@@ -27,10 +27,13 @@ customers and staff.
 | The warehouse, database `shop`, schema `analytics` | `clean_customers`, `clean_orders`, `daily_sales` | each table's columns and types, row count, last-altered time and the role that owns it |
 | The reporting tool | `sales_dashboard`, a chart of revenue per day | the dashboard's title, who created it, when it last refreshed and the values it shows |
 
-These records are the lab's choice of what a typical system of each kind keeps. Real systems
-differ: some warehouses record no owner and no last-altered time, some object stores keep every
-version of an object, and some keep access logs. Each chapter's model-versus-reality note says
-which difference matters to it.
+These records are the lab's choice of what a typical system of each kind keeps; the lab does not
+model why a system keeps a field. The reporting tool keeps no query: a program fills the
+dashboard, as programs fill the tables. A program that writes no rows still moves its table's
+last-written time, so in the lab only a failed write leaves the time stale. Real systems differ:
+some table formats keep history the lab's warehouse does not, such as Apache Iceberg's snapshots
+and Delta Lake's record of each write (`docs/sources.md`). Each chapter's model-versus-reality
+note says which difference matters to it.
 
 ### The programs
 

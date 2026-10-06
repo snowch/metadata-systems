@@ -2,24 +2,31 @@
 
 // Every number Chapter 1's words state, read off the lab. If the shop's data or programs change,
 // this fails until the words change with them (docs/notes/chapter-01/facts.md is the brief the
-// words were drafted from).
+// words were drafted from). A number spelled as a word ("three days", "two settings") is pinned
+// like a number written in figures.
 
 import { describe, expect, it } from "vitest";
 
 import {
+  DAYS,
+  PROGRAM_IDS,
+  QUESTION_IDS,
+  catalogueFor,
   checkRows,
   cleanReconstructions,
   columnValues,
   formatValue,
+  questionMap,
   recordOf,
   runOver,
   storage,
   sumReconstructions,
   sumSql,
-  catalogueFor,
   week,
 } from "@ms/lab";
+import { DEFAULT_VIEW_STRINGS } from "@ms/views";
 
+import { LABELS } from "./invisible-system.labels";
 import { PROSE } from "./invisible-system.prose";
 
 const revenue = (changes: Parameters<typeof week>[0] = []) => {
@@ -29,8 +36,21 @@ const revenue = (changes: Parameters<typeof week>[0] = []) => {
   );
 };
 
+/** The raw orders added up per day, against daily_sales. */
+const rawChecks = () => {
+  const w = week();
+  const r = runOver(
+    sumSql({ source: "orders.parquet", keep: "all", measure: "revenue", per: "day" }),
+    catalogueFor(w),
+  );
+  if (!("table" in r)) throw new Error("query failed");
+  return checkRows(r.table, w.tables.get("daily_sales")!);
+};
+
+const time = (ts: string) => ts.slice(11, 16);
+
 describe("the facts Chapter 1 states", () => {
-  it("has seven assets with the stated row counts", () => {
+  it("has seven assets with the stated row counts, asked eight questions each", () => {
     const view = storage();
     expect(view).toHaveLength(7);
     const rows = Object.fromEntries(view.map((r) => [r.asset, r.rows]));
@@ -43,29 +63,46 @@ describe("the facts Chapter 1 states", () => {
       daily_sales: 7,
       sales_dashboard: 7,
     });
+    expect(PROSE.question).toContain("seven assets");
+    const bySystem = (system: string) => view.filter((r) => r.system === system).length;
+    expect([bySystem("object-storage"), bySystem("warehouse"), bySystem("reporting")]).toEqual([
+      3, 3, 1,
+    ]);
+    expect(PROSE.question).toContain("Three files sit in object storage, three tables");
+    expect(PROSE.question).toContain("one dashboard in the reporting tool");
+    expect(QUESTION_IDS).toHaveLength(8);
+    expect(PROSE.inspectorLead).toContain("eight questions");
+    expect(PROSE.mapLead).toContain("eight questions");
+    expect(LABELS.captions.map).toContain("eight questions");
+  });
+
+  it("gives the first and last days of the week and the learner's first morning", () => {
+    expect(PROSE.question).toContain("Monday 14 September 2026 at 09:00");
+    expect(PROSE.question).toContain("Monday 7 September");
+    expect(Object.keys(revenue())).toEqual([...DAYS]);
+    expect(DAYS[0]).toBe("2026-09-07");
+    expect(DAYS[DAYS.length - 1]).toBe("2026-09-13");
+    expect(LABELS.captions.dashboard).toContain("7 to 13 September");
+    expect(DEFAULT_VIEW_STRINGS.labNote).toContain("7 to 13 September 2026");
   });
 
   it("matches raw orders to daily_sales on three days of seven, the ones the prose names", () => {
-    const w = week();
-    const r = runOver(
-      sumSql({ source: "orders.parquet", keep: "all", measure: "revenue", per: "day" }),
-      catalogueFor(w),
-    );
-    if (!("table" in r)) throw new Error("query failed");
-    const checks = checkRows(r.table, w.tables.get("daily_sales")!);
+    const checks = rawChecks();
     expect(checks.filter((c) => c.same).map((c) => c.key)).toEqual([
       "2026-09-07",
       "2026-09-11",
       "2026-09-13",
     ]);
-    expect(PROSE.p2Explain).toContain("three days: Monday, Friday, and Sunday");
-    expect(PROSE.p2Explain).toContain("the other four days");
+    expect(PROSE.p2Explain).toContain("three days: Monday, Friday and Sunday");
+    expect(PROSE.p2Explain).toContain("the other four, Thursday among them");
   });
 
   it("names etl_service as the owner of all three tables", () => {
     for (const t of ["clean_customers", "clean_orders", "daily_sales"] as const)
       expect(recordOf(storage(), t).ownerRole).toBe("etl_service");
     expect(PROSE.p1Explain).toContain("`etl_service` as the owner of all three tables");
+    expect(PROGRAM_IDS).toHaveLength(4);
+    expect(PROSE.p1Explain).toContain("all four of the shop's programs");
   });
 
   it("has one query that rebuilds daily_sales, the one the hints give", () => {
@@ -81,23 +118,25 @@ describe("the facts Chapter 1 states", () => {
     const copy = recordOf(storage(week(["copy"])), "clean_orders_copy.parquet");
     expect(copy.rows).toBe(44);
     expect(copy.location).toBe("s3://shop-scratch/clean_orders_copy.parquet");
-    expect(copy.lastWritten).toBe("2026-09-14T02:15:17Z");
-    expect(sumReconstructions(week(["copy"]), "daily_sales")).toHaveLength(2);
+    expect(time(copy.lastWritten)).toBe("02:15");
+    expect(sumReconstructions(week(["copy"]), "daily_sales", "covers")).toHaveLength(2);
     expect(PROSE.outcomeCopy).toContain("last modified at 02:15, with the same 44 rows");
+    expect(PROSE.outcomeCopy).toContain("Now 2 queries rebuild");
+    expect(PROSE.afterAll).toContain("two assets fit equally well");
   });
 
   it("states the edit for refunds as the lab makes it", () => {
     const before = revenue();
     const after = revenue(["refunds"]);
     expect([before["2026-09-12"], after["2026-09-12"]]).toEqual(["191.49", "215.49"]);
-    expect(after["2026-09-13"]).toBe("97.75");
-    expect(before["2026-09-13"]).toBe("97.75");
+    expect([before["2026-09-13"], after["2026-09-13"]]).toEqual(["97.75", "97.75"]);
     const changed = recordOf(storage(week(["refunds"])), "daily_sales");
     expect(changed.rows).toBe(7);
     expect(changed.lastWritten).toBe(recordOf(storage(), "daily_sales").lastWritten);
     expect(sumReconstructions(week(["refunds"]), "daily_sales", "covers")).toEqual([]);
-    expect(PROSE.outcomeRefunds).toContain("215.49, not 191.49");
-    expect(PROSE.outcomeRefunds).toContain("unchanged at 97.75");
+    expect(PROSE.outcomeRefunds).toContain("Saturday's row now reads 215.49");
+    expect(PROSE.outcomeRefunds).toContain("it read 191.49");
+    expect(PROSE.outcomeRefunds).toContain("unchanged, 97.75");
     expect(PROSE.outcomeRefunds).toContain("the same 7 rows");
   });
 
@@ -105,42 +144,67 @@ describe("the facts Chapter 1 states", () => {
     const w = week(["failed"]);
     const ds = recordOf(storage(w), "daily_sales");
     expect(ds.rows).toBe(6);
-    expect(ds.lastWritten).toBe("2026-09-13T02:30:21Z");
+    expect(ds.lastWritten.slice(0, 16)).toBe("2026-09-13T02:30");
     expect(columnValues(ds.content, "day")).not.toContain("2026-09-13");
+    expect(time(recordOf(storage(w), "clean_orders").lastWritten)).toBe("02:05");
     const dash = recordOf(storage(w), "sales_dashboard");
     expect(dash.rows).toBe(6);
     expect(dash.lastWritten.slice(0, 16)).toBe("2026-09-14T03:00");
     expect(sumReconstructions(w, "daily_sales", "covers")).toHaveLength(1);
     expect(PROSE.outcomeFailed).toContain("6 rows, with no row for Sunday");
     expect(PROSE.outcomeFailed).toContain("Sunday 13 September at 02:30");
-    expect(PROSE.outcomeFailed).toContain("on Monday at 03:00 as usual and shows 6 values");
+    expect(PROSE.outcomeFailed).toContain("`clean_orders` (Monday at 02:05)");
+    expect(PROSE.outcomeFailed).toContain("the dashboard (Monday at 03:00)");
+    expect(PROSE.outcomeFailed).toContain("shows 6 values");
+    expect(PROSE.outcomeFailed).toContain("the 6 rows");
   });
 
-  it("finds the quantity rule untestable this week, as the reflection says", () => {
+  it("answers the experiment's prediction with the counts the outcomes state", () => {
+    const counts = (["copy", "refunds", "failed"] as const).map(
+      (c) => sumReconstructions(week([c]), "daily_sales", "covers").length,
+    );
+    expect(counts).toEqual([2, 0, 1]);
+  });
+
+  it("moves two questions about what made daily_sales after the edit, as the prose says", () => {
+    const place = (changes: Parameters<typeof week>[0]) =>
+      Object.fromEntries(questionMap(week(changes)).map((e) => [e.question, e.place]));
+    const before = place([]);
+    const after = place(["refunds"]);
+    const moved = QUESTION_IDS.filter((q) => before[q] !== after[q]);
+    expect(moved).toEqual(["made-from", "computed"]);
+    expect(PROSE.generalisation).toContain("two questions about what made `daily_sales`");
+  });
+
+  it("finds two settings of the cleaning rules that pass, differing only in the quantity rule", () => {
     const fits = cleanReconstructions(week());
+    expect(fits).toHaveLength(2);
     expect(new Set(fits.map((c) => c.quantity))).toEqual(new Set(["keep", "drop"]));
     const raw = week().tables.get("orders.parquet")!;
     expect(columnValues(raw, "quantity").every((q) => Number(q) > 0)).toBe(true);
-    expect(PROSE.reflection).toContain("quantity of 0 or less");
+    expect(PROSE.p3Explain).toContain("Two settings pass");
+    expect(PROSE.p3Explain).toContain("quantity of 0 or less");
   });
 
-  it("states order 7015 as the order written twice", () => {
+  it("closes Thursday with the numbers the lab gives", () => {
+    const thu = rawChecks().find((c) => c.key === "2026-09-10")!;
+    expect([thu.actual, thu.expected]).toEqual(["205.50", "51.50"]);
+    const raw = week().tables.get("orders.parquet")!;
+    const noCustomer = raw.rows.filter(
+      (r) => r[1] === null && String(r[6]).startsWith("2026-09-10"),
+    );
+    expect(noCustomer.map((r) => r[0])).toEqual([7021, 7023, 7025]);
+    const worth = noCustomer.reduce((s, r) => s + Number(r[3]) * Number(r[4]), 0);
+    expect(formatValue(worth, raw.columns[4]!.type)).toBe("154.00");
+    expect(PROSE.reflection).toContain("Three orders on Thursday have no customer id");
+    expect(PROSE.reflection).toContain("154.00");
+    expect(PROSE.reflection).toContain("(205.50)");
+    expect(PROSE.reflection).toContain("(51.50)");
+  });
+
+  it("states order 7015 as the order that appears twice", () => {
     const ids = columnValues(week().tables.get("orders.parquet")!, "order_id");
     expect(ids.filter((id) => id === 7015)).toHaveLength(2);
     expect(PROSE.c2Hints[2]).toContain("order 7015 appears twice");
-  });
-
-  it("gives the first and last days of the week and the learner's first morning", () => {
-    expect(PROSE.question).toContain("Monday 14 September 2026, 09:00");
-    expect(PROSE.question).toContain("Monday 7 September");
-    expect(Object.keys(revenue())).toEqual([
-      "2026-09-07",
-      "2026-09-08",
-      "2026-09-09",
-      "2026-09-10",
-      "2026-09-11",
-      "2026-09-12",
-      "2026-09-13",
-    ]);
   });
 });

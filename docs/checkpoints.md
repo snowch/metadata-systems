@@ -23,24 +23,57 @@ author's brief for this course.
 - **Chapter 1, The invisible data system**, built end to end: ten sections, seven figures, two
   challenges, five hints each, prose drafted by Haiku from checked facts, an originality note, a
   facts test pinning every stated number to the lab, and browser tests at desktop and phone
-  widths. The site's front page lists all 32 chapters by part.
+  widths. The site's front page lists all 32 chapters by part. It has been reviewed once by a
+  reader on another model and revised (below).
 - **The platform move.** The lesson schema, the runtime and the primitives moved from
   `snowch/digital-design` to `snowch/learning-platform`, renamed to `@platform/*`, with three
   backwards-compatible generalisations (a `choice` field, a case-graded `text` or `data`
   artifact, a model named by the course). The digital-design course passes on the moved packages:
   strict tsc clean, 872 of 872 unit and integration tests. The cross-book workflow gained the
   metadata course's job and two jobs that run each course against the platform's current
-  packages.
+  packages. Its run on the platform's branch (run 6, 6 October 2026) passed all eight jobs: the
+  three new ones, the digital-design course's own full check, and the four books.
+
+### The review of Chapter 1
+
+A reviewer on another model read the built chapter as its learner and wrote 32 findings (3 high,
+17 medium, 12 low); an independent sceptic attacked each against the lab and the build, upholding
+10, upholding 20 in part, rejecting 1 and finding 1 already fixed
+(`docs/notes/chapter-01/review/`). The three high findings were real: the page said a failed
+night looks like a quiet one, which the lab contradicts; it said the reporting tool keeps the query
+behind its chart, which the lab does not model; and it used "rebuild" in two senses. Two of those
+false statements, and a third, came from the managing session's own briefs, written without being
+read off the lab; the redraft's facts were probed from the lab first.
+
+The revision, code first and then the prose process:
+
+- every prediction is now committed before the lab answers, including one per change in the
+  failure experiment and one after the second challenge, and the days prediction asks for a count
+  that most learners will get wrong (six expected, three found);
+- the learner sorts the chapter's questions before the lab places them, and the map moves as the
+  learner switches between the changed weeks, so a question visibly leaves the data's group;
+- the failure experiment opens once the learner's own query passes, and nothing names the first
+  challenge's answer before then;
+- the kinds of record, and *metadata* with them, are derived from the questions only a record can
+  answer; the opening question about Thursday is closed, its cause left to later chapters as the
+  plan says;
+- on a phone, a wide table says that it scrolls, dates do not break, and SQL wraps;
+- the closing note's two unsourced claims about real systems became two sourced ones (Iceberg's
+  snapshots, Delta Lake's history).
+
+`docs/notes/chapter-01.md` records what each finding got and what the second prose pass caught.
 
 ### What the author should look at
 
-1. Chapter 1 as a learner, on the built site (`npm run dev`, then
-   `#/chapter/invisible-data-system`), or on Pages once `main` exists and deploys.
+1. Chapter 1 as a learner, on the published site
+   (<https://snowch.github.io/metadata-systems/#/chapter/invisible-data-system>, deployed from
+   `main`), or locally with `npm run dev`.
 2. The plan (`docs/plan.md`): the order of the 32 chapters, the rationed terms, and the decisions
    at its end.
 3. The lab's design (`docs/lab.md`), above all the shop's week and its Thursday incident, which
    later chapters measure (13), trace (14) and find (16).
-4. `docs/notes/chapter-01.md`: what the prose process caught, and the managing session's read.
+4. `docs/notes/chapter-01.md`: what the prose process caught, the managing session's read, and
+   the review with what each finding got.
 
 ### Decisions taken, for approval
 
@@ -65,12 +98,15 @@ author's brief for this course.
    collector, the graph, the queries and the interface): JavaScript run in a Web Worker
    (recommended: no download, every browser), or Python under Pyodide, which a data engineer may
    prefer, at about ten megabytes per visit. Needed by checkpoint 2.
-4. **The default branch.** This repository was empty, so its first pushed branch,
-   `claude/metadata-systems-agent-promotion-ggb2lv`, may now be its default. The deploy runs from
-   `main`; creating `main` from this branch (or merging it there) publishes the site.
-5. **Network access.** The build environment cannot reach openlineage.io and the other projects'
-   documentation sites; OpenLineage was checked against its repository on GitHub instead. The
-   hosts that unblock the later chapters' sources are listed in this session's conversation.
+4. **"Predict again".** The platform's prediction primitive lets a learner re-answer after seeing
+   the result; the reviewer counted it against the predictions. It is shared with the
+   digital-design course, so changing it is a platform decision.
+
+Settled since this report was first drafted: `main` exists and the site deploys from it; and the
+documentation hosts are reachable, so OpenLineage was compared with its published site (the same
+as its repository's pages, with one disagreement between its schema and its run-cycle page, now
+recorded) and the plan's product claims were checked against each project's own documentation
+(`docs/sources.md`).
 
 ### Known gaps
 

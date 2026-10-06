@@ -473,3 +473,14 @@ details[open] > summary::before {
 .map-yours {
   color: var(--warn);
 }
+
+/* The change lab's table sits under a heading that names it; its caption stays for a screen
+   reader but is not shown twice. */
+.change-result .days-table caption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

@@ -7,14 +7,26 @@ and review are in `docs/notes/chapter-01/`.
 ## What the chapter does
 
 The learner gets the shop's storage and nothing else, and tries to answer what anybody asks of a
-platform they did not build. Two predictions (what the warehouse names as an owner; on how many
-days the raw orders add up to `daily_sales`); an inspector over the seven assets and exactly what
-their systems record; a construction that rebuilds `daily_sales` from another asset with a query;
-a failure experiment that runs the week again with three changes storage does not record; a
-computed map of which questions storage, the data, or only a record can answer; and a challenge
-that recovers the cleaning rules of `clean_orders` from its input and output, with a rule this
-week's data cannot reveal. *Metadata* is introduced at the end, by the questions the learner could
-not answer.
+platform they did not build. As revised after the review:
+
+- two predictions: what the warehouse names as an owner, among four candidates of one kind; and
+  on how many days the raw orders add up to `daily_sales`, as a count (most learners expect six;
+  the lab finds three);
+- an inspector over the seven assets: exactly what their systems record, and what storage says
+  about the same eight questions for every asset, before the rows;
+- a construction that rebuilds `daily_sales` from another asset with a query, "rebuild" defined
+  once (every row the asset has, with the same values);
+- a failure experiment that opens once the learner's own query passes, and runs the week again
+  with each of three changes after a committed prediction of how many of the builder's queries
+  will rebuild `daily_sales` (two, none, one);
+- a sort: the learner places the eight questions about `daily_sales` in three groups, then the lab
+  places them, tags each question only a record answers with the kind of record that would, and
+  moves them as the learner switches between the changed weeks;
+- the three kinds of record derived from that map, and *metadata* introduced by them;
+- a challenge that recovers the cleaning rules of `clean_orders`, then, once the rules pass, a
+  prediction of how many settings pass (two: this week's data cannot show the quantity rule);
+- a reflection that returns to Thursday, leaves its cause open as the plan does, and places the
+  four questions of Section 2.
 
 ## What was built for it
 
@@ -127,10 +139,36 @@ What each finding gets:
 | R31 | in part | One word per idea: platform, a repeated order, responsible, the last night's write. |
 | R32 | in part | "Really" cut on the front page and in the Reflection; the Generalisation's promise is about the course. The placeholders stay. |
 
+## The revision's prose
+
+After the code, five fact briefs (`briefs/revision/H` to `L`, with `common.md`) went to Haiku in
+parallel, drawn from a fact sheet rewritten from the lab's own output. What came back:
+
+| Draft | Wrong, sent back | Dropped, restored with the fewest words |
+| --- | --- | --- |
+| H (objectives, Sections 1 to 3) | none | what an asset is; that "storage" means all three systems |
+| I (Sections 4 and 5, the inspector's words) | the inspector's closing note said storage leaves all "eight questions" unanswered | what the builder does with the choices |
+| J (the failure experiment) | none | none |
+| K (Sections 7 and 8, the map's words) | the explanation said none of the systems keeps what "your eight questions" asked, and that "the programs create these assets" (the files come from the export) | none |
+| L (Sections 9 and 10, the notes, the front page) | the fourth hint added "the two rules that matter most", which is false | none |
+
+The whole-chapter read, from a dump of the built page in every state (`scratchpad`, not kept),
+sent three things back for style: the failure experiment's caption, which no brief had asked for
+and which still described the old figure; the closing summary's "each change changed"; and the
+closing note's first paragraph, a colon followed by two clauses. It fixed four joins with the
+fewest words: a pronoun ("shown them"); "Once you have checked your sorting" before the
+generalisation's reference to the map's tags, which appear only after the check; quotation marks
+round a group's name and the dashboard's title inside a sentence; and "The column" before an
+identifier that opened a sentence. The duplicated caption under the change lab's own heading is
+hidden visually and kept for a screen reader.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,
   which this course does not use; the digital-design inventory recorded the same for that course.
   Making maths optional in the runtime is a platform change for both courses.
-- The table of an asset's rows scrolls sideways on a phone; its columns are the file's own.
+- The table of an asset's rows still scrolls sideways on a phone (its columns are the file's own),
+  but now says so above the table.
+- "Predict again" lets a learner re-answer after seeing the result. It is the platform
+  primitive's design, shared with the digital-design course; changing it is a platform decision.
 - The lab models one week. Later chapters add weeks and changes as they need them.

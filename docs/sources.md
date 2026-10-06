@@ -134,6 +134,18 @@ fictional Jaffle Shop café"; the BigQuery quickstart's sample data is `jaffle_s
 staging, intermediate and marts models from raw customers, orders, items, products, stores and
 supplies.
 
+## Table formats that keep history (Chapter 1's closing note)
+
+Read 6 October 2026, for one sentence of Chapter 1's model-versus-reality note:
+
+- **Apache Iceberg**: the table specification (iceberg.apache.org/spec). "The table metadata file
+  tracks the table schema, partitioning config, custom properties, and snapshots of the table
+  contents. A snapshot represents the state of a table at some time". Snapshots can expire, and
+  an expired snapshot's files can be garbage collected.
+- **Delta Lake**: "Retrieve Delta table history" (docs.delta.io/latest/delta-utility.html). The
+  history command returns "the operations, user, timestamp, and so on for each write to a Delta
+  table"; "By default table history is retained for 30 days."
+
 ## Still to be read
 
 Each chapter that relies on one of these reads it first and adds an entry above:

@@ -1,14 +1,15 @@
 // Copyright © 2026 Christopher Snow
 
 // Every word the figures put in front of a learner, in one place. Drafted by the course's prose
-// process (CLAUDE.md) from the brief in docs/notes/chapter-01/briefs/F-figure-labels.md and
-// checked against the lab. Slots in braces are filled by `format`.
+// process (CLAUDE.md) from the briefs in docs/notes/chapter-01/briefs (F, then the revision's I,
+// J, K and L after the review) and checked against the lab. Slots in braces are filled by
+// `format`.
 
 import { createContext, useContext } from "react";
 
 export const DEFAULT_VIEW_STRINGS = {
   labNote:
-    "Every figure in this chapter runs the Metadata Lab, a small data platform in your browser. The lab holds the shop's files and tables for the week of 7 to 13 September 2026. The programs in the lab run in SQL over the rows you see. What a figure shows is worked out from those rows each time. The lab's clock is the week's own, not real time. Nothing leaves your browser.",
+    "Every figure in this chapter runs the Metadata Lab, a small data platform in your browser. The lab holds the shop's files and tables for the week of 7 to 13 September 2026. Its programs run in SQL over the rows you see. What a figure shows is worked out from those rows each time. The lab's clock is the week's own, not real time. Nothing leaves your browser.",
   badge: "Lab",
   badgeLabel: "How this figure works: {model}",
   modelNote: "How the figures run",
@@ -72,10 +73,13 @@ export const DEFAULT_VIEW_STRINGS = {
   } as Record<string, string>,
   a: {
     answered: "Storage records the last write, at {time}.",
-    columns: "Storage records the column names and types, not how the values were worked out.",
-    title: "The reporting tool records the title, {title}, not how the values were worked out.",
-    "owner-role": "The warehouse records the name {role} as the owner, not who is responsible.",
-    creator: "The reporting tool records who created it, {person}, not who is responsible now.",
+    columns:
+      "Storage records the column names and their types, not how the values were worked out.",
+    title: "The reporting tool records the title “{title}”, not how the values were worked out.",
+    "owner-role":
+      "The warehouse records the name {role} as the owner, which does not say who is responsible for the table.",
+    creator:
+      "The reporting tool records who created it, {person}, not who is responsible for it now.",
     types: "Storage records {column} as {type}, a number with no unit.",
     "time-only": "Storage records the last write, at {time}, not whether a write was due.",
     nothing: "Storage records nothing that answers this.",
@@ -94,21 +98,21 @@ export const DEFAULT_VIEW_STRINGS = {
   extraRows: "Your rules keep {count} rows that clean_orders does not, orders {ids}.",
   changeLegend: "Change",
   firstWeek: "the week as it first ran",
-  firstWeekStatus: "This is the week as it first ran, the week you have been reading.",
-  runWithChange: "Run the week with this change",
+  firstWeekStatus: "This is the week as it first ran, the one you have been reading.",
+  runWithChange: "Run with this change",
   ranWith: "The lab ran the whole week again with this change: {change}.",
-  locked: "This figure starts once your answer to “{title}” passes its tests.",
+  locked: "This figure starts once your answer to the challenge called “{title}” passes its tests.",
   storageNowHeading: "What storage holds on Monday morning",
   compareNote:
-    "Storage holds only this week's values. Each comparison with the week as it first ran is the lab's: it ran both weeks.",
+    "Storage holds only this week's values. Each comparison with the week as it first ran is the lab's, because it ran both weeks.",
   newAsset: "A new file, {asset}, at {location}, last modified at {time}.",
   changedTime: "{asset} was last written at {after}; in the week as it first ran, at {before}.",
   changedRows: "{asset} has {after} rows; in the week as it first ran, {before}.",
   changedValue:
     "In {asset}, the row for {day} reads {after}; in the week as it first ran, {before}.",
   noDiff: "Storage holds the same as in the week as it first ran.",
-  yourQueryHeading: "Your query on this week's daily_sales",
-  fitsHeading: "Queries in the builder's choices that rebuild daily_sales",
+  yourQueryHeading: "Your query against this week's daily_sales",
+  fitsHeading: "The queries in the builder's choices that rebuild daily_sales",
   fitsNone: "None of the builder's choices rebuilds it.",
   describeQuery: "from {source}, {keep}, add up {measure} per {per}",
   place: {
@@ -121,9 +125,9 @@ export const DEFAULT_VIEW_STRINGS = {
   checkSort: "Check my sorting",
   sortAgain: "Sort again",
   sortScore: "{matching} of {total} questions are where the lab places them.",
-  youPlaced: "You placed it under: {place}.",
+  youPlaced: "You placed it under “{place}”.",
   weekLegend: "Week",
-  movedFrom: "In the week as it first ran: {place}.",
+  movedFrom: "In the week as it first ran, it was under “{place}”.",
   needsRecord: "A record of {kind} would answer it.",
   recordKind: {
     "what-it-is": "what the asset is",
@@ -133,11 +137,11 @@ export const DEFAULT_VIEW_STRINGS = {
   e: {
     time: "Last written at {time}.",
     oneQuery: "One query rebuilds it: {query}.",
-    oneQueryHidden: "One query in the builder's choices rebuilds it.",
+    oneQueryHidden: "One query in the builder's choices rebuilds it (no query named).",
     oneSource: "One asset rebuilds it: {source}.",
-    oneSourceHidden: "One asset rebuilds it.",
+    oneSourceHidden: "One asset rebuilds it (no asset named).",
     manySources: "{count} assets rebuild it equally well: {sources}.",
-    manySourcesHidden: "{count} assets rebuild it equally well.",
+    manySourcesHidden: "{count} assets rebuild it equally well (no assets named).",
     manyQueries: "{count} queries rebuild it, from {sources}.",
     manyQueriesHidden: "{count} queries in the builder's choices rebuild it.",
     noQuery: "None of the builder's choices rebuilds it.",
@@ -146,7 +150,7 @@ export const DEFAULT_VIEW_STRINGS = {
     nightDone: "Last written at {time}, with a row for {day}.",
     nightMissing: "Last written at {time}; the latest row is for {latest}, not {expected}.",
     account: "Storage records the name {role}, not who is responsible.",
-    types: "{column} is {type}, with no unit.",
+    types: "The column {column} is {type}, with no unit.",
     currentOnly: "Storage keeps only the current rows.",
   } as Record<string, string>,
   scrollCue: "Scroll sideways to see every column.",

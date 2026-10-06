@@ -6,7 +6,7 @@
 export const STRINGS = {
   brand: "Metadata Systems",
   courseTitle: "Metadata Systems: From Raw Files to a Working Metadata Platform",
-  lead: "You build a small metadata system inside a small data platform that really runs in your browser. For each idea you predict, build, run, inspect, break and repair it. Your work stays in your browser.",
+  lead: "You build a small metadata system inside a data platform that runs in your browser. For each idea you predict, build, run, inspect, break and repair it. Your work stays in your browser.",
   chapters: "Chapters",
   skip: "Skip to main content",
   theme: "Theme",
