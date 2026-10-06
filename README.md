@@ -6,11 +6,12 @@ An interactive, browser-based course on metadata and data lineage. You do not re
 systems: you build a small one inside a small data platform that really runs in your browser, and
 for each idea you predict, build, run, inspect, break and repair it.
 
+The course is published at <https://snowch.github.io/metadata-systems/>.
+
 **Status.** Chapter 1, *The invisible data system*, is built end to end, with its lab, figures,
 challenges, prose and tests. The other 31 chapters are planned (`docs/plan.md`); the site's list
-of chapters says which exist, worked out from the chapters themselves. The site deploys from
-`main` once `main` exists (`.github/workflows/deploy.yml`) to
-`https://snowch.github.io/metadata-systems/`.
+of chapters says which exist, worked out from the chapters themselves. Every push to `main`
+deploys the site (`.github/workflows/deploy.yml`).
 
 ## Read first
 
