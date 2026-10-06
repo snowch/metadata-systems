@@ -211,11 +211,12 @@ The author reviews the course at five checkpoints:
    this course does not, and the digital-design course keeps it. The learner's way back is a
    "start this chapter again" at the foot of every chapter, which clears everything the chapter
    keeps, after a second press.
-3. **The platform repository can be public.** Its code is already public through this course's
-   copy. The copy stays (`docs/platform.md`).
-4. **The digital-design course switches to the moved packages now**, as proposed: two copies of
-   one runtime drift with every fix, and the cross-book overlay job already shows that course
-   passing on the moved packages. The switch is a change to `snowch/digital-design`, made there.
+3. **The platform repository is public**, made so by the author: its code was already public
+   through this course's copy. The copy stays (`docs/platform.md`).
+4. **The digital-design course switches to the moved packages now**, as proposed and agreed: two
+   copies of one runtime drift with every fix, and the cross-book overlay job already shows that
+   course passing on the moved packages. The switch is a change to `snowch/digital-design`, made
+   there.
 
 ### 6 October 2026: the course's frame
 

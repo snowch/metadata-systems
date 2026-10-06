@@ -85,20 +85,21 @@ The revision, code first and then the prose process:
 - **The learner's state is derived**: later chapters regrade earlier chapters' stored work instead
   of keeping a separate lab state (`docs/lab.md`, "The learner's state").
 - **The platform is copied, not linked**: `platform/` holds the platform's packages at a recorded
-  commit, checked unedited on every run, because `snowch/learning-platform` is private and this
-  repository is public; a submodule would need a credential in CI and in the deploy.
+  commit, checked unedited on every run. It began as a copy because `snowch/learning-platform`
+  was private; it is public since checkpoint 1, and the copy stays because cloning, building and
+  deploying the course then need no second checkout (`docs/platform.md`).
 
 ### The author's answers
 
-1. **Make `snowch/learning-platform` public?** Yes: its code is already public through this
-   course's copy. The author changes the visibility in the repository's settings; this course
-   keeps its checked copy either way (`docs/platform.md`).
+1. **Make `snowch/learning-platform` public?** Yes, and the author made it public on 6 October
+   2026: its code was already public through this course's copy. This course keeps its checked
+   copy (`docs/platform.md`).
 2. **Switch the digital-design course to the moved packages now, or later?** The author asked for
-   a proposal. Now: two copies of one runtime drift with every fix, and the overlay job already
-   shows that course passing on the moved packages. The switch is a change to
-   `snowch/digital-design` (replace its three packages with the platform's, rename `@dd/` to
-   `@platform/`, run its full check, Playwright included), made in that repository on the
-   author's go-ahead.
+   a proposal and agreed to it: now, because two copies of one runtime drift with every fix, and
+   the overlay job already shows that course passing on the moved packages. The switch is made in
+   `snowch/digital-design`: its three packages replaced by the platform's, taken the way this
+   course takes them, `@dd/` renamed to `@platform/`, and its full check run, Playwright
+   included.
 3. **The language of Part VI?** Python under Pyodide: the learner reads and writes this code, and
    Python is a data engineer's language. Pyodide's core is about 5.3 MB compressed, once, served
    from the course's own site (`docs/plan.md`).
