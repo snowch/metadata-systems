@@ -169,6 +169,7 @@ hidden visually and kept for a screen reader.
   Making maths optional in the runtime is a platform change for both courses.
 - The table of an asset's rows still scrolls sideways on a phone (its columns are the file's own),
   but now says so above the table.
-- "Predict again" lets a learner re-answer after seeing the result. It is the platform
-  primitive's design, shared with the digital-design course; changing it is a platform decision.
+- Settled at checkpoint 1: a committed prediction, a committed sort and a change's prediction now
+  stay, with no "Predict again" or "Sort again"; "start this chapter again", at the foot of the
+  chapter, clears everything after a second press (labels drafted from brief N).
 - The lab models one week. Later chapters add weeks and changes as they need them.

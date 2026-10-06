@@ -240,14 +240,8 @@ export const ChangeLab = withProps(
               options={data.prediction.options}
               committed={committed}
               onCommit={(c) => setPredictions({ ...predictions, [change.id]: c })}
-              onAgain={() => {
-                const rest = { ...predictions };
-                delete rest[change.id];
-                setPredictions(rest);
-              }}
               legend={strings.yourPrediction}
               commitLabel={strings.runWithChange}
-              againLabel={strings.predictAgain}
               verdict={
                 committed !== undefined && (
                   <p

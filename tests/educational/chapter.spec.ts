@@ -10,6 +10,8 @@
 import { expect, test, type Page } from "@playwright/test";
 
 import { PLAN } from "@ms/content";
+
+import { STRINGS } from "../../apps/course/src/strings";
 import { testCount } from "@platform/lesson-schema";
 
 import {
@@ -109,8 +111,7 @@ test.describe("the chapter pages", () => {
               continue;
             // Leave the work in place: a reset or "predict again" would undo what was shown.
             const name = (await b.textContent()) ?? "";
-            if ([S.challenge.reset, V.predictAgain, V.sortAgain].some((n) => name.startsWith(n)))
-              continue;
+            if ([S.challenge.reset, STRINGS.startAgain].some((n) => name.startsWith(n))) continue;
             await b.click({ timeout: 500 }).catch(() => {});
           }
         }
@@ -269,8 +270,33 @@ test.describe("the figures", () => {
     await commit.click();
     await expect(figure.locator("[role=status]")).toContainText(V.match);
     await expect(figure).toContainText("etl_service");
-    await figure.getByRole("button", { name: V.predictAgain }).click();
-    await expect(figure.locator("[role=status]")).toHaveCount(0);
+    // A commitment stands: no "Predict again", the options locked, and the same after a reload.
+    await expect(figure.getByRole("button")).toHaveCount(1); // the Lab badge alone
+    await expect(figure.getByRole("radio").first()).toBeDisabled();
+    await page.reload();
+    await expect(page.locator("#ix-predict-owner [role=status]")).toContainText(V.match);
+  });
+
+  test("starting the chapter again clears every prediction and all work, after a second press", async ({
+    page,
+  }) => {
+    await openChapter(page);
+    const owner = page.locator("#ix-predict-owner");
+    await owner.getByRole("radio").first().check();
+    await owner.getByRole("button", { name: V.checkPrediction }).click();
+    await pass(page, "rebuild-daily-sales");
+    const again = page.getByRole("button", { name: STRINGS.startAgain });
+    await again.click();
+    await page.getByRole("button", { name: STRINGS.startAgainCancel }).click();
+    await expect(owner.locator("[role=status]")).toHaveCount(1);
+    await again.click();
+    await page.getByRole("button", { name: STRINGS.startAgainConfirm }).click();
+    await expect(page.locator(".start-again [role=status]")).toHaveText(STRINGS.startAgainDone);
+    await expect(page.locator("#ix-predict-owner [role=status]")).toHaveCount(0);
+    await expect(challenge(page, "rebuild-daily-sales").locator(".challenge-complete")).toHaveCount(
+      0,
+    );
+    expect(await page.evaluate((key) => localStorage.getItem(key), storageKey())).toBeNull();
   });
 
   test("the inspector shows each asset's record, and the rows with no customer id", async ({

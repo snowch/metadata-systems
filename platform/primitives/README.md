@@ -12,7 +12,7 @@ had, so the course's stylesheet and stored screenshots did not change.
 
 | Primitive | What it is | Its figures in the digital-design course |
 | --- | --- | --- |
-| `PredictionChallenge` | the options, "Check my prediction", the verdict's place and "Predict again" | `Prediction`, `ReadingPrediction`, `CircuitCompare`, `CarrySteps`, `SuiteLab` |
+| `PredictionChallenge` | the options, "Check my prediction", the verdict's place and, if the figure passes `onAgain`, "Predict again" | `Prediction`, `ReadingPrediction`, `CircuitCompare`, `CarrySteps`, `SuiteLab` |
 | `FaultInjector` | the choice of a fault, with no fault first, which restores the model | `FaultLab`, `SuiteLab` |
 | `Stepper` | a slider over a run's steps, its "k of n", optional buttons for back, next and last, and a status line | `CircuitExplorer`, `CarrySteps` |
 | `Timeline` | lanes over a time axis: the lane names, marked times laid out so no two labels touch, a cursor and its slider, scrolling that keeps the cursor in view | `TimingDiagram`, which draws the levels, bus values and shaded spans into it |

@@ -240,13 +240,6 @@ export const QuestionMap = withProps(
             </section>
           ))}
         </div>
-        <button
-          type="button"
-          className="button secondary"
-          onClick={() => setSort({ placed, checked: false })}
-        >
-          {strings.sortAgain}
-        </button>
       </div>
     );
   },

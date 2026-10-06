@@ -563,3 +563,23 @@ input[type="radio"] {
   accent-color: var(--accent);
   flex: none;
 }
+
+/* Start a chapter again: at the foot of the chapter, above the pager, deliberately quiet. */
+.start-again {
+  max-width: var(--measure);
+  margin: var(--space-6) 0 var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+.start-again-note {
+  color: var(--fg-muted);
+  font-size: var(--text-sm);
+}
+.start-again-confirm {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.start-again-status:empty {
+  display: none;
+}

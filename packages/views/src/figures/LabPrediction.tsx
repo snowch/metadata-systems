@@ -121,10 +121,8 @@ export const LabPrediction = withProps(
           options={data.options}
           committed={stored?.choice}
           onCommit={(choice) => setStored({ choice })}
-          onAgain={() => setStored(undefined)}
           legend={strings.yourPrediction}
           commitLabel={strings.checkPrediction}
-          againLabel={strings.predictAgain}
         />
         {stored && result && (
           <div className="prediction-outcome">

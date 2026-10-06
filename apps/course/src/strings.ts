@@ -27,6 +27,13 @@ export const STRINGS = {
   next: "Next",
   pagerLabel: "Previous and next chapter",
   notYet: "The next chapter is still to be written",
+  // The chapter-wide start again, drafted from docs/notes/chapter-01/briefs/revision/N.
+  startAgain: "Start this chapter again",
+  startAgainNote:
+    "The chapter keeps your predictions, sorts and challenge work in your browser. Starting again clears them all, and cannot be undone.",
+  startAgainConfirm: "Clear everything in this chapter",
+  startAgainCancel: "Keep my work",
+  startAgainDone: "This chapter's work is cleared.",
   missing: "There is no page at {path}.",
   noLesson: "There is no chapter called {id}.",
   back: "Back to chapters",

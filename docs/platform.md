@@ -29,10 +29,13 @@ node scripts/sync-platform.mjs ../learning-platform   # a clean checkout of the 
 
 A fix to the platform is made in `snowch/learning-platform`, checked there, and then synced here.
 
-A copy and not a git submodule, because `snowch/learning-platform` is private and this repository
-is public: a submodule would need a credential in this course's CI and in its deploy. If the
-platform becomes public, a submodule at `platform/` replaces the copy and the sync script, and
-nothing else changes, because the workspaces and the imports already name `platform/*`.
+A copy and not a git submodule. The platform's code is public either way, because this repository
+is public and carries the copy; making `snowch/learning-platform` public as well (the author's
+call at checkpoint 1) costs nothing and lets anybody check `SOURCE.json`'s commit against it. The
+copy stays even then: cloning, building and deploying the course need no second checkout, and the
+check above already fails on any edit. A submodule at `platform/` could still replace the copy
+and the sync script without changing anything else, because the workspaces and the imports
+already name `platform/*`.
 
 ## What this course needed the platform to generalise
 

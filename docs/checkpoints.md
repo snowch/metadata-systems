@@ -88,19 +88,25 @@ The revision, code first and then the prose process:
   commit, checked unedited on every run, because `snowch/learning-platform` is private and this
   repository is public; a submodule would need a credential in CI and in the deploy.
 
-### Questions only the author can answer
+### The author's answers
 
-1. **Make `snowch/learning-platform` public?** Then this course can take the platform as a git
-   submodule instead of a checked copy, and the digital-design course could do the same.
-2. **Switch the digital-design course to the moved packages now, or later?** The recipe is in
-   `snowch/learning-platform`'s `docs/adoption.md`; the overlay job proves it on demand.
-3. **The language of Part VI** (Chapters 23 to 27, where the learner implements the store, the
-   collector, the graph, the queries and the interface): JavaScript run in a Web Worker
-   (recommended: no download, every browser), or Python under Pyodide, which a data engineer may
-   prefer, at about ten megabytes per visit. Needed by checkpoint 2.
-4. **"Predict again".** The platform's prediction primitive lets a learner re-answer after seeing
-   the result; the reviewer counted it against the predictions. It is shared with the
-   digital-design course, so changing it is a platform decision.
+1. **Make `snowch/learning-platform` public?** Yes: its code is already public through this
+   course's copy. The author changes the visibility in the repository's settings; this course
+   keeps its checked copy either way (`docs/platform.md`).
+2. **Switch the digital-design course to the moved packages now, or later?** The author asked for
+   a proposal. Now: two copies of one runtime drift with every fix, and the overlay job already
+   shows that course passing on the moved packages. The switch is a change to
+   `snowch/digital-design` (replace its three packages with the platform's, rename `@dd/` to
+   `@platform/`, run its full check, Playwright included), made in that repository on the
+   author's go-ahead.
+3. **The language of Part VI?** Python under Pyodide: the learner reads and writes this code, and
+   Python is a data engineer's language. Pyodide's core is about 5.3 MB compressed, once, served
+   from the course's own site (`docs/plan.md`).
+4. **"Predict again"?** What serves the learner is a commitment that stays: the prediction is
+   worth its surprise, and a re-answer after the reveal erases it. The platform's prediction
+   control now offers "Predict again" only to a figure that asks for it (the digital-design course
+   keeps it); this course drops it, and the sort's "Sort again" with it, and offers "start this
+   chapter again" at the foot of each chapter instead, after a second press.
 
 Settled since this report was first drafted: `main` exists and the site deploys from it; and the
 documentation hosts are reachable, so OpenLineage was compared with its published site (the same

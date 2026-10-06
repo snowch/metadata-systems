@@ -171,9 +171,13 @@ Parts I to V named.
   its parse.
 - **Events** (Chapters 6 to 8): JSON, first in the learner's own design, then as OpenLineage run
   events.
-- **Code** (Part VI): to be decided at checkpoint 2. Recommendation: JavaScript run in a Web
-  Worker against tests, because it runs in every browser with no download; Python under Pyodide is
-  the alternative a data engineer might prefer, at about ten megabytes per visit.
+- **Code** (Part VI, and Chapter 32): Python, run in the browser by Pyodide, decided at
+  checkpoint 1 because the learner reads and writes this code and Python is a data engineer's
+  language. The lab stays TypeScript; the learner's Python runs in a Web Worker against tests, and
+  the two exchange JSON. Pyodide 0.28.3's core is about 5.3 MB to download, compressed, on the
+  first visit, and cached after (measured from its CDN on 6 October 2026). The course will serve
+  it from its own site, so that no figure fetches from a third party, and its licence, MPL-2.0,
+  joins the licence check when it is added.
 
 ## OpenLineage, placed
 
@@ -191,13 +195,27 @@ page also disagree on whether an `OTHER` event may follow a terminal one, and th
 The author reviews the course at five checkpoints:
 
 1. After Chapter 1, the plan, the lab's design and the platform move (now).
-2. After Chapter 8: the event model and OpenLineage are in place, and the language of Part VI is
-   decided.
+2. After Chapter 8: the event model and OpenLineage are in place.
 3. After Chapter 16: metadata is operational.
 4. After Chapter 22: the failure chapters.
 5. Before Chapter 32.
 
 ## Decisions since the brief
+
+### 6 October 2026: the author's answers at checkpoint 1
+
+1. **Part VI is written in Python**, under Pyodide ("What the learner writes", above).
+2. **A prediction, once committed, stays.** Its value is the commitment before the lab answers; a
+   re-answer after the reveal teaches nothing and erases the record of the surprise. The
+   platform's prediction control now offers "Predict again" only to a figure that asks for it:
+   this course does not, and the digital-design course keeps it. The learner's way back is a
+   "start this chapter again" at the foot of every chapter, which clears everything the chapter
+   keeps, after a second press.
+3. **The platform repository can be public.** Its code is already public through this course's
+   copy. The copy stays (`docs/platform.md`).
+4. **The digital-design course switches to the moved packages now**, as proposed: two copies of
+   one runtime drift with every fix, and the cross-book overlay job already shows that course
+   passing on the moved packages. The switch is a change to `snowch/digital-design`, made there.
 
 ### 6 October 2026: the course's frame
 
