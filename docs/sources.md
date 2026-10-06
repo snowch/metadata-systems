@@ -5,11 +5,13 @@ claim about a standard or a product that this file does not support is not state
 (`CLAUDE.md`, "Accuracy"). Quotations here are short, marked, and attributed; nothing from these
 sources is copied into the course's text, figures or code.
 
-Each entry says where it was read and when. The OpenLineage website (openlineage.io) is not
-reachable from the course's build environment, so its documentation was read from the project's
-own repository on GitHub, where the website's pages are kept as Markdown under `website/docs/`.
-The older `OpenLineage/docs` repository is archived (since 4 September 2024) and deprecated in
-favour of that directory; where the two differ, the course follows the current one.
+Each entry says where it was read and when. The OpenLineage documentation was first read from the
+project's own repository on GitHub, where the website's pages are kept as Markdown under
+`website/docs/`, because the website (openlineage.io) was not reachable from the build
+environment. When it became reachable, on 6 October 2026, the pages and the schema below were
+compared with the published site (documentation version 1.53.0, and the schema at its `$id`); they
+say the same. The older `OpenLineage/docs` repository is archived (since 4 September 2024) and
+deprecated in favour of `website/docs/`; where the two differ, the course follows the current one.
 
 ## OpenLineage
 
@@ -28,7 +30,10 @@ is `https://openlineage.io/spec/2-0-2/OpenLineage.json`. It supports these claim
   and no `job` or `run`; a job event has a `job` and no `run`.
 - A run event's `eventType` is one of `START`, `RUNNING`, `COMPLETE`, `ABORT`, `FAIL` and
   `OTHER`. The field's description says: "It is required to issue 1 START event and 1 of [
-  COMPLETE, ABORT, FAIL ] event per run."
+  COMPLETE, ABORT, FAIL ] event per run." It goes on to allow further `OTHER` events in the same
+  run, "For example to send additional metadata after the run is complete". The run-cycle page
+  (below) disagrees: there, a terminal event means nothing more about the run will be sent, and
+  `OTHER` comes before a terminal state. The course states both and says that they differ.
 - A run is identified by `runId`, in UUID format. A job and a dataset are each identified by a
   `namespace` and a `name`. Input and output datasets extend a dataset with input-specific and
   output-specific facets.

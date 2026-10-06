@@ -183,7 +183,8 @@ against the specification (`docs/sources.md`), and the specification's silences 
 silences. For a batch job it expects a START and one terminal event per run, and events about a
 run accumulate; a streaming job or a service may never send a terminal event and instead sends
 periodic snapshots of a time window. It does not say what a consumer must do with a duplicate, a
-late or a missing event. Part V is about exactly those silences.
+late or a missing event. Part V is about exactly those silences. Its schema and its run-cycle
+page also disagree on whether an `OTHER` event may follow a terminal one, and the course says so.
 
 ## The checkpoints
 
