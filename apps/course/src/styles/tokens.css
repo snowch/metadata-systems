@@ -1,0 +1,153 @@
+/* Copyright © 2026 Christopher Snow */
+
+/*
+ * Design tokens for the whole course: every colour, size and motion rule is a token here, so the
+ * figures never carry a literal colour and both themes come from one place.
+ *
+ * The course's look is a catalogue's: hairline rules, values and names set in a monospace with
+ * tabular figures, labels set small and spaced, one ink accent. The typefaces are IBM Plex, all
+ * under the SIL Open Font License 1.1 and shipped with the site: Plex Sans for prose, Plex Sans
+ * Condensed for headings, Plex Mono for every name, value and line of SQL.
+ *
+ * Each kind of thing in the course's visual vocabulary (a file, a table, a dashboard; later a job,
+ * a run, an event) has a colour, and the colour never carries meaning alone: every mark sits
+ * beside its name.
+ *
+ * With prefers-reduced-motion every transition collapses to an instant change; nothing in a
+ * chapter depends on seeing motion.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  --bg: #f2f4f3;
+  --bg-raised: #ffffff;
+  --bg-sunken: #e8ecea;
+  --bg-inset: #dfe5e2;
+  --fg: #151a18;
+  --fg-muted: #4f5a55;
+  --fg-faint: #6b7570;
+  --border: #d3dad6;
+  --border-strong: #a5b0ab;
+
+  --accent: #0a6658;
+  --accent-strong: #064d42;
+  --accent-soft: #ddefea;
+  --accent-fg: #ffffff;
+  --focus: #c2410c;
+
+  --ok: #1a7f37;
+  --ok-bg: #e5f3e9;
+  --bad: #b42318;
+  --bad-bg: #fbe9e7;
+  --warn: #855600;
+  --warn-bg: #fff3d4;
+  --note-bg: #e6f0ed;
+
+  --kind-file: #0a6658;
+  --kind-table: #2558a3;
+  --kind-dashboard: #8f5300;
+  --null: #9b4dca;
+
+  --font-text:
+    "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "IBM Plex Sans Condensed", "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5625rem;
+  --text-xxl: 2.25rem;
+  --line: 1.6;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --radius-sm: 2px;
+  --radius: 3px;
+  --shadow: 0 1px 2px rgba(21, 26, 24, 0.06), 0 2px 8px rgba(21, 26, 24, 0.05);
+  --measure: 36rem;
+  --page: 64rem;
+  --gutter: 16px;
+  --control: 2.75rem;
+  --motion: 140ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1312;
+    --bg-raised: #151b19;
+    --bg-sunken: #0a0e0d;
+    --bg-inset: #1d2523;
+    --fg: #e4eae7;
+    --fg-muted: #a0aba6;
+    --fg-faint: #8a958f;
+    --border: #26302c;
+    --border-strong: #43504a;
+    --accent: #5ec5b2;
+    --accent-strong: #93dfd0;
+    --accent-soft: #11302a;
+    --accent-fg: #03130f;
+    --focus: #fb923c;
+    --ok: #4ade80;
+    --ok-bg: #11301b;
+    --bad: #f87171;
+    --bad-bg: #3a1513;
+    --warn: #facc15;
+    --warn-bg: #3a2e05;
+    --note-bg: #12231f;
+    --kind-file: #5ec5b2;
+    --kind-table: #8bb4f5;
+    --kind-dashboard: #f2b25c;
+    --null: #d4a5f5;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.35);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0e1312;
+  --bg-raised: #151b19;
+  --bg-sunken: #0a0e0d;
+  --bg-inset: #1d2523;
+  --fg: #e4eae7;
+  --fg-muted: #a0aba6;
+  --fg-faint: #8a958f;
+  --border: #26302c;
+  --border-strong: #43504a;
+  --accent: #5ec5b2;
+  --accent-strong: #93dfd0;
+  --accent-soft: #11302a;
+  --accent-fg: #03130f;
+  --focus: #fb923c;
+  --ok: #4ade80;
+  --ok-bg: #11301b;
+  --bad: #f87171;
+  --bad-bg: #3a1513;
+  --warn: #facc15;
+  --warn-bg: #3a2e05;
+  --note-bg: #12231f;
+  --kind-file: #5ec5b2;
+  --kind-table: #8bb4f5;
+  --kind-dashboard: #f2b25c;
+  --null: #d4a5f5;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion: 0ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

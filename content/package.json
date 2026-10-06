@@ -1,0 +1,11 @@
+{
+  "name": "@ms/content",
+  "author": "Christopher Snow",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "The course content: one module per chapter, typed by the lesson schema, prose as Markdown strings.",
+  "exports": {
+    ".": "./lessons/index.ts"
+  }
+}

@@ -1,0 +1,67 @@
+# The platform
+
+What this course takes from the author's learning platform, how it takes it, and what is its own.
+
+## What the platform is
+
+`snowch/learning-platform` holds three packages, written for the digital-design course and moved
+there when this course became their second consumer (`docs/plan.md`, decision 4):
+
+| Package | What it holds |
+| --- | --- |
+| `@platform/lesson-schema` | the lesson data format: ten sections in a fixed order, interactives by kind, challenges with tests, five hints and a reference, the originality note, the term gate, the model gate, and the format as JSON Schema |
+| `@platform/lesson-runtime` | a lesson rendered from its data: the sections, the model badges and notes, the challenge runner, the hint ladder, and learner state kept in the browser and graded again on every load |
+| `@platform/primitives` | the shared interaction primitives: `PredictionChallenge`, `FaultInjector`, `Stepper`, `Timeline`, `StateInspector`, `DrillDown` |
+
+The runtime knows a course only through the `Book` it is given: the lessons, a registry of figures
+by kind, a challenge editor, a grader, and a note per model. This course's book is `createBook` in
+`packages/views/src/book.tsx`.
+
+## How this course takes it
+
+`platform/` is a copy of the platform's `packages/` at one commit, which `platform/SOURCE.json`
+records with a hash of every file. `npm run check` fails if any file there differs, so the copy
+changes only by syncing it:
+
+```sh
+node scripts/sync-platform.mjs ../learning-platform   # a clean checkout of the platform
+```
+
+A fix to the platform is made in `snowch/learning-platform`, checked there, and then synced here.
+
+A copy and not a git submodule, because `snowch/learning-platform` is private and this repository
+is public: a submodule would need a credential in this course's CI and in its deploy. If the
+platform becomes public, a submodule at `platform/` replaces the copy and the sync script, and
+nothing else changes, because the workspaces and the imports already name `platform/*`.
+
+## What this course needed the platform to generalise
+
+Three general shapes were added beside the digital-design course's, and nothing that course uses
+changed (its full unit suite passes on the moved packages; `snowch/learning-platform`'s
+`docs/adoption.md`):
+
+- **A challenge built from choices.** An answer field may be a `choice` among options, and the
+  schema holds the reference to one of them. Both of Chapter 1's challenges are built from
+  choices, graded case by case by the book.
+- **An artifact that is text or data.** A written or drawn challenge may be graded case by case
+  when its reference is `text` or `data`, with no circuit rules. Chapters 2 (records), 6 and 7
+  (events) and 9 (SQL) need it.
+- **A model the book names.** A figure's model is a name the book chooses, here `lab`; `none` stays
+  reserved for a figure that runs nothing, and `modelProblems` holds the lessons to the models the
+  book has notes for.
+
+## What is this course's own
+
+- The lab, its SQL subset, its storage model and its inference searches (`packages/lab`).
+- The figures, the choice editor and the grader (`packages/views`).
+- The shell, its look and its words (`apps/course`): the platform shares an interaction
+  vocabulary and a lesson format with the author's other courses, not a look.
+- The runtime's words where this course names things differently: the model's badge and note,
+  and the labels of a failed test (`runtimeStrings` in `packages/views/src/book.tsx`).
+
+## Shared primitives in use
+
+`PredictionChallenge` (the two predictions), `FaultInjector` (the change lab) and `StateInspector`
+(the record, column and day tables). `Stepper`, `Timeline` and `DrillDown` wait for the chapters
+that need them: runs over time (Chapter 6), event delivery (Part V) and drilling from an asset to
+its columns (Chapter 9).

@@ -1,0 +1,11 @@
+{
+  "name": "@ms/lab",
+  "author": "Christopher Snow",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "The Metadata Lab: a small shop's data platform that really runs, its storage, its SQL, and what can and cannot be learnt from it.",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

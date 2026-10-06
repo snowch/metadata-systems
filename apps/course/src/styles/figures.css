@@ -1,0 +1,397 @@
+/* Copyright © 2026 Christopher Snow */
+
+/* The course's figures. A figure is as wide as the page; anything wider than its box (a table of
+   rows, a line of SQL) scrolls inside the box, never the page. */
+
+/* Values, names and code: the monospace, with figures that line up. */
+.data-table,
+.days-table,
+.record-table td,
+.columns-table,
+.bar-value,
+.bar-label,
+.dashboard-meta,
+.asset-button,
+.inspector-asset,
+pre.sql {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tables */
+.data-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: var(--space-3) 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.data-scroll:focus-visible {
+  outline-offset: 0;
+}
+.data-table,
+.days-table,
+.record-table,
+.columns-table {
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+.data-table {
+  width: 100%;
+  font-size: 0.8125rem;
+}
+.data-table caption,
+.days-table caption,
+.record-table caption,
+.columns-table caption {
+  text-align: left;
+  font-family: var(--font-text);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--fg-muted);
+  padding: var(--space-2) var(--space-3);
+}
+.data-table th,
+.data-table td,
+.days-table th,
+.days-table td,
+.record-table th,
+.record-table td,
+.columns-table th,
+.columns-table td {
+  padding: var(--space-1) var(--space-3);
+  border-top: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+  vertical-align: top;
+}
+.data-table thead th,
+.days-table thead th,
+.record-table thead th,
+.columns-table thead th {
+  font-family: var(--font-text);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-muted);
+  background: var(--bg-sunken);
+}
+.days-table thead th {
+  white-space: normal;
+  vertical-align: bottom;
+}
+.record-table tbody th,
+.columns-table tbody th,
+.days-table tbody th {
+  font-weight: 500;
+}
+.cell-null {
+  color: var(--null);
+  font-style: italic;
+}
+.is-same {
+  color: var(--ok);
+}
+.is-different {
+  color: var(--bad);
+  font-weight: 600;
+}
+
+/* The dashboard: one row per day, a bar across. */
+.dashboard {
+  max-width: 40rem;
+}
+.dashboard-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-4);
+  margin-bottom: var(--space-3);
+}
+.dashboard-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-lg);
+}
+.dashboard-meta {
+  font-size: var(--text-xs);
+  color: var(--fg-muted);
+  align-self: center;
+}
+.bars {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.bar-item {
+  display: grid;
+  grid-template-columns: 4rem 1fr 4.5rem;
+  align-items: center;
+  gap: var(--space-3);
+}
+.bar-label {
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+}
+.bar-track {
+  height: 1.25rem;
+  background: var(--bg-sunken);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.bar {
+  display: block;
+  height: 100%;
+  background: var(--kind-dashboard);
+  opacity: 0.85;
+}
+.bar-value {
+  font-size: var(--text-sm);
+  text-align: right;
+}
+
+/* Glyphs: one mark per kind of thing, beside its name. */
+.glyph {
+  flex: none;
+  vertical-align: -0.15em;
+}
+.glyph-file {
+  color: var(--kind-file);
+}
+.glyph-table {
+  color: var(--kind-table);
+}
+.glyph-dashboard {
+  color: var(--kind-dashboard);
+}
+
+/* The storage inspector */
+.inspector {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+@media (min-width: 52rem) {
+  .inspector {
+    grid-template-columns: 15rem minmax(0, 1fr);
+    align-items: start;
+  }
+}
+.inspector-heading {
+  margin-top: 0;
+}
+.asset-group-label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-muted);
+  margin: var(--space-3) 0 var(--space-1);
+}
+.asset-group ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.asset-button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: var(--control);
+  padding: 0 var(--space-3);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  text-align: left;
+  cursor: pointer;
+}
+.asset-button:hover {
+  background: var(--bg-sunken);
+}
+.asset-button[aria-pressed="true"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+.inspector-detail {
+  min-width: 0;
+}
+.inspector-asset {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: 0;
+  font-size: var(--text-lg);
+}
+.record-table,
+.columns-table {
+  margin: var(--space-3) 0;
+  width: 100%;
+}
+.record-table td {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.record-table tbody th {
+  color: var(--fg-muted);
+  font-family: var(--font-text);
+}
+.inspector-questions dl {
+  margin: 0;
+}
+.question-answer {
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--border);
+}
+.question-answer dt {
+  font-weight: 600;
+}
+.question-answer dd {
+  margin: 0;
+  color: var(--fg-muted);
+}
+
+/* A challenge built from choices */
+.choice-fields {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+@media (min-width: 40rem) {
+  .choice-fields {
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  }
+}
+.choice-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.choice-label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.choice-field select {
+  width: 100%;
+}
+.choice-heading {
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-muted);
+}
+pre.sql {
+  font-size: 0.8125rem;
+  white-space: pre;
+}
+.query-problem {
+  color: var(--bad);
+}
+details > summary {
+  display: flex;
+  align-items: center;
+  min-height: var(--control);
+  cursor: pointer;
+}
+
+/* The change lab */
+.change-lab > .button {
+  margin-bottom: var(--space-3);
+}
+.change-status {
+  font-weight: 600;
+}
+.change-result section h4 {
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-muted);
+}
+.change-note {
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+  margin-bottom: 0;
+}
+.change-diffs,
+.change-fits {
+  padding-left: 1.2em;
+}
+.change-outcome,
+.change-after-all {
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-left: 3px solid var(--accent);
+  background: var(--note-bg);
+}
+
+/* The question map: three columns on a wide page, stacked on a phone. */
+.question-map {
+  display: grid;
+  gap: var(--space-3);
+}
+@media (min-width: 52rem) {
+  .question-map {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.map-column {
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+.map-storage {
+  border-top-color: var(--kind-table);
+}
+.map-suggested {
+  border-top-color: var(--warn);
+}
+.map-record {
+  border-top-color: var(--accent);
+}
+.map-column h4 {
+  margin-top: 0;
+  font-size: var(--text-md);
+}
+.map-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.map-column li {
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--border);
+}
+.map-question {
+  display: block;
+}
+.map-evidence {
+  display: block;
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+}
+
+/* Predictions */
+.prediction-outcome {
+  margin-top: var(--space-3);
+}
+.prediction-match,
+.prediction-nomatch {
+  font-weight: 600;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+}
+.prediction-match {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+.prediction-nomatch {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+.lab-prediction .button {
+  margin-right: var(--space-2);
+}
