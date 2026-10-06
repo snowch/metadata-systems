@@ -98,14 +98,47 @@ The schema files in `spec/facets/` of `OpenLineage/OpenLineage`, branch `main`, 
 `JobTypeJobFacet`. A chapter that describes a facet's fields reads that facet's schema file first
 and records it here.
 
+## Marquez
+
+Marquez's site (marquezproject.ai) and the OpenLineage documentation's front page
+(openlineage.io/docs), both read 6 October 2026, call Marquez the reference implementation of the
+OpenLineage API. Its site says it consumes, stores and visualises OpenLineage metadata through an
+OpenLineage-compatible endpoint. Chapters 8 and 28 read its documentation and source before they
+say what it does with an event.
+
+## Where each tool's metadata comes from (Chapter 29, as planned)
+
+Read 6 October 2026 to support the plan's description of Chapter 29; the chapter reads further
+before it states more:
+
+- **Apache Airflow**: the OpenLineage provider's "structure" guide
+  (airflow.apache.org/docs/apache-airflow-providers-openlineage/stable/guides/structure.html).
+  Airflow calls the provider's listener when DAGs or task instances start, complete or fail; for a
+  task instance it runs on the worker. Lineage comes from methods on operators, or from extractors
+  for operators that cannot be changed (the provider's developer guide).
+- **Apache Spark**: the OpenLineage Spark integration's pages on openlineage.io. It is a
+  listener on Spark's `SparkListener` interface, and it analyses Spark's optimised query plan for
+  the datasets a job consumes and produces.
+- **dbt**: "dbt artifacts" (docs.getdbt.com/reference/artifacts/dbt-artifacts). Every invocation
+  writes artifacts, among them `manifest.json` and `run_results.json`.
+- **Trino**: its event listener SPI (trino.io/docs/current/develop/event-listener.html) and its
+  OpenLineage event listener (trino.io/docs/current/admin/event-listeners-openlineage.html, Trino
+  483), which captures every query that creates or modifies Trino tables.
+
+## dbt's sample project, for the course's originality notes
+
+The course's shop must not resemble dbt's jaffle shop, so the plan and Chapter 1's originality
+note describe it. From docs.getdbt.com, read 6 October 2026: the DuckDB quickstart calls it "our
+fictional Jaffle Shop café"; the BigQuery quickstart's sample data is `jaffle_shop.customers`,
+`jaffle_shop.orders` and `stripe.payment`; and "How we structure our dbt projects" builds it into
+staging, intermediate and marts models from raw customers, orders, items, products, stores and
+supplies.
+
 ## Still to be read
 
 Each chapter that relies on one of these reads it first and adds an entry above:
 
-- Marquez, the OpenLineage reference consumer (Chapters 8, 28).
 - OpenMetadata, DataHub and Apache Atlas: their documentation and source, for Chapter 30.
-- dbt's artifacts (manifest and run results), Apache Airflow's OpenLineage provider, Apache
-  Spark's OpenLineage integration and Trino's event listeners, for Chapter 29.
 - W3C PROV (PROV-DM and PROV-O), for Chapter 14.
 - Apache Iceberg's schema evolution by column id, for Chapter 10.
 - MLflow and similar experiment trackers, for Chapter 31.

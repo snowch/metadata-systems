@@ -204,9 +204,11 @@ The author reviews the course at five checkpoints:
 1. **Title.** *Metadata Systems: From Raw Files to a Working Metadata Platform*, in the pattern of
    the author's digital-design course.
 2. **The shop.** An online shop that sells bicycle parts, invented for the course. It is not dbt's
-   jaffle shop (a café with customers, orders and payments, laid out as staging and marts); this
-   shop has no payments table, has a dashboard, keeps its raw files in object storage and its
-   cleaned tables in a warehouse, and its programs are the lab's own SQL.
+   jaffle shop, the café dbt's guides use, whose quickstart data is customers, orders and
+   payments and whose structure guide builds staging, intermediate and marts models
+   (`docs/sources.md`). This shop has no payments table and no layers named for dbt's, has a
+   dashboard, keeps its raw files in object storage and its cleaned tables in a warehouse, and its
+   programs are the lab's own SQL.
 3. **The week.** Monday 7 to Sunday 13 September 2026; the learner arrives on Monday 14
    September. On Thursday the shop's checkout sent orders with no customer id, and the rule in
    `clean_orders` that drops such orders made Thursday's revenue low. Chapter 1 shows the symptom,

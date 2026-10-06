@@ -292,7 +292,7 @@ export const invisibleSystem: LessonInput = {
   modelVsReality: PROSE.modelVsReality,
   originalityNote: {
     textbookExample:
-      "A tour of a data catalogue's screens over a ready-made sample project, such as dbt's jaffle shop (a café's customers, orders and payments, as staging and marts models), with its documentation and its dependency diagram already generated for the reader.",
+      "A tour of a data catalogue's screens over a ready-made sample project, such as dbt's jaffle shop (the café dbt's guides use: its quickstart's data is customers, orders and payments, and its structure guide builds staging, intermediate and marts models), with its documentation and its dependency diagram already generated for the reader.",
     howThisDiffers:
       "Nothing is generated for the learner: they get storage alone and try to recover what a catalogue would hold, by rebuilding one asset from the others with a query and the raw orders' cleaning rules from their output. The failure experiment then makes that inference ambiguous (an analyst's copy), impossible (an unrecorded edit to a program) and misleading (a failed night), and the chapter's three columns of questions are computed by the lab, not listed. The shop, a bicycle-parts retailer with no payments table, its data, its Thursday incident and its programs in the course's own SQL are invented for the course.",
   },
