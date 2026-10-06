@@ -6,18 +6,23 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  ASSET_IDS,
   DUPLICATED,
   NIGHTS,
   PROGRAMS,
+  QUESTION_IDS,
   cleanReconstructions,
   columnValues,
   parseQuery,
+  optionForCount,
   questionMap,
+  recordKindOf,
   recordOf,
   runProbe,
   runWeek,
   sameNumbers,
   storage,
+  storageAnswer,
   sumReconstructions,
   week,
 } from "./index";
@@ -157,6 +162,48 @@ describe("the questions", () => {
       { kind: "days-matching", source: "orders.parquet", keep: "all", target: "daily_sales" },
       week(),
     );
-    expect(days).toMatchObject({ answer: "some", total: 7 });
+    expect(days).toMatchObject({ count: 3, total: 7 });
+    expect(runProbe({ kind: "clean-fits" }, week())).toEqual({ kind: "clean-fits", count: 2 });
+  });
+
+  it("picks the option whose range holds a count, and none where two or none do", () => {
+    const options = [
+      { value: "few", range: [0, 3] as const },
+      { value: "many", range: [4, 7] as const },
+    ];
+    expect(optionForCount(3, options)).toBe("few");
+    expect(optionForCount(4, options)).toBe("many");
+    expect(optionForCount(8, options)).toBeUndefined();
+    expect(optionForCount(3, [...options, { value: "also", range: [3, 3] as const }])).toBe(
+      undefined,
+    );
+  });
+
+  it("asks every asset, the dashboard too, the same eight questions, with an answer to each", () => {
+    for (const asset of ASSET_IDS) {
+      const w = week(asset === "clean_orders_copy.parquet" ? ["copy"] : []);
+      const r = recordOf(storage(w), asset);
+      for (const q of QUESTION_IDS) expect(storageAnswer(q, r).kind).toBeTruthy();
+    }
+    const dashboard = recordOf(storage(week()), "sales_dashboard");
+    expect(storageAnswer("computed", dashboard)).toEqual({
+      kind: "title",
+      title: "Sales, last 7 days",
+    });
+    expect(storageAnswer("responsible", dashboard)).toEqual({ kind: "creator", person: "j.marsh" });
+    expect(storageAnswer("unit", dashboard)).toMatchObject({ kind: "types", column: "revenue" });
+  });
+
+  it("gives every question the kind of record that would answer it", () => {
+    expect(Object.fromEntries(QUESTION_IDS.map((q) => [q, recordKindOf(q)]))).toEqual({
+      "last-written": "what-happened",
+      "made-from": "made-from-what",
+      computed: "made-from-what",
+      "read-by": "made-from-what",
+      worked: "what-happened",
+      responsible: "what-it-is",
+      unit: "what-it-is",
+      changed: "what-happened",
+    });
   });
 });

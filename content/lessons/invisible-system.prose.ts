@@ -40,6 +40,8 @@ export const PROSE = {
   c1Lead: "Your query appears below as SQL, with its result, before you run the tests.",
   changeLead:
     "Each change alters the shop before the week begins. The figure will run the whole week again from Monday, with that change in place. It then shows what storage shows differently, your query's rows against the new `daily_sales`, and every query in the builder's choices that rebuilds it. It uses your query from the construction section if it passes its tests, and the course's query if it does not.\n\nBefore you run each change, make a prediction. Will storage show the change? Will your query still rebuild `daily_sales`?",
+  changeQuestion:
+    "Before the week runs: how many queries in the builder's choices will rebuild `daily_sales` after this change?",
   outcomeCopy:
     "A new file appears in storage: `clean_orders_copy.parquet` in bucket `shop-scratch`, last modified at 02:15, with the same 44 rows as `clean_orders`. Now two queries rebuild `daily_sales`: from `clean_orders` and from the copy. The data cannot say which one was used. Both fit equally well.",
   outcomeRefunds:
@@ -56,10 +58,6 @@ export const PROSE = {
     "The middle column is evidence, not an answer. The failure experiment showed it: the evidence can change when an analyst adds a copy, when a program is edited, or when a night's work fails.",
   generalisation:
     "The right-hand column holds questions no amount of data answers: who is answerable for each asset, what unit a number uses, what changed.\n\nThe middle column holds answers the data suggests. They can be ambiguous, impossible or misleading.\n\nRecords about assets and about the platform, written down and kept separate from the data itself, are called **metadata**. A platform needs three kinds: what each asset is (its meaning, the units it uses, who is answerable for it); what happened (what programs ran, when they ran, whether they worked); and what was made from what. The rest of this course builds a system that keeps all three, starting with the first records in the next chapter.",
-  map2Lead:
-    'The figure runs the week with the analyst\'s copy in storage. Look at the middle column for "What is it made from?".',
-  map2After:
-    "With the analyst's copy present, two different queries, from different assets, give the same result. The data cannot tell which one `daily_sales` was built from.",
   c2Task:
     "You need to choose four rules that turn `orders.parquet` into `clean_orders`. The tests check that your rules keep every row `clean_orders` has, and no row it lacks.",
   c2Hints: [
@@ -70,6 +68,10 @@ export const PROSE = {
     "Keep one copy, drop orders with no customer id, keep cancelled orders. Either choice passes for the quantity rule.",
   ],
   c2Lead: "The rules appear as SQL below the choices, with the number of rows they keep.",
+  p3Question:
+    "Your rules pass. How many settings of the four rules give `clean_orders` exactly, yours included?",
+  p3Explain:
+    "Two settings pass. They differ only in the rule for orders with a quantity of 0 or less: no order this week had one, so either choice keeps the same rows.",
   reflection:
     "Storage gave you names, types, row counts, sizes, times and one account. The data suggested where `daily_sales` comes from, until a copy, an edit or a failed night.\n\nThe program the shop really runs for `clean_orders` also drops orders with a quantity of 0 or less. No order this week had one, so both answers to that rule passed your tests, and no rebuilding from this week's data could find the rule.\n\nWhat would you write down about `daily_sales` so that the next person need not rebuild it? Who should write it down, and when?",
   modelVsReality:

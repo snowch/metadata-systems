@@ -3,8 +3,9 @@
 // The educational tests: every chapter renders whole; every challenge is completable through the
 // page with its reference and refuses a wrong attempt; completion is recomputed on load and
 // cannot be bypassed through storage; a reset clears the work; hints come one rung at a time; a
-// prediction is committed before the lab answers it; a change's outcome waits for its run. Each
-// runs at desktop and phone widths.
+// prediction is committed before the lab answers it; a figure that runs the learner's own work
+// waits for it to pass; a change runs only after a prediction, and its outcome waits for it; the
+// questions are sorted before the lab places them. Each runs at desktop and phone widths.
 
 import { expect, test, type Page } from "@playwright/test";
 
@@ -19,12 +20,16 @@ import {
   challenge,
   challengeData,
   choose,
+  figureProps,
   format,
   openChapter,
+  pass,
   runTests,
   status,
   storageKey,
 } from "./helpers";
+
+type Labelled = { id?: string; value?: string; label: string };
 
 function watchConsole(page: Page): string[] {
   const errors: string[] = [];
@@ -61,37 +66,53 @@ test.describe("the chapter pages", () => {
       isMobile,
     }) => {
       test.skip(!isMobile, "the phone's width is the one that overflows");
-      test.setTimeout(180_000);
+      test.setTimeout(240_000);
       await openChapter(page, lesson.id);
+      // Pass every challenge first, so every figure that waits for one is open.
+      for (const c of lesson.challenges) await pass(page, c.id, lesson);
+      // Run every change, each after a prediction, so every outcome is shown at least once.
+      const lab = page.locator("figure.interactive:has(.change-lab)");
+      if (await lab.count()) {
+        const changes = lab.locator(".fault-choices").getByRole("radio");
+        for (let i = 1; i < (await changes.count()); i++) {
+          await changes.nth(i).check();
+          await lab.locator(".prediction-options").getByRole("radio").first().check();
+          await lab.getByRole("button", { name: V.runWithChange }).click();
+        }
+      }
       const figures = page.locator("figure.interactive");
       for (let f = 0; f < (await figures.count()); f++) {
         const figure = figures.nth(f);
         await figure.scrollIntoViewIfNeeded();
-        const radios = figure.getByRole("radio");
-        for (let i = 0; i < (await radios.count()); i++) {
-          const radio = radios.nth(i);
-          if (await radio.isEnabled()) await radio.check({ timeout: 500 }).catch(() => {});
-          // Run each change as it is chosen, so every outcome is shown at least once.
-          const run = figure.getByRole("button", { name: V.runWeek });
-          if (await run.count()) await run.click();
-        }
-        const selects = figure.locator("select");
-        for (let i = 0; i < (await selects.count()); i++) {
-          const options = await selects
-            .nth(i)
-            .locator("option")
-            .evaluateAll((os) => os.map((o) => (o as HTMLOptionElement).value));
-          for (const v of options) await selects.nth(i).selectOption(v);
-        }
-        const buttons = figure.locator("button:visible");
-        for (let i = 0; i < (await buttons.count()) && i < 40; i++) {
-          const b = buttons.nth(i);
-          if (
-            !(await b.isVisible().catch(() => false)) ||
-            !(await b.isEnabled().catch(() => false))
-          )
-            continue;
-          await b.click({ timeout: 500 }).catch(() => {});
+        // Twice: some controls (a sort's weeks, a prediction's verdict) appear only after others.
+        for (let pass = 0; pass < 2; pass++) {
+          const radios = figure.getByRole("radio");
+          for (let i = 0; i < (await radios.count()); i++) {
+            const radio = radios.nth(i);
+            if (await radio.isEnabled()) await radio.check({ timeout: 500 }).catch(() => {});
+          }
+          const selects = figure.locator("select");
+          for (let i = 0; i < (await selects.count()); i++) {
+            const options = await selects
+              .nth(i)
+              .locator("option")
+              .evaluateAll((os) => os.map((o) => (o as HTMLOptionElement).value));
+            for (const v of options) await selects.nth(i).selectOption(v);
+          }
+          const buttons = figure.locator("button:visible");
+          for (let i = 0; i < (await buttons.count()) && i < 40; i++) {
+            const b = buttons.nth(i);
+            if (
+              !(await b.isVisible().catch(() => false)) ||
+              !(await b.isEnabled().catch(() => false))
+            )
+              continue;
+            // Leave the work in place: a reset or "predict again" would undo what was shown.
+            const name = (await b.textContent()) ?? "";
+            if ([S.challenge.reset, V.predictAgain, V.sortAgain].some((n) => name.startsWith(n)))
+              continue;
+            await b.click({ timeout: 500 }).catch(() => {});
+          }
         }
       }
       const [scroll] = await pageWidth(page);
@@ -243,7 +264,8 @@ test.describe("the figures", () => {
     const commit = figure.getByRole("button", { name: V.checkPrediction });
     await expect(commit).toBeDisabled();
     await expect(figure.locator("[role=status]")).toHaveCount(0);
-    await figure.getByRole("radio").first().check();
+    const options = figureProps("predict-owner")["options"] as Labelled[];
+    await figure.getByLabel(options.find((o) => o.value === "account")!.label).check();
     await commit.click();
     await expect(figure.locator("[role=status]")).toContainText(V.match);
     await expect(figure).toContainText("etl_service");
@@ -262,42 +284,89 @@ test.describe("the figures", () => {
     await expect(figure.locator(".data-table tbody tr")).toHaveCount(7);
   });
 
-  test("a change's outcome waits for its run, and the closing words for all three", async ({
+  test("the failure experiment waits for the learner's own query to pass", async ({ page }) => {
+    const c = challengeData("rebuild-daily-sales");
+    await openChapter(page);
+    const figure = page.locator("#ix-changes");
+    await expect(figure.locator(".figure-locked")).toHaveText(format(V.locked, { title: c.title }));
+    await expect(figure.getByRole("radio")).toHaveCount(0);
+    await pass(page, c.id);
+    await expect(figure.locator(".figure-locked")).toHaveCount(0);
+    await expect(figure.getByRole("radio")).not.toHaveCount(0);
+  });
+
+  test("a change runs only after a prediction; its outcome waits, and the closing words for all three", async ({
     page,
   }) => {
     await openChapter(page);
+    await pass(page, "rebuild-daily-sales");
     const figure = page.locator("#ix-changes");
-    await expect(figure.locator(".change-outcome")).toHaveCount(0);
-    await expect(figure.locator(".change-after-all")).toHaveCount(0);
+    const props = figureProps("changes");
+    const changes = props["changes"] as Labelled[];
+    const options = (props["prediction"] as { options: Labelled[] }).options;
     // How many queries rebuild daily_sales after each change: the copy makes two fit, the edit
     // leaves none, and the failed night leaves the one that rebuilds all six remaining rows, as
     // each outcome's text says.
-    const labels = ["copy", "refunds", "failed"];
-    const fits = [2, 0, 1];
-    for (let i = 0; i < labels.length; i++) {
-      await figure
-        .getByRole("radio")
-        .nth(i + 1)
-        .check();
-      await figure.getByRole("button", { name: V.runWeek }).click();
+    const answers: Record<string, string> = { copy: "twoOrMore", refunds: "none", failed: "one" };
+    const fits: Record<string, number> = { copy: 2, refunds: 0, failed: 1 };
+    for (const [i, change] of changes.entries()) {
+      await figure.getByLabel(change.label, { exact: true }).check();
+      const run = figure.getByRole("button", { name: V.runWithChange });
+      await expect(run).toBeDisabled();
+      await expect(figure.locator(".change-outcome")).toHaveCount(0);
+      const answer = options.find((o) => o.value === answers[change.id!])!;
+      await figure.getByLabel(answer.label, { exact: true }).check();
+      await run.click();
+      await expect(figure.locator("[role=status]")).toContainText(V.match);
       await expect(figure.locator(".change-outcome")).toBeVisible();
-      await expect(figure.locator(".change-fits li")).toHaveCount(fits[i]!);
-      if (fits[i] === 0) await expect(figure).toContainText(V.fitsNone);
-      if (i < labels.length - 1) await expect(figure.locator(".change-after-all")).toHaveCount(0);
+      await expect(figure.locator(".change-fits li")).toHaveCount(fits[change.id!]!);
+      if (fits[change.id!] === 0) await expect(figure).toContainText(V.fitsNone);
+      if (i < changes.length - 1) await expect(figure.locator(".change-after-all")).toHaveCount(0);
     }
     await expect(figure.locator(".change-after-all")).toBeVisible();
-    await expect(figure).toContainText(V.usingCourse);
+    // A prediction is kept: back on the first change, its result is still there.
+    await figure.getByLabel(changes[0]!.label, { exact: true }).check();
+    await expect(figure.locator(".change-fits li")).toHaveCount(2);
   });
 
-  test("the change lab runs the learner's own query once it passes", async ({ page }) => {
-    const c = challengeData("rebuild-daily-sales");
+  test("the questions are sorted before the lab places them, and they move with the week", async ({
+    page,
+  }) => {
     await openChapter(page);
-    await choose(challenge(page, c.id), c.reference.answers ?? {}, c.id);
-    await runTests(challenge(page, c.id));
-    const figure = page.locator("#ix-changes");
-    await figure.getByRole("radio").nth(1).check();
-    await figure.getByRole("button", { name: V.runWeek }).click();
-    await expect(figure).toContainText(V.usingYours);
-    await expect(figure.locator(".change-fits li")).toHaveCount(2);
+    const figure = page.locator("#ix-map");
+    const check = figure.getByRole("button", { name: V.checkSort });
+    await expect(check).toBeDisabled();
+    await expect(figure.locator(".question-map")).toHaveCount(0);
+    const selects = figure.locator("select");
+    for (let i = 0; i < (await selects.count()); i++)
+      await selects.nth(i).selectOption("suggested");
+    await check.click();
+    await expect(figure.locator("[role=status]")).toHaveText(
+      format(V.sortScore, { matching: 4, total: 8 }),
+    );
+    const record = figure.locator(".map-record");
+    await expect(record).not.toContainText(V.q["made-from"]!);
+    const weeks = figureProps("map")["weeks"] as Labelled[];
+    await figure.getByLabel(weeks.find((w) => w.id === "refunds")!.label, { exact: true }).check();
+    await expect(record).toContainText(V.q["made-from"]!);
+    await expect(record).toContainText(format(V.movedFrom, { place: V.place["suggested"]! }));
+    await page.reload();
+    await expect(page.locator("#ix-map [role=status]")).toHaveText(
+      format(V.sortScore, { matching: 4, total: 8 }),
+    );
+  });
+
+  test("the rules prediction waits for the learner's rules to pass, then the lab answers it", async ({
+    page,
+  }) => {
+    const c = challengeData("clean-orders-rules");
+    await openChapter(page);
+    const figure = page.locator("#ix-predict-rules");
+    await expect(figure.locator(".figure-locked")).toHaveText(format(V.locked, { title: c.title }));
+    await pass(page, c.id);
+    const options = figureProps("predict-rules")["options"] as Labelled[];
+    await figure.getByLabel(options.find((o) => o.value === "two")!.label, { exact: true }).check();
+    await figure.getByRole("button", { name: V.checkPrediction }).click();
+    await expect(figure.locator("[role=status]")).toContainText(V.match);
   });
 });

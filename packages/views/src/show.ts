@@ -5,9 +5,12 @@
 
 import { DAYS } from "@ms/lab";
 
-/** "2026-09-14T02:30:21Z" as "2026-09-14 02:30:21 UTC". */
+/** The non-breaking hyphen, so a date never breaks across two lines. */
+const NB_HYPHEN = "\u2011";
+
+/** "2026-09-14T02:30:21Z" as "2026-09-14 02:30:21 UTC", with hyphens that do not break. */
 export function showTime(timestamp: string): string {
-  return `${timestamp.slice(0, 10)} ${timestamp.slice(11, 19)} UTC`;
+  return `${timestamp.slice(0, 10).replaceAll("-", NB_HYPHEN)} ${timestamp.slice(11, 19)} UTC`;
 }
 
 /** Bytes as kilobytes with one place: "3.5 kB". */

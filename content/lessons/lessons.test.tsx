@@ -12,8 +12,8 @@ import { readFileSync } from "node:fs";
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { runProbe, week } from "@ms/lab";
-import { INTERACTIVES, MODELS, createBook, grade, runtimeStrings } from "@ms/views";
+import { optionForCount, runProbe, sumReconstructions, week, type ChangeId } from "@ms/lab";
+import { INTERACTIVES, MODELS, createBook, grade, labAnswer, runtimeStrings } from "@ms/views";
 import { LessonView, memoryStorage } from "@platform/lesson-runtime";
 import { learnerText, modelProblems, termPattern, termProblems } from "@platform/lesson-schema";
 
@@ -84,6 +84,10 @@ describe("the course's chapters", () => {
     for (const m of MODELS) expect(book.timeModelNotes[m]).toBeTruthy();
   });
 
+  type Option = { value: string; label: string; range?: [number, number] };
+  const word = (label: string) =>
+    new RegExp(`\\b${label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
+
   it("gives no prediction's answer in the text a learner reads before committing", () => {
     for (const l of LESSONS)
       for (const s of l.sections)
@@ -92,12 +96,42 @@ describe("the course's chapters", () => {
           const p = x.props as {
             question: string;
             probe: Parameters<typeof runProbe>[0];
-            options: { value: string; label: string }[];
+            options: Option[];
           };
-          const answer = runProbe(p.probe, week()).answer;
-          const label = p.options.find((o) => o.value === answer)?.label ?? answer;
+          const answer = labAnswer(runProbe(p.probe, week()), p.options);
+          expect(answer, `${l.id}: ${x.id} has an option for the lab's answer`).toBeDefined();
+          const label = p.options.find((o) => o.value === answer)?.label ?? "";
           for (const text of [x.lead ?? "", p.question, x.after ?? "", x.caption])
-            expect(text.toLowerCase(), `${l.id}: ${x.id}`).not.toContain(label.toLowerCase());
+            expect(text, `${l.id}: ${x.id}`).not.toMatch(word(label));
+        }
+  });
+
+  it("gives every count prediction ranges that do not overlap, one holding the lab's count", () => {
+    const disjoint = (options: Option[]) => {
+      const ranges = options
+        .map((o): [number, number] => o.range ?? [-1, -1])
+        .sort((a, b) => a[0] - b[0]);
+      return ranges.every((r, i) => r[0] <= r[1] && (i === 0 || (ranges[i - 1]?.[1] ?? 0) < r[0]));
+    };
+    for (const l of LESSONS)
+      for (const s of l.sections)
+        for (const x of s.interactives) {
+          if (x.kind === "change-lab") {
+            const p = x.props as {
+              changes: { id: ChangeId }[];
+              target?: string;
+              prediction: { options: Option[] };
+            };
+            expect(disjoint(p.prediction.options), `${l.id}: ${x.id}`).toBe(true);
+            for (const c of p.changes) {
+              const fits = sumReconstructions(week([c.id]), "daily_sales", "covers").length;
+              expect(optionForCount(fits, p.prediction.options), `${x.id}: ${c.id}`).toBeDefined();
+            }
+          }
+          if (x.kind === "lab-prediction") {
+            const p = x.props as { options: Option[] };
+            if (p.options.some((o) => o.range)) expect(disjoint(p.options), x.id).toBe(true);
+          }
         }
   });
 

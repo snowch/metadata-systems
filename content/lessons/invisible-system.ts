@@ -17,6 +17,17 @@ import { PROSE } from "./invisible-system.prose";
 const options = (labels: Readonly<Record<string, string>>) =>
   Object.entries(labels).map(([value, label]) => ({ value, label }));
 
+/** Options that stand for counts: each label with the counts it covers, inclusive. */
+const counted = (
+  labels: Readonly<Record<string, string>>,
+  ranges: Readonly<Record<string, readonly [number, number]>>,
+) =>
+  Object.entries(labels).map(([value, label]) => {
+    const range = ranges[value];
+    if (!range) throw new Error(`no range for the option ${value}`);
+    return { value, label, range: [range[0], range[1]] as [number, number] };
+  });
+
 /** The assets a query in the builder may read: every file or table except the one to rebuild. */
 const SOURCES = [
   "customers.parquet",
@@ -81,7 +92,12 @@ export const invisibleSystem: LessonInput = {
           caption: LABELS.captions.p2,
           props: {
             question: PROSE.p2Question,
-            options: options(LABELS.p2Options),
+            options: counted(LABELS.p2Options, {
+              all: [7, 7],
+              six: [6, 6],
+              fourOrFive: [4, 5],
+              threeOrFewer: [0, 3],
+            }),
             probe: {
               kind: "days-matching",
               source: "orders.parquet",
@@ -143,6 +159,14 @@ export const invisibleSystem: LessonInput = {
               { id: "failed", label: LABELS.changeLabels.failed, outcome: PROSE.outcomeFailed },
             ],
             afterAll: PROSE.afterAll,
+            prediction: {
+              question: PROSE.changeQuestion,
+              options: counted(LABELS.changeOptions, {
+                none: [0, 0],
+                one: [1, 1],
+                twoOrMore: [2, 1000],
+              }),
+            },
           },
         },
       ],
@@ -159,26 +183,17 @@ export const invisibleSystem: LessonInput = {
           caption: LABELS.captions.map,
           lead: PROSE.mapLead,
           after: PROSE.mapAfter,
-          props: { challengeId: "rebuild-daily-sales" },
+          props: {
+            challengeId: "rebuild-daily-sales",
+            weeks: (["copy", "refunds", "failed"] as const).map((id) => ({
+              id,
+              label: LABELS.changeLabels[id],
+            })),
+          },
         },
       ],
     },
-    {
-      kind: "generalisation",
-      title: LABELS.titles.generalisation,
-      prose: PROSE.generalisation,
-      interactives: [
-        {
-          id: "map-copy",
-          kind: "question-map",
-          timeModel: "lab",
-          caption: LABELS.captions.map2,
-          lead: PROSE.map2Lead,
-          after: PROSE.map2After,
-          props: { challengeId: "rebuild-daily-sales", changes: ["copy"] },
-        },
-      ],
-    },
+    { kind: "generalisation", title: LABELS.titles.generalisation, prose: PROSE.generalisation },
     {
       kind: "challenge",
       title: LABELS.titles.challenge,
@@ -191,6 +206,20 @@ export const invisibleSystem: LessonInput = {
           caption: LABELS.captions.c2,
           lead: PROSE.c2Lead,
           props: { challengeId: "clean-orders-rules" },
+        },
+        {
+          id: "predict-rules",
+          kind: "lab-prediction",
+          timeModel: "lab",
+          caption: LABELS.captions.p3,
+          props: {
+            question: PROSE.p3Question,
+            // Asked once the learner's rules pass, so the count is at least one.
+            options: counted(LABELS.p3Options, { one: [1, 1], two: [2, 2], threeOrMore: [3, 16] }),
+            probe: { kind: "clean-fits" },
+            explain: PROSE.p3Explain,
+            requires: "clean-orders-rules",
+          },
         },
       ],
     },

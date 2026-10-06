@@ -1,21 +1,23 @@
 // Copyright © 2026 Christopher Snow
 
 // Everything storage holds: the seven assets, grouped by the system that holds them; for the one
-// chosen, exactly what its system records, its columns, its rows, and what storage says about each
-// of the chapter's questions. The answers come from the lab's storage view, so a question storage
-// cannot answer says so because no field holds the answer.
+// chosen, exactly what its system records, what storage says about each of the chapter's eight
+// questions, its columns and its rows. The answers come from the lab's storage view, so a question
+// storage cannot answer says so because no field holds the answer. The questions come before the
+// rows, which can be long and, on a phone, wide.
 
 import { z } from "zod";
 
 import {
   ASSET_IDS,
   CHANGE_IDS,
-  questionsFor,
+  QUESTION_IDS,
   storage,
   storageAnswer,
   typeName,
   week,
   type AssetId,
+  type QuestionId,
   type StorageRecord,
 } from "@ms/lab";
 import { useSlot, type InteractiveProps } from "@platform/lesson-runtime";
@@ -69,11 +71,7 @@ function recordRows(r: StorageRecord, strings: ViewStrings) {
   return rows;
 }
 
-function answerText(
-  r: StorageRecord,
-  q: ReturnType<typeof questionsFor>[number],
-  strings: ViewStrings,
-): string {
+function answerText(r: StorageRecord, q: QuestionId, strings: ViewStrings): string {
   const a = storageAnswer(q, r);
   const template = strings.a[a.kind] ?? "";
   switch (a.kind) {
@@ -81,7 +79,7 @@ function answerText(
     case "time-only":
       return format(template, { time: showTime(a.time) });
     case "columns":
-      return format(template, { count: a.count });
+      return template;
     case "title":
       return format(template, { title: a.title });
     case "owner-role":
@@ -149,6 +147,17 @@ export const StorageInspector = withProps(
               cells: [{ text: x.text }],
             }))}
           />
+          <section className="inspector-questions" aria-label={strings.questionsHeading}>
+            <h5>{strings.questionsHeading}</h5>
+            <dl>
+              {QUESTION_IDS.map((q) => (
+                <div key={q} className="question-answer">
+                  <dt>{strings.q[q]}</dt>
+                  <dd>{answerText(current, q, strings)}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
           <StateInspector
             className="columns-table"
             caption={strings.columnsCaption}
@@ -167,19 +176,6 @@ export const StorageInspector = withProps(
                 : format(strings.rowsCaption, { count: current.rows })
             }
           />
-          <section className="inspector-questions" aria-label={strings.questionsHeading}>
-            <h5>{strings.questionsHeading}</h5>
-            <dl>
-              {questionsFor(current.asset).map((q) => (
-                <div key={q} className="question-answer">
-                  <dt>
-                    {(current.kind === "dashboard" && strings.q[`${q}.dashboard`]) || strings.q[q]}
-                  </dt>
-                  <dd>{answerText(current, q, strings)}</dd>
-                </div>
-              ))}
-            </dl>
-          </section>
         </div>
       </div>
     );

@@ -4,11 +4,15 @@
 //
 // For one asset, a question is answered by what storage records, suggested by the data, or
 // answered only by a record somebody kept at the time. The lab works out which by running the
-// storage view and the inference searches, so a figure's three columns are computed, and they
+// storage view and the inference searches, so a figure's three groups are computed, and they
 // move when the shop changes: after an unrecorded edit to a program, the data no longer suggests
 // where daily_sales comes from.
+//
+// Separately, each question has the kind of record that would answer it for certain: a record
+// of what the asset is, of what happened, or of what was made from what. That is the course's
+// classification, not a computation; the chapter derives its three kinds of metadata from it.
 
-import { ASSETS, PROGRAM_ACCOUNT, type AssetId } from "./shop/assets";
+import { PROGRAM_ACCOUNT, type AssetId } from "./shop/assets";
 import { PROGRAM_IDS } from "./shop/programs";
 import { ARRIVAL, DAYS } from "./shop/data";
 import type { Week } from "./shop/week";
@@ -45,6 +49,8 @@ export function storageAnswer(q: QuestionId, r: StorageRecord): StorageAnswer {
     case "last-written":
       return { kind: "answered", time: r.lastWritten };
     case "computed":
+      // What storage holds about a calculation: a dashboard's title, a table's or a file's column
+      // names. Neither says how the values were worked out.
       return r.title
         ? { kind: "title", title: r.title }
         : { kind: "columns", count: r.columns.length };
@@ -152,9 +158,22 @@ export function questionMap(w: Week, asset: AssetId = "daily_sales"): MapEntry[]
   });
 }
 
-/** The questions the inspector asks of an asset, by what kind of asset it is. */
-export function questionsFor(asset: AssetId): readonly QuestionId[] {
-  return ASSETS[asset].kind === "dashboard"
-    ? ["last-written", "computed", "responsible", "made-from", "read-by", "changed"]
-    : QUESTION_IDS;
+/** The kinds of record that answer a question for certain. */
+export const RECORD_KINDS = ["what-it-is", "what-happened", "made-from-what"] as const;
+export type RecordKind = (typeof RECORD_KINDS)[number];
+
+const KIND_OF: Record<QuestionId, RecordKind> = {
+  "last-written": "what-happened",
+  "made-from": "made-from-what",
+  computed: "made-from-what",
+  "read-by": "made-from-what",
+  worked: "what-happened",
+  responsible: "what-it-is",
+  unit: "what-it-is",
+  changed: "what-happened",
+};
+
+/** The kind of record that would answer a question for certain, whatever storage holds. */
+export function recordKindOf(q: QuestionId): RecordKind {
+  return KIND_OF[q];
 }

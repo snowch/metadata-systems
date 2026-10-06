@@ -51,4 +51,20 @@ export async function runTests(c: Locator): Promise<void> {
   await c.getByRole("button", { name: S.challenge.run }).click();
 }
 
+/** Passes a challenge through the page with its reference, and waits for the badge. */
+export async function pass(page: Page, id: string, lesson = CHAPTER): Promise<void> {
+  const c = challengeData(id, lesson);
+  const section = challenge(page, id);
+  await choose(section, c.reference.answers ?? {}, id, lesson);
+  await runTests(section);
+  await expect(section.locator(".challenge-complete")).toBeVisible();
+}
+
+/** A figure's props as the lesson gives them, for the labels a test clicks. */
+export function figureProps(id: string, lesson = CHAPTER): Record<string, unknown> {
+  const x = lesson.sections.flatMap((s) => s.interactives).find((i) => i.id === id);
+  if (!x) throw new Error(`no figure ${id}`);
+  return (x.props ?? {}) as Record<string, unknown>;
+}
+
 export const storageKey = (id = CHAPTER.id) => `ms:v1:${id}`;

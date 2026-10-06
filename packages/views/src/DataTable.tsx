@@ -1,10 +1,11 @@
 // Copyright © 2026 Christopher Snow
 
 // An asset's rows, as storage holds them: one column per column, each value written by its type,
-// NULL marked. A table wider than its box scrolls inside it, never the page, and the scrolling
-// box can be reached and scrolled with the keyboard.
+// NULL marked. A table wider than its box scrolls inside it (ScrollRegion), never the page.
 
 import { formatRow, type Table } from "@ms/lab";
+
+import { ScrollRegion } from "./ScrollRegion";
 
 export function DataTable({
   table,
@@ -17,7 +18,7 @@ export function DataTable({
   mark?: ReadonlyMap<number, string>;
 }) {
   return (
-    <div className="data-scroll" role="region" aria-label={caption} tabIndex={0}>
+    <ScrollRegion label={caption}>
       <table className="data-table">
         <caption>{caption}</caption>
         <thead>
@@ -41,6 +42,6 @@ export function DataTable({
           ))}
         </tbody>
       </table>
-    </div>
+    </ScrollRegion>
   );
 }
