@@ -180,9 +180,10 @@ Parts I to V named.
 OpenLineage appears in Chapter 7, after the learner has designed an event from the problem in
 Chapter 6, and returns in Chapters 8, 17 to 19 and 28. What the course states about it is checked
 against the specification (`docs/sources.md`), and the specification's silences are named as
-silences: it requires a START and one terminal event per run and says events about a run
-accumulate, but it does not say what a consumer must do with a duplicate, a late or a missing
-event. Part V is about exactly those silences.
+silences. For a batch job it expects a START and one terminal event per run, and events about a
+run accumulate; a streaming job or a service may never send a terminal event and instead sends
+periodic snapshots of a time window. It does not say what a consumer must do with a duplicate, a
+late or a missing event. Part V is about exactly those silences.
 
 ## The checkpoints
 
