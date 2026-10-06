@@ -138,7 +138,11 @@ export const ChangeLab = withProps(
     const saved = stored.challenges[data.challengeId]?.artifact;
     const choice = saved ? sumChoiceOf(answersOf(challenge, saved)) : undefined;
     const change = chosen >= 0 ? data.changes[chosen] : undefined;
-    const committed = change ? predictions?.[change.id] : undefined;
+    // A prediction saved against options the lesson no longer offers is no commitment at all.
+    const savedChoice = change ? predictions?.[change.id] : undefined;
+    const committed = data.prediction.options.some((o) => o.value === savedChoice)
+      ? savedChoice
+      : undefined;
     const label = (value: string) =>
       data.prediction.options.find((o) => o.value === value)?.label ?? value;
 
@@ -214,7 +218,9 @@ export const ChangeLab = withProps(
       );
     }
 
-    const allRan = data.changes.every((c) => predictions?.[c.id] !== undefined);
+    const allRan = data.changes.every((c) =>
+      data.prediction.options.some((o) => o.value === predictions?.[c.id]),
+    );
     return (
       <div className="change-lab" data-ran={Object.keys(predictions ?? {}).length}>
         <FaultInjector

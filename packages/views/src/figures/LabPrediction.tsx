@@ -100,7 +100,9 @@ export const LabPrediction = withProps(
     store,
   }: InteractiveProps & { data: z.infer<typeof Props> }) {
     const strings = useViewStrings();
-    const [stored, setStored] = useSlot<{ choice: string }>(store, interactive.id);
+    const [saved, setStored] = useSlot<{ choice: string }>(store, interactive.id);
+    // A choice saved against options the lesson no longer offers is no commitment at all.
+    const stored = data.options.some((o) => o.value === saved?.choice) ? saved : undefined;
     const ready = usePassed(lesson, store, data.requires ?? "") || data.requires === undefined;
     if (!ready)
       return (

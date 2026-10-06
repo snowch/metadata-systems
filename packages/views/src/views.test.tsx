@@ -174,6 +174,14 @@ describe("the figures on Chapter 1's page", () => {
     );
   });
 
+  it("treats a prediction saved against options the lesson no longer offers as not made", () => {
+    const { figure } = show((store) => store.setSlot("predict-days", { choice: "some" }));
+    expect(figure("predict-days").querySelector("[role=status]")).toBeNull();
+    expect(
+      within(figure("predict-days")).getByRole("button", { name: V.checkPrediction }),
+    ).toBeTruthy();
+  });
+
   it("asks how many rule settings pass only once the learner's rules pass", () => {
     expect(show().figure("predict-rules").textContent).toContain(
       format(V.locked, { title: rules.title }),

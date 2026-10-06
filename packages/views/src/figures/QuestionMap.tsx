@@ -127,7 +127,10 @@ export const QuestionMap = withProps(
     const [shownWeek, setShownWeek] = useState(-1);
     const named = usePassed(lesson, store, data.challengeId);
     const challenge = lesson.challenges.find((c) => c.id === data.challengeId);
-    const placed = sort?.placed ?? {};
+    // Only places the figure offers count: anything else in storage is no placement at all.
+    const placed = Object.fromEntries(
+      Object.entries(sort?.placed ?? {}).filter(([, p]) => PLACES.includes(p as Place)),
+    ) as Partial<Record<QuestionId, Place>>;
     const first = questionMap(week(), data.asset);
     const placeIn = (q: QuestionId, entries = first) =>
       entries.find((e) => e.question === q)?.place;
