@@ -17,6 +17,20 @@ import { PROSE } from "./invisible-system.prose";
 const options = (labels: Readonly<Record<string, string>>) =>
   Object.entries(labels).map(([value, label]) => ({ value, label }));
 
+/**
+ * Options that stand for what a probe names: each label with the answers it stands for. Each
+ * option is an explanation the learner could hold; the lab's answer picks one.
+ */
+const meaning = (
+  labels: Readonly<Record<string, string>>,
+  means: Readonly<Record<string, readonly string[]>>,
+) =>
+  Object.entries(labels).map(([value, label]) => {
+    const m = means[value];
+    if (!m) throw new Error(`no answers for the option ${value}`);
+    return { value, label, means: [...m] };
+  });
+
 /** Options that stand for counts: each label with the counts it covers, inclusive. */
 const counted = (
   labels: Readonly<Record<string, string>>,
@@ -60,10 +74,18 @@ export const invisibleSystem: LessonInput = {
       prose: PROSE.question,
       interactives: [
         {
+          id: "platform",
+          kind: "platform-map",
+          timeModel: "lab",
+          caption: LABELS.captions.platform,
+        },
+        {
           id: "dashboard",
           kind: "dashboard",
           timeModel: "lab",
           caption: LABELS.captions.dashboard,
+          lead: PROSE.dashboardLead,
+          after: PROSE.dashboardAfter,
         },
       ],
     },
@@ -80,7 +102,11 @@ export const invisibleSystem: LessonInput = {
           caption: LABELS.captions.p1,
           props: {
             question: PROSE.p1Question,
-            options: options(LABELS.p1Options),
+            // Yes: an owner field names who is responsible. No: it names who writes the table.
+            options: meaning(LABELS.p1Options, {
+              yes: ["person", "team"],
+              no: ["account", "none"],
+            }),
             probe: { kind: "owner-kind", asset: "daily_sales" },
             explain: PROSE.p1Explain,
           },
@@ -92,17 +118,14 @@ export const invisibleSystem: LessonInput = {
           caption: LABELS.captions.p2,
           props: {
             question: PROSE.p2Question,
-            options: counted(LABELS.p2Options, {
-              all: [7, 7],
-              six: [6, 6],
-              fourOrFive: [4, 5],
-              threeOrFewer: [0, 3],
-            }),
+            // The same: Thursday was a slow day. More: orders came in and some were left out.
+            options: meaning(LABELS.p2Options, { same: ["same"], more: ["more"] }),
             probe: {
-              kind: "days-matching",
+              kind: "day-total",
               source: "orders.parquet",
               keep: "all",
               target: "daily_sales",
+              day: "2026-09-10",
             },
             explain: PROSE.p2Explain,
           },
@@ -214,8 +237,9 @@ export const invisibleSystem: LessonInput = {
           caption: LABELS.captions.p3,
           props: {
             question: PROSE.p3Question,
-            // Asked once the learner's rules pass, so the count is at least one.
-            options: counted(LABELS.p3Options, { one: [1, 1], two: [2, 2], threeOrMore: [3, 16] }),
+            // Asked once the learner's rules pass, so the count is at least one: theirs alone,
+            // or more than one, of the sixteen settings.
+            options: counted(LABELS.p3Options, { one: [1, 1], more: [2, 16] }),
             probe: { kind: "clean-fits" },
             explain: PROSE.p3Explain,
             requires: "clean-orders-rules",
@@ -323,6 +347,6 @@ export const invisibleSystem: LessonInput = {
     textbookExample:
       "A tour of a data catalogue's screens over a ready-made sample project, such as dbt's jaffle shop (the café dbt's guides use: its quickstart's data is customers, orders and payments, and its structure guide builds staging, intermediate and marts models), with its documentation and its dependency diagram already generated for the reader.",
     howThisDiffers:
-      "Nothing is generated for the learner: they get storage alone and try to recover what a catalogue would hold, by rebuilding one asset from the others with a query and the raw orders' cleaning rules from their output. The failure experiment then makes that inference ambiguous (an analyst's copy), out of the builder's reach (an unrecorded edit to a program) and misleading (a failed night that leaves the dashboard looking up to date), each after the learner predicts it; and the learner sorts the chapter's questions before the lab places them in three groups, computed, not listed. The shop, a bicycle-parts retailer with no payments table, its data, its Thursday incident and its programs in the course's own SQL are invented for the course.",
+      "Nothing is generated for the learner: they get storage alone, and a map of the platform's systems and assets that shows no asset made from another, and try to recover what a catalogue would hold, by rebuilding one asset from the others with a query and the raw orders' cleaning rules from their output. Each prediction offers explanations of how the platform works, not numbers to guess. The failure experiment then makes that inference ambiguous (an analyst's copy), out of the builder's reach (an unrecorded edit to a program) and misleading (a failed night that leaves the dashboard looking up to date), each after the learner predicts it; and the learner sorts the chapter's questions before the lab places them in three groups, computed, not listed. The shop, a bicycle-parts retailer with no payments table, its data, its Thursday incident and its programs in the course's own SQL are invented for the course.",
   },
 };

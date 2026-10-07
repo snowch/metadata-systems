@@ -153,6 +153,20 @@ deliberately produces at least one surprising result: a dependency the lab canno
 that did not join, an event that changed nothing, a duplicate that was or was not harmless. The
 learner learns what metadata systems cannot do, not only what they can.
 
+**A prediction asks for a belief the learner can already hold.** Before a prediction goes in, ask:
+what has the learner seen by this point; what explanations could they reasonably hold; could they
+say why they chose one; and does the lab's answer tell those explanations apart? Each option is
+one such explanation of how the platform works. None is a hidden fact about the shop, a number
+nobody could reason to, an answer that is plainly right, or a guess at what the author decided. A
+count is offered as the explanations it stands for (none, one, more than one), never as an exact
+figure to hit. The chapter's notes answer the four questions for every prediction, in a table the
+content tests check.
+
+**After a result, ask what it proved.** A query that rebuilds an asset suggests how the asset was
+made; it does not show it. A chapter asks what its experiment proved and what the data could not
+tell before it names what a metadata system would record, and it does not tell the learner what
+metadata is for before they have needed it.
+
 ## Reviewing a chapter
 
 A review has two halves, and the test suite does neither on its own.

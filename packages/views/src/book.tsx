@@ -19,6 +19,7 @@ import { ChoiceEditor } from "./ChoiceEditor";
 import { ChangeLab } from "./figures/ChangeLab";
 import { Dashboard } from "./figures/Dashboard";
 import { LabPrediction } from "./figures/LabPrediction";
+import { PlatformMap } from "./figures/PlatformMap";
 import { QuestionMap } from "./figures/QuestionMap";
 import { StorageInspector } from "./figures/StorageInspector";
 import { grade } from "./grade";
@@ -26,12 +27,20 @@ import { DEFAULT_VIEW_STRINGS, type ViewStrings } from "./strings";
 
 /** The figures a lesson may name, by kind. */
 export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProps>>> = {
+  "platform-map": PlatformMap,
   dashboard: Dashboard,
   "lab-prediction": LabPrediction,
   "storage-inspector": StorageInspector,
   "change-lab": ChangeLab,
   "question-map": QuestionMap,
 };
+
+/**
+ * The figures that take the learner's commitment before the lab answers: a prediction, a change
+ * run after a prediction, and a sort. Each must ask for a belief the learner can already hold, and
+ * the chapter's notes say why it does (CLAUDE.md, "Interaction is the explanation").
+ */
+export const PREDICTION_KINDS: readonly string[] = ["lab-prediction", "change-lab", "question-map"];
 
 /** The models this course's figures run, by the name a lesson gives. */
 export const MODELS = ["lab"] as const;

@@ -41,8 +41,9 @@ a zod schema and says so in its place when they do not fit.
 
 | kind | props | what it does |
 | --- | --- | --- |
+| `platform-map` | `changes?`, `dock?` | the platform as the lab's `platformMap` computes it: the systems in the order data moves through them, the assets each holds, and between two systems the programs the learner cannot see, never a link from one asset to another; once the learner scrolls past it, a button at the foot of the window opens the same map over the page, unless `dock` is false |
 | `dashboard` | `changes?` | the reporting tool's chart as Monday morning shows it, one bar per value, from the lab's week |
-| `lab-prediction` | `question`, `options` (each a value, a label and, for a probe that counts, a `range` of counts), `probe` (`owner-kind` of an asset; `days-matching` of a source, a filter and a target; `clean-fits`), `explain?`, `changes?`, `requires?` (a challenge id) | the learner commits to an option, and the commitment stays (no "Predict again"); the lab runs the probe and answers, a counting probe by the option whose range holds its count, with its evidence; `explain` shows only after the commit; with `requires`, the figure waits until the learner's own work on that challenge passes |
+| `lab-prediction` | `question`, `options` (each a value, a label, and either `means`, the answers of a naming probe it stands for, or `range`, the counts of a counting probe), `probe` (`owner-kind` of an asset; `day-total` of a source, a filter, a target and a day; `clean-fits`), `explain?`, `changes?`, `requires?` (a challenge id) | the learner commits to an option, and the commitment stays (no "Predict again"); the lab runs the probe and answers with the option that stands for what it found, with its evidence; `explain` shows only after the commit; with `requires`, the figure waits until the learner's own work on that challenge passes |
 | `storage-inspector` | `initial?`, `changes?` | every asset by the system that holds it; for the one chosen, what its system records, what storage says about each of the chapter's eight questions (the same eight for every asset), its columns and its rows; a table wider than its box says so |
 | `change-lab` | `changes` (each an id, a label and an outcome), `afterAll?`, `challengeId`, `target?`, `prediction` (a question and options with count ranges) | waits until the learner's own query passes; for each change, takes a committed prediction of how many queries in the builder's choices will rebuild the target, then runs the week with it and shows those queries (the lab's answer), what storage holds on Monday morning with the comparison against the first run labelled as the lab's, and the learner's query against the new target; each outcome shows once its prediction is committed, and `afterAll` once all are |
 | `question-map` | `asset?`, `challengeId`, `weeks?` (each a change id and its label) | the learner places the chapter's questions about one asset in three groups and commits, for good; the lab then places them (storage, the data, only a record), each with its evidence and, for a question only a record answers, the kind of record that would; a week selector runs the placement on each change and marks the questions that moved; a query and its source are named only once the learner's own query passes |
@@ -50,6 +51,30 @@ a zod schema and says so in its place when they do not fit.
 
 The book's graders are `reproduces` (a sum compared with a target day by day) and `same-rows` (a
 set of cleaning rules compared with `clean_orders` as multisets).
+
+## Predictions
+
+A prediction asks for a belief the learner can already hold (`CLAUDE.md`). Every figure that takes
+a commitment before the lab answers (`PREDICTION_KINDS` in `packages/views/src/book.tsx`: a
+prediction, a change run after a prediction, a sort) gets a row in the chapter's notes, under
+"Predictions", before it is built:
+
+| Figure | What the learner has seen | The explanations its options stand for | How the lab tells them apart |
+| --- | --- | --- | --- |
+
+- **What the learner has seen** is what is on the page above the figure, not what the lab knows.
+  If the options can only be told apart by a fact the page has not shown, the prediction is a
+  lottery: show the fact first, or ask something else.
+- **Each option is an explanation** of how the platform works, written as one: "yes, because…",
+  "no, because…", "one, so the data still points to a single query". Options are parallel in form
+  and length, so that none is chosen for its wording.
+- **A count is asked as what it means.** None, one, or more than one are explanations; "four or
+  five" is a number to hit.
+- **The lab answers.** A naming probe's answer is a word the option lists under `means`; a
+  counting probe's is a count inside the option's `range`. The lesson never stores the answer.
+
+The content tests fail a figure of these kinds that has no row in the notes, and a prediction
+whose option stands for no answer at all.
 
 ## The prose process
 
@@ -77,8 +102,9 @@ brief of facts and checked by the managing model for facts only. For a chapter:
 - The term gate against the whole plan, and the plan's list against `docs/plan.md`.
 - The model gate: every figure runs a model the book has a note for.
 - `content/lessons/lessons.test.tsx`: every reference passes and every starting point fails; no
-  prediction's answer appears in its question, caption, lead or after-text; the whole chapter
-  renders in jsdom with no figure problem.
+  prediction's answer appears in its question, caption, lead or after-text; every prediction has
+  its row in the chapter's notes, and every option stands for an answer or a count; the whole
+  chapter renders in jsdom with no figure problem.
 - `content/lessons/<id>.facts.test.ts`: every number the chapter's words state, read off the lab.
 - `tests/educational/chapter.spec.ts`, at desktop and phone widths: the chapter renders whole with
   no console error and no horizontal scroll, even after every figure is used; each challenge is

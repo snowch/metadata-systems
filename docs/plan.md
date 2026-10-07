@@ -52,6 +52,12 @@ shop's data platform that really runs. Three raw files arrive each night (`custo
 (`sales_dashboard`). The course's week is Monday 7 to Sunday 13 September 2026, and the learner
 arrives on Monday 14 September. On Thursday something went wrong, and the dashboard shows it.
 
+A small map of the platform stays to hand through a chapter: the systems in the order data moves
+through them, the assets each holds, and between them the programs the learner cannot yet see. In
+Chapter 1 it shows no link from one asset to another, because that is what the chapter finds
+storage cannot tell. As the learner builds records in later chapters, the map gains what those
+records hold, and a link appears on it only once something the learner built records it.
+
 The lab starts with deliberately too little information. Chapter 1 gives the learner storage and
 nothing else. Each later chapter adds one kind of record, built by the learner, and the lab keeps
 what they built: the lab a figure runs is the shop plus the learner's own graded work from every
@@ -61,7 +67,10 @@ earlier chapter (`docs/lab.md`, "The learner's state").
 
 Every chapter follows the loop **predict, build, run, inspect, explain, change, run again**, inside
 the platform's ten sections: question, motivation, prediction, investigation, construction,
-failure experiment, explanation, generalisation, challenge, reflection. A chapter is finished when
+failure experiment, explanation, generalisation, challenge, reflection. Read as the learner meets
+it, the loop asks: a real question; what can I believe about it now; predict; act on the lab;
+observe; what did that prove; what can the data not tell me; what would a system have to record.
+A prediction asks only for a belief the learner can already hold (`CLAUDE.md`). A chapter is finished when
 the learner can do something they could not reliably do before, and every major idea in it has an
 explanation, a concrete example, an experiment, a prediction, an observable result, a reflection
 and an application.
@@ -201,6 +210,25 @@ The author reviews the course at five checkpoints:
 5. Before Chapter 32.
 
 ## Decisions since the brief
+
+### 7 October 2026: the author's second round on Chapter 1
+
+1. **A prediction asks for a belief the learner can already hold**, course-wide. Each option is an
+   explanation of how the platform works; a count is offered as what it means (none, one, more
+   than one); the chapter's notes say, for each prediction, what the learner has seen and how the
+   lab tells the explanations apart, and a content test checks the notes have a row for it.
+   Chapter 1's owner and days predictions were rebuilt on this rule (`docs/notes/chapter-01.md`).
+2. **A map of the platform, to hand through the chapter**, computed by the lab. The author's sketch
+   drew arrows from asset to asset; the map does not, because in Chapter 1 those arrows would
+   state what the chapter shows storage cannot tell, and would answer the construction's first
+   choice. It draws systems, assets and the unseen programs between systems, and gains links in
+   later chapters only from records the learner builds.
+3. **"Asset" and "metadata" defined precisely.** An asset is something in the platform that can be
+   stored, described, changed, related to other assets, or depended on. Metadata is information
+   about an asset or the platform, and can live inside a system, inside a file beside the data, or
+   in a system of its own; the course never says it is kept apart from the data.
+4. **A chapter ends with a short summary** of what it found, said once, before its reflective
+   questions, which lead into the next chapter.
 
 ### 6 October 2026: the author's answers at checkpoint 1
 

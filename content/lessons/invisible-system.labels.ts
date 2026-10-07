@@ -28,38 +28,34 @@ export const LABELS = {
     c2: "Which rules filter orders.parquet?",
   },
   captions: {
+    platform: "The map: the shop's three systems and the assets each holds.",
     dashboard: "On Monday morning the dashboard shows daily revenue for 7 to 13 September.",
-    p1: "Predict the owner the warehouse records for daily_sales.",
-    p2: "Predict on how many days the totals of orders.parquet equal daily_sales.",
+    p1: "Predict whether the owner the warehouse records for daily_sales is someone you could ask.",
+    p2: "Predict whether Thursday's rows of orders.parquet add up to the dashboard's figure.",
     inspector: "Browse the seven assets and what storage records about each.",
     c1: "Build a query that rebuilds daily_sales from another asset.",
     change:
       "Choose a change to the shop, predict how many queries will rebuild daily_sales afterwards, run the week again with it, and read what storage holds.",
     map: "Sort the eight questions about daily_sales by what can answer them, then let the lab place them.",
     c2: "Choose which orders the rules keep.",
-    p3: "Predict how many settings of the four rules pass.",
+    p3: "Predict whether your setting of the four rules is the only one that passes.",
   },
   p1Options: {
-    person: "a person, for example whoever built it",
-    team: "a team, for example finance",
-    program: "the program that writes it",
-    account: "an account that programs log in as",
+    yes: "yes, because an owner field names whoever is responsible for the table",
+    no: "no, because an owner field names the account that writes the table, and programs write the tables",
   },
   p2Options: {
-    all: "all seven",
-    six: "six, every day but Thursday",
-    fourOrFive: "four or five",
-    threeOrFewer: "three or fewer",
+    same: "yes, because Thursday was a slow day, and the raw orders show it too",
+    more: "no, the total is more, because the orders came in and something on the way to daily_sales left some out",
   },
   changeOptions: {
-    none: "none",
-    one: "one",
-    twoOrMore: "two or more",
+    none: "none, so the data no longer points to any query",
+    one: "one, so the data still points to a single query",
+    twoOrMore: "two or more, so the data fits more than one query",
   },
   p3Options: {
-    one: "one, only yours",
-    two: "two",
-    threeOrMore: "three or more",
+    one: "yes, because every rule you chose decides some row this week",
+    more: "no, because some rule decides no row this week",
   },
   c1Fields: {
     source: "Asset to read",
@@ -87,7 +83,8 @@ export const LABELS = {
   ],
   changeLabels: {
     copy: "an analyst copies clean_orders every night",
-    refunds: "the program that writes daily_sales is edited for refunds",
+    refunds:
+      "the program that writes daily_sales is edited to keep orders that are not refunded, from Saturday's row on",
     failed: "the last night's write of daily_sales fails",
   },
   c2Fields: {

@@ -16,11 +16,13 @@ import {
   cleanReconstructions,
   columnValues,
   formatValue,
+  platformMap,
   questionMap,
   recordOf,
   runOver,
   storage,
   sumReconstructions,
+  sumSources,
   sumSql,
   week,
 } from "@ms/lab";
@@ -68,12 +70,21 @@ describe("the facts Chapter 1 states", () => {
     expect([bySystem("object-storage"), bySystem("warehouse"), bySystem("reporting")]).toEqual([
       3, 3, 1,
     ]);
-    expect(PROSE.question).toContain("Three files sit in object storage, three tables");
-    expect(PROSE.question).toContain("one dashboard in the reporting tool");
+    expect(PROSE.question).toContain(
+      "three files in object storage, three tables in the warehouse, one dashboard in the reporting tool",
+    );
     expect(QUESTION_IDS).toHaveLength(8);
     expect(PROSE.inspectorLead).toContain("eight questions");
     expect(PROSE.mapLead).toContain("eight questions");
     expect(LABELS.captions.map).toContain("eight questions");
+  });
+
+  it("maps three systems in the order data moves, with the assets the prose counts", () => {
+    const m = platformMap(week());
+    expect(m.systems.map((s) => s.system)).toEqual(["object-storage", "warehouse", "reporting"]);
+    expect(m.systems.map((s) => s.assets.length)).toEqual([3, 3, 1]);
+    expect(PROSE.question).toContain("has three systems");
+    expect(PROSE.question).toContain("in the order data moves through them each night");
   });
 
   it("gives the first and last days of the week and the learner's first morning", () => {
@@ -94,7 +105,24 @@ describe("the facts Chapter 1 states", () => {
       "2026-09-13",
     ]);
     expect(PROSE.p2Explain).toContain("three days: Monday, Friday and Sunday");
-    expect(PROSE.p2Explain).toContain("the other four, Thursday among them");
+    expect(PROSE.p2Explain).toContain("They differ on four, Thursday among them");
+  });
+
+  it("asks about Thursday with the figures the dashboard and the raw orders give", () => {
+    const dash = recordOf(storage(), "sales_dashboard");
+    const thursday = dash.content.rows.find((r) => r[0] === "2026-09-10")!;
+    expect(formatValue(thursday[1] ?? null, dash.content.columns[1]!.type)).toBe("51.50");
+    expect(revenue()["2026-09-10"]).toBe("51.50");
+    expect(PROSE.p2Question).toContain("The dashboard shows 51.50 for Thursday");
+    expect(PROSE.p2Question).toContain("Will the total be 51.50 too?");
+    const raw = Object.fromEntries(rawChecks().map((c) => [c.key, c.actual]));
+    expect([raw["2026-09-09"], raw["2026-09-10"], raw["2026-09-11"]]).toEqual([
+      "198.75",
+      "205.50",
+      "204.24",
+    ]);
+    expect(PROSE.p2Explain).toContain("add up to 205.50. `daily_sales` has 51.50");
+    expect(PROSE.p2Explain).toContain("Wednesday's raw total (198.75) and Friday's (204.24)");
   });
 
   it("names etl_service as the owner of all three tables", () => {
@@ -120,6 +148,9 @@ describe("the facts Chapter 1 states", () => {
     expect(copy.location).toBe("s3://shop-scratch/clean_orders_copy.parquet");
     expect(time(copy.lastWritten)).toBe("02:15");
     expect(sumReconstructions(week(["copy"]), "daily_sales", "covers")).toHaveLength(2);
+    // The lead says the builder's choices cover every asset in storage that week.
+    expect(sumSources(week(["copy"]), "daily_sales")).toContain("clean_orders_copy.parquet");
+    expect(PROSE.changeLead).toContain("cover every asset in storage that week");
     expect(PROSE.outcomeCopy).toContain("last modified at 02:15, with the same 44 rows");
     expect(PROSE.outcomeCopy).toContain("Now 2 queries rebuild");
     expect(PROSE.afterAll).toContain("two assets fit equally well");
@@ -128,11 +159,16 @@ describe("the facts Chapter 1 states", () => {
   it("states the edit for refunds as the lab makes it", () => {
     const before = revenue();
     const after = revenue(["refunds"]);
+    // The label says the edit holds from Saturday's row on: no earlier row changes.
+    const changed = DAYS.filter((d) => before[d] !== after[d]);
+    expect(changed).toEqual(["2026-09-12"]);
+    expect(DAYS.indexOf("2026-09-12")).toBe(5);
+    expect(LABELS.changeLabels.refunds).toContain("from Saturday's row on");
     expect([before["2026-09-12"], after["2026-09-12"]]).toEqual(["191.49", "215.49"]);
     expect([before["2026-09-13"], after["2026-09-13"]]).toEqual(["97.75", "97.75"]);
-    const changed = recordOf(storage(week(["refunds"])), "daily_sales");
-    expect(changed.rows).toBe(7);
-    expect(changed.lastWritten).toBe(recordOf(storage(), "daily_sales").lastWritten);
+    const record = recordOf(storage(week(["refunds"])), "daily_sales");
+    expect(record.rows).toBe(7);
+    expect(record.lastWritten).toBe(recordOf(storage(), "daily_sales").lastWritten);
     expect(sumReconstructions(week(["refunds"]), "daily_sales", "covers")).toEqual([]);
     expect(PROSE.outcomeRefunds).toContain("Saturday's row now reads 215.49");
     expect(PROSE.outcomeRefunds).toContain("it read 191.49");
@@ -184,6 +220,7 @@ describe("the facts Chapter 1 states", () => {
     expect(columnValues(raw, "quantity").every((q) => Number(q) > 0)).toBe(true);
     expect(PROSE.p3Explain).toContain("Two settings pass");
     expect(PROSE.p3Explain).toContain("quantity of 0 or less");
+    expect(PROSE.reflection).toContain("two settings of the rules rebuild `clean_orders`");
   });
 
   it("closes Thursday with the numbers the lab gives", () => {

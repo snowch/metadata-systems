@@ -1,7 +1,8 @@
 // Copyright © 2026 Christopher Snow
 
-// The shop's assets: where each lives and what kind of thing it is. An asset is anything the
-// platform stores or shows: a file, a table, a dashboard.
+// The shop's assets: where each lives and what kind of thing it is. An asset is anything in the
+// platform that can be stored, described, changed, related to another or depended on; the shop's
+// are files, tables and a dashboard.
 
 export const ASSET_IDS = [
   "customers.parquet",

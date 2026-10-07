@@ -484,3 +484,142 @@ details[open] > summary::before {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* The map of the platform: the systems stacked, with an arrow down between two that programs
+   join, on a narrow figure or in the map that opens over the page; in a row, with the arrow
+   turned to point across, where the figure is wide enough for three names side by side. */
+.platform-map-place,
+.map-dock-panel {
+  container-type: inline-size;
+}
+.platform-map {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.map-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.map-system {
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  min-width: 0;
+}
+.map-system-name {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-muted);
+}
+.map-assets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.map-asset {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+.map-flow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding-left: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
+}
+.map-arrow {
+  flex: none;
+  color: var(--accent);
+}
+@container (min-width: 44rem) {
+  .platform-map {
+    flex-direction: row;
+    align-items: stretch;
+  }
+  .map-step {
+    flex-direction: row;
+    flex: 1 1 0;
+    align-items: stretch;
+  }
+  .map-system {
+    flex: 1 1 0;
+  }
+  .map-flow {
+    flex: none;
+    flex-direction: column;
+    justify-content: center;
+    width: 7rem;
+    padding: 0;
+    text-align: center;
+  }
+  .map-arrow {
+    transform: rotate(-90deg);
+  }
+}
+
+/* The same map, to hand from anywhere in the chapter: a button at the foot of the window, and
+   the map over the page when it is pressed. */
+.map-dock {
+  position: fixed;
+  right: max(var(--gutter), env(safe-area-inset-right));
+  bottom: max(var(--space-4), env(safe-area-inset-bottom));
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+  max-width: calc(100vw - 2 * var(--gutter));
+}
+.map-dock-toggle {
+  box-shadow: var(--shadow);
+}
+.map-dock-toggle[aria-expanded="true"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+.map-dock-panel {
+  width: min(24rem, calc(100vw - 2 * var(--gutter)));
+  max-height: min(34rem, calc(100vh - 7rem));
+  max-height: min(34rem, calc(100dvh - 7rem));
+  overflow: auto;
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.map-dock-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+.map-dock-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+@media print {
+  .map-dock {
+    display: none;
+  }
+}

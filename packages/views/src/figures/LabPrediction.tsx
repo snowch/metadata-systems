@@ -2,17 +2,21 @@
 
 // Predict, then let the lab answer. The learner commits to one option before anything is shown;
 // the lab then runs the prediction's probe on the week, and the page says what the lab found,
-// whether it matched, and the evidence. A probe that counts answers with a number, and the option
-// whose range holds it is the lab's answer. The answer is computed when the learner commits; the
-// lesson's data never holds it. A prediction about a challenge's result can wait for the learner's
-// own work on that challenge to pass.
+// whether it matched, and the evidence. Each option stands for an explanation the learner could
+// hold, and names the answers it stands for: a probe that names what it found picks the option
+// whose `means` holds that word, and a probe that counts picks the option whose range holds the
+// count. The answer is computed when the learner commits; the lesson's data never holds it. A
+// prediction about a challenge's result can wait for the learner's own work on that challenge to
+// pass.
 
 import { z } from "zod";
 
 import {
   ASSET_IDS,
   CHANGE_IDS,
+  DAYS,
   KEEP,
+  optionForAnswer,
   optionForCount,
   runProbe,
   week,
@@ -30,10 +34,11 @@ import { format, useViewStrings, type ViewStrings } from "../strings";
 const Probe = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("owner-kind"), asset: z.enum(ASSET_IDS) }),
   z.object({
-    kind: z.literal("days-matching"),
+    kind: z.literal("day-total"),
     source: z.enum(ASSET_IDS),
     keep: z.enum(KEEP),
     target: z.enum(ASSET_IDS),
+    day: z.enum(DAYS),
   }),
   z.object({ kind: z.literal("clean-fits") }),
 ]);
@@ -47,6 +52,8 @@ const Props = z.object({
         label: z.string(),
         /** For a probe that counts: the counts this option stands for, inclusive. */
         range: z.tuple([z.number().int().min(0), z.number().int().min(0)]).optional(),
+        /** For a probe that names what it found: the answers this option stands for. */
+        means: z.array(z.string().min(1)).min(1).optional(),
       }),
     )
     .min(2),
@@ -62,12 +69,15 @@ export function labAnswer(
   result: ProbeResult,
   options: z.infer<typeof Props>["options"],
 ): string | undefined {
-  return result.kind === "owner-kind" ? result.answer : optionForCount(result.count, options);
+  return result.kind === "clean-fits"
+    ? optionForCount(result.count, options)
+    : optionForAnswer(result.answer, options);
 }
 
 function Evidence({ result, strings }: { result: ProbeResult; strings: ViewStrings }) {
-  // Only the days prediction has a table of evidence; the others' explanations say it.
-  if (result.kind !== "days-matching") return null;
+  // Only the day's totals have a table of evidence, every day of the week; the others'
+  // explanations say it.
+  if (result.kind !== "day-total") return null;
   return (
     <ScrollRegion label={strings.daysCaption}>
       <StateInspector
@@ -131,8 +141,9 @@ export const LabPrediction = withProps(
               className={answer === stored.choice ? "prediction-match" : "prediction-nomatch"}
             >
               {format(strings.youSaid, { choice: label(stored.choice) })}{" "}
-              {format(strings.labFound, { answer: answer ? label(answer) : "" })}{" "}
-              {answer === stored.choice ? strings.match : strings.noMatch}
+              {answer === stored.choice
+                ? strings.match
+                : `${format(strings.labFound, { answer: answer ? label(answer) : "" })} ${strings.noMatch}`}
             </p>
             <Evidence result={result} strings={strings} />
             {data.explain && <Prose markdown={data.explain} />}

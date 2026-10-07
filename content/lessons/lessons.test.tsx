@@ -13,7 +13,15 @@ import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { optionForCount, runProbe, sumReconstructions, week, type ChangeId } from "@ms/lab";
-import { INTERACTIVES, MODELS, createBook, grade, labAnswer, runtimeStrings } from "@ms/views";
+import {
+  INTERACTIVES,
+  MODELS,
+  PREDICTION_KINDS,
+  createBook,
+  grade,
+  labAnswer,
+  runtimeStrings,
+} from "@ms/views";
 import { LessonView, memoryStorage } from "@platform/lesson-runtime";
 import { learnerText, modelProblems, termPattern, termProblems } from "@platform/lesson-schema";
 
@@ -84,7 +92,7 @@ describe("the course's chapters", () => {
     for (const m of MODELS) expect(book.timeModelNotes[m]).toBeTruthy();
   });
 
-  type Option = { value: string; label: string; range?: [number, number] };
+  type Option = { value: string; label: string; range?: [number, number]; means?: string[] };
   const word = (label: string) =>
     new RegExp(`\\b${label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
 
@@ -132,6 +140,37 @@ describe("the course's chapters", () => {
             const p = x.props as { options: Option[] };
             if (p.options.some((o) => o.range)) expect(disjoint(p.options), x.id).toBe(true);
           }
+        }
+  });
+
+  it("says in its chapter's notes why every prediction asks for a belief the learner can hold", () => {
+    // Each figure that takes a commitment has a row in the notes' "Predictions" table: what the
+    // learner has seen, the explanations its options stand for, and how the lab tells them apart.
+    const missing: string[] = [];
+    for (const l of LESSONS) {
+      const notes = readFileSync(
+        `docs/notes/chapter-${String(chapterOf(l)).padStart(2, "0")}.md`,
+        "utf8",
+      );
+      const table = notes.split("\n## Predictions\n")[1]?.split("\n## ")[0] ?? "";
+      for (const s of l.sections)
+        for (const x of s.interactives)
+          if (PREDICTION_KINDS.includes(x.kind) && !table.includes(`| \`${x.id}\` |`))
+            missing.push(`${l.id}: ${x.id}`);
+    }
+    expect(missing).toEqual([]);
+  });
+
+  it("gives every prediction at least two options, each an explanation that picks one answer", () => {
+    for (const l of LESSONS)
+      for (const s of l.sections)
+        for (const x of s.interactives) {
+          if (x.kind !== "lab-prediction") continue;
+          const p = x.props as { options: Option[] };
+          expect(p.options.length, x.id).toBeGreaterThanOrEqual(2);
+          // An option stands for answers or for counts, never for nothing.
+          for (const o of p.options)
+            expect(o.means ?? o.range, `${x.id}: ${o.value}`).toBeDefined();
         }
   });
 

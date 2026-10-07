@@ -266,7 +266,8 @@ test.describe("the figures", () => {
     await expect(commit).toBeDisabled();
     await expect(figure.locator("[role=status]")).toHaveCount(0);
     const options = figureProps("predict-owner")["options"] as Labelled[];
-    await figure.getByLabel(options.find((o) => o.value === "account")!.label).check();
+    // No: the owner names the account the programs log in as, not someone to ask.
+    await figure.getByLabel(options.find((o) => o.value === "no")!.label).check();
     await commit.click();
     await expect(figure.locator("[role=status]")).toContainText(V.match);
     await expect(figure).toContainText("etl_service");
@@ -275,6 +276,60 @@ test.describe("the figures", () => {
     await expect(figure.getByRole("radio").first()).toBeDisabled();
     await page.reload();
     await expect(page.locator("#ix-predict-owner [role=status]")).toContainText(V.match);
+  });
+
+  test("the Thursday prediction is answered by the raw orders against daily_sales", async ({
+    page,
+  }) => {
+    await openChapter(page);
+    const figure = page.locator("#ix-predict-days");
+    const options = figureProps("predict-days")["options"] as Labelled[];
+    await figure.getByLabel(options.find((o) => o.value === "more")!.label).check();
+    await figure.getByRole("button", { name: V.checkPrediction }).click();
+    await expect(figure.locator("[role=status]")).toContainText(V.match);
+    await expect(figure.locator(".days-table tbody tr")).toHaveCount(7);
+    await expect(figure).toContainText("205.50");
+  });
+
+  test("the map stays to hand: a button opens it once its place is scrolled past", async ({
+    page,
+  }) => {
+    await openChapter(page);
+    const map = page.locator("#ix-platform .platform-map");
+    await expect(map.locator(".map-asset")).toHaveCount(7);
+    await expect(map.locator(".map-system-name")).toHaveText(
+      ["object-storage", "warehouse", "reporting"].map((s) => V.systems[s]!),
+    );
+    const open = page.getByRole("button", { name: V.mapOpen });
+    // Before the learner reaches the map, and while it is in view, there is no button.
+    await expect(open).toHaveCount(0);
+    await map.scrollIntoViewIfNeeded();
+    await expect(open).toHaveCount(0);
+    // Past it, the button opens the same map over the page, and Escape closes it again.
+    await challenge(page, "rebuild-daily-sales").scrollIntoViewIfNeeded();
+    await expect(open).toBeVisible();
+    await expect(open).toHaveAttribute("aria-expanded", "false");
+    await open.click();
+    const panel = page.locator("#map-dock-panel");
+    await expect(panel.locator(".map-asset")).toHaveCount(7);
+    await expect(page.getByRole("button", { name: V.mapClose })).toBeFocused();
+    await page.keyboard.press("Escape");
+    await expect(panel).toHaveCount(0);
+    await expect(open).toBeFocused();
+    await open.click();
+    await page.getByRole("button", { name: V.mapClose }).click();
+    await expect(panel).toHaveCount(0);
+    // Back at the map, the button goes.
+    await map.scrollIntoViewIfNeeded();
+    await expect(open).toHaveCount(0);
+    // A jump from above the map to far below it, which never shows it, still brings the button.
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.reload();
+    await expect(page.locator("section.lesson-section")).toHaveCount(10);
+    await page.locator("#ix-predict-rules").scrollIntoViewIfNeeded();
+    await expect(open).toBeVisible();
+    const [scroll, client] = await pageWidth(page);
+    expect(scroll).toBeLessThanOrEqual(client + 1);
   });
 
   test("starting the chapter again clears every prediction and all work, after a second press", async ({
@@ -391,7 +446,10 @@ test.describe("the figures", () => {
     await expect(figure.locator(".figure-locked")).toHaveText(format(V.locked, { title: c.title }));
     await pass(page, c.id);
     const options = figureProps("predict-rules")["options"] as Labelled[];
-    await figure.getByLabel(options.find((o) => o.value === "two")!.label, { exact: true }).check();
+    // More than one setting passes: the quantity rule decides no row this week.
+    await figure
+      .getByLabel(options.find((o) => o.value === "more")!.label, { exact: true })
+      .check();
     await figure.getByRole("button", { name: V.checkPrediction }).click();
     await expect(figure.locator("[role=status]")).toContainText(V.match);
   });

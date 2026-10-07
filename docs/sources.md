@@ -134,6 +134,23 @@ fictional Jaffle Shop café"; the BigQuery quickstart's sample data is `jaffle_s
 staging, intermediate and marts models from raw customers, orders, items, products, stores and
 supplies.
 
+## Apache Parquet's file metadata (the lab's files; Chapter 1's definition of metadata)
+
+The Parquet format specification, `apache/parquet-format` at the tag
+`apache-parquet-format-2.12.0`, read 7 October 2026 from the repository (parquet.apache.org was not
+reachable from the build environment):
+
+- `README.md`, the file layout: the column chunks come first and the file metadata after them, at
+  the end of the file, followed by its length and the magic number. "File Metadata is written after
+  the data to allow for single pass writing."
+- `src/main/thrift/parquet.thrift`, the `FileMetaData` structure: a required `schema` (the file's
+  columns and their types), a required `num_rows`, the row groups, optional key/value metadata and
+  an optional `created_by`, the application that wrote the file.
+
+They support the lab's choice (`docs/lab.md`) that a Parquet file carries its own column names,
+types and row count, and Chapter 1's statements that a file holds them after its rows and that
+metadata can live inside the same file as the data.
+
 ## Table formats that keep history (Chapter 1's closing note)
 
 Read 6 October 2026, for one sentence of Chapter 1's model-versus-reality note:

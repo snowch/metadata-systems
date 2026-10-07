@@ -1,6 +1,13 @@
 // Copyright © 2026 Christopher Snow
 
-export { COURSE_TITLE, INTERACTIVES, MODELS, createBook, runtimeStrings } from "./book";
+export {
+  COURSE_TITLE,
+  INTERACTIVES,
+  MODELS,
+  PREDICTION_KINDS,
+  createBook,
+  runtimeStrings,
+} from "./book";
 export { ChoiceEditor } from "./ChoiceEditor";
 export { answersOf, cleanChoiceOf, describeSum, optionLabel, sumChoiceOf } from "./choices";
 export { DataTable } from "./DataTable";
@@ -19,5 +26,6 @@ export {
 export { ChangeLab, storageDifferences } from "./figures/ChangeLab";
 export { Dashboard } from "./figures/Dashboard";
 export { LabPrediction, labAnswer } from "./figures/LabPrediction";
+export { PlatformMap } from "./figures/PlatformMap";
 export { QuestionMap, evidenceText, listOf } from "./figures/QuestionMap";
 export { StorageInspector } from "./figures/StorageInspector";

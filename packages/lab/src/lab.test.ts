@@ -14,6 +14,8 @@ import {
   cleanReconstructions,
   columnValues,
   parseQuery,
+  platformMap,
+  optionForAnswer,
   optionForCount,
   questionMap,
   recordKindOf,
@@ -158,12 +160,69 @@ describe("the questions", () => {
       answer: "account",
       value: "etl_service",
     });
-    const days = runProbe(
-      { kind: "days-matching", source: "orders.parquet", keep: "all", target: "daily_sales" },
+    const thursday = runProbe(
+      {
+        kind: "day-total",
+        source: "orders.parquet",
+        keep: "all",
+        target: "daily_sales",
+        day: "2026-09-10",
+      },
       week(),
     );
-    expect(days).toMatchObject({ count: 3, total: 7 });
+    expect(thursday).toMatchObject({ answer: "more", day: "2026-09-10" });
+    if (thursday.kind === "day-total") {
+      expect(thursday.checks).toHaveLength(7);
+      expect(thursday.checks.filter((c) => c.same)).toHaveLength(3);
+    }
+    const monday = runProbe(
+      {
+        kind: "day-total",
+        source: "orders.parquet",
+        keep: "all",
+        target: "daily_sales",
+        day: "2026-09-07",
+      },
+      week(),
+    );
+    expect(monday).toMatchObject({ answer: "same" });
     expect(runProbe({ kind: "clean-fits" }, week())).toEqual({ kind: "clean-fits", count: 2 });
+  });
+
+  it("maps the platform by system, in the order data moves, with no asset made from another", () => {
+    const m = platformMap(week());
+    expect(m.systems.map((s) => s.system)).toEqual(["object-storage", "warehouse", "reporting"]);
+    expect(m.systems.map((s) => s.assets.map((a) => a.id))).toEqual([
+      ["customers.parquet", "orders.parquet", "products.parquet"],
+      ["clean_customers", "clean_orders", "daily_sales"],
+      ["sales_dashboard"],
+    ]);
+    expect(m.flows).toEqual([
+      { from: "object-storage", to: "warehouse" },
+      { from: "warehouse", to: "reporting" },
+    ]);
+    // A flow names two systems and nothing else: no asset, no program.
+    for (const f of m.flows) expect(Object.keys(f).sort()).toEqual(["from", "to"]);
+    expect(platformMap(week(["copy"])).systems[0]?.assets.map((a) => a.id)).toContain(
+      "clean_orders_copy.parquet",
+    );
+  });
+
+  it("picks the option that stands for an answer, and none where two do", () => {
+    const options = [
+      { value: "yes", means: ["person", "team"] },
+      { value: "no", means: ["account", "none"] },
+    ];
+    expect(optionForAnswer("team", options)).toBe("yes");
+    expect(optionForAnswer("account", options)).toBe("no");
+    expect(optionForAnswer("robot", options)).toBeUndefined();
+    expect(optionForAnswer("same", [{ value: "same" }, { value: "more" }])).toBe("same");
+    expect(
+      optionForAnswer("x", [
+        { value: "a", means: ["x"] },
+        { value: "b", means: ["x"] },
+      ]),
+    ).toBeUndefined();
   });
 
   it("picks the option whose range holds a count, and none where two or none do", () => {

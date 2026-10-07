@@ -2,8 +2,9 @@
 
 Every brief for Chapter 1 attaches this sheet. Each fact was read off the lab (`packages/lab`) on
 6 October 2026, and read again for the revision after the review, by running it (two statements
-the first version carried were not the lab's, and are gone); the chapter's facts test pins every
-number below. Do not add a number that is not here. Do not change a number.
+the first version carried were not the lab's, and are gone), and again on 7 October 2026 for the
+author's second round (the predictions, the map, the definitions); the chapter's facts test pins
+every number below. Do not add a number that is not here. Do not change a number.
 
 ## The situation
 
@@ -20,7 +21,8 @@ number below. Do not add a number that is not here. Do not change a number.
 
 ## The seven assets
 
-An asset is anything the platform stores or shows: a file, a table, a dashboard.
+An asset is something in the platform that can be stored, described, changed, related to other
+assets, or depended on. The shop's assets are files, tables and a dashboard.
 
 | Asset | Where it lives | Rows |
 | --- | --- | --- |
@@ -31,6 +33,23 @@ An asset is anything the platform stores or shows: a file, a table, a dashboard.
 | clean_orders | the warehouse, shop.analytics | 44 |
 | daily_sales | the warehouse, shop.analytics | 7 |
 | sales_dashboard | the reporting tool | shows 7 values |
+
+## The map of the platform
+
+The chapter shows a small map of the platform near its start, and keeps it to hand.
+
+- The map shows the shop's data platform: its three systems, in the order data moves through them
+  each night (object storage, then the warehouse, then the reporting tool), and the assets each
+  holds: three files, three tables, one dashboard.
+- Between object storage and the warehouse, and between the warehouse and the reporting tool, an
+  arrow stands for programs that move data from one system to the next each night. You cannot
+  see the programs.
+- The map shows no asset made from another. Which file or table feeds which is what this chapter
+  finds storage cannot tell. Never draw, describe or hint at a link between two assets.
+- The map stays to hand: once its place on the page scrolls out of view, a button at the foot of
+  the window opens the same map over the page. The button goes when the map's place comes back
+  into view.
+- The map shows the week as it first ran. It does not show the analyst's copy or any change.
 
 ## What each storage system records about an asset (and nothing else)
 
@@ -97,6 +116,25 @@ lowest.
   is responsible for the file. No program in the lab reads products.parquet; storage cannot show
   that.
 
+## The two predictions before storage
+
+Each option of a prediction is an explanation the learner could hold, not a fact to guess. The
+learner has seen the map, the dashboard and the words before them, nothing else.
+
+1. **The owner.** The warehouse records an owner for every table. Will the owner it records for
+   daily_sales name someone you could ask about the table? Two explanations:
+   - yes: the owner field names whoever is responsible for the table;
+   - no: the owner field names the account that writes the table, and programs write the tables.
+   The lab finds no: the owner is `etl_service`, the account all four of the shop's programs log in
+   as.
+2. **Thursday.** The dashboard shows 51.50 for Thursday, and daily_sales holds the same figure for
+   Thursday. Add up price times quantity over Thursday's rows of orders.parquet: will the total be
+   51.50 too? Two explanations:
+   - yes: Thursday was a slow day, and the raw orders show it too;
+   - no, more: the orders came in, and something on the way to daily_sales left some out.
+   The lab finds more: 205.50 against 51.50. Thursday's raw total is close to Wednesday's (198.75)
+   and Friday's (204.24), so Thursday was not a slow day in orders.parquet.
+
 ## Adding up orders.parquet per day
 
 If you add up price times quantity over every row of orders.parquet, per day, and compare with
@@ -114,14 +152,24 @@ clean_customers or clean_orders); which rows to keep (every row, completed order
 orders only); what to add up (price times quantity, quantity, the number of rows); and per what
 (the day the order was placed, the customer, the product). Exactly one choice rebuilds
 daily_sales. (Do not state it in any text a learner reads before passing the challenge.) A query
-that rebuilds an asset is a candidate for how it was made, not proof.
+that rebuilds an asset suggests how the asset was made. It does not show it: the failure
+experiment finds a second asset that fits as well, an edit that leaves no choice that fits, and a
+failed night the query does not notice. The construction asks the question; the failure
+experiment answers it. Do not answer it in the construction.
 
 ## Three changes to the shop (the failure experiment)
 
-The experiment re-runs the learner's own query, so it starts once their query passes. Before each
-change runs, the learner predicts how many queries in the builder's choices will rebuild
-daily_sales afterwards (none, one, two or more). The lab answers: 2 after the copy, 0 after the
-edit, 1 after the failed night. Storage in a changed week holds only that week's values; any
+The experiment re-runs the learner's own query, so it starts once their query passes. Each change
+gives a different week: the lab runs the whole week again from Monday with that change. The
+builder's choices cover every asset in storage that week, so the analyst's copy is among them in
+the copy's week. Before each change runs, the learner predicts what the data will then say about
+where daily_sales comes from, as the number of queries in the builder's choices that rebuild it:
+none (the data no longer points to any query), one (it still points to one), or two or more (it
+fits more than one). The lab answers: 2 after the copy, 0 after the edit, 1 after the failed
+night. The learner can reason to each before it runs: a copy has the same rows; the edit keeps
+cancelled orders from Saturday's row on but not before, and every builder choice keeps the same
+rows on every day; the failed night leaves a table with one row fewer, and "rebuild" asks only for
+the rows the asset has. Storage in a changed week holds only that week's values; any
 comparison with the week as it first ran is the lab's, because the lab ran both weeks.
 
 1. An analyst's copy. A script copies clean_orders every night to
@@ -130,7 +178,10 @@ comparison with the week as it first ran is the lab's, because the lab ran both 
    same query from clean_orders and from the copy. The data cannot say which one daily_sales was
    built from. Storage shows the new file; nothing says who made it or why.
 2. A program edited for refunds. From Saturday's row on, the program that writes daily_sales
-   keeps every order whose status is not "refunded", where it kept completed orders only. The shop
+   keeps every order whose status is not "refunded", where it kept completed orders only. The
+   change's label says what the edit does, so the learner can reason about it before it runs; it
+   must say "from Saturday's row on", not a day or time of the edit, which the lab does not
+   record. The shop
    has no refunds: every order is completed or cancelled. Saturday's row now reads 215.49 (it read
    191.49 in the week as it first ran), because Saturday's cancelled order now counts; the
    dashboard shows the same. Sunday's row is unchanged, 97.75, because Sunday had no cancelled
@@ -158,13 +209,15 @@ with a quantity of 0 or less (keep, drop). That makes 16 settings. Exactly 2 of 
 clean_orders exactly, and they differ only in the quantity rule, because no order this week has a
 quantity of 0 or less. The shop's program drops such orders. No rebuilding from this week's data
 can find that rule. (Do not state the passing settings in any text a learner reads before
-passing.) After a pass, the learner predicts how many settings pass (one, two, three or more); the
-lab answers 2.
+passing.) After a pass, the learner predicts whether their own setting is the only one that
+passes (every rule they chose decides some row this week) or whether more than one does (some
+rule decides no row this week). The lab answers more than one: 2.
 
 ## The three groups of questions about daily_sales
 
-The inspector asks every asset the same eight questions. The map places the eight questions about
-daily_sales in three groups, by what can answer them, and the lab works out each place. Name a
+The inspector asks every asset the same eight questions. A figure places the eight questions about
+daily_sales in three groups, by what can answer them, and the lab works out each place. Do not
+call this figure a map: "map" is the platform's map. Call it the figure, or speak of your sorting. Name a
 group by its heading, never by its position (on a phone they stack):
 
 - **Storage records it.**
@@ -184,7 +237,7 @@ group by its heading, never by its position (on a phone they stack):
 | What changed in it this week? | only a record kept at the time (storage keeps only the current rows) |
 
 Before the lab places them, the learner places all eight and commits; the lab then shows its
-places and marks where the learner's differ. A week selector runs the map on each change: with the
+places and marks where the learner's differ. A week selector places them again on each change: with the
 copy, "What is it made from?" stays with the data, with two assets; with the edit, "What is it made
 from?" and "How are its numbers worked out?" leave the data's group for the record's; with the
 failed night, "Did last night's write work?" stays with the data, and its evidence becomes "last
@@ -203,9 +256,18 @@ certain. They are different sortings and need not line up.
 
 ## Words on this page, each with one meaning
 
-- **asset**: a file, a table or a dashboard. Introduced in this chapter.
-- **metadata**: introduced at the end of this chapter, in the generalisation: records about assets
-  and about the platform that the data does not contain. Do not use the word before that section.
+- **asset**: something in the platform that can be stored, described, changed, related to other
+  assets, or depended on; the shop's are files, tables and a dashboard. Introduced at the start of
+  this chapter, with the map.
+- **metadata**: introduced at the end of this chapter, in the generalisation: information about an
+  asset or about the platform: what an asset is, where it came from, who is responsible for it,
+  what its numbers mean, how it is made, and how it relates to other assets. It can live inside the
+  system that holds the data (the warehouse keeps each table's column names and types), next to
+  the data (a Parquet file carries its own column names, types and row count after its rows), or
+  in a system of its own. Never say metadata is kept apart from the data: some of it is not. Do not
+  use the word before the generalisation.
+- **map**: the map of the platform, and nothing else. Never call the figure that sorts the
+  questions a map.
 - **row**: a line of data in a file or a table. Never call a row a "record".
 - **record**: something written down about an asset or the platform, other than its rows.
 - **program**: code that reads assets and writes one. The shop has four. Never "job".
@@ -232,6 +294,19 @@ night's work" or "the program"), event, dataset, schema, entity, attribute, iden
 ingestion, observation, freshness, data quality, assertion, provenance, impact analysis, root
 cause, identity, environment, alias, index, partition, retention, descriptive, operational,
 catalog, catalogue.
+
+## What the chapter found, at its end
+
+Said once, at the start of the reflection, as a short summary:
+
+- Storage tells you what exists now: which assets there are, their columns and rows, and when each
+  was last written.
+- The data can sometimes suggest what produced an asset: a query rebuilt daily_sales, and four
+  rules rebuilt clean_orders. It cannot prove it: a copy fitted as well, an edit left no choice
+  that fits, and two settings of the rules fitted clean_orders.
+- Neither storage nor the data tells you for certain what happened, why it happened, who was
+  responsible, or what depends on an asset.
+- Those are things somebody has to record on purpose, when they happen.
 
 ## How the lab differs from a real platform (the closing note)
 

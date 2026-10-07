@@ -105,6 +105,19 @@ evidence:
 Each question's classification is computed by running the storage view and the inference search,
 never written into the lesson.
 
+Two more things the figures ask of it:
+
+- **The map of the platform** (`platformMap`): the systems in the order data moves through them
+  (a system nothing flows into first), the assets each holds in the week asked about, and the
+  flows between systems, each from what a program reads to what it writes. A flow names two
+  systems and nothing else: never a program, never an asset. The map shows what a newcomer is
+  told on the first morning, and nothing Chapter 1 finds storage cannot tell.
+- **A prediction's answer** (`runProbe`): the owner a table's system records, and what kind of
+  name it is (`owner-kind`); one day's total over an asset against the target's row for that day,
+  as the same, more or less, with every day's two totals for the evidence (`day-total`); how many
+  settings of the cleaning rules rebuild `clean_orders` (`clean-fits`). A prediction's option
+  names the answers it stands for, so the lesson never stores the answer.
+
 ## The course's SQL subset
 
 The programs, the queries a learner builds and, from Chapter 9, the queries the learner writes

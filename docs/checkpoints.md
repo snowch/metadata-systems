@@ -109,6 +109,15 @@ The revision, code first and then the prose process:
    keeps it); this course drops it, and the sort's "Sort again" with it, and offers "start this
    chapter again" at the foot of each chapter instead, after a second press.
 
+### The author's second round on Chapter 1
+
+On 7 October 2026 the author sent consolidated feedback on Chapter 1: keep the design; make every
+prediction one the learner can reason about; add a small map of the platform that stays to hand;
+define "asset" early and "metadata" without saying it is kept apart from the data; and close with
+a short summary. All five are done, the first as a course-wide rule; `docs/plan.md` records the
+decisions and `docs/notes/chapter-01.md` the audit of every prediction. One choice differs from the
+author's sketch, and the plan says why: the map draws no arrow from one asset to another.
+
 Settled since this report was first drafted: `main` exists and the site deploys from it; and the
 documentation hosts are reachable, so OpenLineage was compared with its published site (the same
 as its repository's pages, with one disagreement between its schema and its run-cycle page, now
