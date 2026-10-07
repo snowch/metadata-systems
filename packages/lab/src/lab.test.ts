@@ -156,9 +156,12 @@ describe("the questions", () => {
   });
 
   it("answers the predictions from the lab", () => {
+    // Every table in the warehouse records the programs' account as its owner.
     expect(runProbe({ kind: "owner-kind", asset: "daily_sales" }, week())).toMatchObject({
       answer: "account",
       value: "etl_service",
+      tables: 3,
+      owned: 3,
     });
     const thursday = runProbe(
       {

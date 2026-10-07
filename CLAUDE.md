@@ -16,6 +16,9 @@ the data not tell me; what would a system have to record? Every chapter protects
 above the rest: do not teach the learner what metadata systems contain; make them experience the
 information gap that makes such a system necessary.
 
+Beside metadata itself, the course teaches one habit the learner can take anywhere: when a
+requirement sounds obvious, ask what it actually means ("Question the requirement", below).
+
 Every figure uses one vocabulary, shared with the author's other courses: inspect, predict, step,
 experiment, break, explain, drill down, replay.
 
@@ -197,6 +200,45 @@ made; it does not show it. A chapter asks what its experiment proved and what th
 tell before it names what a metadata system would record, and it does not tell the learner what
 metadata is for before they have needed it.
 
+## Question the requirement
+
+The learner should leave able to interrogate a requirement, not having memorised what a product's
+fields hold. A metadata system is full of names that sound settled (*owner*, *fresh*, *source*,
+*complete*, *duplicate*), and each of its fields holds one system's answer to a question its
+requirement may never have stated. The habit the course builds is to ask, of a requirement, a
+field's name or a definition: what question is this actually asking, and why is that answer
+needed?
+
+So some exercises carry a requirement that is deliberately underspecified, and keep five things
+apart:
+
+1. what the requirement literally says;
+2. what it might mean: the questions it could be asking;
+3. what information each of those questions needs;
+4. what the platform actually records, and by which meaning;
+5. whether that record meets the requirement, as written and as meant.
+
+The learner commits first, as they would at work, where a familiar word invites a quick answer.
+The exercise then shows the other reasonable readings, each beside what it needs, before the lab
+shows what the platform records; last, it shows which readings that record satisfies. No
+reasonable reading is marked wrong because the platform chose another, and "there is not enough
+information to choose yet" is an option the learner can take. The lesson is never "this field
+means X". It is that the platform has its own meaning, the requirement did not say which meaning
+it wanted, and a field's name does not say which question the field answers.
+
+Chapter 1's owner is the standing example. "Every table must have an owner" could ask who is
+responsible for a table, which team is, which program writes it, or which account controls it in
+the warehouse, and each needs something different stored. The lab's warehouse records an account:
+that meets the requirement as written, and answers only the last question, while "Who should I
+ask about `daily_sales`?" needed one of the first two. The figure is `requirement`.
+
+Every chapter looks for its own chance to do this, wherever its material raises a requirement that
+sounds obvious; `docs/plan.md` lists a candidate for each. A chapter's notes say, under
+"Requirements", which requirement the chapter questions and with which figure, or why none fits,
+and the content tests fail notes that say neither. A requirement exercise is not a prediction
+with a hidden answer: the prediction rule above holds for its choice, and the lab answers only
+what the platform does.
+
 ## Reviewing a chapter
 
 A review has two halves, and the test suite does neither on its own.
@@ -231,6 +273,8 @@ Read for these before calling a chapter finished:
 - a prediction its notes justify but its page does not: read the page above it as the learner, and
   ask whether they could say why they chose their option;
 - a figure, caption or label that shows what the chapter asks the learner to find;
+- a field's name taken for its meaning: a page that says what a field holds without saying which
+  question it answers;
 - the same argument made twice, far apart;
 - a number spelled as a word that the lab did not produce;
 - a claim about a standard or a product that `docs/sources.md` does not support.
@@ -251,6 +295,9 @@ reason it exists.
   nobody mounts, fails to parse.** The content tests parse every lesson.
 - **The term gate** across chapters, and **the model gate**: a figure may name only a model the
   book has a note for (`modelProblems`).
+- **Every chapter's notes say which requirement it questions, or why none,** under "Requirements",
+  naming each requirement figure; and a requirement figure's record answers some of its readings
+  and not all, and no text the learner reads before its second press names that record.
 - **Every challenge's reference passes its own tests, and its starting point does not.**
 - **The whole chapter renders in jsdom with no figure problem.**
 - **The chapter's stated numbers are pinned** by its facts test against the lab.

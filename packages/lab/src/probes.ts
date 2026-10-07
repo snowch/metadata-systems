@@ -35,6 +35,9 @@ export type ProbeResult =
       readonly kind: "owner-kind";
       readonly answer: "account" | "person" | "team" | "none";
       readonly value: string | null;
+      /** The warehouse's tables this week, and how many of them record an owner. */
+      readonly tables: number;
+      readonly owned: number;
     }
   | {
       readonly kind: "day-total";
@@ -57,7 +60,9 @@ const TEAMS = new Set(["finance", "analytics"]);
 export function runProbe(probe: Probe, w: Week): ProbeResult {
   switch (probe.kind) {
     case "owner-kind": {
-      const r = recordOf(storage(w), probe.asset);
+      const view = storage(w);
+      const r = recordOf(view, probe.asset);
+      const tables = view.filter((x) => x.system === "warehouse");
       const value = r.ownerRole ?? r.createdBy ?? null;
       const answer =
         value === null
@@ -69,7 +74,13 @@ export function runProbe(probe: Probe, w: Week): ProbeResult {
               : TEAMS.has(value)
                 ? "team"
                 : "none";
-      return { kind: "owner-kind", answer, value };
+      return {
+        kind: "owner-kind",
+        answer,
+        value,
+        tables: tables.length,
+        owned: tables.filter((x) => x.ownerRole !== undefined).length,
+      };
     }
     case "day-total": {
       const target = w.tables.get(probe.target);

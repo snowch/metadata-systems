@@ -182,6 +182,49 @@ describe("the figures on Chapter 1's page", () => {
     ).toBeTruthy();
   });
 
+  it("questions the requirement before it shows the warehouse, and marks only what it answers", () => {
+    type Reading = { value: string; label: string; short: string; means: string[] };
+    const p = props("predict-owner") as {
+      options: Reading[];
+      undecided: Labelled;
+      buttons: { choose: string; show: string };
+    };
+    const { figure } = show();
+    const f = within(figure("predict-owner"));
+    expect(figure("predict-owner").querySelector("table")).toBeNull();
+    const team = p.options.find((o) => o.value === "team")!;
+    fireEvent.click(f.getByLabelText(team.label));
+    fireEvent.click(f.getByRole("button", { name: p.buttons.choose }));
+    // The four meanings, the learner's own marked, and nothing yet of what the warehouse holds.
+    const rows = () => [...figure("predict-owner").querySelectorAll("tbody tr")];
+    expect(rows()).toHaveLength(4);
+    expect(rows().filter((r) => r.classList.contains("is-chosen"))).toHaveLength(1);
+    expect(figure("predict-owner").querySelectorAll("thead th")).toHaveLength(2);
+    expect(figure("predict-owner").textContent).not.toContain("etl_service");
+    fireEvent.click(f.getByRole("button", { name: p.buttons.show }));
+    expect(figure("predict-owner").querySelectorAll("thead th")).toHaveLength(3);
+    expect(rows().map((r) => r.lastElementChild?.textContent)).toEqual([V.no, V.no, V.no, V.yes]);
+    expect(figure("predict-owner").textContent).toContain("etl_service");
+    expect(f.queryByRole("button", { name: p.buttons.show })).toBeNull();
+  });
+
+  it("takes 'nothing yet' as a choice, and forgets one the lesson no longer offers", () => {
+    const p = props("predict-owner") as { undecided: Labelled; buttons: { choose: string } };
+    const { page, figure } = show();
+    const f = within(figure("predict-owner"));
+    fireEvent.click(f.getByLabelText(p.undecided.label));
+    fireEvent.click(f.getByRole("button", { name: p.buttons.choose }));
+    expect(figure("predict-owner").querySelectorAll("tbody tr")).toHaveLength(4);
+    expect(figure("predict-owner").querySelector(".is-chosen")).toBeNull();
+    page.unmount();
+
+    const stale = show((store) => store.setSlot("predict-owner", { choice: "some", shown: true }));
+    expect(stale.figure("predict-owner").querySelector("table")).toBeNull();
+    expect(
+      within(stale.figure("predict-owner")).getByRole("button", { name: p.buttons.choose }),
+    ).toBeTruthy();
+  });
+
   it("asks how many rule settings pass only once the learner's rules pass", () => {
     expect(show().figure("predict-rules").textContent).toContain(
       format(V.locked, { title: rules.title }),

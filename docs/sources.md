@@ -151,6 +151,22 @@ They support the lab's choice (`docs/lab.md`) that a Parquet file carries its ow
 types and row count, and Chapter 1's statements that a file holds them after its rows and that
 metadata can live inside the same file as the data.
 
+## A table's owner in PostgreSQL (Chapter 1's closing note)
+
+PostgreSQL's documentation, the section "Privileges" (`doc/src/sgml/ddl.sgml` in
+`postgres/postgres` at the branch `REL_18_STABLE`, commit `1370a78`), read 7 October 2026 from
+the repository, because postgresql.org refused the build environment. When an object is created
+it is given an owner, "normally the role that executed the creation statement"; for most kinds of
+object only the owner (or a superuser) can do anything with it at first, and other roles use it
+once privileges are granted; the right to modify or destroy an object comes with being its owner
+and cannot be granted on its own. A role here is what the course calls an account.
+
+It supports the closing note's sentences on PostgreSQL, and the fourth reading of Chapter 1's
+requirement, "which account controls `daily_sales` in the warehouse?": a warehouse's owner is an
+account with rights over the table, an answer to a question about control, not about who is
+responsible. The note says "some real databases": not every database gives a table an owner, and
+the course claims nothing about the others.
+
 ## Table formats that keep history (Chapter 1's closing note)
 
 Read 6 October 2026, for one sentence of Chapter 1's model-versus-reality note:

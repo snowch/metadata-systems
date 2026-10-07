@@ -50,6 +50,7 @@ a zod schema and says so in its place when they do not fit.
 | `platform-map` | `changes?`, `dock?` | the platform as the lab's `platformMap` computes it: the systems in the order data moves through them, the assets each holds, and between two systems the programs the learner cannot see, never a link from one asset to another; once the learner scrolls past it, a button at the foot of the window opens the same map over the page, unless `dock` is false |
 | `dashboard` | `changes?` | the reporting tool's chart as Monday morning shows it, one bar per value, from the lab's week |
 | `lab-prediction` | `question`, `options` (each a value, a label, and either `means`, the answers of a naming probe it stands for, or `range`, the counts of a counting probe), `probe` (`owner-kind` of an asset; `day-total` of a source, a filter, a target and a day; `clean-fits`), `explain?`, `changes?`, `requires?` (a challenge id), `mode?` (`predict`, the default, or `choose`), `compare?` (for a choice: its button, `commit`, in words about what it shows, and the line after it, `mine` with `{choice}` and `lab` with `{answer}`) | the learner commits to an option, and the commitment stays (no "Predict again"); the lab runs the probe and answers with the option that stands for what it found, with its evidence; a prediction is marked right or not, a choice is set beside what the shop does and marked neither; `explain` shows only after the commit; with `requires`, the figure waits until the learner's own work on that challenge passes |
+| `requirement` | `requirement` (its words, as written), `question`, `options` (each a value, a label, `short`, what it needs stored, `asks`, the question it asks with names between backticks, and `means`, the probe's answers that answer it), `undecided` (the option to store nothing until the requirement says what it is for), `probe` (`owner-kind` of an asset), `buttons` (`choose` and `show`), `headings` (`asks`, `store`, `answers`), `text` (`mine` with `{choice}`, `undecided`, `meanings`, `lab` with `{value}`, `{owned}` and `{tables}`, `explain?`) | a requirement questioned (`CLAUDE.md`, "Question the requirement"): the learner chooses what to store, or nothing yet; the figure then shows the questions the requirement could be asking, each beside what it needs stored, with their own row marked; at a second press the lab runs the probe, says what the platform records, and the same table gains a column saying which questions that record answers, in words and without colour; no reading is called wrong, and both presses stay |
 | `storage-inspector` | `initial?`, `changes?` | every asset by the system that holds it; for the one chosen, what its system records, what storage says about each of the chapter's eight questions (the same eight for every asset), its columns and its rows; a table wider than its box says so |
 | `change-lab` | `changes` (each an id, a label and an outcome), `afterAll?`, `challengeId`, `target?`, `prediction` (a question and options with count ranges) | waits until the learner's own query passes; for each change, takes a committed prediction of how many queries in the builder's choices will rebuild the target, then runs the week with it and shows those queries (the lab's answer), what storage holds on Monday morning with the comparison against the first run labelled as the lab's, and the learner's query against the new target; each outcome shows once its prediction is committed, and `afterAll` once all are |
 | `question-map` | `asset?`, `challengeId`, `weeks?` (each a change id and its label) | the learner places the chapter's questions about one asset in three groups and commits, for good; the lab then places them (storage, the data, only a record), each with its evidence and, for a question only a record answers, the kind of record that would; a week selector runs the placement on each change and marks the questions that moved; a query and its source are named only once the learner's own query passes |
@@ -79,12 +80,37 @@ prediction, a change run after a prediction, a sort) gets a row in the chapter's
 - **Where the page gives no grounds, ask a choice.** If nothing above the figure lets a learner
   tell the options apart (how this shop happened to set up its warehouse), ask what they would do
   in the shop's place, with `mode: "choose"`: the lab shows what the shop does beside their
-  choice, and neither is called right. Chapter 1's owner question is the example.
+  choice, and neither is called right. Chapter 1's owner question began as one; when the question
+  is what a requirement means, the requirement figure ("Requirements", below) asks it better.
 - **The lab answers.** A naming probe's answer is a word the option lists under `means`; a
   counting probe's is a count inside the option's `range`. The lesson never stores the answer.
 
 The content tests fail a figure of these kinds that has no row in the notes, and a prediction
 whose option stands for no answer at all.
+
+## Requirements
+
+Some exercises question a requirement instead of predicting the lab (`CLAUDE.md`, "Question the
+requirement"). Look for one in every chapter: `docs/plan.md` lists a candidate for each, a
+requirement that sounds settled in that chapter's material. To build one:
+
+- **State the requirement in words**, as somebody at the shop would write it, and say nothing yet
+  about what it means. The figure shows it apart, as a quotation.
+- **List what it could be asking**, each as a question, and what each question needs recorded.
+  Every reading must be one a reasonable engineer could hold; none is there to be wrong.
+- **Let the learner commit first**, to what they would record, or to nothing until they know what
+  the requirement is for. Only then show the readings, and only after a second press what the
+  platform records.
+- **Let the lab say which readings the record answers.** A probe reads what the platform records,
+  each reading names the answers that satisfy it under `means`, and the figure marks them. The
+  record should answer some readings and not others: that is the gap the learner experiences. The
+  explanation then says whether the requirement is met as written, and under which meanings.
+
+The chapter's notes get a section, "Requirements", that names the figure and walks the five things
+`CLAUDE.md` keeps apart; a chapter with no requirement to question says why under the same
+heading. The content tests fail notes without the section, a requirement figure the section does
+not name, a requirement figure whose record answers every reading or none, and one that names the
+platform's record in any text the learner reads before the second press.
 
 ## The prose process
 
@@ -114,14 +140,17 @@ brief of facts and checked by the managing model for facts only. For a chapter:
 - The model gate: every figure runs a model the book has a note for.
 - `content/lessons/lessons.test.tsx`: every reference passes and every starting point fails; no
   prediction's answer appears in its question, caption, lead or after-text; every prediction has
-  its row in the chapter's notes, and every option stands for an answer or a count; the whole
-  chapter renders in jsdom with no figure problem.
+  its row in the chapter's notes, and every option stands for an answer or a count; the notes
+  have a "Requirements" section naming every requirement figure; a requirement figure's record
+  answers some readings and not all, and no text before its second press names that record; the
+  whole chapter renders in jsdom with no figure problem.
 - `content/lessons/<id>.facts.test.ts`: every number the chapter's words state, read off the lab.
 - `tests/educational/chapter.spec.ts`, at desktop and phone widths: the chapter renders whole with
   no console error and no horizontal scroll, even after every figure is used; each challenge is
   completable through the page with its reference and refuses its starting point; saved work is
   graded again on load and a tampered mark earns nothing; a reset takes two steps; hints come one
-  rung at a time; a prediction is committed before the lab answers; a change's outcome waits for
+  rung at a time; a prediction is committed before the lab answers; a requirement's meanings come
+  after the learner's choice and before what the platform records; a change's outcome waits for
   its run.
 - `tests/educational/aesthetics.spec.ts`: no visible text under 11 pixels, every phone control at
   least 40 pixels tall, no line of prose much over 85 characters; the map's names whole and its

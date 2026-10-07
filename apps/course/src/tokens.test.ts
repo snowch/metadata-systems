@@ -51,7 +51,7 @@ const systemDark = tokens(rule(':root:not([data-theme="light"])'));
 /** Ink, and the surfaces the stylesheets set it on. */
 const TEXT: readonly [string, readonly string[]][] = [
   ["fg", ["bg", "bg-raised", "bg-sunken", "bg-inset", "note-bg", "accent-soft"]],
-  ["fg-muted", ["bg", "bg-raised", "bg-sunken", "note-bg"]],
+  ["fg-muted", ["bg", "bg-raised", "bg-sunken", "note-bg", "accent-soft"]],
   ["accent", ["bg", "bg-raised", "accent-soft"]],
   ["accent-fg", ["accent"]],
   ["ok", ["ok-bg", "bg-raised"]],

@@ -112,8 +112,9 @@ Two more things the figures ask of it:
   flows between systems, each from what a program reads to what it writes. A flow names two
   systems and nothing else: never a program, never an asset. The map shows what a newcomer is
   told on the first morning, and nothing Chapter 1 finds storage cannot tell.
-- **A prediction's answer** (`runProbe`): the owner a table's system records, and what kind of
-  name it is (`owner-kind`); one day's total over an asset against the target's row for that day,
+- **A prediction's answer** (`runProbe`): the owner a table's system records, what kind of
+  name it is, and how many of the warehouse's tables record an owner at all (`owner-kind`, which
+  the requirement figure reads as well); one day's total over an asset against the target's row for that day,
   as the same, more or less, with every day's two totals for the evidence (`day-total`); how many
   settings of the cleaning rules rebuild `clean_orders` (`clean-fits`). A prediction's option
   names the answers it stands for, so the lesson never stores the answer.

@@ -259,36 +259,48 @@ test.describe("challenges", () => {
 });
 
 test.describe("the figures", () => {
-  test("a choice must be committed before the lab answers, and is not marked right or wrong", async ({
+  test("a requirement is questioned before the warehouse answers, and no reading is called wrong", async ({
     page,
   }) => {
     await openChapter(page);
     const figure = page.locator("#ix-predict-owner");
     const props = figureProps("predict-owner");
-    const options = props["options"] as Labelled[];
-    const compare = props["compare"] as { commit: string; mine: string; lab: string };
+    const options = props["options"] as (Labelled & { short: string })[];
+    const buttons = props["buttons"] as { choose: string; show: string };
+    const text = props["text"] as { mine: string };
     // A choice is not a prediction, and its button does not say so.
     await expect(figure.getByRole("button", { name: V.checkPrediction })).toHaveCount(0);
-    const commit = figure.getByRole("button", { name: compare.commit });
-    await expect(commit).toBeDisabled();
+    const choose = figure.getByRole("button", { name: buttons.choose });
+    await expect(choose).toBeDisabled();
     await expect(figure.locator("[role=status]")).toHaveCount(0);
+    await expect(figure.locator("table")).toHaveCount(0);
     // A team: what many would store, and not what this shop's warehouse holds.
-    const team = options.find((o) => o.value === "team")!.label;
-    const account = options.find((o) => o.value === "account")!.label;
-    await figure.getByLabel(team).check();
-    await commit.click();
-    const status = figure.locator("[role=status]");
-    await expect(status).toHaveText(
-      `${format(compare.mine, { choice: team })} ${format(compare.lab, { answer: account })}`,
+    const team = options.find((o) => o.value === "team")!;
+    await figure.getByLabel(team.label).check();
+    await choose.click();
+    await expect(figure.locator("[role=status]")).toHaveText(
+      format(text.mine, { choice: team.label }),
     );
-    await expect(status).not.toContainText(V.match);
-    await expect(status).not.toContainText(V.noMatch);
-    await expect(figure).toContainText("etl_service");
-    // A commitment stands: no "Predict again", the options locked, and the same after a reload.
-    await expect(figure.getByRole("button")).toHaveCount(1); // the Lab badge alone
+    // What the requirement could mean, the learner's own reading marked, before the warehouse.
+    await expect(figure.locator("tbody tr")).toHaveCount(options.length);
+    await expect(figure.locator("tr.is-chosen")).toContainText(team.short);
+    await expect(figure).not.toContainText("etl_service");
+    await figure.getByRole("button", { name: buttons.show }).click();
+    await expect(figure.locator("[role=status]").last()).toContainText("etl_service");
+    const answers = figure.locator("tbody tr td:last-child");
+    await expect(answers).toHaveText([V.no, V.no, V.no, V.yes]);
+    await expect(figure).not.toContainText(V.match);
+    await expect(figure).not.toContainText(V.noMatch);
+    // Both presses stand: the options locked, no button but the Lab badge, the same after a reload.
+    await expect(figure.getByRole("button")).toHaveCount(1);
     await expect(figure.getByRole("radio").first()).toBeDisabled();
     await page.reload();
-    await expect(page.locator("#ix-predict-owner [role=status]")).toContainText(account);
+    await expect(page.locator("#ix-predict-owner tbody tr td:last-child")).toHaveText([
+      V.no,
+      V.no,
+      V.no,
+      V.yes,
+    ]);
   });
 
   test("a prediction must be committed before the lab answers, and says whether it was right", async ({
@@ -367,8 +379,8 @@ test.describe("the figures", () => {
     await openChapter(page);
     const owner = page.locator("#ix-predict-owner");
     await owner.getByRole("radio").first().check();
-    const choice = figureProps("predict-owner")["compare"] as { commit: string };
-    await owner.getByRole("button", { name: choice.commit }).click();
+    const buttons = figureProps("predict-owner")["buttons"] as { choose: string };
+    await owner.getByRole("button", { name: buttons.choose }).click();
     await pass(page, "rebuild-daily-sales");
     const again = page.getByRole("button", { name: STRINGS.startAgain });
     await again.click();

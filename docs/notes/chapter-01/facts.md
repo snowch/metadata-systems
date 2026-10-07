@@ -121,12 +121,30 @@ lowest.
 Each option of a prediction is an explanation the learner could hold, not a fact to guess. The
 learner has seen the map, the dashboard and the words before them, nothing else.
 
-1. **The owner, as a choice.** Suppose you write the program that writes daily_sales every
-   night; the warehouse keeps an owner for every table: what would you store as the owner? Four
-   options: a person, for example whoever built it; a team, for example finance; the program that
-   writes it; an account that programs log in as. No option is right. The lab shows what the
-   shop's warehouse holds: `etl_service`, the account all four of the shop's programs log in as;
-   the shop's tables have no person or team as owner.
+1. **The owner, as a requirement.** The shop has set one requirement for its warehouse, in these
+   words: "Every table must have an owner." Suppose you write the program that writes daily_sales
+   every night: what would you store as the owner of daily_sales? Five options: a person, for
+   example whoever built it; a team, for example finance; the program that writes it; an account
+   that programs log in as; or nothing yet, because you would first ask what the owner is for.
+   No option is right or wrong, and the figure calls none of them either.
+   - Each of the first four meets the requirement as written: each puts an owner on the table.
+     Each answers a different question about daily_sales:
+     - a person: who is responsible for daily_sales?
+     - a team: which team is responsible for daily_sales?
+     - the program that writes it: which program writes daily_sales?
+     - an account: which account controls daily_sales in the warehouse?
+   - The requirement does not say which question the owner must answer, so it does not say which
+     to store. Somebody has to ask whoever set it what the owner is for.
+   - The lab then shows what the shop's warehouse holds: `etl_service` as the owner of
+     daily_sales, and an owner for 3 of its 3 tables, `etl_service` for each. `etl_service` is the
+     account all four of the shop's programs log in as; the lab knows this, storage does not show
+     it. The shop's tables have no person or team as owner.
+   - So the warehouse meets the requirement as written: every table has an owner. The warehouse
+     has its own meaning of owner: the account that controls the table. Of the four questions,
+     `etl_service` answers only the last.
+   - "Who should I ask about daily_sales?", one of the four questions at the start of the chapter,
+     needs a person or a team. The warehouse's owner names neither.
+   - The name of a field does not say which question the field answers.
 2. **Thursday.** The dashboard shows 51.50 for Thursday, and daily_sales holds the same figure for
    Thursday. Add up price times quantity over Thursday's rows of orders.parquet: will the total be
    51.50 too? Two explanations:
@@ -284,6 +302,11 @@ certain. They are different sortings and need not line up.
 - **an order that appears twice**: the repeated order 7015. Not "a copy": "copy" is the analyst's
   file.
 - **account**: a login that programs use, such as etl_service.
+- **owner**: on this page the word has several meanings, and that is the point of the requirement
+  figure. Never use it alone where it could mean more than one: say "the warehouse's owner" for
+  the account the warehouse records, and quote the requirement's word as "owner".
+- **requirement**: something the shop has written down that its platform must do. This chapter
+  has one: "Every table must have an owner."
 - **revenue**: the number daily_sales holds for each day. Do not say "sales" for it.
 
 ## Words this chapter must not use
@@ -321,3 +344,9 @@ Said once, at the start of the reflection, as a short summary:
   would cost far more.
 - The lab's search covers only the query builder's choices. "None of the builder's choices
   rebuilds it" means none of those choices; a query outside them might.
+- In some real databases a table's owner is an account too. In PostgreSQL, for example, a new
+  table's owner is normally the account that created it. At first only the owner (or a superuser)
+  can do anything with the table; other accounts can use it once they are given the right to. The
+  right to alter or drop the table comes with being its owner (PostgreSQL's documentation,
+  "Privileges"). Not every database gives a table an owner. The lab's warehouse records the owning
+  account and models no such rights.

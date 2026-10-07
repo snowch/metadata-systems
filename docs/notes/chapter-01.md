@@ -45,7 +45,7 @@ the lab's answer tells them apart. The content tests fail a prediction without a
 
 | Figure | What the learner has seen | The explanations its options stand for | How the lab tells them apart |
 | --- | --- | --- | --- |
-| `predict-owner` | the map; the words: programs write the tables every night; the warehouse keeps an owner for each table; their own experience of writing such a program | a choice, not a prediction: what they would store as the owner of `daily_sales` if they wrote its program (a person, a team, the program, or the account it logs in as) | the probe reads the owner the warehouse records, `etl_service`, an account, and the figure sets it beside the learner's choice without calling either right |
+| `predict-owner` | the map; the requirement in its own words, "Every table must have an owner."; the words: programs write the tables every night; the motivation's question "Who should I ask about `daily_sales`?"; their own experience of writing such a program | a choice, not a prediction: what they would store to meet the requirement if they wrote the program that writes `daily_sales` (a person, a team, the program, or the account it logs in as), or nothing until they know what the owner is for | nothing hidden is guessed: the figure first shows the four questions the requirement could be asking, each beside what it needs stored, and only then the probe reads the warehouse's owner, `etl_service`, an account, and the table marks which question that answers, the last; no reading is called right or wrong |
 | `predict-days` | the dashboard: Thursday at 51.50, far below the other days; `daily_sales` holds the same figure | Thursday was a slow day, and the raw orders show it; or the orders came in, and something on the way to `daily_sales` left some out | the probe adds up Thursday's rows of `orders.parquet`: 205.50, more than 51.50 and as much as Wednesday or Friday; the table shows every day |
 | `changes` | their own query rebuilding `daily_sales`; what each change does, in its label; the statuses and rows in the inspector; "rebuild" asking only for the rows the asset has | after the change the data points to one query, to more than one, or to none | the lab runs the week with the change and searches every choice the builder offers over every asset in storage: two after the copy, none after the edit, one after the failed night |
 | `map` | storage's answer to each of the eight questions in the inspector; the query that rebuilds `daily_sales`; the changes; the rule for the data's group, stated above the figure | for each question: storage records it, the data suggests it, or only a record kept at the time answers it | the lab places each question by reading storage and trying every query the builder offers, and places them again for each change |
@@ -67,6 +67,36 @@ shows. At the author's suggestion it now asks what the learner would store as th
 `daily_sales` if they wrote its program, with the first version's four options, and the lab shows
 the shop's `etl_service` beside their choice, marked neither right nor wrong. The figure's
 `choose` mode carries this, and `CLAUDE.md` now says when to use it.
+
+In the third round the author asked for more than a fair choice: the question should teach the
+learner to question a requirement. It now gives the requirement in words, "Every table must have
+an owner.", asks what the learner would store, lets them choose nothing until they know what the
+owner is for, then shows the four questions the requirement could be asking before it shows the
+warehouse; "Requirements", below, has the whole of it.
+
+## Requirements
+
+The requirement this chapter questions (`CLAUDE.md`, "Question the requirement"), and how its
+figure keeps the five things apart. The content tests fail these notes without this section, and
+a requirement figure it does not name.
+
+**"Every table must have an owner."**, in Section 3, the figure `predict-owner` (kind
+`requirement`):
+
+1. What it literally says: every table has an owner.
+2. What it might mean: who is responsible for `daily_sales`; which team is; which program writes
+   it; which account controls it in the warehouse.
+3. What each meaning needs stored: a person; a team; the program; an account.
+4. What the platform records: the lab's warehouse records `etl_service`, the account all four
+   programs log in as, as the owner of each of its three tables; its own meaning is the account
+   that controls the table, as a table's owner is in PostgreSQL (`docs/sources.md`).
+5. Whether that meets the requirement: as written, yes, every table has an owner; as meant, only
+   under the fourth meaning. The motivation's "Who should I ask about `daily_sales`?" needed the
+   first or the second, and the warehouse's owner names neither.
+
+The learner commits before they see the meanings, may choose to store nothing until they know
+what the owner is for, and sees the meanings before the warehouse. Nothing calls a meaning wrong;
+the table marks only which question the warehouse's owner answers, in plain words, without colour.
 
 ## What was built for it
 
@@ -279,6 +309,54 @@ phone's layout and the row, each system lists its assets across, on one line. A 
 the names whole and the systems even at thirteen widths from 320 to 1280 pixels; run against the
 old styles, it fails as the screenshot did. The phone and desktop screenshots this round took had
 missed it: neither is a width where the row is crowded.
+
+## The author's third round, 7 October 2026
+
+The author asked for a principle for the whole book, not only a fix: some exercises should carry a
+requirement that is deliberately underspecified, and teach the learner to ask what it means before
+building to it, keeping apart what it says, what it might mean, what each meaning needs, what the
+platform records and whether that meets it. "There is not enough information to choose yet" can
+be the right outcome. What it became:
+
+1. **The principle, bound for every chapter.** `CLAUDE.md` has a section, "Question the
+   requirement", with this chapter's owner as its standing example, and a line under "What no
+   check can catch": a field's name taken for its meaning. `docs/plan.md` adds the habit to what
+   the learner can do at the end, and a table with a candidate requirement for every chapter. Each
+   chapter's notes now have a "Requirements" section, and a content test fails notes without one.
+2. **The owner question, rebuilt on a new figure, `requirement`.** It shows the requirement in its
+   own words and asks what the learner would store, with a fifth option to store nothing until
+   they know what the owner is for. Once they choose, it shows the four questions the requirement
+   could be asking, each beside what it needs stored, their own row marked; at a second press the
+   lab reads the warehouse's owner, `etl_service`, and the same table marks which question it
+   answers. The probe now also counts the warehouse's tables and those with an owner, so "every
+   table has an owner" is the lab's to say. Both presses are kept, as a prediction is, and "start
+   this chapter again" clears them.
+3. **The closing note** says what a table's owner is in PostgreSQL, from its own documentation,
+   and that the lab's warehouse models none of its rights.
+
+### The third round's prose
+
+Two fact briefs (`briefs/round-3/V` and `W`, with `common.md`) went to Haiku, from the fact sheet
+updated against the lab and against PostgreSQL's documentation. What came back:
+
+| Draft | Wrong, sent back | Dropped, restored with the fewest words |
+| --- | --- | --- |
+| V (the owner requirement, and the closing note's owner paragraph) | the closing note's paragraph faithfully carried two facts the brief had wrong: that a table in a real database has an owner (not every database gives a table one), and that only the owner may let other accounts use a table (PostgreSQL lets a right be given on); the fact sheet was corrected and the paragraph sent back as W | the first button said "Show what this means", one meaning where the figure shows four: "could" restored; "the four choices" with five on screen: "first"; the pointer to the table of questions: "listed below"; and "in the table" went, beside "the table" meaning a warehouse's |
+| W (the closing note's owner paragraph) | none | none; its sentence on the lab came first, before the rights it calls "such", and moved to the end, with no word changed |
+
+The whole-chapter read, from the built page at 320, 390 and 1280 pixels in both themes, before
+the choice, after it and after the second press, found three things:
+
+1. **The warehouse's owner said twice in a row.** The figure's own line ("records `etl_service`
+   as the owner of `daily_sales` and an owner for 3 of its 3 tables") was followed by the
+   explanation's "The warehouse records `etl_service` as the owner of all three tables". The
+   explanation's sentence was cut; the paragraph now opens with the account all four programs log
+   in as, and the facts test pins the line the figure computes instead.
+2. **The table's headings began in lower case,** where the course's headings are in sentence case.
+3. **At 320 pixels the table is 9 pixels wider than its box,** held open by `daily_sales` in the
+   first column and "warehouse's" in the third heading, so the cue says it scrolls sideways. It
+   fits from 360 pixels, the width the change lab's table was held to in the styling review, and a
+   heading word may hyphenate where the browser can. Left so.
 
 ## Known gaps
 

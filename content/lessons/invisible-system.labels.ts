@@ -30,7 +30,7 @@ export const LABELS = {
   captions: {
     platform: "The map: the shop's three systems and the assets each holds.",
     dashboard: "On Monday morning the dashboard shows daily revenue for 7 to 13 September.",
-    p1: "Choose what you would store as the owner of daily_sales; then see what the shop's warehouse holds.",
+    p1: "Choose what you would store to meet a requirement, see what it could mean, then see what the shop's warehouse holds.",
     p2: "Predict whether Thursday's rows of orders.parquet add up to the dashboard's figure.",
     inspector: "Browse the seven assets and what storage records about each.",
     c1: "Build a query that rebuilds daily_sales from another asset.",
@@ -40,12 +40,35 @@ export const LABELS = {
     c2: "Choose which orders the rules keep.",
     p3: "Predict whether your setting of the four rules is the only one that passes.",
   },
-  p1Commit: "Show the warehouse",
+  // The requirement, in the author's words, and the figure that questions it (brief V).
+  p1Requirement: "Every table must have an owner.",
+  p1Commit: "Show what this could mean",
+  p1Show: "Show the warehouse",
   p1Options: {
     person: "a person, for example whoever built it",
     team: "a team, for example finance",
     program: "the program that writes it",
     account: "an account that programs log in as",
+  },
+  p1Undecided: "nothing yet; ask what the owner is for",
+  /** What each reading needs stored, for the figure's table. */
+  p1Short: {
+    person: "a person",
+    team: "a team",
+    program: "the program that writes it",
+    account: "an account that programs log in as",
+  },
+  /** The question each reading asks; names between backticks, which the figure sets as code. */
+  p1Asks: {
+    person: "Who is responsible for `daily_sales`?",
+    team: "Which team is responsible for `daily_sales`?",
+    program: "Which program writes `daily_sales`?",
+    account: "Which account controls `daily_sales` in the warehouse?",
+  },
+  p1Headings: {
+    asks: "The question the owner would answer",
+    store: "What you would store for it",
+    answers: "Whether the warehouse's owner answers it",
   },
   p2Options: {
     same: "yes, because Thursday was a slow day, and the raw orders show it too",

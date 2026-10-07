@@ -19,6 +19,11 @@ Explain, and build in small, the machinery of a metadata platform:
 - how real systems (OpenLineage producers, Marquez, OpenMetadata, DataHub, Atlas) are built;
 - and how to build a simplified metadata platform themselves, because they have built one.
 
+Beside all of this, the learner leaves with a habit: when a requirement sounds obvious, ask what it
+actually means. They can say what a requirement literally asks, what it might mean, what each
+meaning needs, what a platform actually records, and whether that record meets it (`CLAUDE.md`,
+"Question the requirement").
+
 The course's last chapter asks for almost everything at once: model a small platform's metadata,
 instrument its programs, capture lineage, ingest events, build the graph, track schema changes,
 record quality observations, diagnose a failure, analyse an impact, and explain where a result
@@ -168,6 +173,43 @@ Parts I to V named.
 | --- | --- | --- |
 | 32 | Build the whole thing | receive a second, unfamiliar platform and model it, instrument it, capture and ingest its lineage, track its schemas and quality, diagnose a failure, analyse an impact and explain a result's provenance |
 
+## Questioning the requirement, chapter by chapter
+
+A candidate for each chapter: a requirement that sounds settled in that chapter's material, and
+the questions it could be asking. Each chapter confirms or replaces its own when it is written,
+and its notes say which (`CLAUDE.md`, "Question the requirement").
+
+| Ch | A requirement that sounds settled | What it could be asking |
+| --- | --- | --- |
+| 1 | "Every table must have an owner." (built) | who is responsible for it; which team is; which program writes it; which account controls it in the warehouse |
+| 2 | "Every column must have a description." | what the column means; its unit; where its values come from; whether it may be empty. A description that repeats the column's name meets it as written |
+| 3 | "Each asset has one owner." | one person, one team, or one identifier for an owner two records spell differently |
+| 4 | "Show everything related to `daily_sales`." | what it is made from; what reads it; who is responsible for it; where it is kept. Each is a different kind of edge |
+| 5 | "Record the lineage of `daily_sales`." | what its program declares it reads, what it was seen to read, or both; between tables or between columns |
+| 6 | "Record every run." | to find failures; to know when an asset was last written; to audit who changed what. Each needs a different event |
+| 7 | "Our programs must emit OpenLineage." | which events, with which facets, under which namespace and name |
+| 8 | "The graph must show the current lineage." | current as of the last event received, the last run, or the last change to a program |
+| 9 | "Show which columns `revenue` depends on." | the columns its value is computed from, or also those that decide which rows count, such as `status` |
+| 10 | "Warn us of breaking changes." | breaking for which reader: a program that reads by name, the dashboard, somebody's own query |
+| 11 | "The same table must have one identity." | the same name, the same rows, the same environment, or the same version |
+| 12 | "The dashboard must be fresh." | refreshed lately; built from the latest data; showing the latest day. Chapter 1's failed night met the first and neither of the others |
+| 13 | "No order without a customer." | in the raw file, in `clean_orders`, or on the dashboard. An assertion on `clean_orders` passes because the rows were filtered first |
+| 14 | "Show where Thursday's figure came from." | the rows; the program; the run; the rows as they were when the run read them |
+| 15 | "Tell us what breaks if `customer_id` is renamed." | what fails, or also what keeps running and gives a wrong answer |
+| 16 | "Find the cause of the wrong figure." | where the data first went wrong; the change that did it; the decision behind that change |
+| 17 | "Lineage must be complete." | complete for the programs that send events, or for every program that touches the data |
+| 18 | "Ingestion must ignore duplicates." | the same event twice; the same run reported twice; the same content at another time |
+| 19 | "Show the latest state of each run." | latest by when it happened, or by when it arrived |
+| 20 | "Show the correct owner." | the newest claim; the claim from the most trusted system; every claim with where it came from. Chapter 1's owner returns |
+| 21 | "Merge the same dataset across systems." | the same name, the same rows, or the same thing to the business; across environments or not |
+| 22 | "Keep lineage for 90 days." | 90 days of events, of edges, or of whatever assets still in use depend on |
+| 23 to 27 | the learner's own query layer must answer "who owns X?" (Chapter 26) | whichever meaning the learner's records keep, and the query layer says which |
+| 28 | "Use the reference consumer." | what the specification requires, against what one implementation does |
+| 29 | "Capture lineage from Airflow, Spark, dbt and Trino." | each system's own meaning of a task, a run and an input |
+| 30 | "Choose a metadata platform that tracks ownership." | each platform's own meaning of an owner, compared from its documentation |
+| 31 | "Record the training data of the model." | the snapshot it read; the query that chose it; the features computed from it |
+| 32 | the unfamiliar platform's own requirements | the learner questions each before building to it |
+
 ## What the learner writes
 
 - **Choices in a figure** (Chapter 1 on): a query built from choices, a rule set, a change to
@@ -210,6 +252,19 @@ The author reviews the course at five checkpoints:
 5. Before Chapter 32.
 
 ## Decisions since the brief
+
+### 7 October 2026: the author's third round: question the requirement
+
+The author asked for a goal of the whole course, beside metadata: the habit of questioning a
+requirement before building to it. `CLAUDE.md` binds it ("Question the requirement"): some
+exercises carry a requirement that is deliberately underspecified, and keep apart what it says,
+what it might mean, what each meaning needs, what the platform records and whether that record
+meets it; "not enough information to choose yet" is an option the learner can take. Chapter 1's
+owner question became the standing example, on a new figure, `requirement`: the learner chooses
+what to store for "Every table must have an owner", sees the four questions the requirement could
+be asking and what each needs stored, then sees the warehouse's account and which of the four it
+answers. "Questioning the requirement, chapter by chapter", above, lists a candidate for every
+later chapter, and each chapter's notes say which requirement it questions, or why none.
 
 ### 7 October 2026: the course's icon
 

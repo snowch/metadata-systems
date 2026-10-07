@@ -114,6 +114,60 @@ describe("the course's chapters", () => {
         }
   });
 
+  it("questions a requirement without showing what the platform records before it is asked", () => {
+    // A requirement figure (CLAUDE.md, "Question the requirement"): the platform's record answers
+    // some of the requirement's readings and not others, and nothing the learner reads before the
+    // second press names that record.
+    for (const l of LESSONS)
+      for (const s of l.sections)
+        for (const x of s.interactives) {
+          if (x.kind !== "requirement") continue;
+          const p = x.props as {
+            requirement: string;
+            question: string;
+            probe: Parameters<typeof runProbe>[0];
+            options: (Option & { short: string; asks: string })[];
+            undecided: { label: string };
+            text: { mine: string; undecided: string; meanings: string };
+          };
+          const found = runProbe(p.probe, week());
+          if (found.kind !== "owner-kind") throw new Error(`${x.id}: an owner probe`);
+          const answered = p.options.filter((o) => o.means?.includes(found.answer));
+          expect(answered.length, `${x.id}: some reading is answered`).toBeGreaterThan(0);
+          expect(answered.length, `${x.id}: some reading is not`).toBeLessThan(p.options.length);
+          const before = [
+            x.lead ?? "",
+            x.caption,
+            x.after ?? "",
+            p.requirement,
+            p.question,
+            p.undecided.label,
+            ...Object.values(p.text),
+            ...p.options.flatMap((o) => [o.label, o.short, o.asks]),
+          ].filter((t) => t !== p.text["explain" as keyof typeof p.text]);
+          for (const text of before) expect(text, `${x.id}`).not.toContain(found.value ?? "");
+        }
+  });
+
+  it("says in its chapter's notes which requirement the chapter questions, or why none", () => {
+    // Every chapter's notes have a "Requirements" section: it names each requirement figure, or,
+    // in a chapter with none, says why none fits (CLAUDE.md, "Question the requirement").
+    const missing: string[] = [];
+    for (const l of LESSONS) {
+      const notes = readFileSync(
+        `docs/notes/chapter-${String(chapterOf(l)).padStart(2, "0")}.md`,
+        "utf8",
+      );
+      const section = notes.split("\n## Requirements\n")[1]?.split("\n## ")[0]?.trim() ?? "";
+      if (!section) missing.push(`${l.id}: no "Requirements" section`);
+      for (const s of l.sections)
+        for (const x of s.interactives)
+          if (x.kind === "requirement" && !section.includes(`\`${x.id}\``))
+            missing.push(`${l.id}: ${x.id}`);
+    }
+    expect(missing).toEqual([]);
+  });
+
   it("gives every count prediction ranges that do not overlap, one holding the lab's count", () => {
     const disjoint = (options: Option[]) => {
       const ranges = options

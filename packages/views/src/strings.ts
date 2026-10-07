@@ -23,6 +23,8 @@ export const DEFAULT_VIEW_STRINGS = {
   checkPrediction: "Check my prediction",
   yourPrediction: "Prediction",
   yourChoice: "Your choice",
+  // Set small above a requirement's own words (brief V).
+  requirement: "Requirement",
   youSaid: "You predicted: {choice}.",
   labFound: "The lab found: {answer}.",
   match: "The prediction was correct.",

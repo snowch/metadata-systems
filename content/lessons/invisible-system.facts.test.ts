@@ -20,6 +20,7 @@ import {
   questionMap,
   recordOf,
   runOver,
+  runProbe,
   storage,
   sumReconstructions,
   sumSources,
@@ -128,9 +129,30 @@ describe("the facts Chapter 1 states", () => {
   it("names etl_service as the owner of all three tables", () => {
     for (const t of ["clean_customers", "clean_orders", "daily_sales"] as const)
       expect(recordOf(storage(), t).ownerRole).toBe("etl_service");
-    expect(PROSE.p1Explain).toContain("`etl_service` as the owner of all three tables");
+    // The figure's own line says it from the lab ("an owner for 3 of its 3 tables"), and the
+    // explanation names the account the programs share.
+    expect(PROSE.p1Lab).toContain("an owner for {owned} of its {tables} tables");
     expect(PROGRAM_IDS).toHaveLength(4);
     expect(PROSE.p1Explain).toContain("all four of the shop's programs");
+  });
+
+  it("meets the owner requirement as written, and answers only the last of its four readings", () => {
+    const found = runProbe({ kind: "owner-kind", asset: "daily_sales" }, week());
+    // Every table in the warehouse records an owner: the requirement as written is met.
+    expect(found).toMatchObject({ value: "etl_service", tables: 3, owned: 3 });
+    expect(PROSE.p1Explain).toContain("Every table has an owner");
+    // Of the four readings, in the table's order, only the last is answered by an account.
+    const readings = Object.keys(LABELS.p1Asks);
+    expect(readings).toEqual(Object.keys(LABELS.p1Options));
+    expect(readings).toHaveLength(4);
+    expect(found.kind === "owner-kind" && found.answer).toBe(readings[readings.length - 1]);
+    expect(PROSE.p1Explain).toContain(
+      "Of the four questions above, `etl_service` answers only the last",
+    );
+    expect(PROSE.p1Meanings).toContain("Each of the first four choices");
+    // The question it quotes from the start of the chapter is the motivation's own.
+    expect(PROSE.motivation).toContain("Who should I ask about `daily_sales`?");
+    expect(PROSE.p1Explain).toContain('"Who should I ask about `daily_sales`?"');
   });
 
   it("has one query that rebuilds daily_sales, the one the hints give", () => {
