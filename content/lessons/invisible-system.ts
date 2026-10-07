@@ -42,6 +42,9 @@ const counted = (
     return { value, label, range: [range[0], range[1]] as [number, number] };
   });
 
+/** The explanations the learner can test for Thursday, and what the rows must show for each. */
+const THURSDAY = meaning(LABELS.hOptions, { left: ["left"], lower: ["lower"], moved: ["moved"] });
+
 /** The assets a query in the builder may read: every file or table except the one to rebuild. */
 const SOURCES = [
   "customers.parquet",
@@ -162,6 +165,21 @@ export const invisibleSystem: LessonInput = {
       prose: "",
       interactives: [
         {
+          id: "why-thursday",
+          kind: "hypothesis",
+          timeModel: "lab",
+          caption: LABELS.captions.hypothesis,
+          props: {
+            // The effect is established; now the cause, as an explanation the learner chooses
+            // and tests with the figures that follow, checked after their rebuild passes.
+            question: PROSE.hQuestion,
+            options: THURSDAY,
+            commit: LABELS.hCommit,
+            mine: PROSE.hMine,
+            test: PROSE.hTest,
+          },
+        },
+        {
           id: "storage",
           kind: "storage-inspector",
           timeModel: "lab",
@@ -184,6 +202,33 @@ export const invisibleSystem: LessonInput = {
           caption: LABELS.captions.c1,
           lead: PROSE.c1Lead,
           props: { challengeId: "rebuild-daily-sales" },
+        },
+        {
+          id: "why-thursday-check",
+          kind: "hypothesis-check",
+          timeModel: "lab",
+          caption: LABELS.captions.check,
+          props: {
+            of: "why-thursday",
+            options: THURSDAY,
+            requires: "rebuild-daily-sales",
+            probe: {
+              kind: "day-gap",
+              source: "orders.parquet",
+              via: "clean_orders",
+              keep: "completed",
+              target: "daily_sales",
+              day: "2026-09-10",
+            },
+            button: LABELS.cButton,
+            headings: LABELS.cHeadings,
+            text: {
+              mine: PROSE.cMine,
+              none: PROSE.cNone,
+              lab: PROSE.cLab,
+              explain: PROSE.cExplain,
+            },
+          },
         },
       ],
     },

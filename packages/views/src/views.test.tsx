@@ -239,6 +239,38 @@ describe("the figures on Chapter 1's page", () => {
     ).toBeTruthy();
   });
 
+  it("keeps the learner's explanation for Thursday, and shows nothing of the rows at the choice", () => {
+    const p = props("why-thursday") as { options: Labelled[]; commit: string };
+    const { figure } = show();
+    const f = within(figure("why-thursday"));
+    fireEvent.click(f.getByLabelText(p.options.find((o) => o.value === "lower")!.label));
+    fireEvent.click(f.getByRole("button", { name: p.commit }));
+    expect(f.getByRole("status").textContent).toContain(
+      p.options.find((o) => o.value === "lower")!.label,
+    );
+    expect(figure("why-thursday").textContent).not.toContain("154.00");
+  });
+
+  it("checks that explanation only once the learner's rebuild passes, then reads the rows", () => {
+    const p = props("why-thursday-check") as { button: string };
+    const locked = show((store) => store.setSlot("why-thursday", { choice: "lower" }));
+    expect(locked.figure("why-thursday-check").textContent).toContain(
+      format(V.locked, { title: rebuild.title }),
+    );
+    locked.page.unmount();
+
+    const { figure } = show((store) => {
+      store.setSlot("why-thursday", { choice: "lower" });
+      passing("rebuild-daily-sales")(store);
+    });
+    expect(figure("why-thursday-check").querySelector("table")).toBeNull();
+    fireEvent.click(within(figure("why-thursday-check")).getByRole("button", { name: p.button }));
+    const rows = [...figure("why-thursday-check").querySelectorAll("tbody tr")];
+    expect(rows.map((r) => r.lastElementChild?.textContent)).toEqual([V.yes, V.no, V.no]);
+    expect(rows.map((r) => r.classList.contains("is-chosen"))).toEqual([false, true, false]);
+    expect(figure("why-thursday-check").textContent).toContain("154.00");
+  });
+
   it("asks how many rule settings pass only once the learner's rules pass", () => {
     expect(show().figure("predict-rules").textContent).toContain(
       format(V.locked, { title: rules.title }),

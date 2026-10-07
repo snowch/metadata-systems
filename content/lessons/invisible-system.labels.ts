@@ -32,6 +32,8 @@ export const LABELS = {
     dashboard: "On Monday morning the dashboard shows daily revenue for 7 to 13 September.",
     p1: "Choose what you would store to meet a requirement, see what it could mean, then see what the shop's warehouse holds.",
     p2: "Predict what Thursday's rows of orders.parquet add up to.",
+    hypothesis: "Choose the explanation you will test for the difference on Thursday.",
+    check: "Check the explanation you chose against Thursday's rows.",
     inspector: "Browse the seven assets and what storage records about each.",
     c1: "Build a query that rebuilds daily_sales from another asset.",
     change:
@@ -79,6 +81,18 @@ export const LABELS = {
     none: "none, so the data no longer points to any query",
     one: "one, so the data still points to a single query",
     twoOrMore: "two or more, so the data fits more than one query",
+  },
+  // The explanation the learner tests for Thursday, and its check (brief Y).
+  hOptions: {
+    left: "some of Thursday's orders are not counted in daily_sales",
+    lower: "Thursday's orders are counted, but at lower values",
+    moved: "some of Thursday's orders are counted on another day",
+  },
+  hCommit: "Test this explanation",
+  cButton: "Read Thursday's rows",
+  cHeadings: {
+    explanation: "The explanation",
+    supported: "Whether Thursday's rows support it",
   },
   p3Options: {
     one: "yes, a setting that gives clean_orders exactly is the only one that does",

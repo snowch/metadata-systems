@@ -351,6 +351,40 @@ test.describe("the figures", () => {
     await expect(figure).toContainText("205.50");
   });
 
+  test("an explanation for Thursday is chosen, tested by the learner, and checked after the rebuild", async ({
+    page,
+  }) => {
+    await openChapter(page);
+    const choose = page.locator("#ix-why-thursday");
+    const props = figureProps("why-thursday");
+    const options = props["options"] as Labelled[];
+    const moved = options.find((o) => o.value === "moved")!.label;
+    await choose.getByLabel(moved).check();
+    await choose.getByRole("button", { name: props["commit"] as string }).click();
+    await expect(choose.locator("[role=status]")).toHaveText(
+      format(props["mine"] as string, { choice: moved }),
+    );
+    await expect(choose).not.toContainText("154.00");
+    // The rows are read only after the learner's own query rebuilds daily_sales.
+    const check = page.locator("#ix-why-thursday-check");
+    await expect(check.locator(".figure-locked")).toHaveText(
+      format(V.locked, { title: challengeData("rebuild-daily-sales").title }),
+    );
+    await pass(page, "rebuild-daily-sales");
+    await check
+      .getByRole("button", { name: figureProps("why-thursday-check")["button"] as string })
+      .click();
+    await expect(check.locator("tbody tr td:last-child")).toHaveText([V.yes, V.no, V.no]);
+    await expect(check.locator("tr.is-chosen")).toContainText(moved);
+    await expect(check.locator("[role=status]")).toContainText("154.00");
+    await page.reload();
+    await expect(page.locator("#ix-why-thursday-check tbody tr td:last-child")).toHaveText([
+      V.yes,
+      V.no,
+      V.no,
+    ]);
+  });
+
   test("the map stays to hand: a button opens it once its place is scrolled past", async ({
     page,
   }) => {

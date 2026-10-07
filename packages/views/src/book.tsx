@@ -18,6 +18,7 @@ import {
 import { ChoiceEditor } from "./ChoiceEditor";
 import { ChangeLab } from "./figures/ChangeLab";
 import { Dashboard } from "./figures/Dashboard";
+import { Hypothesis, HypothesisCheck } from "./figures/HypothesisLab";
 import { LabPrediction } from "./figures/LabPrediction";
 import { PlatformMap } from "./figures/PlatformMap";
 import { QuestionMap } from "./figures/QuestionMap";
@@ -32,6 +33,8 @@ export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProp
   dashboard: Dashboard,
   "lab-prediction": LabPrediction,
   requirement: RequirementLab,
+  hypothesis: Hypothesis,
+  "hypothesis-check": HypothesisCheck,
   "storage-inspector": StorageInspector,
   "change-lab": ChangeLab,
   "question-map": QuestionMap,
@@ -45,6 +48,7 @@ export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProp
 export const PREDICTION_KINDS: readonly string[] = [
   "lab-prediction",
   "requirement",
+  "hypothesis",
   "change-lab",
   "question-map",
 ];

@@ -98,9 +98,12 @@ export function labAnswer(
   result: ProbeResult,
   options: z.infer<typeof Props>["options"],
 ): string | undefined {
-  return result.kind === "clean-fits"
-    ? optionForCount(result.count, options)
-    : optionForAnswer(result.answer, options);
+  if (result.kind === "clean-fits") return optionForCount(result.count, options);
+  // A probe that finds several things at once stands for the first option that names one.
+  if (result.kind === "day-gap")
+    return options.find((o) => o.means?.some((m) => (result.answer as string[]).includes(m)))
+      ?.value;
+  return optionForAnswer(result.answer, options);
 }
 
 function Evidence({ result, strings }: { result: ProbeResult; strings: ViewStrings }) {

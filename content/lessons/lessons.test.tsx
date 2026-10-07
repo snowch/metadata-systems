@@ -149,6 +149,41 @@ describe("the course's chapters", () => {
         }
   });
 
+  it("checks an explanation only against a choice the chapter offers, after the learner's work", () => {
+    // A hypothesis check reads the choice of a hypothesis figure earlier in the same chapter, with
+    // the same explanations; it waits for a challenge; its rows support some explanations and
+    // rule out others; and neither figure names what the left-out rows have in common, which a
+    // later challenge asks the learner to find.
+    for (const l of LESSONS) {
+      const figures = l.sections.flatMap((s) => s.interactives);
+      figures.forEach((x, i) => {
+        if (x.kind !== "hypothesis-check") return;
+        const p = x.props as {
+          of: string;
+          requires: string;
+          options: Option[];
+          probe: Parameters<typeof runProbe>[0];
+          text: Record<string, string>;
+        };
+        const choice = figures.findIndex((f) => f.id === p.of);
+        expect(choice, `${x.id}: ${p.of} comes first`).toBeGreaterThanOrEqual(0);
+        expect(choice, `${x.id}: ${p.of} comes first`).toBeLessThan(i);
+        const asked = figures[choice]?.props as { options: Option[]; question: string };
+        expect(p.options.map((o) => o.value)).toEqual(asked.options.map((o) => o.value));
+        expect(l.challenges.map((c) => c.id)).toContain(p.requires);
+        const found = runProbe(p.probe, week());
+        if (found.kind !== "day-gap") throw new Error(`${x.id}: a day-gap probe`);
+        const supported = p.options.filter((o) =>
+          o.means?.some((m) => found.answer.includes(m as never)),
+        );
+        expect(supported.length, `${x.id}: some explanation holds`).toBeGreaterThan(0);
+        expect(supported.length, `${x.id}: some is ruled out`).toBeLessThan(p.options.length);
+        for (const text of [asked.question, ...Object.values(p.text), x.caption])
+          expect(text, x.id).not.toMatch(/customer id/i);
+      });
+    }
+  });
+
   it("says in its chapter's notes which requirement the chapter questions, or why none", () => {
     // Every chapter's notes have a "Requirements" section: it names each requirement figure, or,
     // in a chapter with none, says why none fits (CLAUDE.md, "Question the requirement").

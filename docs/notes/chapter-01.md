@@ -94,6 +94,32 @@ without a block here, or a block missing an answer.
 - **A belief, not a guess:** that `daily_sales` is the day's total is a belief anyone reading the
   dashboard holds, and adding up the raw orders tests it.
 
+### `why-thursday`
+
+- **Objective:** practise the second half of an investigation: having seen an effect, choose an
+  explanation, test it against the rows with the tools on the page, and compare.
+- **Known before:** the difference itself, 205.50 against 51.50, and that four days of seven
+  differ; the question the result ended on, what might explain it; nothing yet of how
+  `daily_sales` is made.
+- **Hypotheses:** some of Thursday's orders are not counted; they are counted at lower values;
+  some are counted on another day. There is no "I can't tell yet": the figure asks which
+  explanation to test, not which is true, and every learner can choose one to test.
+- **Told apart by:** the learner's own tests, Thursday's rows in the inspector and, in the next
+  section, a query that rebuilds `daily_sales`; then `why-thursday-check`, once that query passes,
+  reads Thursday's orders against the rows the query keeps: 4 of 7 kept at the same value on the
+  same day, 3 not kept, worth 154.00, the whole difference; none lower, none on another day.
+- **Gives nothing away:** the three explanations come before any evidence about them, and the
+  figure reveals nothing at the choice. The check waits for the learner's rebuild, so it names no
+  source before the construction is solved, and it says which explanation the rows support, never
+  why those orders were left out, which the rules challenge asks.
+- **If wrong:** a learner who chose lower values or another day sees the rows rule it out, and
+  which explanation they support instead: the first explanation tested need not be the right one,
+  and the rows decide.
+- **Next question:** what do the left-out orders have in common, and did anybody mean to leave
+  them out? The rules challenge finds the rule, and the reflection says what no data can.
+- **A belief, not a guess:** the learner chooses what to test and tests it with tools on the page;
+  no option asks them to guess a failure inside a program they cannot see.
+
 ### `changes`
 
 - **Objective:** see that a query that rebuilds an asset is evidence, and that changes to the shop
@@ -498,6 +524,41 @@ against the lab. What came back:
 The read of the built page, at 1280 pixels in the light theme and 390 in the dark, with each of
 the three options committed, found the investigation's first task, to find the rows that make
 Thursday's total differ, now answering the question the result ends on, and nothing to change.
+
+## Thursday's cause, tested by the learner, 7 October 2026
+
+Asked to do what is best for the learning, the Thursday difference now gets the second half of an
+investigation, as the author's fourth round describes it: once the effect is seen, the learner
+investigates the cause instead of being told it.
+
+1. **A choice of explanation to test**, `why-thursday`, opens the investigation section, before
+   the inspector: some of Thursday's orders are not counted, they are counted at lower values, or
+   some are counted on another day. It keeps the choice and reveals nothing; its line says how to
+   test it, with the inspector and then the query builder.
+2. **A check after the learner's own work**, `why-thursday-check`, follows the rebuild challenge
+   and stays locked until it passes, so it names no source before the construction is solved. At
+   a press, the lab's new `day-gap` probe reads Thursday's orders against the rows the rebuild
+   keeps: 4 of 7 kept at the same price and quantity on the same day, 3 not kept, worth 154.00,
+   the whole difference, none lower and none on another day. The table marks the explanation the
+   rows support, beside the learner's choice. It never says why the three were left out: the rules
+   challenge finds that, and a content test fails either figure if it mentions a customer id.
+3. **The reflection** no longer gives the numbers, which the check gave; it names what the three
+   have in common, after the rules challenge has found it.
+
+### Its prose
+
+One fact brief (`briefs/round-5/Y`) went to Haiku, from the fact sheet's new section "Testing an
+explanation for Thursday". What came back:
+
+| Draft | Wrong, sent back | Dropped, restored with the fewest words |
+| --- | --- | --- |
+| Y (the choice, its check, the investigation's first task, the reflection's Thursday) | none | the investigation's first task came back capitalised, with a full stop and a semicolon inside it, in a list of lower-case items ending in semicolons: recased and repunctuated, no word changed; the check's button came back as nine words where the brief allowed five, and was cut to its first three, "Read Thursday's rows" |
+
+The read of the built page, at 1280 pixels in the light theme and 390 in the dark, through the
+choice, the locked check, the rebuild and the check, found two things, both fixed: the slot in
+"You will test {choice}" holds a whole clause, so the line read "You will test some of Thursday's
+orders are counted on another day", and a colon now introduces it, in both lines; and the check's
+table was named by its own column heading, where it now takes the figure's caption.
 
 ## Known gaps
 

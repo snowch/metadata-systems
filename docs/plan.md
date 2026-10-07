@@ -254,6 +254,18 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 7 October 2026: Thursday's cause, tested by the learner
+
+Asked to do what is best for the learning, the Thursday difference now gets the second half of an
+investigation. Once the prediction has shown it, the investigation opens with a choice of which
+explanation to test (orders left out, counted at lower values, or counted on another day); the
+learner tests it with the inspector and the query builder; and once their query rebuilds
+`daily_sales`, a check reads Thursday's orders against the rows the query keeps and marks which
+explanations they support. The check waits for the rebuild, so it names no source before the
+construction is solved, and it never says why the orders were left out, which the rules challenge
+asks. The reflection no longer repeats the numbers; it names what the left-out orders have in
+common, after the challenge has found it.
+
 ### 7 October 2026: the author's fourth round: predictions around learnable questions
 
 The author gave a quality test for every interactive question, and `CLAUDE.md` binds it

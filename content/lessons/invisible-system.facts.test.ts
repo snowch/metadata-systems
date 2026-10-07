@@ -262,10 +262,28 @@ describe("the facts Chapter 1 states", () => {
     expect(noCustomer.map((r) => r[0])).toEqual([7021, 7023, 7025]);
     const worth = noCustomer.reduce((s, r) => s + Number(r[3]) * Number(r[4]), 0);
     expect(formatValue(worth, raw.columns[4]!.type)).toBe("154.00");
-    expect(PROSE.reflection).toContain("Three orders on Thursday have no customer id");
-    expect(PROSE.reflection).toContain("154.00");
-    expect(PROSE.reflection).toContain("(205.50)");
-    expect(PROSE.reflection).toContain("(51.50)");
+    // The check gives the numbers, read from the rows: the three are the orders the rebuild's rows
+    // leave out, and they are the whole difference.
+    const gap = runProbe(
+      {
+        kind: "day-gap",
+        source: "orders.parquet",
+        via: "clean_orders",
+        keep: "completed",
+        target: "daily_sales",
+        day: "2026-09-10",
+      },
+      week(),
+    );
+    expect(gap).toMatchObject({ orders: 7, kept: 4, left: 3, lower: 0, moved: 0 });
+    expect(gap.kind === "day-gap" && [gap.leftTotal, gap.difference]).toEqual(["154.00", "154.00"]);
+    expect(PROSE.cLab).toContain("{leftTotal}, the whole difference");
+    expect(PROSE.cExplain).toContain("none on another day");
+    // The reflection names them, after the rules challenge: both passing settings drop them.
+    expect(PROSE.reflection).toContain(
+      "The three orders your check found left out are the three with no customer id",
+    );
+    expect(cleanReconstructions(week()).every((r) => r.missingCustomer === "drop")).toBe(true);
   });
 
   it("states order 7015 as the order that appears twice", () => {

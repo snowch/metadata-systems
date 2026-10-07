@@ -111,6 +111,9 @@ lowest.
   has 51.50. The difference, 154.00, is the three orders with no customer id. Nothing in storage
   says whether leaving them out is a fault in the checkout or a rule somebody chose. The course
   leaves that question open in Chapter 1 and comes back to it in later chapters.
+- In the reflection, after the rules challenge: the three orders the check found left out are the
+  three with no customer id, and every setting of the rules that passes drops orders with no
+  customer id.
 - products.parquet has a column `updated_by`, holding staff names (k.adeyemi, r.novak, s.lund).
   It says who last edited each product's row. It is a fact about a product, not a record of who
   is responsible for the file. No program in the lab reads products.parquet; storage cannot show
@@ -158,6 +161,30 @@ and the words before them, nothing else.
    Thursday was not a slow day in orders.parquet. The totals are equal on three days (Monday,
    Friday and Sunday) and differ on four, Thursday among them. What explains the difference is
    for the next section, where the learner reads the rows; the prediction does not say.
+
+## Testing an explanation for Thursday
+
+Once the Thursday prediction has shown the difference (205.50 against 51.50), the investigation
+section opens with a choice: which explanation will you test? Three explanations, each one a
+reasonable engineer could hold:
+
+- some of Thursday's orders are not counted in daily_sales;
+- Thursday's orders are counted, but at lower values;
+- some of Thursday's orders are counted on another day.
+
+The figure keeps the choice and reveals nothing. The learner tests it: Thursday's rows in the
+inspector, then the query builder in the construction section, which adds up an asset's rows and
+compares each day with daily_sales. There is no "I can't tell yet": the figure asks which
+explanation to test, not which is true.
+
+Once the learner's query rebuilds daily_sales, a check after the challenge reads the rows, at a
+press: of Thursday's 7 orders in orders.parquet, 4 are among the rows the learner's query keeps,
+each at the same price and quantity and on Thursday; the other 3 are not, and together they are
+worth 154.00, the whole difference. So the rows support the first explanation, and rule out the
+other two: no order is counted at a lower value, and none on another day. The check does not say
+why the three were left out, and must not say they have no customer id: the challenge at the end
+of the chapter asks the learner to find which rows the cleaning keeps. (Before the rebuild passes,
+nothing may name clean_orders as what daily_sales is made from.)
 
 ## Adding up orders.parquet per day
 

@@ -155,6 +155,34 @@ describe("the questions", () => {
     expect(places(["refunds"])).toMatchObject({ "made-from": "record", computed: "record" });
   });
 
+  it("compares a day's raw orders with the rows a rebuild keeps, order by order", () => {
+    // Thursday: three orders are not among the rows the rebuild keeps, and are worth the whole
+    // difference; the four it keeps have the same value, on the same day.
+    expect(
+      runProbe(
+        {
+          kind: "day-gap",
+          source: "orders.parquet",
+          via: "clean_orders",
+          keep: "completed",
+          target: "daily_sales",
+          day: "2026-09-10",
+        },
+        week(),
+      ),
+    ).toEqual({
+      kind: "day-gap",
+      answer: ["left"],
+      orders: 7,
+      kept: 4,
+      left: 3,
+      lower: 0,
+      moved: 0,
+      leftTotal: "154.00",
+      difference: "154.00",
+    });
+  });
+
   it("answers the predictions from the lab", () => {
     // Every table in the warehouse records the programs' account as its owner.
     expect(runProbe({ kind: "owner-kind", asset: "daily_sales" }, week())).toMatchObject({
