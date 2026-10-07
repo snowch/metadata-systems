@@ -26,23 +26,28 @@ each chapter under the heading "How the figures run". It serves every chapter of
 says nothing that only Chapter 1 needs. Read off the code (`packages/lab`, `packages/views`, the
 platform's `state.ts`) on 7 October 2026:
 
-- The Metadata Lab is a small data platform written for this course. It comes with the page, as
-  code, and runs in your browser: there is nothing to install, open or sign in to.
-- You use it through the figures. Each figure asks the lab something and shows its answer. A
-  figure that shows storage reads what the lab's storage records; a query you build, the lab runs;
-  a change to the shop makes the lab run the week again.
-- It holds the shop: files, tables and a dashboard with real rows, and programs, written in SQL,
-  that run each night and write the tables and the dashboard. The lab reads and runs that SQL
-  itself, with a query engine of its own, and runs the queries you build the same way.
-- Nothing about the shop is stored. Each time the page loads, the lab builds the shop's data and
-  runs the whole week, night by night, in memory. So the shop's rows and times are the same for
-  every reader, on any day.
-- The week is the shop's first week online, Monday 7 to Sunday 13 September 2026. The shop and its
-  week are invented for the course.
-- Every date and time a figure shows comes from the week the lab runs, whose last night ends early
-  on Monday 14 September. None comes from today's date or your computer's clock.
-- Your browser keeps your own work, chapter by chapter: your predictions, your choices and your
-  answers to challenges. Nothing you do leaves your browser: the page sends none of it anywhere.
+In the order the note gives them, each thing named before a sentence uses it:
+
+1. **What the lab is.** The Metadata Lab is a small data platform written for this course. It
+   comes with the page, as code, and runs in your browser: there is nothing to install, open or
+   sign in to.
+2. **What it holds.** The shop: files, tables and a dashboard with real rows, and programs,
+   written in SQL, that write the tables and the dashboard.
+3. **The week.** The lab holds one week of the shop: its first week online, Monday 7 to Sunday 13
+   September 2026. The shop and its week are invented for the course. Each night of the week the
+   programs run; the last night ends early on Monday 14 September.
+4. **How it runs.** The lab reads and runs the programs' SQL itself, with a query engine of its
+   own. Nothing about the shop is stored: each time the page loads, the lab builds the shop's data
+   and runs the whole week, night by night, in memory. So the rows and times are the same for
+   every reader on any day, and every date and time a figure shows comes from that week, never
+   from today's date or your computer's clock.
+5. **How you use it.** Through the figures: each figure asks the lab something and shows its
+   answer. A figure that shows storage reads what the lab's storage records. When you build a
+   query, the lab runs it with the same query engine. When you change the shop, the lab runs the
+   week again with your change.
+6. **What your browser keeps.** Your own work, chapter by chapter: your predictions, your choices
+   and your answers to challenges. Nothing you do leaves your browser: the page sends none of it
+   anywhere.
 
 The note does not say how many programs there are, which asset a program reads or writes, or what
 any program does: Chapter 1 shows that storage cannot tell.

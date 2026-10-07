@@ -796,6 +796,19 @@ foot: the note's last two sentences and, two paragraphs later, the line before "
 chapter again", which also says the browser keeps your work. The second names what starting again
 clears, and the badges show the first without it, so both stay.
 
+The author then found the note unclear: its second paragraph said the lab "runs the week again"
+and that programs "run each night" before the third said what the week is, and "A query you
+build, the lab runs." put its object first. The fault was brief AA's, which listed how you use the
+lab before what it holds; the read had missed a definite article in front of a noun the note had
+not introduced. The facts were put in the order a reader needs them (what the lab is, what it
+holds, the week, how it runs, how you use it, what your browser keeps) and redrafted from brief
+AB, which also asked for every sentence's subject first. The facts test now fails a note that
+uses "the week" or "each night" before it gives the week's dates.
+
+| Draft | Wrong, sent back | Dropped, restored with the fewest words |
+| --- | --- | --- |
+| AB (the note, reordered) | none | "small", "open", what the programs write, "invented for the course", "of its own" (the query engine), and a comma that keeps "a query you build, with the same query engine" from reading as one phrase. Haiku went on editing its file after the check had read it, and cut its draft to 200 words by dropping more facts ("as code", "itself", "date"); the note keeps the fuller version it wrote first, saved as `drafts/round-7/AB-first.md`. It comes to 225 words |
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,

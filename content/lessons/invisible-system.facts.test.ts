@@ -102,7 +102,12 @@ describe("the facts Chapter 1 states", () => {
     expect(NIGHTS[NIGHTS.length - 1]).toBe("2026-09-14");
     const times = [...week().lastWritten.values()];
     expect(times.every((t) => t >= "2026-09-07" && t < "2026-09-14T06:00")).toBe(true);
-    expect(DEFAULT_VIEW_STRINGS.labNote).toContain("ending early Monday 14 September");
+    const note = DEFAULT_VIEW_STRINGS.labNote;
+    expect(note).toContain("The last night ends early on Monday 14 September");
+    // The note says what the week is before any sentence uses it.
+    const said = note.indexOf("13 September 2026");
+    for (const use of ["the week", "each night"])
+      expect(note.toLowerCase().indexOf(use), use).toBeGreaterThan(said);
   });
 
   it("matches raw orders to daily_sales on three days of seven, the ones the prose names", () => {
