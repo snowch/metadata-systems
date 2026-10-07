@@ -8,6 +8,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  ARRIVAL,
   DAYS,
   NIGHTS,
   PROGRAM_IDS,
@@ -17,6 +18,7 @@ import {
   cleanReconstructions,
   columnValues,
   formatValue,
+  mapTally,
   platformMap,
   questionMap,
   recordOf,
@@ -27,8 +29,10 @@ import {
   sumSources,
   sumSql,
   week,
+  weekTimeline,
 } from "@ms/lab";
 
+import { invisibleSystem } from "./invisible-system";
 import { LABELS } from "./invisible-system.labels";
 import { PROSE } from "./invisible-system.prose";
 
@@ -66,14 +70,22 @@ describe("the facts Chapter 1 states", () => {
       daily_sales: 7,
       sales_dashboard: 7,
     });
-    expect(PROSE.question).toContain("seven assets");
+    expect(PROSE.platformAfter).toContain("seven assets");
     const bySystem = (system: string) => view.filter((r) => r.system === system).length;
     expect([bySystem("object-storage"), bySystem("warehouse"), bySystem("reporting")]).toEqual([
       3, 3, 1,
     ]);
-    expect(PROSE.question).toContain(
-      "three files in object storage, three tables in the warehouse, one dashboard in the reporting tool",
-    );
+    // The map in the opening counts them, kind by kind, as the lab does.
+    expect(mapTally(platformMap(week()))).toEqual({
+      kinds: [
+        { kind: "file", count: 3 },
+        { kind: "table", count: 3 },
+        { kind: "dashboard", count: 1 },
+      ],
+      total: 7,
+    });
+    const map = invisibleSystem.sections[0]!.interactives!.find((x) => x.id === "platform")!;
+    expect(map.props).toMatchObject({ tally: true });
     expect(QUESTION_IDS).toHaveLength(8);
     expect(PROSE.inspectorLead).toContain("eight questions");
     expect(PROSE.mapLead).toContain("eight questions");
@@ -84,33 +96,50 @@ describe("the facts Chapter 1 states", () => {
     const m = platformMap(week());
     expect(m.systems.map((s) => s.system)).toEqual(["object-storage", "warehouse", "reporting"]);
     expect(m.systems.map((s) => s.assets.length)).toEqual([3, 3, 1]);
-    expect(PROSE.question).toContain("has three systems");
-    expect(PROSE.question).toContain("in the order data moves through them each night");
+    expect(PROSE.platformLead).toContain("has three systems");
+    expect(PROSE.platformLead).toContain("in the order data moves through them each night");
   });
 
   it("gives the first and last days of the week and the learner's first morning", () => {
     expect(PROSE.question).toContain("Monday 14 September 2026 at 09:00");
+    expect(ARRIVAL).toBe("2026-09-14T09:00:00Z");
     expect(PROSE.question).toContain("Monday 7 September");
     expect(Object.keys(revenue())).toEqual([...DAYS]);
     expect(DAYS[0]).toBe("2026-09-07");
     expect(DAYS[DAYS.length - 1]).toBe("2026-09-13");
     expect(LABELS.captions.dashboard).toContain("7 to 13 September");
-    expect(PROSE.question).toContain("Monday 7 to Sunday 13 September 2026");
+    expect(PROSE.weekLead).toContain("Monday 7 to Sunday 13 September 2026");
     // The week's last night ends early on the Monday morning the learner arrives: every time
-    // storage shows falls inside the week or that night.
+    // storage shows falls inside the week or that night, and the week's figure draws it so.
     expect(NIGHTS[NIGHTS.length - 1]).toBe("2026-09-14");
     const times = [...week().lastWritten.values()];
     expect(times.every((t) => t >= "2026-09-07" && t < "2026-09-14T06:00")).toBe(true);
-    // The lab is explained where the chapter first names it, and says what the week is before any
-    // sentence uses it.
-    const opening = PROSE.question;
-    expect(opening).toContain("The last night ends early on Monday 14 September");
-    const said = opening.indexOf("13 September 2026");
-    for (const use of ["the week", "each night"]) {
+    const line = weekTimeline(week());
+    expect(line.nights.map((n) => n.date)).toEqual([...NIGHTS]);
+    expect(line.nights[line.nights.length - 1]!.finished < ARRIVAL).toBe(true);
+    expect(PROSE.weekAfter).toContain("The last night ends early on Monday 14 September");
+    // The opening, in the order the page gives it, names the lab in its own prose, says when the
+    // shop opened and when you start before any sentence speaks of its nights, and gives the
+    // week's dates before any sentence says "the week".
+    const opening = [
+      PROSE.question,
+      PROSE.labDetails,
+      PROSE.platformLead,
+      PROSE.platformAfter,
+      PROSE.weekLead,
+      PROSE.weekAfter,
+    ].join("\n\n");
+    expect(PROSE.question).toContain("Metadata Lab");
+    const opened = opening.indexOf("Monday 7 September");
+    const dated = opening.indexOf("13 September 2026");
+    expect(opened).toBeGreaterThan(-1);
+    for (const [use, after] of [
+      ["night", opened],
+      ["the week", dated],
+    ] as const) {
       const at = opening.toLowerCase().indexOf(use);
-      expect(at === -1 || at > said, use).toBe(true);
+      expect(at === -1 || at > after, use).toBe(true);
     }
-    expect(opening.indexOf("Metadata Lab")).toBeGreaterThan(-1);
   });
 
   it("matches raw orders to daily_sales on three days of seven, the ones the prose names", () => {

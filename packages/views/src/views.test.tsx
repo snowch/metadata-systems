@@ -8,7 +8,7 @@
 import { fireEvent, render, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { sumReconstructions, week } from "@ms/lab";
+import { mapTally, platformMap, sumReconstructions, week, weekTimeline } from "@ms/lab";
 import type { Challenge } from "@platform/lesson-schema";
 import { parseLesson } from "@platform/lesson-schema";
 import { LessonStore, LessonView, memoryStorage } from "@platform/lesson-runtime";
@@ -237,6 +237,60 @@ describe("the figures on Chapter 1's page", () => {
     expect(
       within(stale.figure("predict-owner")).getByRole("button", { name: p.buttons.choose }),
     ).toBeTruthy();
+  });
+
+  it("opens on the situation and the lab, then the map with its count, then the week", () => {
+    const { page, figure } = show();
+    const opening = page.container.querySelector<HTMLElement>('section[data-kind="question"]')!;
+    // How the lab runs waits behind a control, closed, between the lab's paragraph and the map.
+    const details = opening.querySelector<HTMLDetailsElement>("details.lesson-details")!;
+    expect(details.open).toBe(false);
+    expect(details.querySelector("summary")?.textContent).toBe(
+      lesson.sections[0]!.details?.summary,
+    );
+    const after = (a: Node, b: Node) =>
+      Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(after(details, figure("platform"))).toBe(true);
+    expect([...opening.querySelectorAll("figure.interactive")].map((f) => f.id)).toEqual([
+      "ix-platform",
+      "ix-week",
+      "ix-dashboard",
+    ]);
+    // The map counts what it shows, kind by kind and in all, as the lab counts it.
+    const tally = mapTally(platformMap(week()));
+    const counted = figure("platform").querySelector(".map-tally")?.textContent ?? "";
+    for (const k of tally.kinds) {
+      const forms = V.mapTally[k.kind]!;
+      expect(counted).toContain(
+        format(k.count === 1 ? forms.one : forms.other, { count: k.count }),
+      );
+    }
+    expect(counted).toContain(format(V.mapTally["asset"]!.other, { count: tally.total }));
+    // The week: a column a day and one for the morning you start, a bar at every night's work in
+    // the early hours after its day, and one line at the morning you start.
+    const t = weekTimeline(week());
+    const w = figure("week");
+    expect(w.querySelectorAll(".week-day")).toHaveLength(t.days.length + 1);
+    expect(w.querySelector(".week-day.is-start")?.textContent).toContain("14");
+    const bars = [...w.querySelectorAll<HTMLElement>(".week-night")];
+    expect(bars).toHaveLength(t.nights.length);
+    const columns = (t.days.length + 1) * 24;
+    bars.forEach((bar, i) =>
+      expect(parseFloat(bar.style.left)).toBeCloseTo((((i + 1) * 24 + 1) / columns) * 100, 2),
+    );
+    expect(parseFloat(w.querySelector<HTMLElement>(".week-start")!.style.left)).toBeCloseTo(
+      ((t.days.length * 24 + 9) / columns) * 100,
+      2,
+    );
+    expect(w.querySelector(".week-start-label")?.textContent).toBe(
+      format(V.weekStart, { time: t.arrival.slice(11, 16) }),
+    );
+    // A screen reader hears the drawing as one sentence, with the week's first and last days.
+    const heard = w.querySelector(".week-strip")?.getAttribute("aria-label") ?? "";
+    for (const day of ["Mon 7", "Sun 13", "Mon 14", "09:00"]) expect(heard).toContain(day);
+    // The week names no asset: it says when the nights were, not what they wrote.
+    for (const id of ["orders.parquet", "clean_orders", "daily_sales", "sales_dashboard"])
+      expect(w.textContent).not.toContain(id);
   });
 
   it("badges every figure by what it asks of the learner, and opens that role's line alone", () => {

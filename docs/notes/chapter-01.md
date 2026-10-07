@@ -55,9 +55,23 @@ role, without a block, or with a question unanswered.
 - **Role:** reference
 - **Serves:** every question in the chapter that needs to know which systems hold which assets, in
   the order data moves through them. It draws no asset made from another: that is what the
-  chapter shows storage cannot tell.
+  chapter shows storage cannot tell. Under its systems it counts what it shows, as the lab counts
+  it (3 files + 3 tables + 1 dashboard = 7 assets): the count gives the word "asset", and the
+  sentence under the map says what the word covers.
 - **Why now:** the learner meets the shop before any question, and keeps it to hand afterwards,
-  through the button at the foot of the window.
+  through the button at the foot of the window. It carries the systems and the assets that the
+  opening's prose carried before, so the first question comes sooner.
+
+### `week`
+
+- **Role:** reference
+- **Serves:** every question that needs to place a day or a time: which days the dashboard shows,
+  when each night's work happened, and where the learner stands, on Monday at 09:00 after the
+  last night. It shows when the nights were, from the lab's own week, and nothing about what a
+  night wrote or which asset is made from which.
+- **Why now:** the dashboard just below shows those seven days, and the chapter's questions ask
+  "since when"; every time storage shows falls inside this week. It carries the dates and the
+  nights that the opening's prose carried before.
 
 ### `dashboard`
 

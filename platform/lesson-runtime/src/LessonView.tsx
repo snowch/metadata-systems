@@ -205,6 +205,12 @@ function LessonBody({ book, lesson, storage, lessonHref }: Omit<LessonViewProps,
               <span className="section-title">{section.title}</span>
             </h2>
             {section.prose && <Prose markdown={section.prose} />}
+            {section.details && (
+              <details className="lesson-details">
+                <summary>{section.details.summary}</summary>
+                <Prose markdown={section.details.prose} />
+              </details>
+            )}
             {section.interactives.map((x) => (
               <InteractiveFigure
                 key={x.id}

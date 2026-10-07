@@ -75,6 +75,7 @@ export const invisibleSystem: LessonInput = {
       kind: "question",
       title: LABELS.titles.question,
       prose: PROSE.question,
+      details: { summary: LABELS.labDetails, prose: PROSE.labDetails },
       interactives: [
         {
           id: "platform",
@@ -82,6 +83,18 @@ export const invisibleSystem: LessonInput = {
           kind: "platform-map",
           timeModel: "lab",
           caption: LABELS.captions.platform,
+          lead: PROSE.platformLead,
+          after: PROSE.platformAfter,
+          props: { tally: true },
+        },
+        {
+          id: "week",
+          role: "reference",
+          kind: "week-timeline",
+          timeModel: "lab",
+          caption: LABELS.captions.week,
+          lead: PROSE.weekLead,
+          after: PROSE.weekAfter,
         },
         {
           id: "dashboard",

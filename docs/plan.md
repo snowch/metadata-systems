@@ -256,6 +256,30 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 7 October 2026: the opening in short steps, around two figures
+
+An agent's guide the author passed on found Chapter 1's opening right in what it said and wrong in
+how: a long block of prose before the learner did anything, holding the date, the shop, three
+systems, what an asset is, seven assets, the nights, the programs, the lab, how the lab runs and
+what the browser keeps. The opening now reaches the first question in short steps: the situation
+and the lab in two short paragraphs; how the lab runs behind a control the reader opens (a
+section's `details`, the platform at 8c2f186); the map, with a count under it the lab computes
+(3 files + 3 tables + 1 dashboard = 7 assets) and what an asset is under that; a new figure of
+the shop's first week (`week-timeline`), the days, the night of work after each and the morning
+the learner starts, computed from the lab's own run; then the dashboard's question. `CLAUDE.md`
+binds the rule for every chapter: a diagram carries what prose would make the learner hold in
+mind, and each has one job.
+
+Two of the guide's sketches were adapted. Its architecture diagram drew an arrow along one row of
+assets, from `orders.parquet` to `clean_orders` to the dashboard, which reads as one asset made
+from another: the map keeps its arrows between systems. Its fourth diagram, the lab as an
+instrument (a question, the lab, then storage, programs and metadata, then evidence), was not
+built: it names metadata before the chapter has earned the word, shows the programs as evidence
+in the chapter whose point is that you cannot see them, calls every figure an instrument, the
+name of one role, and is not a view of anything the lab computes. The lab's paragraph says in
+one sentence what it was for: each figure asks the lab something, and the lab works out its
+answer.
+
 ### 7 October 2026: the lab's mark
 
 The author asked whether the lab should sit in a coloured box or carry an icon, so that a reader

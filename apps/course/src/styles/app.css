@@ -398,6 +398,17 @@ ol {
 .prose + .prose {
   margin-top: var(--space-4);
 }
+/* A section's details: closed until the reader opens them, at the prose's measure, with a rule
+   beside the words inside so the reader sees where they end. */
+.lesson-details {
+  max-width: var(--measure);
+  margin: var(--space-2) 0 0;
+}
+.lesson-details > .prose {
+  margin: var(--space-1) 0 var(--space-3);
+  padding-left: var(--space-4);
+  border-left: 3px solid var(--border);
+}
 /* A figure: the lab's view in a card, headed by its caption. The text that leads into a figure
    and the text that follows it stay on the page, at the prose's measure, so the card always means
    the lab and always opens with its badge. The card is a layer drawn behind the caption and the

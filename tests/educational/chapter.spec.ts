@@ -408,6 +408,47 @@ test.describe("the figures", () => {
     expect(CHAPTER.sections[0]!.prose).toContain("Metadata Lab");
   });
 
+  test("the opening keeps how the lab runs behind a control, then shows the map, the week and the question", async ({
+    page,
+  }) => {
+    await openChapter(page);
+    const opening = page.locator('section.lesson-section[data-kind="question"]');
+    const details = opening.locator("details.lesson-details");
+    await expect(details).toHaveCount(1);
+    const body = details.locator(".prose");
+    await expect(body).toBeHidden();
+    await details.locator("summary").click();
+    await expect(body).toBeVisible();
+    await expect(body).toContainText("query engine");
+    await details.locator("summary").click();
+    await expect(body).toBeHidden();
+    expect(
+      await opening.locator("figure.interactive").evaluateAll((fs) => fs.map((f) => f.id)),
+    ).toEqual(["ix-platform", "ix-week", "ix-dashboard"]);
+    // The week keeps every name whole and inside its figure, with a bar for every night.
+    const week = page.locator("#ix-week");
+    await expect(week.locator(".week-night")).toHaveCount(7);
+    const problems = await week.evaluate((f) => {
+      const box = f.getBoundingClientRect();
+      const out: string[] = [];
+      for (const e of f.querySelectorAll<HTMLElement>(
+        ".week-day, .week-night, .week-start, .week-start-label, .week-key li",
+      )) {
+        const r = e.getBoundingClientRect();
+        if (r.left < box.left - 0.5 || r.right > box.right + 0.5)
+          out.push(`${e.className} ${e.textContent} leaves the figure`);
+        if (e.scrollWidth > e.clientWidth + 1) out.push(`${e.textContent} is cut`);
+      }
+      const days = [...f.querySelectorAll(".week-day")].map((d) => d.getBoundingClientRect());
+      days.forEach((d, i) => {
+        const next = days[i + 1];
+        if (next && d.right > next.left + 0.5) out.push(`day ${i} runs into the next`);
+      });
+      return out;
+    });
+    expect(problems).toEqual([]);
+  });
+
   test("the investigation starts where the learner chooses to look, and the inspector opens there", async ({
     page,
   }) => {
@@ -478,7 +519,7 @@ test.describe("the figures", () => {
     page,
     baseURL,
   }) => {
-    // The lab's note says so; the lab runs in the page and the learner's work stays in the browser.
+    // The opening says so: the lab runs in the page and the learner's work stays in the browser.
     const sent: string[] = [];
     page.on("request", (r) => {
       if (r.method() !== "GET" || !r.url().startsWith(baseURL ?? ""))

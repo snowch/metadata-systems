@@ -129,6 +129,36 @@ describe("LessonView", () => {
     expect(loop.querySelector(".time-model-toggle")).toBeNull();
   });
 
+  it("shows a section's details closed, after its prose and before its figures", async () => {
+    const user = userEvent.setup();
+    const detailed = {
+      ...lesson,
+      sections: lesson.sections.map((s) =>
+        s.kind === "investigation"
+          ? { ...s, details: { summary: "How the loop is built", prose: "Two **inverters**." } }
+          : s,
+      ),
+    };
+    render(
+      <LessonView book={fixtureBook([detailed])} lesson={detailed} storage={memoryStorage()} />,
+    );
+    const section = document.querySelector('section[data-kind="investigation"]') as HTMLElement;
+    const details = section.querySelector("details.lesson-details") as HTMLDetailsElement;
+    expect(details).not.toBeNull();
+    expect(details.open).toBe(false);
+    expect(within(details).getByText("How the loop is built").tagName).toBe("SUMMARY");
+    expect(within(details).getByText("inverters").tagName).toBe("STRONG");
+    // After the section's prose and before its first figure.
+    const prose = within(section).getByText("investigation").closest("p") as HTMLElement;
+    const figure = document.getElementById("ix-loop") as HTMLElement;
+    expect(prose.compareDocumentPosition(details) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(details.compareDocumentPosition(figure) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    await user.click(within(details).getByText("How the loop is built"));
+    expect(details.open).toBe(true);
+    // A section without details has none.
+    expect(document.querySelectorAll("details.lesson-details")).toHaveLength(1);
+  });
+
   it("mounts the challenge section's challenge through the runner", () => {
     render(<LessonView book={book} lesson={lesson} storage={memoryStorage()} />);
     expect(screen.getByRole("heading", { level: 3, name: /Remember a press/ })).toBeInTheDocument();

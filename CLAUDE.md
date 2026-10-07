@@ -80,6 +80,18 @@ example. It stays to hand through every chapter, and in Chapter 1 it has no arro
 another, because which asset is made from which is what that chapter shows storage cannot tell.
 The map gains a relation only once something the learner built records it.
 
+**A diagram carries what prose would make the learner hold in mind.** Where a passage asks the
+learner to keep a date, a set of systems, a count, a sequence of nights or their own place in an
+investigation in working memory, a figure carries it, and the prose says only what the next
+question needs. Each such figure has one job, named in its notes: the platform's architecture,
+its assets, time, a flow, or where the learner stands. It is a reference, still a view of the lab,
+and still shows only what the learner has been told or has built; it is never decoration. Detail
+the learner's next step does not need, such as how the lab itself runs, goes in a section's
+`details`, a control the reader opens, where it first matters, and nowhere else. A chapter's
+opening sets up the smallest model its first question needs, and adds structure when the
+investigation makes it relevant. Chapter 1's opening is the standing example: a short situation,
+the lab, the map with its count, the shop's week, then the question.
+
 ## Accuracy
 
 - **Check every technical claim** about a standard or a system against its authoritative source,
@@ -342,6 +354,8 @@ Read for these before calling a chapter finished:
   it, generate it;
 - a sentence the learner would not miss: reassurance, motivation, the platform described as a
   person, a line about what they were told; silence is preferable to filler;
+- a block of description before the learner's first question that a figure could carry, or that
+  the question does not need yet;
 - a word that means two things on one page: *table* (the warehouse's and the page's), *record*,
   *event*, *run* (the noun and the verb), *version*, *source*, *owner*, *schema* (a structure and
   a database's namespace), *model* (the lab, a data model, an ML model), *map* (the platform map;

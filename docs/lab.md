@@ -105,13 +105,18 @@ evidence:
 Each question's classification is computed by running the storage view and the inference search,
 never written into the lesson.
 
-Two more things the figures ask of it:
+Three more things the figures ask of it:
 
 - **The map of the platform** (`platformMap`): the systems in the order data moves through them
   (a system nothing flows into first), the assets each holds in the week asked about, and the
   flows between systems, each from what a program reads to what it writes. A flow names two
   systems and nothing else: never a program, never an asset. The map shows what a newcomer is
-  told on the first morning, and nothing Chapter 1 finds storage cannot tell.
+  told on the first morning, and nothing Chapter 1 finds storage cannot tell. `mapTally` counts
+  what it holds, kind by kind and in all, for the count under the opening's map.
+- **The week, as it ran** (`weekTimeline`): the days the shop took orders, the night of work after
+  each with when its first write began and its last ended, and the morning the learner starts
+  (`ARRIVAL`). It says when the nights were and nothing about what a night wrote, which writer ran
+  when, or which asset is made from which.
 - **A prediction's answer** (`runProbe`): the owner a table's system records, what kind of
   name it is, and how many of the warehouse's tables record an owner at all (`owner-kind`, which
   the requirement figure reads as well); one day's total over an asset against the target's row for that day,

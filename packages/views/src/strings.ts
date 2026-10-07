@@ -178,6 +178,20 @@ export const DEFAULT_VIEW_STRINGS = {
     reporting: "Reporting tool",
   } as Record<string, string>,
   mapFlow: "unseen programs move data each night",
+  /** The map's count of its assets: the kinds joined by " + ", then " = " and the whole. */
+  mapTally: {
+    file: { one: "{count} file", other: "{count} files" },
+    table: { one: "{count} table", other: "{count} tables" },
+    dashboard: { one: "{count} dashboard", other: "{count} dashboards" },
+    asset: { one: "{count} asset", other: "{count} assets" },
+  } as Record<string, { one: string; other: string }>,
+  /** The week's words: provisional until the prose process drafts them (brief AE). */
+  weekDay: "{weekday} {date}",
+  weekSummary:
+    "{first} to {last}, with a night's work after each day; the last ends early on {night}, before you start work on {start} at {time}.",
+  weekOrders: "the shop's first week, when it took orders",
+  weekNight: "a night's work",
+  weekStart: "You start work, {time}",
   mapOpen: "The map",
   mapClose: "Close",
   scrollCue: "Scroll sideways to see every column.",

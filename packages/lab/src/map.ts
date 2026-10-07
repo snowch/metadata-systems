@@ -56,3 +56,24 @@ export function platformMap(w: Week): PlatformMap {
     flows,
   };
 }
+
+/** How many assets of a kind the map holds. */
+export interface KindCount {
+  readonly kind: AssetKind;
+  readonly count: number;
+}
+
+/** What the map counts under its systems: its assets by kind, in the order it shows them, and all. */
+export function mapTally(m: PlatformMap): {
+  readonly kinds: readonly KindCount[];
+  readonly total: number;
+} {
+  const kinds: { kind: AssetKind; count: number }[] = [];
+  for (const s of m.systems)
+    for (const a of s.assets) {
+      const k = kinds.find((c) => c.kind === a.kind);
+      if (k) k.count += 1;
+      else kinds.push({ kind: a.kind, count: 1 });
+    }
+  return { kinds, total: kinds.reduce((n, k) => n + k.count, 0) };
+}

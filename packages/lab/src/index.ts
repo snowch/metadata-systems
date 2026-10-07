@@ -12,6 +12,7 @@ export * from "./infer";
 export * from "./questions";
 export * from "./probes";
 export * from "./map";
+export * from "./timeline";
 export * from "./shop/assets";
 export * from "./shop/data";
 export * from "./shop/programs";

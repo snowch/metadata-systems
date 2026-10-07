@@ -53,7 +53,8 @@ says what a figure is, a view of the lab; the badge says what it asks of the lea
 
 | kind | props | what it does |
 | --- | --- | --- |
-| `platform-map` | `changes?`, `dock?` | the platform as the lab's `platformMap` computes it: the systems in the order data moves through them, the assets each holds, and between two systems the programs the learner cannot see, never a link from one asset to another; once the learner scrolls past it, a button at the foot of the window opens the same map over the page, unless `dock` is false |
+| `platform-map` | `changes?`, `dock?`, `tally?` | the platform as the lab's `platformMap` computes it: the systems in the order data moves through them, the assets each holds, and between two systems the programs the learner cannot see, never a link from one asset to another; with `tally`, a count under the systems, kind by kind and in all (`mapTally`), in this place only; once the learner scrolls past it, a button at the foot of the window opens the same map over the page, unless `dock` is false |
+| `week-timeline` | `changes?` | the shop's first week on one line, as the lab's `weekTimeline` computes it: a column a day, the band of days the shop took orders, a bar at each night's work where its hours fall, and a line at the morning the learner starts, with a key; a screen reader hears one sentence that says the same; it names no asset and no program |
 | `dashboard` | `changes?` | the reporting tool's chart as Monday morning shows it, one bar per value, from the lab's week |
 | `lab-prediction` | `question`, `options` (each a value, a label, and either `means`, the answers of a naming probe it stands for, or `range`, the counts of a counting probe), `probe` (`owner-kind` of an asset; `day-total` of a source, a filter, a target and a day; `clean-fits`), `explain?`, `changes?`, `requires?` (a challenge id), `mode?` (`predict`, the default, or `choose`), `compare?` (for a choice: its button, `commit`, in words about what it shows, and the line after it, `mine` with `{choice}` and `lab` with `{answer}`), `undecided?` (the option "I can't tell yet": a value, a label, and the `line` shown after it, with `{answer}`) | the learner commits to an option, and the commitment stays (no "Predict again"); the lab runs the probe and answers with the option that stands for what it found, with its evidence; a prediction is marked right or not, "I can't tell yet" and a choice are set beside what the lab found and marked neither; `explain` shows only after the commit; with `requires`, the figure waits until the learner's own work on that challenge passes |
 | `requirement` | `requirement` (its words, as written), `question`, `options` (each a value, a label, `short`, what it needs stored, `asks`, the question it asks with names between backticks, and `means`, the probe's answers that answer it), `undecided` (the option to store nothing until the requirement says what it is for), `probe` (`owner-kind` of an asset), `buttons` (`choose` and `show`), `headings` (`asks`, `store`, `answers`), `text` (`mine` with `{choice}`, `undecided`, `meanings`, `lab` with `{value}`, `{owned}` and `{tables}`, `explain?`) | a requirement questioned (`CLAUDE.md`, "Question the requirement"): the learner chooses what to store, or nothing yet; the figure then shows the questions the requirement could be asking, each beside what it needs stored, with their own row marked; at a second press the lab runs the probe, says what the platform records, and the same table gains a column saying which questions that record answers, in words and without colour; no reading is called wrong, and both presses stay |
@@ -66,6 +67,18 @@ says what a figure is, a view of the lab; the badge says what it asks of the lea
 
 The book's graders are `reproduces` (a sum compared with a target day by day) and `same-rows` (a
 set of cleaning rules compared with `clean_orders` as multisets).
+
+## A diagram carries what prose would make the learner hold
+
+Where a passage would ask the learner to keep a date, a set of systems, a count, a sequence of
+nights or their own place in an investigation in mind, a figure carries it, and the prose says
+only what the next question needs (`CLAUDE.md`, "Every figure is a view of the lab"). Such a
+figure is a reference with one job, named in its block under "Figures": the platform's
+architecture, its assets, time, a flow, or where the learner stands. It is still a view of the
+lab, and it still shows only what the learner has been told or has built. Detail the next step
+does not need goes in the section's `details`, a control the reader opens, where it first
+matters: Chapter 1 keeps how the lab runs there. A chapter's opening sets up the smallest model
+its first question needs, and adds structure when the investigation makes it relevant.
 
 ## Experiments, instruments and references
 

@@ -18,10 +18,15 @@ export function showSize(bytes: number): string {
   return `${(Math.round(bytes / 100) / 10).toFixed(1)} kB`;
 }
 
-/** The weekday of one of the week's days, by the figure's names for Monday to Sunday. */
+/** Midnight UTC of a date written "2026-09-10", in milliseconds. */
+const midnight = (day: string) =>
+  Date.UTC(Number(day.slice(0, 4)), Number(day.slice(5, 7)) - 1, Number(day.slice(8, 10)));
+
+/** The weekday of a date, by the figure's names for Monday to Sunday: the week starts on a Monday. */
 export function weekdayOf(day: string, names: readonly string[]): string {
-  const i = DAYS.indexOf(day as (typeof DAYS)[number]);
-  return i >= 0 ? (names[i] ?? day) : day;
+  const offset = Math.round((midnight(day) - midnight(DAYS[0])) / 86_400_000);
+  if (!Number.isFinite(offset)) return day;
+  return names[((offset % 7) + 7) % 7] ?? day;
 }
 
 /** "2026-09-10" as "Thu 10", with the figure's weekday names. */

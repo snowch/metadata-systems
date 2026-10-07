@@ -14,18 +14,47 @@ import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { createPortal } from "react-dom";
 import { z } from "zod";
 
-import { CHANGE_IDS, platformMap, week, type PlatformMap as Map } from "@ms/lab";
+import { CHANGE_IDS, mapTally, platformMap, week, type PlatformMap as Map } from "@ms/lab";
 import type { InteractiveProps } from "@platform/lesson-runtime";
 
 import { Glyph } from "../Glyph";
 import { withProps } from "../props";
-import { useViewStrings, type ViewStrings } from "../strings";
+import { format, useViewStrings, type ViewStrings } from "../strings";
 
 const Props = z.object({
   changes: z.array(z.enum(CHANGE_IDS)).default([]),
   /** Whether the map stays to hand, from a button, once its place scrolls away. */
   dock: z.boolean().default(true),
+  /** Whether the map counts its assets under its systems, kind by kind and in all. */
+  tally: z.boolean().default(false),
 });
+
+/** A count in words: "1 dashboard", "3 files". */
+const counted = (forms: { one: string; other: string } | undefined, count: number) =>
+  format(forms ? (count === 1 ? forms.one : forms.other) : "{count}", { count });
+
+/**
+ * The map's assets counted: each kind with its mark, joined by plus signs, and all of them. Each
+ * sign stays with the term after it, so a narrow figure breaks the sum before a sign, never after.
+ */
+function MapTally({ map, strings }: { map: Map; strings: ViewStrings }) {
+  const tally = mapTally(map);
+  return (
+    <p className="map-tally">
+      {tally.kinds.map((k, i) => (
+        <span key={k.kind} className="map-tally-term">
+          {i > 0 && <span className="map-tally-sign">+</span>}
+          <Glyph kind={k.kind} />
+          {counted(strings.mapTally[k.kind], k.count)}
+        </span>
+      ))}
+      <span className="map-tally-term map-tally-total">
+        <span className="map-tally-sign">=</span>
+        {counted(strings.mapTally["asset"], tally.total)}
+      </span>
+    </p>
+  );
+}
 
 /** An arrow pointing down; turned to point across where the map lays its systems in a row. */
 function FlowArrow() {
@@ -170,6 +199,7 @@ export const PlatformMap = withProps(
     return (
       <div ref={place} className="platform-map-place">
         <MapBody map={map} strings={strings} />
+        {data.tally && <MapTally map={map} strings={strings} />}
         {away && createPortal(<Dock map={map} strings={strings} />, document.body)}
       </div>
     );

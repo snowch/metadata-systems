@@ -24,12 +24,14 @@ import { PlatformMap } from "./figures/PlatformMap";
 import { QuestionMap } from "./figures/QuestionMap";
 import { RequirementLab } from "./figures/RequirementLab";
 import { StorageInspector } from "./figures/StorageInspector";
+import { WeekTimeline } from "./figures/WeekTimeline";
 import { grade } from "./grade";
 import { DEFAULT_VIEW_STRINGS, type ViewStrings } from "./strings";
 
 /** The figures a lesson may name, by kind. */
 export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProps>>> = {
   "platform-map": PlatformMap,
+  "week-timeline": WeekTimeline,
   dashboard: Dashboard,
   "lab-prediction": LabPrediction,
   requirement: RequirementLab,

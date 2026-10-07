@@ -38,7 +38,7 @@ already name `platform/*`.
 
 ## What this course needed the platform to generalise
 
-Four general shapes were added beside the digital-design course's, and nothing that course uses
+Five general shapes were added beside the digital-design course's, and nothing that course uses
 changed (its full unit suite passes on the moved packages; `snowch/learning-platform`'s
 `docs/adoption.md`):
 
@@ -60,6 +60,10 @@ changed (its full unit suite passes on the moved packages; `snowch/learning-plat
   has one: an experiment, an instrument to inspect with, or a reference (`CLAUDE.md`,
   "Experiments, instruments and explanations"). A figure without a role keeps the model's badge,
   as the digital-design course's do.
+- **A section's details.** A section may carry `details`: the words of a control and the Markdown
+  it opens, shown closed after the section's prose and before its figures (the platform, at
+  8c2f186). Chapter 1 keeps how the lab runs there, where it first names the lab, so the learner
+  reaches the first question sooner; the course styles it as it styles every disclosure.
 
 ## What is this course's own
 

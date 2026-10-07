@@ -19,39 +19,45 @@ every number below. Do not add a number that is not here. Do not change a number
   log in as). Call it "the lab".
 - All times are UTC. Write a time like this: Monday 14 September, 02:30.
 
-## The Metadata Lab, where the chapter introduces it
+## The opening, in the order the page gives it
 
-The chapter explains the lab once, where it first names it: in the opening section, after the
-paragraphs on the shop's systems, its assets and its nights, and before the map. No figure's badge
-and no note at the foot repeats it. Read off the code (`packages/lab`, `packages/views`, the
-platform's `state.ts`) on 7 October 2026. The paragraphs above it already say: you start work on
-Monday 14 September 2026 at 09:00; the shop opened its online store on Monday 7 September; its
-platform has three systems (object storage holds files, the warehouse tables, the reporting tool a
-dashboard); what an asset is; that it has seven assets; that every night the three files are
-written again, then programs write the tables and refresh the dashboard; and that you cannot see
-the programs. In the order the lab's paragraphs give them, each thing named before a sentence uses
-it:
+The opening section brings the learner to the first question with as little as possible to hold
+in mind: a short situation, the lab, the map, the week, then the dashboard's question (the
+author's agent guide on the opening's diagrams, 7 October 2026). The lab is explained once, here,
+where the chapter first names it; no figure's badge and no note at the foot repeats it. Read off
+the code (`packages/lab`, `packages/views`, the platform's `state.ts`) on 7 October 2026. In the
+order the page gives them, each thing named before a sentence uses it:
 
-1. **What the lab is.** Every figure on the page runs the Metadata Lab, a small data platform
+1. **The situation.** You start work on Monday 14 September 2026 at 09:00 (the lab's `ARRIVAL`).
+   You are a data engineer at an online shop that sells bicycle parts. The shop opened its online
+   store on Monday 7 September.
+2. **What the lab is.** Every figure on the page runs the Metadata Lab, a small data platform
    written for this course. It runs in your browser: there is nothing to install, open or sign
-   in to.
-2. **What it holds.** The shop described above, with real rows in its files, tables and dashboard,
-   and its programs, written in SQL.
-3. **The week.** The shop's first week online, Monday 7 to Sunday 13 September 2026. The shop and
-   its week are invented for the course. The programs run each night of the week; the last night
-   ends early on Monday 14 September, before you start work.
-4. **How it runs.** The lab runs the programs' SQL with a query engine of its own. Nothing about
-   the shop is stored: each time the page loads, the lab builds the shop's data and runs the whole
-   week, night by night, in memory. So the rows and times are the same for every reader on any
-   day, and every date and time a figure shows comes from that week, never from today's date or
-   your computer's clock.
-5. **How you use it.** Only through the figures on the page. The lab works out everything a figure
-   shows: each figure asks the lab something and shows its answer.
-6. **What your browser keeps.** Your own work, chapter by chapter: your predictions, your choices
-   and your answers to challenges. Nothing you do leaves your browser: the page sends none of it
-   anywhere.
+   in to (the author's own words). The lab holds the shop, with real rows in its files, tables
+   and dashboard, and its programs, written in SQL. The shop is invented for the course. Each
+   figure asks the lab something, and the lab works out its answer.
+3. **How the lab runs, behind a control the reader opens.** The lab runs the programs' SQL with a
+   query engine of its own. Nothing about the shop is stored anywhere: each time the page loads,
+   the lab builds the shop's data and runs the shop's first week, night by night, in memory. So
+   the rows and times are the same for every reader on any day, and every date and time a figure
+   shows comes from that week, never from today's date or your computer's clock. Your browser
+   keeps your own work, chapter by chapter: your predictions, your choices and your answers to
+   challenges. Nothing you do leaves your browser: the page sends none of it anywhere.
+4. **The map** (below, "The map of the platform"). The shop's data platform has three systems.
+   The map shows them in the order data moves through them each night, with what each holds,
+   and under them a count the lab computes: 3 files + 3 tables + 1 dashboard = 7 assets.
+   Programs move the data from one system to the next; you cannot see the programs. Once you
+   scroll past the map, a button at the foot of the window opens it again.
+5. **What an asset is**, under the map. An asset is something in the platform that can be
+   stored, described, changed, related to other assets, or depended on. The files, tables and
+   dashboard on the map are the shop's seven assets. In this chapter, storage means all three
+   systems.
+6. **The week** (below, "The week, as the lab ran it"). The shop's first week ran from Monday 7
+   to Sunday 13 September 2026. Each night, in the early hours of the next day, the three files
+   are written again, then the programs write the tables and refresh the dashboard. The last
+   night ends early on Monday 14 September, before you start work.
 
-The paragraphs do not say how many programs there are, which asset a program reads or writes, or
+The opening does not say how many programs there are, which asset a program reads or writes, or
 what any program does: the chapter shows that storage cannot tell.
 
 ## The seven assets
@@ -85,6 +91,24 @@ The chapter shows a small map of the platform near its start, and keeps it to ha
   the window opens the same map over the page. The button goes when the map's place comes back
   into view.
 - The map shows the week as it first ran. It does not show the analyst's copy or any change.
+- Under its systems, the map counts what it shows, as the lab computes it: 3 files + 3 tables +
+  1 dashboard = 7 assets. The count is in the opening's map only; the map that opens over the
+  page leaves it out.
+
+## The week, as the lab ran it
+
+The chapter shows the shop's first week on one line, after the map, computed by the lab
+(`weekTimeline`).
+
+- The days the shop took orders: Monday 7 to Sunday 13 September 2026, seven days.
+- A night's work after each day, in the early hours of the next date, Tuesday 8 to Monday 14
+  September: the three files are written again, then the programs write the tables and refresh
+  the dashboard. The line draws each night's work where its hours fall, from 01:00 to a little
+  after 03:00, and prints no time for it.
+- The last night's work ends early on Monday 14 September, before 09:00, when you start work.
+  The line marks 09:00 on Monday 14 September with the words that you start work then.
+- The line shows when the nights were, and nothing about what a night wrote, which program ran
+  when, or which asset is made from which.
 
 ## What each storage system records about an asset (and nothing else)
 

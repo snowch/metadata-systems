@@ -6,7 +6,9 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  ARRIVAL,
   ASSET_IDS,
+  DAYS,
   DUPLICATED,
   NIGHTS,
   PROGRAMS,
@@ -17,6 +19,7 @@ import {
   platformMap,
   optionForAnswer,
   optionForCount,
+  mapTally,
   questionMap,
   recordKindOf,
   recordOf,
@@ -27,6 +30,7 @@ import {
   storageAnswer,
   sumReconstructions,
   week,
+  weekTimeline,
 } from "./index";
 
 describe("the shop's week", () => {
@@ -237,6 +241,41 @@ describe("the questions", () => {
     expect(platformMap(week(["copy"])).systems[0]?.assets.map((a) => a.id)).toContain(
       "clean_orders_copy.parquet",
     );
+  });
+
+  it("counts the map's assets by kind, in the order the map shows them", () => {
+    expect(mapTally(platformMap(week()))).toEqual({
+      kinds: [
+        { kind: "file", count: 3 },
+        { kind: "table", count: 3 },
+        { kind: "dashboard", count: 1 },
+      ],
+      total: 7,
+    });
+    expect(mapTally(platformMap(week(["copy"]))).kinds[0]).toEqual({ kind: "file", count: 4 });
+    expect(mapTally(platformMap(week(["copy"]))).total).toBe(8);
+  });
+
+  it("lays out the week: seven days, a night of work after each, and the morning you start", () => {
+    const t = weekTimeline(week());
+    expect(t.days).toEqual([...DAYS]);
+    expect(t.nights.map((n) => n.after)).toEqual([...DAYS]);
+    expect(t.nights.map((n) => n.date)).toEqual([...NIGHTS]);
+    for (const n of t.nights) {
+      // Each night's work falls in the early hours of the date after its day.
+      expect(n.started.slice(0, 10)).toBe(n.date);
+      expect(n.finished.slice(0, 10)).toBe(n.date);
+      expect(n.started < n.finished).toBe(true);
+      expect(n.finished.slice(11, 13) < "06").toBe(true);
+      // It says when, and nothing about who wrote what.
+      expect(Object.keys(n).sort()).toEqual(["after", "date", "finished", "started"]);
+    }
+    // The last night ends before the learner starts, and no write storage shows comes after it.
+    const last = t.nights[t.nights.length - 1]!;
+    expect(last.date).toBe("2026-09-14");
+    expect(t.arrival).toBe(ARRIVAL);
+    expect(last.finished < t.arrival).toBe(true);
+    expect([...week().lastWritten.values()].every((at) => at <= last.finished)).toBe(true);
   });
 
   it("picks the option that stands for an answer, and none where two do", () => {
