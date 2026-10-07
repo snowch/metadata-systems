@@ -9,16 +9,16 @@
 
 export const PROSE = {
   question:
-    "You start work on Monday 14 September 2026 at 09:00. You are a data engineer at an online shop that sells bicycle parts. The shop opened its online store on Monday 7 September.\n\nEvery figure on the page runs the Metadata Lab, a small data platform written for this course. It runs in your browser: there is nothing to install, open or sign in to. The lab holds the shop, which is invented for the course, with real rows in its files, tables and dashboard. Each figure asks the lab something, and the lab works out its answer.",
-  /** Provisional until the prose process drafts it (brief AE). */
+    "You start work on Monday 14 September 2026 at 09:00. You are a data engineer at an online shop selling bicycle parts. The shop opened its online store on Monday 7 September.\n\nEvery figure runs the Metadata Lab, a small data platform written for this course. It runs in your browser: there is nothing to install, open or sign in to. The lab holds the shop, with real rows in its files, tables and dashboard, and programs written in SQL. The shop is invented for the course. Each figure asks the lab something; the lab works out its answer.",
+  /** How the lab runs, behind the control the reader opens (brief AE). */
   labDetails:
-    "The lab runs the programs' SQL with a query engine of its own. Nothing about the shop is stored anywhere: each time the page loads, the lab builds the shop's data and runs its first week, night by night, in memory. Every reader sees the same rows and times, from that week, never from today or your computer's clock. Your browser keeps your predictions, choices and answers to challenges, chapter by chapter. Nothing you do leaves your browser.",
+    "The lab runs the programs' SQL with its own query engine. Nothing about the shop is kept between page loads. Each page load, the lab builds the shop's data and runs its first week, night by night, in memory. So every reader sees the same rows and times, on any day. A figure's dates and times come from the first week, never from today's date or your computer's clock. Your browser keeps your work, chapter by chapter: predictions, choices and answers to challenges. Nothing you do leaves your browser.",
   platformLead:
-    "The shop's data platform has three systems. The map shows them in the order data moves through them each night, with what each holds. You cannot see the programs that move the data. Once you scroll past the map, a button at the foot of the window opens it again.",
+    "The shop's data platform has three systems. The map shows them in the order data moves through them each night. You cannot see the programs. Once you scroll past the map, a button at the foot of the window opens it again.",
   platformAfter:
-    "An asset is something in the platform that can be stored, described, changed, related to other assets, or depended on. The files, tables and dashboard on the map are the shop's seven assets. In this chapter, storage means all three systems.",
+    "An asset is something in the platform that can be stored, described, changed, related to other assets, or depended on. In this chapter, storage means all three systems.",
   weekLead:
-    "The shop's first week ran from Monday 7 to Sunday 13 September 2026. Each night, in the early hours of the next day, the three files are written again, then the programs write the tables and refresh the dashboard.",
+    "The shop's first week ran from Monday 7 to Sunday 13 September 2026. After each day, in the early hours of the next day, the three files are written again, then the programs write the tables and refresh the dashboard.",
   weekAfter: "The last night ends early on Monday 14 September, before you start work.",
   dashboardLead:
     "The dashboard shows revenue per day for the shop's first week. Thursday is far lower than the other days. The head of the shop asks you why.",

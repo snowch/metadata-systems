@@ -28,8 +28,8 @@ export const LABELS = {
     c2: "Which rules filter orders.parquet?",
   },
   captions: {
-    platform: "The map: the shop's three systems and the assets each holds.",
-    week: "The shop's first week: the days it took orders, each night's work, and the morning you start.",
+    platform: "The map: the shop's three systems and what each holds.",
+    week: "The shop's first week: order days, a night's work after each, and the morning you start.",
     dashboard: "On Monday morning the dashboard shows daily revenue for 7 to 13 September.",
     p1: "Choose what you would store to meet a requirement, see what it could mean, then see what the shop's warehouse holds.",
     p2: "Predict what Thursday's rows of orders.parquet add up to.",
@@ -44,7 +44,7 @@ export const LABELS = {
     c2: "Choose which orders the rules keep.",
     p3: "Predict whether your setting of the four rules is the only one that passes.",
   },
-  /** The words on the control that opens how the lab runs: provisional until brief AE. */
+  /** The control that opens how the lab runs: the label the author's agent guide gave it. */
   labDetails: "About the Metadata Lab",
   // The requirement, in the author's words, and the figure that questions it (brief V).
   p1Requirement: "Every table must have an owner.",

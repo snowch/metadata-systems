@@ -185,13 +185,13 @@ export const DEFAULT_VIEW_STRINGS = {
     dashboard: { one: "{count} dashboard", other: "{count} dashboards" },
     asset: { one: "{count} asset", other: "{count} assets" },
   } as Record<string, { one: string; other: string }>,
-  /** The week's words: provisional until the prose process drafts them (brief AE). */
+  /** The week's words (brief AE). */
   weekDay: "{weekday} {date}",
   weekSummary:
-    "{first} to {last}, with a night's work after each day; the last ends early on {night}, before you start work on {start} at {time}.",
-  weekOrders: "the shop's first week, when it took orders",
+    "The shop took orders from {first} to {last}, with a night's work after each day, and the last night ends early on {night}, before you start work on {start} at {time}.",
+  weekOrders: "the days the shop took orders",
   weekNight: "a night's work",
-  weekStart: "You start work, {time}",
+  weekStart: "You start work at {time}",
   mapOpen: "The map",
   mapClose: "Close",
   scrollCue: "Scroll sideways to see every column.",

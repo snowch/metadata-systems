@@ -902,6 +902,27 @@ The author cut "It comes with the page, as code," from the opening: the lab's pa
 says "It runs in your browser: there is nothing to install, open or sign in to." The words are
 the author's, so no brief went to Haiku; `facts.md` follows.
 
+## The opening in short steps, 7 October 2026
+
+An agent's guide the author passed on found the opening right in what it said and wrong in how: a
+long block of prose before the learner did anything (`docs/plan.md` has the decision). The opening
+now reaches the first question in short steps: the situation and the lab; how the lab runs,
+behind "About the Metadata Lab", a control the reader opens; the map, with the lab's count under
+it and what an asset is under that; the shop's first week (`week`); then the dashboard's
+question. The guide's architecture diagram drew an arrow along one row of assets, which reads as
+one asset made from another, so the map keeps its arrows between systems. Its fourth diagram, the
+lab as an instrument, was not built (`docs/plan.md` says why).
+
+| Draft | Wrong, sent back | Dropped, restored with the fewest words |
+| --- | --- | --- |
+| AE (the opening) | none sent back. The control's label, "Lab engine; what your browser keeps", said neither in plain words, so the control carries the label the author's guide gave it, "About the Metadata Lab". Haiku changed two of fact 3's wordings, both kept: "kept between page loads" for "stored anywhere", since "stored" on this page means the chapter's storage, and "Nothing you do leaves your browser" alone for the page sending nothing | that the map shows the systems in the order data moves through them ("The map shows them") |
+
+The second pass, on the built page at 1280 pixels in the light theme and 390 in the dark, with the
+lab's details closed and open, cut three repeats of what a figure beside them shows: "Programs
+move data between them." above the map, whose arrows say it; "The files, tables and dashboard on
+the map are the shop's seven assets." under the map's count; and, in the week's key, what a
+night's work does, which the sentence above the figure says.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,

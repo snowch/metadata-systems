@@ -70,7 +70,8 @@ describe("the facts Chapter 1 states", () => {
       daily_sales: 7,
       sales_dashboard: 7,
     });
-    expect(PROSE.platformAfter).toContain("seven assets");
+    // The count under the opening's map says seven; the inspector's tasks say it in words.
+    expect(PROSE.inspectorLead).toContain("seven assets");
     const bySystem = (system: string) => view.filter((r) => r.system === system).length;
     expect([bySystem("object-storage"), bySystem("warehouse"), bySystem("reporting")]).toEqual([
       3, 3, 1,
