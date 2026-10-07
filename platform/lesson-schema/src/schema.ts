@@ -201,6 +201,12 @@ export const Interactive = z.object({
   kind: z.string().min(1),
   /** Which of the book's models it runs, said on the page; `none` for a figure that runs none. */
   timeModel: TimeModel,
+  /**
+   * What the figure asks of the reader, in the course's own word for it (an experiment, an
+   * instrument to inspect with, a reference): the runtime names it in the figure's badge. A figure
+   * without one is badged by the model it runs.
+   */
+  role: z.string().min(1).optional(),
   /** A caption a screen reader and the page both get. */
   caption: z.string().min(1),
   /** Markdown shown directly above the figure, inside its section. */

@@ -239,9 +239,79 @@ describe("the figures on Chapter 1's page", () => {
     ).toBeTruthy();
   });
 
+  it("badges every figure by what it asks of the learner, and opens that role's note first", () => {
+    const { figure } = show();
+    for (const x of lesson.sections.flatMap((s) => s.interactives)) {
+      const role = x.role ?? "";
+      expect(figure(x.id).dataset["role"], x.id).toBe(role);
+      const badge = within(figure(x.id)).getByRole("button", {
+        name: format(V.roleBadgeLabel, { role: V.roles[role] ?? "" }),
+      });
+      expect(badge.textContent, x.id).toBe(V.roles[role]);
+    }
+    const storage = figure("storage");
+    fireEvent.click(
+      within(storage).getByRole("button", {
+        name: format(V.roleBadgeLabel, { role: V.roles["inspect"] ?? "" }),
+      }),
+    );
+    const note = storage.querySelector(".time-model-note")!;
+    expect(note.hasAttribute("hidden")).toBe(false);
+    const role = (note.textContent ?? "").indexOf(V.roleNotes["inspect"]!.slice(0, 40));
+    expect(role).toBeGreaterThanOrEqual(0);
+    expect((note.textContent ?? "").indexOf(V.labNote.slice(0, 40))).toBeGreaterThan(role);
+  });
+
+  it("asks where to look, and which explanation to test, only once the answer above is committed", () => {
+    const caption = (id: string) =>
+      lesson.sections
+        .flatMap((s) => s.interactives)
+        .find((x) => x.id === id)!
+        .caption.replace(/\.$/, "");
+    const before = show();
+    expect(before.figure("where-first").textContent).toContain(
+      format(V.waits, { caption: caption("predict-days") }),
+    );
+    expect(before.figure("where-first").textContent).not.toContain("205.50");
+    expect(before.figure("where-first").querySelector("input")).toBeNull();
+    before.page.unmount();
+
+    const { figure } = show((store) => store.setSlot("predict-days", { choice: "same" }));
+    expect(figure("where-first").querySelector("input")).not.toBeNull();
+    expect(figure("why-thursday").textContent).toContain(
+      format(V.waits, { caption: caption("where-first") }),
+    );
+  });
+
+  it("opens the inspector on the asset the learner chose to look at first", () => {
+    const p = props("where-first") as {
+      options: (Labelled & { after: string })[];
+      commit: string;
+      test: string;
+    };
+    const { figure } = show((store) => store.setSlot("predict-days", { choice: "different" }));
+    const opened = () =>
+      figure("storage").querySelector(".asset-button[aria-pressed='true']")?.textContent;
+    expect(opened()).toBe("orders.parquet");
+    const daily = p.options.find((o) => o.value === "daily")!;
+    const f = within(figure("where-first"));
+    fireEvent.click(f.getByLabelText(daily.label));
+    fireEvent.click(f.getByRole("button", { name: p.commit }));
+    expect(f.getByRole("status").textContent).toContain(daily.label);
+    expect(figure("where-first").textContent).toContain("one row per day");
+    expect(figure("where-first").textContent).not.toContain("154.00");
+    expect(opened()).toBe("daily_sales");
+    // The learner's own choice in the inspector wins over the decision's.
+    fireEvent.click(within(figure("storage")).getByRole("button", { name: "clean_orders" }));
+    expect(opened()).toBe("clean_orders");
+  });
+
   it("keeps the learner's explanation for Thursday, and shows nothing of the rows at the choice", () => {
     const p = props("why-thursday") as { options: Labelled[]; commit: string };
-    const { figure } = show();
+    const { figure } = show((store) => {
+      store.setSlot("predict-days", { choice: "different" });
+      store.setSlot("where-first", { choice: "orders" });
+    });
     const f = within(figure("why-thursday"));
     fireEvent.click(f.getByLabelText(p.options.find((o) => o.value === "lower")!.label));
     fireEvent.click(f.getByRole("button", { name: p.commit }));

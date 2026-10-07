@@ -133,6 +133,35 @@ describe("the facts Chapter 1 states", () => {
     expect(PROSE.p2Explain).toContain("Wednesday's (198.75) and Friday's (204.24)");
   });
 
+  it("says what each asset to look at first can show, from the asset's shape", () => {
+    const view = storage();
+    const names = (asset: Parameters<typeof recordOf>[1]) =>
+      recordOf(view, asset).columns.map((c) => c.name);
+    expect(names("orders.parquet")).toEqual(
+      expect.arrayContaining(["price", "quantity", "status"]),
+    );
+    expect(names("clean_orders")).toEqual(names("orders.parquet"));
+    expect(names("daily_sales")).toEqual(["day", "revenue"]);
+    const days = (asset: "daily_sales" | "sales_dashboard") =>
+      recordOf(view, asset).content.rows.map((r) => String(r[0]));
+    expect(new Set(days("daily_sales")).size).toBe(recordOf(view, "daily_sales").rows);
+    expect(new Set(days("sales_dashboard")).size).toBe(recordOf(view, "sales_dashboard").rows);
+    // An order appears twice in orders.parquet, so its line says each row is an order, not that
+    // an order has one row; the chapter's last challenge finds the repeat.
+    const ids = columnValues(week().tables.get("orders.parquet")!, "order_id");
+    expect(new Set(ids).size).toBeLessThan(ids.length);
+    expect(PROSE.wAfter.orders).toContain(
+      "Each row of `orders.parquet` is an order, with its price, quantity and status.",
+    );
+    expect(PROSE.wAfter.orders).not.toMatch(/one row per order/);
+    expect(PROSE.wAfter.clean).toContain("with the same columns as `orders.parquet`");
+    expect(PROSE.wAfter.daily).toContain("one row per day: the day and its revenue");
+    expect(PROSE.wAfter.dashboard).toContain("the values it shows, one per day");
+    expect(PROSE.wQuestion).toContain(
+      "add up to 205.50. `daily_sales` and the dashboard both show 51.50",
+    );
+  });
+
   it("names etl_service as the owner of all three tables", () => {
     for (const t of ["clean_customers", "clean_orders", "daily_sales"] as const)
       expect(recordOf(storage(), t).ownerRole).toBe("etl_service");

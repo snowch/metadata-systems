@@ -4,7 +4,9 @@
 // chosen, exactly what its system records, what storage says about each of the chapter's eight
 // questions, its columns and its rows. The answers come from the lab's storage view, so a question
 // storage cannot answer says so because no field holds the answer. The questions come before the
-// rows, which can be long and, on a phone, wide.
+// rows, which can be long and, on a phone, wide. It is an instrument (CLAUDE.md, "Experiments,
+// instruments and explanations"): where a decision above asks where to look first, it opens on the
+// asset the learner chose there.
 
 import { z } from "zod";
 
@@ -32,6 +34,13 @@ import { format, useViewStrings, type ViewStrings } from "../strings";
 
 const Props = z.object({
   initial: z.enum(ASSET_IDS).default("orders.parquet"),
+  /**
+   * A decision figure above whose choice names the asset to open first, so the inspector is the
+   * instrument for the question that decision asked; the learner's own choice here still wins.
+   */
+  from: z
+    .object({ figure: z.string().min(1), assets: z.record(z.string(), z.enum(ASSET_IDS)) })
+    .optional(),
   changes: z.array(z.enum(CHANGE_IDS)).default([]),
 });
 
@@ -104,7 +113,12 @@ export const StorageInspector = withProps(
     const strings = useViewStrings();
     const view = storage(week(data.changes));
     const [chosen, setChosen] = useSlot<AssetId>(store, interactive.id);
-    const current = view.find((r) => r.asset === (chosen ?? data.initial)) ?? view[0];
+    const [decision] = useSlot<{ choice: string }>(
+      store,
+      data.from?.figure ?? `${interactive.id}:from`,
+    );
+    const start = (decision && data.from?.assets[decision.choice]) ?? data.initial;
+    const current = view.find((r) => r.asset === (chosen ?? start)) ?? view[0];
     const groups = new Map<string, StorageRecord[]>();
     for (const r of view)
       groups.set(groupLabel(r, strings), [...(groups.get(groupLabel(r, strings)) ?? []), r]);

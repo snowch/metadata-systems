@@ -162,19 +162,52 @@ and the words before them, nothing else.
    Friday and Sunday) and differ on four, Thursday among them. What explains the difference is
    for the next section, where the learner reads the rows; the prediction does not say.
 
+## Where to look first (the investigation's opening decision)
+
+Once the Thursday prediction has shown the difference, the investigation opens with a decision:
+which asset would you inspect first, to find where Thursday's 205.50 became 51.50, and what would
+you look for there? Four options, each an asset and the evidence sought:
+
+- orders.parquet, for the orders that make up Thursday's 205.50;
+- clean_orders, to set its Thursday orders beside the raw ones;
+- daily_sales, for how its 51.50 was worked out;
+- the dashboard, for where its 51.50 comes from.
+
+No option is right: it is a decision about where to look. After the choice, one line says what
+that asset can show, a fact about the asset's shape, never what it shows for Thursday:
+
+- each row of orders.parquet is an order, with its price, quantity and status: it shows what
+  Thursday's 205.50 is made of, and does not say which orders daily_sales counts. It is not one
+  row per order: order 7015 appears twice, which the learner finds in the chapter's last
+  challenge, so this line says nothing about how many rows an order has;
+- each row of clean_orders is an order too, with the same columns as orders.parquet: set beside
+  it, it shows which orders the two hold differently;
+- daily_sales keeps one row per day, the day and its revenue: it shows 51.50, and not which orders
+  make it up;
+- the dashboard keeps the values it shows, one per day: it shows 51.50, and nothing about orders.
+
+Then the inspector, below, opens on the chosen asset, and the learner may open any other. The
+choice of an explanation to test comes after the inspector.
+
+The decision states what the Thursday prediction found, and it sits just below that prediction,
+in view while the learner is still choosing. So it waits until the learner has committed their
+answer there, and the choice of an explanation waits for the decision; until then, one line
+stands in place of each, naming the figure it waits for by its caption. Nothing that shows before
+the answer (a caption, the words above the inspector) may say that Thursday's totals differ.
+
 ## Testing an explanation for Thursday
 
-Once the Thursday prediction has shown the difference (205.50 against 51.50), the investigation
-section opens with a choice: which explanation will you test? Three explanations, each one a
-reasonable engineer could hold:
+Once the Thursday prediction has shown the difference (205.50 against 51.50), and the learner has
+decided where to look first and used the inspector, the investigation ends with a choice: which
+explanation will you test? Three explanations, each one a reasonable engineer could hold:
 
 - some of Thursday's orders are not counted in daily_sales;
 - Thursday's orders are counted, but at lower values;
 - some of Thursday's orders are counted on another day.
 
-The figure keeps the choice and reveals nothing. The learner tests it: Thursday's rows in the
-inspector, then the query builder in the construction section, which adds up an asset's rows and
-compares each day with daily_sales. There is no "I can't tell yet": the figure asks which
+The figure keeps the choice and reveals nothing. The learner tests it with the query builder in the
+construction section, which adds up an asset's rows and compares each day with daily_sales; the
+inspector, above the choice, has already shown them Thursday's rows. There is no "I can't tell yet": the figure asks which
 explanation to test, not which is true.
 
 Once the learner's query rebuilds daily_sales, a check after the challenge reads the rows, at a

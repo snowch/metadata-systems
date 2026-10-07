@@ -78,12 +78,14 @@ export const invisibleSystem: LessonInput = {
       interactives: [
         {
           id: "platform",
+          role: "reference",
           kind: "platform-map",
           timeModel: "lab",
           caption: LABELS.captions.platform,
         },
         {
           id: "dashboard",
+          role: "inspect",
           kind: "dashboard",
           timeModel: "lab",
           caption: LABELS.captions.dashboard,
@@ -100,6 +102,7 @@ export const invisibleSystem: LessonInput = {
       interactives: [
         {
           id: "predict-owner",
+          role: "experiment",
           kind: "requirement",
           timeModel: "lab",
           caption: LABELS.captions.p1,
@@ -134,6 +137,7 @@ export const invisibleSystem: LessonInput = {
         },
         {
           id: "predict-days",
+          role: "experiment",
           kind: "lab-prediction",
           timeModel: "lab",
           caption: LABELS.captions.p2,
@@ -165,28 +169,66 @@ export const invisibleSystem: LessonInput = {
       prose: "",
       interactives: [
         {
-          id: "why-thursday",
-          kind: "hypothesis",
+          id: "where-first",
+          role: "experiment",
+          kind: "decision",
           timeModel: "lab",
-          caption: LABELS.captions.hypothesis,
+          caption: LABELS.captions.where,
           props: {
-            // The effect is established; now the cause, as an explanation the learner chooses
-            // and tests with the figures that follow, checked after their rebuild passes.
-            question: PROSE.hQuestion,
-            options: THURSDAY,
-            commit: LABELS.hCommit,
-            mine: PROSE.hMine,
-            test: PROSE.hTest,
+            // The effect is established; first, where to look. Each option is an asset and the
+            // evidence sought there; the line after the choice says what that asset can show, a
+            // fact of its shape, never what it shows for Thursday. The inspector opens on it.
+            question: PROSE.wQuestion,
+            options: Object.entries(LABELS.wOptions).map(([value, label]) => ({
+              value,
+              label,
+              after: PROSE.wAfter[value as keyof typeof PROSE.wAfter],
+            })),
+            commit: LABELS.wCommit,
+            mine: PROSE.wMine,
+            test: PROSE.wNext,
+            // Its question states what the Thursday prediction found, so it waits for it.
+            waits: "predict-days",
           },
         },
         {
           id: "storage",
+          role: "inspect",
           kind: "storage-inspector",
           timeModel: "lab",
           caption: LABELS.captions.inspector,
           lead: PROSE.inspectorLead,
           after: PROSE.inspectorAfter,
-          props: { initial: "orders.parquet" },
+          props: {
+            initial: "orders.parquet",
+            from: {
+              figure: "where-first",
+              assets: {
+                orders: "orders.parquet",
+                clean: "clean_orders",
+                daily: "daily_sales",
+                dashboard: "sales_dashboard",
+              },
+            },
+          },
+        },
+        {
+          id: "why-thursday",
+          role: "experiment",
+          kind: "decision",
+          timeModel: "lab",
+          caption: LABELS.captions.hypothesis,
+          props: {
+            // Then the cause, as an explanation the learner chooses and tests with the figures
+            // that follow, checked after their rebuild passes.
+            question: PROSE.hQuestion,
+            options: THURSDAY,
+            commit: LABELS.hCommit,
+            mine: PROSE.hMine,
+            test: PROSE.hTest,
+            // Where to look comes before what could explain it.
+            waits: "where-first",
+          },
         },
       ],
     },
@@ -197,6 +239,7 @@ export const invisibleSystem: LessonInput = {
       interactives: [
         {
           id: "build-daily-sales",
+          role: "experiment",
           kind: "challenge",
           timeModel: "lab",
           caption: LABELS.captions.c1,
@@ -205,6 +248,7 @@ export const invisibleSystem: LessonInput = {
         },
         {
           id: "why-thursday-check",
+          role: "experiment",
           kind: "hypothesis-check",
           timeModel: "lab",
           caption: LABELS.captions.check,
@@ -239,6 +283,7 @@ export const invisibleSystem: LessonInput = {
       interactives: [
         {
           id: "changes",
+          role: "experiment",
           kind: "change-lab",
           timeModel: "lab",
           caption: LABELS.captions.change,
@@ -270,6 +315,7 @@ export const invisibleSystem: LessonInput = {
       interactives: [
         {
           id: "map",
+          role: "experiment",
           kind: "question-map",
           timeModel: "lab",
           caption: LABELS.captions.map,
@@ -293,6 +339,7 @@ export const invisibleSystem: LessonInput = {
       interactives: [
         {
           id: "build-rules",
+          role: "experiment",
           kind: "challenge",
           timeModel: "lab",
           caption: LABELS.captions.c2,
@@ -301,6 +348,7 @@ export const invisibleSystem: LessonInput = {
         },
         {
           id: "predict-rules",
+          role: "experiment",
           kind: "lab-prediction",
           timeModel: "lab",
           caption: LABELS.captions.p3,

@@ -32,19 +32,35 @@ export const PROSE = {
     "The dashboard shows 51.50 for Thursday. `daily_sales` holds the same figure for Thursday. Add up price times quantity over Thursday's rows of `orders.parquet`. What do you expect the total to be?",
   p2UndecidedLine: "You said you could not tell yet. The lab found {answer}.",
   p2Explain:
-    "Thursday's rows of `orders.parquet` add up to 205.50. `daily_sales` holds 51.50 for Thursday. So `daily_sales` is not simply the total of Thursday's orders in `orders.parquet`.\n\nThursday's raw total of 205.50 is close to Wednesday's (198.75) and Friday's (204.24). In `orders.parquet`, Thursday was not a slow day.\n\nThe table shows every day: the totals are equal on three days (Monday, Friday and Sunday) and differ on four (Tuesday, Wednesday, Thursday and Saturday).\n\nNow there is a difference to explain. What might explain it?\n\nThe next section lets you read the rows of `orders.parquet`.",
+    "Thursday's rows of `orders.parquet` add up to 205.50. `daily_sales` holds 51.50 for Thursday. So `daily_sales` is not simply the total of Thursday's orders in `orders.parquet`.\n\nThursday's raw total of 205.50 is close to Wednesday's (198.75) and Friday's (204.24). In `orders.parquet`, Thursday was not a slow day.\n\nThe table shows every day: the totals are equal on three days (Monday, Friday and Sunday) and differ on four (Tuesday, Wednesday, Thursday and Saturday).\n\nNow there is a difference to explain.\n\nFirst, where to look: the next section starts there.",
+  wQuestion:
+    "Thursday's orders in `orders.parquet` add up to 205.50. `daily_sales` and the dashboard both show 51.50. Somewhere between them, the total changed. Which asset would you inspect first to find where, and what would you look for there?",
+  wMine: "You will start with: {choice}.",
+  /** What the chosen asset can show: a fact of its shape, never what it shows for Thursday. */
+  wAfter: {
+    orders:
+      "Each row of `orders.parquet` is an order, with its price, quantity and status. It shows what Thursday's 205.50 is made of. It does not say which orders `daily_sales` counts.",
+    clean:
+      "Each row of `clean_orders` is an order too, with the same columns as `orders.parquet`. Set beside it, it shows which orders the two hold differently.",
+    daily:
+      "`daily_sales` keeps one row per day: the day and its revenue. It shows 51.50, and not which orders make it up.",
+    dashboard:
+      "The dashboard keeps the values it shows, one per day. It shows 51.50, and nothing about orders.",
+  },
+  wNext:
+    "The inspector below opens on the asset you chose. Look there first, then at any other asset.",
   hQuestion:
     "Thursday's `orders.parquet` rows add up to 205.50, but `daily_sales` holds 51.50. Which explanation will you test?",
   hMine: "You will test: {choice}.",
   hTest:
-    "Read Thursday's rows in the inspector below. In the next section, the query builder adds up an asset's rows and compares each day with `daily_sales`. Once your query rebuilds `daily_sales`, a check at the end of that section reads the rows and says which explanations they support.",
+    "In the next section, the query builder adds up an asset's rows and compares each day with `daily_sales`. Once your query rebuilds `daily_sales`, a check at the end of that section reads the rows and says which explanations they support.",
   cMine: "You chose to test: {choice}.",
   cNone: "You did not choose an explanation to test.",
   cLab: "Of Thursday's {orders} orders in `orders.parquet`, {kept} are among the rows your query keeps, each at the same price and quantity and on the same day. The other {left} are not, and together they are worth {leftTotal}, the whole difference.",
   cExplain:
     "The rows support one explanation. Some of Thursday's orders are not counted.\n\nThey rule out the other two. No order is counted at a lower value, and none on another day.\n\nIf you chose another explanation, the rows have ruled it out. The first explanation you test need not be the right one.\n\nThe rows do not say why those orders were left out. Ask: what do they have in common?\n\nThe challenge at the end of this chapter asks which rows the cleaning keeps.",
   inspectorLead:
-    "Choose an asset from the list. The figure shows what storage records about it: its record, what storage says about eight questions, its columns and their types, and its rows.\n\nThe figure asks every asset the same eight questions.\n\nThen try one of these:\n\n- test the explanation you chose: find the rows of `orders.parquet` that make Thursday's total differ from `daily_sales`;\n- compare `orders.parquet` with `clean_orders`;\n- put the seven assets in the order they were last written, and say what that order suggests and what it cannot prove;\n- open `daily_sales` and read what storage says about each question.",
+    "The inspector is your instrument for the question above.\n\nChoose an asset from the list. The inspector shows what storage records about it. That includes its record, what storage says about eight questions, its columns and their types, and its rows.\n\nIt asks every asset the same eight questions.\n\nThen try one of these:\n\n- compare `orders.parquet` with `clean_orders`;\n- put the seven assets in the order they were last written, and say what that order suggests and what it cannot prove;\n- open `daily_sales` and read what storage says about each question.",
   inspectorAfter:
     "Storage cannot answer some of the questions about `daily_sales`. The next section tries the data on them.",
   construction:

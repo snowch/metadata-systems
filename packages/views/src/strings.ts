@@ -14,6 +14,22 @@ export const DEFAULT_VIEW_STRINGS = {
     "Every figure in this chapter runs the Metadata Lab, a small data platform in your browser. The lab holds the shop's files and tables for the week of 7 to 13 September 2026. Its programs run in SQL over the rows you see. What a figure shows is worked out from those rows each time. The lab's clock is the week's own, not real time. Nothing leaves your browser.",
   badge: "Lab",
   badgeLabel: "How this figure works: {model}",
+  // What each figure asks of the learner, on its badge, and the note the badge opens, above the
+  // lab's (brief Z; CLAUDE.md, "Experiments, instruments and explanations").
+  roles: {
+    experiment: "Experiment",
+    inspect: "Inspect",
+    reference: "Reference",
+  } as Record<string, string>,
+  roleBadgeLabel: "What this figure asks of you is {role}",
+  roleNotes: {
+    experiment:
+      "You commit first, to a prediction, a choice or a query you build. Then you act, and the lab's evidence answers. What you take away is what the evidence shows beside what you expected.",
+    inspect:
+      "This is an instrument: it shows what the platform holds, and answers no question by itself. Use it on the question the page has just asked, and look for the evidence that question needs.",
+    reference:
+      "You have what you were told about the platform, kept to hand. It asks nothing of you.",
+  } as Record<string, string>,
   modelNote: "How the figures run",
   modelVsReality: "How this lab differs from a real platform",
   modelVsRealityNone: "How the course's model differs from a real platform",
@@ -106,6 +122,8 @@ export const DEFAULT_VIEW_STRINGS = {
   runWithChange: "Run with this change",
   ranWith: "The lab ran the whole week again with this change: {change}.",
   locked: "This figure starts once your answer to the challenge called “{title}” passes its tests.",
+  // In place of a figure that waits for an answer above it (brief Z3).
+  waits: "This figure starts once your answer to “{caption}”, above, is committed.",
   storageNowHeading: "What storage holds on Monday morning",
   compareNote:
     "Storage holds only this week's values. Each comparison with the week as it first ran is the lab's, because it ran both weeks.",

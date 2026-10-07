@@ -1,12 +1,15 @@
 // Copyright © 2026 Christopher Snow
 
-// An explanation to test (CLAUDE.md, "Interaction is the explanation": the effect before its
-// cause). Once the learner has seen a difference, `hypothesis` asks which explanation they will
-// test, keeps their choice and shows nothing more: the testing is theirs, with the figures that
-// follow. `hypothesis-check` sits after the learner's own work (a challenge that must pass first)
-// and, at a press, reads the rows: which explanations they support and which they rule out, with
-// the learner's choice marked. It says what the rows show, never why, which is left to the
-// chapter's own investigation. Both presses are kept, as a prediction is.
+// A decision the learner makes in an investigation (CLAUDE.md, "Experiments, instruments and
+// explanations"): where to look first, or which explanation to test. `decision` keeps the choice
+// and reveals nothing about the answer: it may say what the chosen option can show (a line per
+// option), and how to go on, and the testing is the learner's own, with the figures that follow.
+// A decision that states what an earlier figure found waits for the learner's answer there, so
+// that it cannot give that answer away to a learner still choosing it.
+// `hypothesis-check` sits after the learner's own work (a challenge that must pass first) and, at
+// a press, reads the rows: which explanations they support and which they rule out, with the
+// learner's choice marked. It says what the rows show, never why, which is left to the chapter's
+// own investigation. Both presses are kept, as a prediction is.
 
 import { z } from "zod";
 
@@ -14,7 +17,7 @@ import { ASSET_IDS, DAYS, KEEP, runProbe, week } from "@ms/lab";
 import { Prose, useSlot, type InteractiveProps } from "@platform/lesson-runtime";
 import { PredictionChallenge } from "@platform/primitives";
 
-import { challengeTitle, usePassed } from "../passed";
+import { challengeTitle, figureCaption, usePassed } from "../passed";
 import { withProps } from "../props";
 import { plain, Rich } from "../Rich";
 import { ScrollRegion } from "../ScrollRegion";
@@ -30,25 +33,46 @@ const Explanation = z.object({
 
 const Choose = z.object({
   question: z.string().min(1),
-  options: z.array(Explanation).min(2),
+  options: z
+    .array(
+      z.object({
+        value: z.string(),
+        label: z.string(),
+        /** For an explanation a check will read: the findings that support it. */
+        means: z.array(z.string().min(1)).min(1).optional(),
+        /** What this option can show, said once it is chosen: never the answer it leads to. */
+        after: z.string().min(1).optional(),
+      }),
+    )
+    .min(2),
   commit: z.string().min(1),
-  /** After the choice: the learner's line, with `{choice}`, and how to test it. */
+  /** After the choice: the learner's line, with `{choice}`, and how to go on. */
   mine: z.string().includes("{choice}"),
-  test: z.string().min(1),
+  test: z.string().min(1).optional(),
+  /** An earlier figure whose committed answer this one waits for; until then, a line instead. */
+  waits: z.string().min(1).optional(),
 });
 
-export const Hypothesis = withProps(
+export const Decision = withProps(
   Choose,
-  function Hypothesis({
+  function Decision({
     data,
     interactive,
+    lesson,
     store,
   }: InteractiveProps & { data: z.infer<typeof Choose> }) {
     const strings = useViewStrings();
     const [saved, setStored] = useSlot<{ choice: string }>(store, interactive.id);
+    const [earlier] = useSlot<{ choice?: string }>(store, data.waits ?? `${interactive.id}:waits`);
+    if (data.waits && !earlier?.choice)
+      return (
+        <p className="figure-locked" role="note">
+          {format(strings.waits, { caption: figureCaption(lesson, data.waits) })}
+        </p>
+      );
     const chosen = data.options.find((o) => o.value === saved?.choice);
     return (
-      <div className="hypothesis" data-committed={chosen ? "true" : "false"}>
+      <div className="decision" data-committed={chosen ? "true" : "false"}>
         <Prose markdown={data.question} />
         <PredictionChallenge
           name={`${interactive.id}-choice`}
@@ -63,7 +87,8 @@ export const Hypothesis = withProps(
             <p role="status" className="prediction-compare">
               {format(data.mine, { choice: chosen.label })}
             </p>
-            <Prose markdown={data.test} />
+            {chosen.after && <Prose markdown={chosen.after} />}
+            {data.test && <Prose markdown={data.test} />}
           </div>
         )}
       </div>
@@ -72,7 +97,7 @@ export const Hypothesis = withProps(
 );
 
 const Check = z.object({
-  /** The `hypothesis` figure whose choice this checks, and its explanations, in its order. */
+  /** The `decision` figure whose choice this checks, and its explanations, in its order. */
   of: z.string().min(1),
   options: z.array(Explanation).min(2),
   /** The challenge whose work must pass before the rows are read. */

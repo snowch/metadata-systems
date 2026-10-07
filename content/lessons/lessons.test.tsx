@@ -3,9 +3,9 @@
 
 // Every chapter in the course, checked as content: it parses, its challenges can be completed
 // with their references and not with their starting points, it uses no term before the chapter
-// that introduces it (including chapters not yet written), every figure it names exists and
-// runs a model the book has, it states no prediction's answer before the learner commits, and
-// the whole page renders.
+// that introduces it (including chapters not yet written), every figure it names exists, runs a
+// model the book has and says what it asks of the learner, it states no prediction's answer before
+// the learner commits, and the whole page renders.
 
 import { readFileSync } from "node:fs";
 
@@ -17,6 +17,7 @@ import {
   INTERACTIVES,
   MODELS,
   PREDICTION_KINDS,
+  ROLES,
   createBook,
   grade,
   labAnswer,
@@ -114,6 +115,53 @@ describe("the course's chapters", () => {
         }
   });
 
+  it("states a prediction's result below it only in a figure that waits for its answer", () => {
+    // A figure below a prediction can be in view while the learner is still choosing, so it states
+    // what the prediction found only once the answer is committed: it waits for the prediction, or
+    // for a figure that waits for it. Captions, leads, after-texts, tasks and the sections' own
+    // prose show at once, so none of them states it.
+    for (const l of LESSONS) {
+      const placed = l.sections.flatMap((s) => s.interactives.map((x) => ({ s, x })));
+      const waits = (id: string) =>
+        (placed.find((f) => f.x.id === id)?.x.props as { waits?: string } | undefined)?.waits;
+      const waitsFor = (id: string, earlier: string): boolean => {
+        const w = waits(id);
+        return w !== undefined && (w === earlier || waitsFor(w, earlier));
+      };
+      placed.forEach(({ x }, i) => {
+        const w = waits(x.id);
+        if (w === undefined) return;
+        const at = placed.findIndex((f) => f.x.id === w);
+        expect(at, `${x.id} waits for an earlier figure`).toBeGreaterThanOrEqual(0);
+        expect(at, `${x.id} waits for an earlier figure`).toBeLessThan(i);
+        expect(PREDICTION_KINDS, `${x.id} waits for an answer`).toContain(placed[at]?.x.kind);
+      });
+      placed.forEach(({ s, x }, i) => {
+        if (x.kind !== "lab-prediction") return;
+        const found = runProbe(
+          (x.props as { probe: Parameters<typeof runProbe>[0] }).probe,
+          week(),
+        );
+        if (found.kind !== "day-total") return;
+        const result = found.checks.find((c) => c.key === found.day)?.actual;
+        expect(result, x.id).toBeTruthy();
+        const below = placed.slice(i + 1).map((f) => f.x);
+        const tasks = below
+          .filter((f) => f.kind === "challenge")
+          .map((f) => l.challenges.find((c) => c.id === f.props["challengeId"])?.task ?? "");
+        const atOnce = [
+          ...l.sections.slice(l.sections.indexOf(s)).map((t) => t.prose),
+          ...below.flatMap((f) => [f.caption, f.lead ?? "", f.after ?? ""]),
+          ...tasks,
+        ];
+        for (const text of atOnce) expect(text, x.id).not.toContain(result);
+        for (const f of below)
+          if (JSON.stringify(f.props).includes(result ?? ""))
+            expect(waitsFor(f.id, x.id), `${f.id} states what ${x.id} found`).toBe(true);
+      });
+    }
+  });
+
   it("questions a requirement without showing what the platform records before it is asked", () => {
     // A requirement figure (CLAUDE.md, "Question the requirement"): the platform's record answers
     // some of the requirement's readings and not others, and nothing the learner reads before the
@@ -150,7 +198,7 @@ describe("the course's chapters", () => {
   });
 
   it("checks an explanation only against a choice the chapter offers, after the learner's work", () => {
-    // A hypothesis check reads the choice of a hypothesis figure earlier in the same chapter, with
+    // A hypothesis check reads the choice of a decision figure earlier in the same chapter, with
     // the same explanations; it waits for a challenge; its rows support some explanations and
     // rule out others; and neither figure names what the left-out rows have in common, which a
     // later challenge asks the learner to find.
@@ -232,36 +280,66 @@ describe("the course's chapters", () => {
         }
   });
 
-  it("answers the eight questions in its chapter's notes for every prediction", () => {
-    // Each figure that takes a commitment has a block in the notes' "Predictions" section, with
-    // an answer to each question CLAUDE.md asks of a prediction ("Interaction is the
-    // explanation"), so a prediction cannot go in without its author having asked them.
-    const LABELS = [
+  it("gives every figure a role, and its block in the chapter's notes, in the page's order", () => {
+    // CLAUDE.md, "Experiments, instruments and explanations": a figure says what it asks of the
+    // learner, and the notes' "Figures" section says why it is on the page. An experiment answers
+    // twelve questions, or names the experiment it completes; an instrument or a reference answers
+    // two. A figure that takes a commitment is an experiment.
+    const EXPERIMENT = [
       "Objective",
       "Known before",
-      "Hypotheses",
-      "Told apart by",
+      "Driving question",
+      "The action",
+      "Why the action",
+      "Evidence",
+      "Consequence",
+      "Predictable",
       "Gives nothing away",
-      "If wrong",
+      "Not knowing",
       "Next question",
-      "A belief, not a guess",
+      "An experiment",
     ];
+    const OTHER = ["Serves", "Why now"];
+    const answers = (block: string, label: string) =>
+      new RegExp(`\\*\\*${label}:\\*\\* \\S`).test(block);
     const missing: string[] = [];
     for (const l of LESSONS) {
       const notes = readFileSync(
         `docs/notes/chapter-${String(chapterOf(l)).padStart(2, "0")}.md`,
         "utf8",
       );
-      const section = notes.split("\n## Predictions\n")[1]?.split("\n## ")[0] ?? "";
-      for (const s of l.sections)
-        for (const x of s.interactives) {
-          if (!PREDICTION_KINDS.includes(x.kind)) continue;
-          const block = section.split(`\n### \`${x.id}\`\n`)[1]?.split("\n### ")[0];
-          if (block === undefined) missing.push(`${l.id}: ${x.id} has no block`);
-          for (const label of LABELS)
-            if (block !== undefined && !new RegExp(`\\*\\*${label}:\\*\\* \\S`).test(block))
-              missing.push(`${l.id}: ${x.id} does not answer "${label}"`);
+      const section = notes.split("\n## Figures\n")[1]?.split("\n## ")[0] ?? "";
+      const blocks = new Map(
+        section
+          .split("\n### `")
+          .slice(1)
+          .map((b) => [b.slice(0, b.indexOf("`")), b] as const),
+      );
+      const figures = l.sections.flatMap((s) => s.interactives);
+      expect([...blocks.keys()], `${l.id}: the notes' figures, in order`).toEqual(
+        figures.map((x) => x.id),
+      );
+      for (const x of figures) {
+        const role = x.role;
+        if (role === undefined || !(ROLES as readonly string[]).includes(role)) {
+          missing.push(`${l.id}: ${x.id} has no role`);
+          continue;
         }
+        if (PREDICTION_KINDS.includes(x.kind) && role !== "experiment")
+          missing.push(`${l.id}: ${x.id} takes a commitment, so it is an experiment`);
+        const block = blocks.get(x.id) ?? "";
+        if (!block.includes(`\n- **Role:** ${role}\n`))
+          missing.push(`${l.id}: ${x.id}'s notes do not give its role, ${role}`);
+        const part = /\*\*Part of:\*\* `([^`]+)`/.exec(block)?.[1];
+        if (part !== undefined) {
+          const whole = figures.find((f) => f.id === part);
+          if (role !== "experiment" || whole?.role !== "experiment" || whole === x)
+            missing.push(`${l.id}: ${x.id} is part of ${part}, which is no other experiment`);
+          continue;
+        }
+        for (const label of role === "experiment" ? EXPERIMENT : OTHER)
+          if (!answers(block, label)) missing.push(`${l.id}: ${x.id} does not answer "${label}"`);
+      }
     }
     expect(missing).toEqual([]);
   });

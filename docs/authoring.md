@@ -23,8 +23,10 @@ the title and the introduced terms to the plan as well.
   uses one, including chapters not yet written. `termExemptions` lists a word used in another
   sense, with the reason (Chapter 1 uses "run" as a verb; the noun is Chapter 6's).
 - `sections`: exactly ten, in the platform's order. A figure (`interactives`) has an `id`, a
-  `kind` from the book's registry, a `timeModel` (`lab`, or `none` for a figure that runs nothing),
-  a plain-text `caption`, Markdown `lead` and `after`, and `props` its schema checks.
+  `role` (what it asks of the learner: `experiment`, `inspect` or `reference`; "Experiments,
+  instruments and references", below), a `kind` from the book's registry, a `timeModel` (`lab`,
+  or `none` for a figure that runs nothing), a plain-text `caption`, Markdown `lead` and `after`,
+  and `props` its schema checks.
 - `challenges`: built from choices for now (`gradedDirection: "answer"` with `choice` fields and
   `answers` tests naming a grader the book has). Each has five hints, a starting point that fails
   and a reference that passes.
@@ -51,9 +53,9 @@ a zod schema and says so in its place when they do not fit.
 | `dashboard` | `changes?` | the reporting tool's chart as Monday morning shows it, one bar per value, from the lab's week |
 | `lab-prediction` | `question`, `options` (each a value, a label, and either `means`, the answers of a naming probe it stands for, or `range`, the counts of a counting probe), `probe` (`owner-kind` of an asset; `day-total` of a source, a filter, a target and a day; `clean-fits`), `explain?`, `changes?`, `requires?` (a challenge id), `mode?` (`predict`, the default, or `choose`), `compare?` (for a choice: its button, `commit`, in words about what it shows, and the line after it, `mine` with `{choice}` and `lab` with `{answer}`), `undecided?` (the option "I can't tell yet": a value, a label, and the `line` shown after it, with `{answer}`) | the learner commits to an option, and the commitment stays (no "Predict again"); the lab runs the probe and answers with the option that stands for what it found, with its evidence; a prediction is marked right or not, "I can't tell yet" and a choice are set beside what the lab found and marked neither; `explain` shows only after the commit; with `requires`, the figure waits until the learner's own work on that challenge passes |
 | `requirement` | `requirement` (its words, as written), `question`, `options` (each a value, a label, `short`, what it needs stored, `asks`, the question it asks with names between backticks, and `means`, the probe's answers that answer it), `undecided` (the option to store nothing until the requirement says what it is for), `probe` (`owner-kind` of an asset), `buttons` (`choose` and `show`), `headings` (`asks`, `store`, `answers`), `text` (`mine` with `{choice}`, `undecided`, `meanings`, `lab` with `{value}`, `{owned}` and `{tables}`, `explain?`) | a requirement questioned (`CLAUDE.md`, "Question the requirement"): the learner chooses what to store, or nothing yet; the figure then shows the questions the requirement could be asking, each beside what it needs stored, with their own row marked; at a second press the lab runs the probe, says what the platform records, and the same table gains a column saying which questions that record answers, in words and without colour; no reading is called wrong, and both presses stay |
-| `hypothesis` | `question`, `options` (each a value, a label, and `means`, the findings that support it: `left`, `lower`, `moved`), `commit`, `mine` (with `{choice}`), `test` (how to test it with the figures that follow) | once the learner has seen an effect, they choose which explanation to test; the figure keeps the choice and reveals nothing: the testing is theirs |
-| `hypothesis-check` | `of` (the `hypothesis` figure it checks), `options` (the same explanations, in the same order), `requires` (a challenge id), `probe` (`day-gap`: a source, the asset a rebuild reads and the rows it keeps, a target and a day), `button`, `headings` (`explanation`, `supported`), `text` (`mine` with `{choice}`, `none`, `lab` with `{orders}`, `{kept}`, `{left}` and `{leftTotal}`, `explain?`) | waits until the learner's own work on the challenge passes; at a press, reads the day's rows against the rows the rebuild keeps, and marks which explanations they support, the learner's choice marked; says what the rows show, never why |
-| `storage-inspector` | `initial?`, `changes?` | every asset by the system that holds it; for the one chosen, what its system records, what storage says about each of the chapter's eight questions (the same eight for every asset), its columns and its rows; a table wider than its box says so |
+| `decision` | `question`, `options` (each a value, a label, `means?`, for an explanation a check will read, the findings that support it: `left`, `lower`, `moved`, and `after?`, a line on what the option can show, never what it leads to), `commit`, `mine` (with `{choice}`), `test?` (how to go on with the figures that follow), `waits?` (an earlier figure that takes a commitment) | a decision in an investigation: where to look first, or which explanation to test; the figure keeps the choice and reveals nothing of the answer: after the choice it shows the learner's line, the chosen option's `after` and `test`, and the testing is theirs; with `waits`, a line stands in its place until the learner has committed their answer in that figure, so a decision that states what a prediction found cannot give it away |
+| `hypothesis-check` | `of` (the `decision` figure it checks), `options` (the same explanations, in the same order), `requires` (a challenge id), `probe` (`day-gap`: a source, the asset a rebuild reads and the rows it keeps, a target and a day), `button`, `headings` (`explanation`, `supported`), `text` (`mine` with `{choice}`, `none`, `lab` with `{orders}`, `{kept}`, `{left}` and `{leftTotal}`, `explain?`) | waits until the learner's own work on the challenge passes; at a press, reads the day's rows against the rows the rebuild keeps, and marks which explanations they support, the learner's choice marked; says what the rows show, never why |
+| `storage-inspector` | `initial?`, `from?` (a `decision` figure, and for each of its options the asset to open), `changes?` | every asset by the system that holds it; for the one chosen, what its system records, what storage says about each of the chapter's eight questions (the same eight for every asset), its columns and its rows; a table wider than its box says so; with `from`, it opens on the asset the learner chose in that decision, until they choose another here |
 | `change-lab` | `changes` (each an id, a label and an outcome), `afterAll?`, `challengeId`, `target?`, `prediction` (a question and options with count ranges) | waits until the learner's own query passes; for each change, takes a committed prediction of how many queries in the builder's choices will rebuild the target, then runs the week with it and shows those queries (the lab's answer), what storage holds on Monday morning with the comparison against the first run labelled as the lab's, and the learner's query against the new target; each outcome shows once its prediction is committed, and `afterAll` once all are |
 | `question-map` | `asset?`, `challengeId`, `weeks?` (each a change id and its label) | the learner places the chapter's questions about one asset in three groups and commits, for good; the lab then places them (storage, the data, only a record), each with its evidence and, for a question only a record answers, the kind of record that would; a week selector runs the placement on each change and marks the questions that moved; a query and its source are named only once the learner's own query passes |
 | `challenge` | `challengeId` | the runtime's challenge runner with the book's choice editor, which shows the SQL the choices mean and its result |
@@ -61,28 +63,58 @@ a zod schema and says so in its place when they do not fit.
 The book's graders are `reproduces` (a sum compared with a target day by day) and `same-rows` (a
 set of cleaning rules compared with `clean_orders` as multisets).
 
-## Predictions
+## Experiments, instruments and references
 
-A prediction is built around what the learner should learn (`CLAUDE.md`, "Interaction is the
-explanation"). Every figure that takes a commitment before the lab answers (`PREDICTION_KINDS` in
-`packages/views/src/book.tsx`: a prediction, a requirement, a change run after a prediction, a
-sort) gets a block in the chapter's notes, under "Predictions", before it is built: a heading with
-its id, and the eight answers, each under its own label.
+Every figure says what it asks of the learner (`CLAUDE.md`, "Experiments, instruments and
+explanations"), in its `role`, which its badge names; the note the badge opens says what the role
+asks, then how the lab made what the figure shows (`roleNotes` on the book, `roles` and
+`roleBadgeLabel` in `packages/views/src/strings.ts`).
+
+- `experiment`: the learner commits (to a prediction, a choice, a decision or a query they build),
+  acts, and the lab's evidence answers. Every figure that takes a commitment before the lab
+  answers (`PREDICTION_KINDS` in `packages/views/src/book.tsx`: a prediction, a requirement, a
+  decision, a change run after a prediction, a sort) is one, and so is a challenge. Prefer it.
+- `inspect`: an instrument the learner examines for evidence, such as the inspector or the
+  dashboard. Never present it as the activity: put a question in front of it and say what to look
+  for. Chapter 1's inspector follows a decision about where to look first (`where-first`) and
+  opens on the asset chosen there (`from`).
+- `reference`: what the learner has been told, kept to hand, such as the platform map. It asks
+  nothing.
+
+Before a figure is built, it gets a block in the chapter's notes, under "Figures", in the page's
+order: a heading with its id, its role, and for an experiment twelve answers, each under its own
+label.
 
 ```
 ### `predict-days`
 
-- **Objective:** what the learner should understand or be able to do afterwards.
+- **Role:** experiment
+- **Objective:** what the learner should understand, discover or be able to do afterwards.
 - **Known before:** what is on the page above the figure, not what the lab knows.
-- **Hypotheses:** the beliefs a learner could reasonably hold, one per option.
-- **Told apart by:** the observable result, and the evidence the lab reads for it.
+- **Driving question:** the question, hypothesis or decision that drives it.
+- **The action:** what the learner does.
+- **Why the action:** why the learner must act to learn it, and not only look.
+- **Evidence:** what the action produces.
+- **Consequence:** what they believed before, what the evidence lets them believe after, and what
+  a wrong prediction teaches.
+- **Predictable:** whether they could reason to the outcome from what is on the page.
 - **Gives nothing away:** why no option, caption or line above it carries the explanation.
-- **If wrong:** what the result teaches a learner whose option it does not support.
+- **Not knowing:** whether "I can't tell yet" could be the right engineering response, and
+  whether the figure offers it.
 - **Next question:** the question the result raises, and where the chapter takes it.
-- **A belief, not a guess:** why the learner is testing a belief, not guessing the author's answer.
+- **An experiment:** why it is an experiment, and not an instrument or a reference.
 ```
 
-The content tests fail a figure of these kinds with no block, or a block missing a label.
+An instrument or a reference answers two, **Serves** (the question it serves) and **Why now**
+(why the learner needs it at that point). A figure that completes another experiment, such as a
+check after the learner's own work, gives **Part of** and that experiment's id instead of the
+twelve. The content tests fail a figure without a role, a commitment that is not an experiment, a
+block missing, out of the page's order or not repeating the figure's role, and an answer missing.
+
+## Predictions
+
+A prediction is an experiment, built around what the learner should learn (`CLAUDE.md`,
+"Interaction is the explanation").
 
 - **State the objective first.** If it cannot be said in a sentence, redesign the exercise.
 - **Ask for an observable result.** Each option names a result and the belief it reflects ("51.50:
@@ -90,10 +122,13 @@ The content tests fail a figure of these kinds with no block, or a block missing
   is chosen for its wording. An option never says why the result will be what it is: that is the
   explanation, and it comes after the evidence.
 - **Establish the effect before asking for its cause.** "Is there a difference?" comes before
-  "what explains it?", and the second is an investigation, not a reveal: the learner chooses an
-  explanation to test (`hypothesis`), tests it with the figures that follow, and the rows are read
-  against their choice only after their own work passes (`hypothesis-check`). Chapter 1's Thursday
-  is the example.
+  "where is it?", "what could explain it?" and "which explanation fits?", and the later questions
+  are an investigation, not a reveal: the learner decides where to look first (a `decision` whose
+  choice opens the inspector), chooses an explanation to test (another `decision`), tests it with
+  the figures that follow, and the rows are read against their choice only after their own work
+  passes (`hypothesis-check`). Chapter 1's Thursday is the example. Each decision waits for the
+  answer before it (`waits`): the first states the difference the prediction found, and the
+  figure just below a prediction is in view while the learner is still choosing.
 - **Prefer independent evidence**: a total the learner could add up, rows they could read, not
   a failure inside a program they cannot see.
 - **Offer "I can't tell yet"** where nothing on the page settles the question (`undecided` on the
@@ -162,9 +197,10 @@ brief of facts and checked by the managing model for facts only. For a chapter:
 - The term gate against the whole plan, and the plan's list against `docs/plan.md`.
 - The model gate: every figure runs a model the book has a note for.
 - `content/lessons/lessons.test.tsx`: every reference passes and every starting point fails; no
-  prediction's answer appears in its question, caption, lead or after-text; every prediction has
-  its block in the chapter's notes, with all eight answers, and every option stands for an answer
-  or a count, other than "I can't tell yet"; the notes
+  prediction's answer appears in its question, caption, lead or after-text; every figure has a
+  role and its block in the chapter's notes, in the page's order, with every answer its role
+  needs; a prediction's result is stated below it only in a figure that waits for its answer;
+  every option stands for an answer or a count, other than "I can't tell yet"; the notes
   have a "Requirements" section naming every requirement figure; a requirement figure's record
   answers some readings and not all, and no text before its second press names that record; the
   whole chapter renders in jsdom with no figure problem.
@@ -175,7 +211,8 @@ brief of facts and checked by the managing model for facts only. For a chapter:
   graded again on load and a tampered mark earns nothing; a reset takes two steps; hints come one
   rung at a time; a prediction is committed before the lab answers; a requirement's meanings come
   after the learner's choice and before what the platform records; a change's outcome waits for
-  its run.
+  its run; every figure's badge names its role; the inspector opens where the learner chose to
+  look first.
 - `tests/educational/aesthetics.spec.ts`: no visible text under 11 pixels, every phone control at
   least 40 pixels tall, no line of prose much over 85 characters; the map's names whole and its
   systems even at every width; the map's button clear of the page's foot on a phone; a

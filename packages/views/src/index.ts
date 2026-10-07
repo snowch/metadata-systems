@@ -5,6 +5,7 @@ export {
   INTERACTIVES,
   MODELS,
   PREDICTION_KINDS,
+  ROLES,
   createBook,
   runtimeStrings,
 } from "./book";

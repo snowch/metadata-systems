@@ -33,6 +33,13 @@ import {
 
 type Labelled = { id?: string; value?: string; label: string };
 
+/** Commits the Thursday prediction, which the investigation's decisions wait for. */
+async function commitThursday(page: Page): Promise<void> {
+  const figure = page.locator("#ix-predict-days");
+  await figure.getByRole("radio").first().check();
+  await figure.getByRole("button", { name: V.checkPrediction }).click();
+}
+
 function watchConsole(page: Page): string[] {
   const errors: string[] = [];
   page.on("console", (m) => {
@@ -291,7 +298,7 @@ test.describe("the figures", () => {
     await expect(answers).toHaveText([V.no, V.no, V.no, V.yes]);
     await expect(figure).not.toContainText(V.match);
     await expect(figure).not.toContainText(V.noMatch);
-    // Both presses stand: the options locked, no button but the Lab badge, the same after a reload.
+    // Both presses stand: the options locked, no button but the badge, the same after a reload.
     await expect(figure.getByRole("button")).toHaveCount(1);
     await expect(figure.getByRole("radio").first()).toBeDisabled();
     await page.reload();
@@ -351,10 +358,61 @@ test.describe("the figures", () => {
     await expect(figure).toContainText("205.50");
   });
 
+  test("every figure's badge says what it asks of the learner, and opens that role's note", async ({
+    page,
+  }) => {
+    await openChapter(page);
+    for (const x of CHAPTER.sections.flatMap((s) => s.interactives)) {
+      const figure = page.locator(`#ix-${x.id}`);
+      await expect(figure).toHaveAttribute("data-role", x.role ?? "");
+      await expect(figure.locator("figcaption .badge")).toHaveText(V.roles[x.role ?? ""] ?? "");
+    }
+    const storage = page.locator("#ix-storage");
+    await storage
+      .getByRole("button", { name: format(V.roleBadgeLabel, { role: V.roles["inspect"] ?? "" }) })
+      .click();
+    await expect(storage.locator(".time-model-note p").first()).toBeVisible();
+    await expect(storage.locator(".time-model-note p").first()).toContainText(
+      V.roleNotes["inspect"]!.slice(0, 40),
+    );
+  });
+
+  test("the investigation starts where the learner chooses to look, and the inspector opens there", async ({
+    page,
+  }) => {
+    await openChapter(page);
+    const decide = page.locator("#ix-where-first");
+    const props = figureProps("where-first");
+    const dashboard = (props["options"] as Labelled[]).find((o) => o.value === "dashboard")!;
+    const opened = page.locator("#ix-storage .asset-button[aria-pressed=true]");
+    await expect(opened).toHaveText("orders.parquet");
+    // It states what the Thursday prediction found, so it waits for that answer.
+    await expect(decide.locator(".figure-locked")).toBeVisible();
+    await expect(decide).not.toContainText("205.50");
+    await commitThursday(page);
+    await decide.getByLabel(dashboard.label).check();
+    await decide.getByRole("button", { name: props["commit"] as string }).click();
+    await expect(decide.locator("[role=status]")).toHaveText(
+      format(props["mine"] as string, { choice: dashboard.label }),
+    );
+    await expect(decide).not.toContainText("154.00");
+    await expect(opened).toHaveText("sales_dashboard");
+    await page.reload();
+    await expect(page.locator("#ix-storage .asset-button[aria-pressed=true]")).toHaveText(
+      "sales_dashboard",
+    );
+  });
+
   test("an explanation for Thursday is chosen, tested by the learner, and checked after the rebuild", async ({
     page,
   }) => {
     await openChapter(page);
+    await commitThursday(page);
+    const where = page.locator("#ix-where-first");
+    await where.getByRole("radio").first().check();
+    await where
+      .getByRole("button", { name: figureProps("where-first")["commit"] as string })
+      .click();
     const choose = page.locator("#ix-why-thursday");
     const props = figureProps("why-thursday");
     const options = props["options"] as Labelled[];

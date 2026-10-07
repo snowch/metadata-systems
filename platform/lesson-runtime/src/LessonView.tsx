@@ -80,11 +80,22 @@ function InteractiveFigure({
   // A badge only on a figure that runs the simulator: it names the rules that made what the
   // figure shows, and opens that model's note where the reader is, not at the foot of the page.
   // A figure that runs nothing gets no badge: a label saying what a figure is not tells nothing.
+  // A figure that declares a role (what it asks of the reader) is badged by the role instead, and
+  // its note says what the role asks, then how the model made what the figure shows.
   const simulated = interactive.timeModel !== NO_MODEL;
-  const badge = strings.lesson.timeModel[interactive.timeModel] ?? interactive.timeModel;
-  const note = simulated
-    ? book.timeModelNotes[interactive.timeModel as keyof Book["timeModelNotes"]]
-    : undefined;
+  const role = interactive.role;
+  const badge =
+    role !== undefined
+      ? (strings.lesson.role[role] ?? role)
+      : (strings.lesson.timeModel[interactive.timeModel] ?? interactive.timeModel);
+  const notes = [
+    role !== undefined ? book.roleNotes?.[role] : undefined,
+    simulated
+      ? book.timeModelNotes[interactive.timeModel as keyof Book["timeModelNotes"]]
+      : undefined,
+  ].filter((n): n is string => n !== undefined);
+  const note = notes.length > 0 ? notes.join("\n\n") : undefined;
+  const badged = simulated || role !== undefined;
   const [noteOpen, setNoteOpen] = useState(false);
   const noteId = `ix-${interactive.id}-model`;
   return (
@@ -93,17 +104,22 @@ function InteractiveFigure({
       id={`ix-${interactive.id}`}
       data-kind={interactive.kind}
       data-time-model={interactive.timeModel}
+      data-role={role}
     >
       {interactive.lead && <Prose markdown={interactive.lead} className="figure-lead" />}
       <figcaption>
-        {simulated &&
+        {badged &&
           (note !== undefined ? (
             <button
               type="button"
               className="time-model-toggle"
               aria-expanded={noteOpen}
               aria-controls={noteId}
-              aria-label={format(strings.lesson.badgeLabel, { model: badge })}
+              aria-label={
+                role !== undefined
+                  ? format(strings.lesson.roleBadgeLabel, { role: badge })
+                  : format(strings.lesson.badgeLabel, { model: badge })
+              }
               onClick={() => setNoteOpen((open) => !open)}
             >
               <span className="badge time-model">

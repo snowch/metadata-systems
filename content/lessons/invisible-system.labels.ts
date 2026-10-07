@@ -32,9 +32,10 @@ export const LABELS = {
     dashboard: "On Monday morning the dashboard shows daily revenue for 7 to 13 September.",
     p1: "Choose what you would store to meet a requirement, see what it could mean, then see what the shop's warehouse holds.",
     p2: "Predict what Thursday's rows of orders.parquet add up to.",
+    where: "Decide which asset you would inspect first, and what you would look for there.",
     hypothesis: "Choose the explanation you will test for the difference on Thursday.",
     check: "Check the explanation you chose against Thursday's rows.",
-    inspector: "Browse the seven assets and what storage records about each.",
+    inspector: "Inspect what storage records about each asset, starting with the one you chose.",
     c1: "Build a query that rebuilds daily_sales from another asset.",
     change:
       "Choose a change to the shop, predict how many queries will rebuild daily_sales afterwards, run the week again with it, and read what storage holds.",
@@ -82,6 +83,15 @@ export const LABELS = {
     one: "one, so the data still points to a single query",
     twoOrMore: "two or more, so the data fits more than one query",
   },
+  // Where the learner looks first for Thursday's difference: an asset, and the evidence sought
+  // there (brief Z).
+  wOptions: {
+    orders: "orders.parquet, for the orders that make up Thursday's 205.50",
+    clean: "clean_orders, to set its Thursday orders beside the raw ones",
+    daily: "daily_sales, for how its 51.50 was worked out",
+    dashboard: "the dashboard, for where its 51.50 comes from",
+  },
+  wCommit: "I'll start here",
   // The explanation the learner tests for Thursday, and its check (brief Y).
   hOptions: {
     left: "some of Thursday's orders are not counted in daily_sales",

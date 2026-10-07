@@ -38,7 +38,7 @@ already name `platform/*`.
 
 ## What this course needed the platform to generalise
 
-Three general shapes were added beside the digital-design course's, and nothing that course uses
+Four general shapes were added beside the digital-design course's, and nothing that course uses
 changed (its full unit suite passes on the moved packages; `snowch/learning-platform`'s
 `docs/adoption.md`):
 
@@ -51,6 +51,12 @@ changed (its full unit suite passes on the moved packages; `snowch/learning-plat
 - **A model the book names.** A figure's model is a name the book chooses, here `lab`; `none` stays
   reserved for a figure that runs nothing, and `modelProblems` holds the lessons to the models the
   book has notes for.
+- **A figure's role.** A figure may say what it asks of the reader (`role`, a name the book
+  chooses); the runtime's badge then names the role instead of the model, and the note it opens
+  gives the book's note for the role (`roleNotes`) before the model's. Every figure in this course
+  has one: an experiment, an instrument to inspect with, or a reference (`CLAUDE.md`,
+  "Experiments, instruments and explanations"). A figure without a role keeps the model's badge,
+  as the digital-design course's do.
 
 ## What is this course's own
 
@@ -59,11 +65,13 @@ changed (its full unit suite passes on the moved packages; `snowch/learning-plat
 - The shell, its look and its words (`apps/course`): the platform shares an interaction
   vocabulary and a lesson format with the author's other courses, not a look.
 - The runtime's words where this course names things differently: the model's badge and note,
-  and the labels of a failed test (`runtimeStrings` in `packages/views/src/book.tsx`).
+  the roles' badges and notes, and the labels of a failed test (`runtimeStrings` and `createBook`
+  in `packages/views/src/book.tsx`).
 
 ## Shared primitives in use
 
-`PredictionChallenge` (the two predictions), `FaultInjector` (the change lab) and `StateInspector`
-(the record, column and day tables). `Stepper`, `Timeline` and `DrillDown` wait for the chapters
+`PredictionChallenge` (every commitment before the lab answers: the predictions, the requirement,
+the decisions and the change lab's prediction), `FaultInjector` (the change lab's changes and the
+question map's weeks) and `StateInspector` (the record, column and day tables). `Stepper`, `Timeline` and `DrillDown` wait for the chapters
 that need them: runs over time (Chapter 6), event delivery (Part V) and drilling from an asset to
 its columns (Chapter 9).

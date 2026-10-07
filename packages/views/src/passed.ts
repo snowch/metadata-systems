@@ -20,3 +20,9 @@ export function usePassed(lesson: Lesson, store: LessonStore, challengeId: strin
 export function challengeTitle(lesson: Lesson, challengeId: string): string {
   return lesson.challenges.find((c) => c.id === challengeId)?.title ?? challengeId;
 }
+
+/** A figure's caption without its closing full stop, for a figure that says which it waits for. */
+export function figureCaption(lesson: Lesson, id: string): string {
+  const figure = lesson.sections.flatMap((s) => s.interactives).find((x) => x.id === id);
+  return (figure?.caption ?? id).replace(/\.$/, "");
+}

@@ -1,9 +1,9 @@
 // Copyright © 2026 Christopher Snow
 
 // The metadata course as a book the platform's runtime can render: its lessons, the figures they
-// name, the challenge editor, the grader, and the note for the one model its figures run, the
-// lab. The runtime's own words are kept, except where this course names its model and its tests
-// differently.
+// name, the challenge editor, the grader, the note for the one model its figures run, the lab, and
+// a note for each role a figure can have. The runtime's own words are kept, except where this
+// course names its model, its roles and its tests differently.
 
 import type { ComponentType } from "react";
 
@@ -18,7 +18,7 @@ import {
 import { ChoiceEditor } from "./ChoiceEditor";
 import { ChangeLab } from "./figures/ChangeLab";
 import { Dashboard } from "./figures/Dashboard";
-import { Hypothesis, HypothesisCheck } from "./figures/HypothesisLab";
+import { Decision, HypothesisCheck } from "./figures/HypothesisLab";
 import { LabPrediction } from "./figures/LabPrediction";
 import { PlatformMap } from "./figures/PlatformMap";
 import { QuestionMap } from "./figures/QuestionMap";
@@ -33,7 +33,7 @@ export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProp
   dashboard: Dashboard,
   "lab-prediction": LabPrediction,
   requirement: RequirementLab,
-  hypothesis: Hypothesis,
+  decision: Decision,
   "hypothesis-check": HypothesisCheck,
   "storage-inspector": StorageInspector,
   "change-lab": ChangeLab,
@@ -48,13 +48,19 @@ export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProp
 export const PREDICTION_KINDS: readonly string[] = [
   "lab-prediction",
   "requirement",
-  "hypothesis",
+  "decision",
   "change-lab",
   "question-map",
 ];
 
 /** The models this course's figures run, by the name a lesson gives. */
 export const MODELS = ["lab"] as const;
+
+/**
+ * What a figure asks of the learner, which its badge names (CLAUDE.md, "Experiments, instruments
+ * and explanations"): an experiment, an instrument to inspect with, or a reference.
+ */
+export const ROLES = ["experiment", "inspect", "reference"] as const;
 
 export function runtimeStrings(v: ViewStrings = DEFAULT_VIEW_STRINGS): Strings {
   return {
@@ -66,6 +72,8 @@ export function runtimeStrings(v: ViewStrings = DEFAULT_VIEW_STRINGS): Strings {
       modelVsRealityNoSimulator: v.modelVsRealityNone,
       timeModel: { lab: v.badge },
       badgeLabel: v.badgeLabel,
+      role: v.roles,
+      roleBadgeLabel: v.roleBadgeLabel,
     },
     challenge: {
       ...DEFAULT_STRINGS.challenge,
@@ -90,5 +98,6 @@ export function createBook(
     ChallengeEditor: ChoiceEditor,
     grade: (challenge, artifact) => grade(challenge, artifact),
     timeModelNotes: { lab: DEFAULT_VIEW_STRINGS.labNote },
+    roleNotes: DEFAULT_VIEW_STRINGS.roleNotes,
   };
 }

@@ -18,6 +18,10 @@ export interface Strings {
     readonly timeModel: Readonly<Record<string, string>>;
     /** The time-model badge's accessible name; {model} is the badge's text. */
     readonly badgeLabel: string;
+    /** A figure's role as its badge names it, by the role's name in the lesson. */
+    readonly role: Readonly<Record<string, string>>;
+    /** The badge's accessible name on a figure with a role; {role} is the badge's text. */
+    readonly roleBadgeLabel: string;
     readonly unknownInteractive: string;
     readonly brokenInteractive: string;
   };
@@ -74,6 +78,8 @@ export const DEFAULT_STRINGS: Strings = {
       delay: "Gate delays",
     },
     badgeLabel: "Time model: {model}",
+    role: {},
+    roleBadgeLabel: "What this figure asks of you: {role}",
     unknownInteractive: "Unknown interactive type: {kind}",
     brokenInteractive: "The {kind} figure could not be shown: {message}",
   },

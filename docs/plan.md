@@ -76,7 +76,9 @@ failure experiment, explanation, generalisation, challenge, reflection. Read as 
 it, the loop asks: a real question; what can I believe about it now; predict; act on the lab;
 observe; what did that prove; what can the data not tell me; what would a system have to record.
 A prediction is built around what the learner should learn, asks for a belief about a result the
-learner can observe, and never asks for a cause before its effect has been seen (`CLAUDE.md`). A chapter is finished when
+learner can observe, and never asks for a cause before its effect has been seen (`CLAUDE.md`).
+Every figure says whether it is an experiment, an instrument or a reference, experiments are
+preferred, and an instrument always has a question in front of it. A chapter is finished when
 the learner can do something they could not reliably do before, and every major idea in it has an
 explanation, a concrete example, an experiment, a prediction, an observable result, a reflection
 and an application.
@@ -253,6 +255,27 @@ The author reviews the course at five checkpoints:
 5. Before Chapter 32.
 
 ## Decisions since the brief
+
+### 7 October 2026: the author's fifth round: experiments, instruments and explanations
+
+The author gave a guide to designing effective labs, and `CLAUDE.md` binds it ("Experiments,
+instruments and explanations"). A figure is an explanation (`reference`), an instrument the learner
+examines for evidence (`inspect`), or an experiment, in which the learner has a question, a
+hypothesis or a decision and uses the system to answer it; experiments are preferred. Every figure
+declares which, and its badge says so, where every badge said "Lab" before, so a map, an asset
+browser and an experiment looked alike. The page calls the guide's "lab" an experiment, because
+"the lab" is the Metadata Lab. An experiment's notes answer twelve questions, which replace the
+eight a prediction's answered; an instrument's or a reference's answer two; and a content test
+fails a figure without its role or its answers. The platform gained the role for it.
+
+Chapter 1's audit against it. The inspector was presented as the activity ("Browse the seven
+assets and what storage records about each."), the guide's own example of an instrument passed off
+as an experiment. The investigation now opens with a decision: where to look first for Thursday's
+difference, and what to look for there. A line after the choice says what that asset can show,
+from its shape, and the inspector opens on it, as the instrument for that question. The choice of
+an explanation to test moved after the inspector, so the investigation runs in the guide's order:
+is there a discrepancy, where is it, what could explain it, which explanation fits. The map is a
+reference and the dashboard an instrument; every other figure is an experiment.
 
 ### 7 October 2026: Thursday's cause, tested by the learner
 

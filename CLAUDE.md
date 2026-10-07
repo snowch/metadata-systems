@@ -213,16 +213,58 @@ explains; they never guess an explanation the page then reveals.
   prediction figure's `choose` mode); where the question is what a requirement means, question the
   requirement (below).
 
-For every prediction, the chapter's notes answer eight questions, and the content tests fail a
-prediction whose notes miss one: what the learner should learn; what they know before answering;
-the plausible hypotheses; how the evidence tells them apart; whether any option gives the
-explanation away; what a wrong answer teaches the learner about their reasoning; what question the
-result raises next; and whether the learner is testing a belief or guessing the author's answer.
+A prediction is an experiment, and its notes answer the twelve questions every experiment's do
+("Experiments, instruments and explanations", below).
 
 **After a result, ask what it proved.** A query that rebuilds an asset suggests how the asset was
 made; it does not show it. A chapter asks what its experiment proved and what the data could not
 tell before it names what a metadata system would record, and it does not tell the learner what
 metadata is for before they have needed it.
+
+## Experiments, instruments and explanations
+
+A figure is one of three things, and its badge says which (its `role`):
+
+- **An explanation** (`reference`): the page telling the learner something, in a figure because a
+  figure tells it better. The map is one. It asks nothing.
+- **An instrument** (`inspect`): something the learner examines to obtain evidence, such as
+  storage through the inspector, or the dashboard. It is never presented as the activity itself:
+  the page puts a question in front of it first and says what evidence to look for, so that it is
+  the instrument of an investigation, not a browser.
+- **An experiment** (`experiment`): the learner has a question, a hypothesis or a decision, and
+  uses the system to answer it. Prefer it.
+
+What the author's guide calls a lab, the page calls an experiment: on the page, "the lab" is the
+Metadata Lab, which every figure runs, and one word must not mean two things.
+
+An experiment has a learning job: what the learner will understand, discover or be able to do
+because they did it, and the action that causes that learning. "They can see the metadata" is an
+instrument's job, not an experiment's. It runs a reasoning loop (question, prediction, action,
+evidence, interpretation; or hypothesis, inspect, compare, discover, revise; or requirement,
+ambiguity, investigate, evidence, conclusion), so that the learner does the thinking. Everything it
+shows has a purpose: it supports or contradicts a hypothesis, answers a question, allows an
+inference, shows what still cannot be concluded, or says what to investigate next; anything else
+belongs in the prose. An investigation runs in order: is there a discrepancy; where is it; what
+could explain it; which explanation fits the evidence. "I don't know yet" and "the requirement is
+underspecified" are outcomes the learner can reach, where the evidence does not tell the
+alternatives apart. The system is the learner's instrument, and the habit to build is: I have a
+question; what observation would answer it; where can I obtain it? An experiment has a
+consequence (what the learner believed before, the evidence, what they can believe after, and the
+next question), never a bare "correct". And it teaches a skill that outlives the course:
+questioning a requirement, forming competing hypotheses, comparing independent sources, tracing a
+transformation, separating observation from inference, deciding what to inspect next. A
+platform's field can be an experiment's evidence; it is rarely its objective.
+
+Before an experiment is built, the chapter's notes answer twelve questions about it, in its block
+under "Figures": what the learner should learn; what they know before; the question or hypothesis
+that drives it; what they do; why that action is necessary; what evidence it produces; how that
+evidence changes their understanding, a wrong prediction's included; whether they could have
+predicted the outcome; whether any option gives the explanation away; whether "I don't know yet"
+could be the right engineering response; the question that follows; and whether it is really an
+experiment, or an instrument or a reference. An instrument or a reference answers two: the
+question it serves, and why the learner needs it then. A figure that completes another experiment
+(a check after the learner's own work) names the experiment it is part of. The content tests fail
+a figure without a role, without its block, or with a question unanswered.
 
 ## Question the requirement
 
@@ -298,7 +340,9 @@ Read for these before calling a chapter finished:
   ask whether they could say why they chose their option;
 - an option that carries the explanation its result is about to give, or a cause asked for before
   the learner has seen its effect;
-- a figure, caption or label that shows what the chapter asks the learner to find;
+- a figure, caption or label that shows what the chapter asks the learner to find, including one
+  just below a prediction, which is in view while the learner is still choosing;
+- an instrument with no question in front of it, or a figure showing what no question needs;
 - a field's name taken for its meaning: a page that says what a field holds without saying which
   question it answers;
 - the same argument made twice, far apart;
@@ -321,6 +365,13 @@ reason it exists.
   nobody mounts, fails to parse.** The content tests parse every lesson.
 - **The term gate** across chapters, and **the model gate**: a figure may name only a model the
   book has a note for (`modelProblems`).
+- **Every figure declares its role** (an experiment, an instrument to inspect with, or a reference),
+  which its badge shows, **and has its block in the chapter's notes** under "Figures": twelve
+  answers for an experiment, two for an instrument or a reference.
+- **A figure below a prediction states what the prediction found only if it waits for the
+  learner's answer** (`waits`), directly or through another figure that does, and no caption,
+  lead, after-text, task or section prose below it states it: the next figure down is in view
+  while the learner is still choosing.
 - **Every chapter's notes say which requirement it questions, or why none,** under "Requirements",
   naming each requirement figure; and a requirement figure's record answers some of its readings
   and not all, and no text the learner reads before its second press names that record.

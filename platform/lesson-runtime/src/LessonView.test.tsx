@@ -64,6 +64,42 @@ describe("LessonView", () => {
     expect(within(none).queryByRole("button", { expanded: false })).toBeNull();
   });
 
+  it("badges a figure that declares a role by the role, and opens the role's note, then its model's", async () => {
+    const user = userEvent.setup();
+    const withRole = {
+      ...lesson,
+      sections: lesson.sections.map((s) => ({
+        ...s,
+        interactives: s.interactives.map((x) =>
+          x.id === "loop" ? { ...x, role: "experiment" } : x,
+        ),
+      })),
+    };
+    const roleNote = "An experiment: you commit first, and the model answers.";
+    const roleBook = { ...fixtureBook([withRole]), roleNotes: { experiment: roleNote } };
+    const strings = {
+      ...DEFAULT_STRINGS,
+      lesson: { ...DEFAULT_STRINGS.lesson, role: { experiment: "Experiment" } },
+    };
+    render(
+      <LessonView book={roleBook} lesson={withRole} storage={memoryStorage()} strings={strings} />,
+    );
+    const loop = document.getElementById("ix-loop") as HTMLElement;
+    expect(loop).toHaveAttribute("data-role", "experiment");
+    const badge = within(loop).getByRole("button", {
+      name: format(DEFAULT_STRINGS.lesson.roleBadgeLabel, { role: "Experiment" }),
+    });
+    expect(badge).toHaveTextContent("Experiment");
+    await user.click(badge);
+    const note = loop.querySelector(".time-model-note") as HTMLElement;
+    expect(note).toBeVisible();
+    expect(note.textContent).toContain(roleNote);
+    expect(note.textContent).toContain(roleBook.timeModelNotes.settle ?? "");
+    expect(note.textContent?.indexOf(roleNote)).toBeLessThan(
+      note.textContent?.indexOf(roleBook.timeModelNotes.settle ?? "") ?? 0,
+    );
+  });
+
   it("mounts the challenge section's challenge through the runner", () => {
     render(<LessonView book={book} lesson={lesson} storage={memoryStorage()} />);
     expect(screen.getByRole("heading", { level: 3, name: /Remember a press/ })).toBeInTheDocument();
