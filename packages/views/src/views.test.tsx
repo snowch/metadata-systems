@@ -174,6 +174,20 @@ describe("the figures on Chapter 1's page", () => {
     );
   });
 
+  it('answers "I can\'t tell yet" with what the lab found, and marks it neither right nor wrong', () => {
+    const p = props("predict-days") as {
+      options: Labelled[];
+      undecided: Labelled & { line: string };
+    };
+    const { figure } = show((store) => store.setSlot("predict-days", { choice: "undecided" }));
+    const status = figure("predict-days").querySelector("[role=status]")!;
+    expect(status.textContent).toBe(
+      format(p.undecided.line, { answer: p.options.find((o) => o.value === "different")!.label }),
+    );
+    expect(status.textContent).not.toContain(V.match);
+    expect(status.textContent).not.toContain(V.noMatch);
+  });
+
   it("treats a prediction saved against options the lesson no longer offers as not made", () => {
     const { figure } = show((store) => store.setSlot("predict-days", { choice: "some" }));
     expect(figure("predict-days").querySelector("[role=status]")).toBeNull();

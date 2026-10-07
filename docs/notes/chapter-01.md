@@ -40,16 +40,120 @@ platform they did not build. As revised after the review and the author's second
 ## Predictions
 
 Every figure that takes the learner's commitment before the lab answers, held to the rule in
-`CLAUDE.md`: what the learner has seen by then, the explanations its options stand for, and how
-the lab's answer tells them apart. The content tests fail a prediction without a row here.
+`CLAUDE.md` ("Interaction is the explanation"): what the learner should learn, what they know,
+the hypotheses its options stand for, how the evidence tells them apart, whether any option gives
+the explanation away, what a wrong answer teaches, the question the result raises, and whether
+the learner tests a belief or guesses the author's answer. The content tests fail a prediction
+without a block here, or a block missing an answer.
 
-| Figure | What the learner has seen | The explanations its options stand for | How the lab tells them apart |
-| --- | --- | --- | --- |
-| `predict-owner` | the map; the requirement in its own words, "Every table must have an owner."; the words: programs write the tables every night; the motivation's question "Who should I ask about `daily_sales`?"; their own experience of writing such a program | a choice, not a prediction: what they would store to meet the requirement if they wrote the program that writes `daily_sales` (a person, a team, the program, or the account it logs in as), or nothing until they know what the owner is for | nothing hidden is guessed: the figure first shows the four questions the requirement could be asking, each beside what it needs stored, and only then the probe reads the warehouse's owner, `etl_service`, an account, and the table marks which question that answers, the last; no reading is called right or wrong |
-| `predict-days` | the dashboard: Thursday at 51.50, far below the other days; `daily_sales` holds the same figure | Thursday was a slow day, and the raw orders show it; or the orders came in, and something on the way to `daily_sales` left some out | the probe adds up Thursday's rows of `orders.parquet`: 205.50, more than 51.50 and as much as Wednesday or Friday; the table shows every day |
-| `changes` | their own query rebuilding `daily_sales`; what each change does, in its label; the statuses and rows in the inspector; "rebuild" asking only for the rows the asset has | after the change the data points to one query, to more than one, or to none | the lab runs the week with the change and searches every choice the builder offers over every asset in storage: two after the copy, none after the edit, one after the failed night |
-| `map` | storage's answer to each of the eight questions in the inspector; the query that rebuilds `daily_sales`; the changes; the rule for the data's group, stated above the figure | for each question: storage records it, the data suggests it, or only a record kept at the time answers it | the lab places each question by reading storage and trying every query the builder offers, and places them again for each change |
-| `predict-rules` | their own passing rules; the rows each rule keeps as they change it; the quantities in `orders.parquet` | every rule they chose decides some row this week, so theirs is the only setting that passes; or some rule decides no row, so more than one does | the lab tries all sixteen settings: two pass, differing only in the rule for a quantity of 0 or less, which no order this week has |
+### `predict-owner`
+
+- **Objective:** recognise that a requirement's word does not fix its meaning: ask what "owner"
+  is for before deciding what to store, and judge a platform's record against each meaning.
+- **Known before:** the map; the requirement in its words, "Every table must have an owner.";
+  programs write the tables every night; the motivation's question "Who should I ask about
+  `daily_sales`?"; their own experience of writing such a program.
+- **Hypotheses:** a person, a team, the program that writes it, or an account it logs in as, each
+  the answer to a different question; or nothing until they know what the owner is for.
+- **Told apart by:** nothing the learner has seen tells them apart, by design. The figure shows
+  the four questions the requirement could be asking, each beside what it needs stored; then the
+  probe reads the warehouse's owner, `etl_service`, an account, and marks which question it
+  answers.
+- **Gives nothing away:** the options say what to store, not what the warehouse holds or why;
+  nothing before the second press names `etl_service`, which a content test checks.
+- **If wrong:** no option is wrong. A learner who would store a person or a team sees that the
+  warehouse's own meaning answers a different question, and that their reading was one of four
+  the requirement allowed.
+- **Next question:** what is the owner for? The explanation sends the learner to ask whoever set
+  the requirement, and "Who should I ask about `daily_sales`?" stays open until a record answers
+  it.
+- **A belief, not a guess:** the learner says what they would do, from their own reading of the
+  requirement; nothing about the shop is to be guessed.
+
+### `predict-days`
+
+- **Objective:** recognise that what a derived figure means is an assumption, and test it against
+  an independent source: add up the raw orders and compare.
+- **Known before:** the dashboard: Thursday at 51.50, far below the other days; `daily_sales`
+  holds the same figure; the head of the shop asks why; the question says what to add up, price
+  times quantity over Thursday's rows of `orders.parquet`.
+- **Hypotheses:** 51.50, because `daily_sales` holds the total of Thursday's orders; a different
+  total, because it is not simply that total; or "I can't tell yet", because nothing so far says
+  what `daily_sales` measures.
+- **Told apart by:** the probe adds up Thursday's rows of `orders.parquet`: 205.50 against 51.50;
+  the table shows every day's two totals.
+- **Gives nothing away:** no option says why a total might differ, and the question says nothing
+  of a difference. What explains it, three orders with no customer id, waits for the
+  investigation and the reflection.
+- **If wrong:** a learner who expected 51.50 learns that the name `daily_sales` and the matching
+  dashboard were an assumption about what it measures, not evidence. "I can't tell yet" is
+  marked neither right nor wrong, and the result shows what settled it.
+- **Next question:** what might explain the difference? The explanation asks it, and the
+  investigation answers it: the learner reads the rows and finds the orders `daily_sales` does
+  not count.
+- **A belief, not a guess:** that `daily_sales` is the day's total is a belief anyone reading the
+  dashboard holds, and adding up the raw orders tests it.
+
+### `changes`
+
+- **Objective:** see that a query that rebuilds an asset is evidence, and that changes to the shop
+  can make it ambiguous, absent or misleading: a rebuild does not show how an asset was made.
+- **Known before:** their own query rebuilding `daily_sales`; what each change does, in its label;
+  the statuses and rows in the inspector; "rebuild" asking only for the rows the asset has.
+- **Hypotheses:** after the change the data points to one query, to more than one, or to none.
+- **Told apart by:** the lab runs the week with the change and searches every choice the builder
+  offers over every asset in storage: two after the copy, none after the edit, one after the
+  failed night.
+- **Gives nothing away:** the options are counts, each with what the count means for the data;
+  none says what the change does to `daily_sales` or why, and each change's label says what is
+  done, not what follows.
+- **If wrong:** a learner who expected one query after the copy sees a second asset with the same
+  rows fit as well; one who expected one after the edit sees the builder lose its fit.
+- **Next question:** does a rebuild show how `daily_sales` was made? The closing words answer
+  that it suggested it and did not show it, and that no change left a record of itself.
+- **A belief, not a guess:** each change's label gives the learner what they need to reason about
+  the count; nothing about the shop's hidden set-up is asked.
+
+### `map`
+
+- **Objective:** tell apart what storage records, what the data only suggests, and what only a
+  record kept at the time can answer.
+- **Known before:** storage's answer to each of the eight questions in the inspector; the query
+  that rebuilds `daily_sales`; the changes; the rule for the data's group, stated above the
+  figure.
+- **Hypotheses:** for each question: storage records it, the data suggests it, or only a record
+  kept at the time answers it.
+- **Told apart by:** the lab places each question by reading storage and trying every query the
+  builder offers, and places them again for each change.
+- **Gives nothing away:** the groups are defined above the figure by a rule the learner applies,
+  not by examples of the answers, and the lab's placement shows only after the learner's sort is
+  checked.
+- **If wrong:** a question the learner put with the data that the lab places elsewhere shows that
+  evidence they took for an answer was a suggestion, or that storage held more than they thought.
+- **Next question:** what kind of record would answer the questions only a record answers? The
+  generalisation tags each with its kind.
+- **A belief, not a guess:** the learner sorts from what they found in the inspector and the
+  builder; every placement can be reasoned from those.
+
+### `predict-rules`
+
+- **Objective:** see that rebuilding an output does not identify the rules that made it: a
+  setting can match every row without being the only one that does.
+- **Known before:** their own passing rules; the rows each rule keeps as they change it; the
+  quantities in `orders.parquet`.
+- **Hypotheses:** yes, a setting that gives `clean_orders` exactly is the only one that does; or
+  no, another setting can give exactly the same rows.
+- **Told apart by:** the lab tries all sixteen settings: two pass, differing only in the rule for
+  a quantity of 0 or less, which no order this week has.
+- **Gives nothing away:** the options say whether another setting can match, not which rule leaves
+  it open or why. Before the author's fourth round they named a rule that decides no row, the
+  very explanation the result gives.
+- **If wrong:** a learner who said yes learns that matching every row did not pin down every rule,
+  and that this week's data cannot show the quantity rule at all.
+- **Next question:** what would show the rule this week's data cannot? The reflection answers: a
+  record somebody kept of it.
+- **A belief, not a guess:** whether matching an output pins down how it was made is a belief an
+  engineer holds or doubts, and the learner can test it on their own rules before committing.
 
 Before the second round, two predictions failed this rule. The owner prediction offered four
 kinds of owner (a person, a team, the program, an account), a fact about how this shop set up its
@@ -357,6 +461,43 @@ the choice, after it and after the second press, found three things:
    first column and "warehouse's" in the third heading, so the cue says it scrolls sideways. It
    fits from 360 pixels, the width the change lab's table was held to in the styling review, and a
    heading word may hyphenate where the browser can. Left so.
+
+## The author's fourth round, 7 October 2026
+
+The author gave a quality test for every interactive question: a prediction starts from what the
+learner should learn, asks for a result the learner can observe and never for the explanation the
+result is about to give, establishes an effect before asking for its cause, tests a belief against
+independent evidence, and offers "I can't tell yet" where nothing seen settles the question. What
+it became:
+
+1. **The rule, bound.** `CLAUDE.md` ("Interaction is the explanation") now builds every prediction
+   around its objective and keeps the stages of an investigation apart; `docs/authoring.md` and
+   `docs/style.md` say how an option is written. Each prediction's notes answer eight questions,
+   and a content test fails a prediction whose block misses one; the table "Predictions" had
+   asked four.
+2. **The audit of Chapter 1's five commitments.** The Thursday prediction failed: its "no" said
+   that something on the way to `daily_sales` left orders out, a cause asked for before the
+   learner had seen the effect. It now asks what Thursday's orders add up to, with 51.50, a
+   different total, or "I can't tell yet", each with the belief behind it; the lab's 205.50 shows
+   the difference, and only then does the explanation ask what might explain it, which the
+   investigation answers. The rules prediction failed too: its options named a rule that decides
+   no row, the explanation its result gives; they now say only whether another setting can match
+   every row. The owner requirement, the change lab and the sort passed; their blocks say why.
+3. **"I can't tell yet" in the prediction figure.** An `undecided` option that stands for no
+   answer: it is marked neither right nor wrong, and its line says what the lab found.
+
+### The fourth round's prose
+
+One fact brief (`briefs/round-4/X`, with `common.md`) went to Haiku, from the fact sheet updated
+against the lab. What came back:
+
+| Draft | Wrong, sent back | Dropped, restored with the fewest words |
+| --- | --- | --- |
+| X (Thursday's prediction, the rules' options) | none | "I", lower-cased to "i" with the other options' lower case, restored. The draft also named the four days whose totals differ, which the brief had not listed: checked against the lab (Tuesday, Wednesday, Thursday and Saturday) and kept, and the facts test pins it |
+
+The read of the built page, at 1280 pixels in the light theme and 390 in the dark, with each of
+the three options committed, found the investigation's first task, to find the rows that make
+Thursday's total differ, now answering the question the result ends on, and nothing to change.
 
 ## Known gaps
 

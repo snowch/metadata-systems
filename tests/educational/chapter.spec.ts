@@ -325,10 +325,29 @@ test.describe("the figures", () => {
     await openChapter(page);
     const figure = page.locator("#ix-predict-days");
     const options = figureProps("predict-days")["options"] as Labelled[];
-    await figure.getByLabel(options.find((o) => o.value === "more")!.label).check();
+    await figure.getByLabel(options.find((o) => o.value === "different")!.label).check();
     await figure.getByRole("button", { name: V.checkPrediction }).click();
     await expect(figure.locator("[role=status]")).toContainText(V.match);
     await expect(figure.locator(".days-table tbody tr")).toHaveCount(7);
+    await expect(figure).toContainText("205.50");
+  });
+
+  test('"I can\'t tell yet" is answered by the lab and marked neither right nor wrong', async ({
+    page,
+  }) => {
+    await openChapter(page);
+    const figure = page.locator("#ix-predict-days");
+    const props = figureProps("predict-days");
+    const undecided = props["undecided"] as Labelled & { line: string };
+    const options = props["options"] as Labelled[];
+    await figure.getByLabel(undecided.label).check();
+    await figure.getByRole("button", { name: V.checkPrediction }).click();
+    const status = figure.locator("[role=status]");
+    await expect(status).toHaveText(
+      format(undecided.line, { answer: options.find((o) => o.value === "different")!.label }),
+    );
+    await expect(status).not.toContainText(V.match);
+    await expect(status).not.toContainText(V.noMatch);
     await expect(figure).toContainText("205.50");
   });
 

@@ -13,11 +13,14 @@ anything else the lab did not produce; every such number comes from the lab and 
 it. The stamped result becomes the lab's computed answer. The vocabulary ration is the per-chapter
 term gate that `docs/plan.md` lists and `CLAUDE.md` describes.
 
-One rule is this course's own, for the labels of a prediction's options. Each option is an
-explanation the learner could hold ("no, because an owner field names the account that writes the
-table"), not a bare answer or a number. The options of one prediction share a form and run to
-about the same length, so that no option looks right because of its wording, and nothing above
-the options hints at the one the lab will support (`CLAUDE.md`, "Interaction is the explanation").
+One rule is this course's own, for the labels of a prediction's options. Each option names a
+result the learner could expect and the belief it reflects ("51.50: `daily_sales` holds the total
+of Thursday's orders"), not a bare number, and never the explanation the result is about to give
+("more, because something on the way left some out"). Where nothing on the page settles the
+question, one option says so ("I can't tell yet: nothing so far says what `daily_sales`
+measures"). The options of one prediction share a form and run to about the same length, so that
+no option looks right because of its wording, and nothing above the options hints at the one the
+lab will support (`CLAUDE.md`, "Interaction is the explanation").
 
 The checklist applies to every string a learner reads: chapter prose, hints, the feedback after a
 failed test, model-versus-reality notes and labels inside the figures. Both closing passes run over

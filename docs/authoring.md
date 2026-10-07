@@ -49,7 +49,7 @@ a zod schema and says so in its place when they do not fit.
 | --- | --- | --- |
 | `platform-map` | `changes?`, `dock?` | the platform as the lab's `platformMap` computes it: the systems in the order data moves through them, the assets each holds, and between two systems the programs the learner cannot see, never a link from one asset to another; once the learner scrolls past it, a button at the foot of the window opens the same map over the page, unless `dock` is false |
 | `dashboard` | `changes?` | the reporting tool's chart as Monday morning shows it, one bar per value, from the lab's week |
-| `lab-prediction` | `question`, `options` (each a value, a label, and either `means`, the answers of a naming probe it stands for, or `range`, the counts of a counting probe), `probe` (`owner-kind` of an asset; `day-total` of a source, a filter, a target and a day; `clean-fits`), `explain?`, `changes?`, `requires?` (a challenge id), `mode?` (`predict`, the default, or `choose`), `compare?` (for a choice: its button, `commit`, in words about what it shows, and the line after it, `mine` with `{choice}` and `lab` with `{answer}`) | the learner commits to an option, and the commitment stays (no "Predict again"); the lab runs the probe and answers with the option that stands for what it found, with its evidence; a prediction is marked right or not, a choice is set beside what the shop does and marked neither; `explain` shows only after the commit; with `requires`, the figure waits until the learner's own work on that challenge passes |
+| `lab-prediction` | `question`, `options` (each a value, a label, and either `means`, the answers of a naming probe it stands for, or `range`, the counts of a counting probe), `probe` (`owner-kind` of an asset; `day-total` of a source, a filter, a target and a day; `clean-fits`), `explain?`, `changes?`, `requires?` (a challenge id), `mode?` (`predict`, the default, or `choose`), `compare?` (for a choice: its button, `commit`, in words about what it shows, and the line after it, `mine` with `{choice}` and `lab` with `{answer}`), `undecided?` (the option "I can't tell yet": a value, a label, and the `line` shown after it, with `{answer}`) | the learner commits to an option, and the commitment stays (no "Predict again"); the lab runs the probe and answers with the option that stands for what it found, with its evidence; a prediction is marked right or not, "I can't tell yet" and a choice are set beside what the lab found and marked neither; `explain` shows only after the commit; with `requires`, the figure waits until the learner's own work on that challenge passes |
 | `requirement` | `requirement` (its words, as written), `question`, `options` (each a value, a label, `short`, what it needs stored, `asks`, the question it asks with names between backticks, and `means`, the probe's answers that answer it), `undecided` (the option to store nothing until the requirement says what it is for), `probe` (`owner-kind` of an asset), `buttons` (`choose` and `show`), `headings` (`asks`, `store`, `answers`), `text` (`mine` with `{choice}`, `undecided`, `meanings`, `lab` with `{value}`, `{owned}` and `{tables}`, `explain?`) | a requirement questioned (`CLAUDE.md`, "Question the requirement"): the learner chooses what to store, or nothing yet; the figure then shows the questions the requirement could be asking, each beside what it needs stored, with their own row marked; at a second press the lab runs the probe, says what the platform records, and the same table gains a column saying which questions that record answers, in words and without colour; no reading is called wrong, and both presses stay |
 | `storage-inspector` | `initial?`, `changes?` | every asset by the system that holds it; for the one chosen, what its system records, what storage says about each of the chapter's eight questions (the same eight for every asset), its columns and its rows; a table wider than its box says so |
 | `change-lab` | `changes` (each an id, a label and an outcome), `afterAll?`, `challengeId`, `target?`, `prediction` (a question and options with count ranges) | waits until the learner's own query passes; for each change, takes a committed prediction of how many queries in the builder's choices will rebuild the target, then runs the week with it and shows those queries (the lab's answer), what storage holds on Monday morning with the comparison against the first run labelled as the lab's, and the learner's query against the new target; each outcome shows once its prediction is committed, and `afterAll` once all are |
@@ -61,20 +61,38 @@ set of cleaning rules compared with `clean_orders` as multisets).
 
 ## Predictions
 
-A prediction asks for a belief the learner can already hold (`CLAUDE.md`). Every figure that takes
-a commitment before the lab answers (`PREDICTION_KINDS` in `packages/views/src/book.tsx`: a
-prediction, a change run after a prediction, a sort) gets a row in the chapter's notes, under
-"Predictions", before it is built:
+A prediction is built around what the learner should learn (`CLAUDE.md`, "Interaction is the
+explanation"). Every figure that takes a commitment before the lab answers (`PREDICTION_KINDS` in
+`packages/views/src/book.tsx`: a prediction, a requirement, a change run after a prediction, a
+sort) gets a block in the chapter's notes, under "Predictions", before it is built: a heading with
+its id, and the eight answers, each under its own label.
 
-| Figure | What the learner has seen | The explanations its options stand for | How the lab tells them apart |
-| --- | --- | --- | --- |
+```
+### `predict-days`
 
-- **What the learner has seen** is what is on the page above the figure, not what the lab knows.
-  If the options can only be told apart by a fact the page has not shown, the prediction is a
-  lottery: show the fact first, or ask something else.
-- **Each option is an explanation** of how the platform works, written as one: "yes, because…",
-  "no, because…", "one, so the data still points to a single query". Options are parallel in form
-  and length, so that none is chosen for its wording.
+- **Objective:** what the learner should understand or be able to do afterwards.
+- **Known before:** what is on the page above the figure, not what the lab knows.
+- **Hypotheses:** the beliefs a learner could reasonably hold, one per option.
+- **Told apart by:** the observable result, and the evidence the lab reads for it.
+- **Gives nothing away:** why no option, caption or line above it carries the explanation.
+- **If wrong:** what the result teaches a learner whose option it does not support.
+- **Next question:** the question the result raises, and where the chapter takes it.
+- **A belief, not a guess:** why the learner is testing a belief, not guessing the author's answer.
+```
+
+The content tests fail a figure of these kinds with no block, or a block missing a label.
+
+- **State the objective first.** If it cannot be said in a sentence, redesign the exercise.
+- **Ask for an observable result.** Each option names a result and the belief it reflects ("51.50:
+  `daily_sales` holds the total of Thursday's orders"), in parallel form and length, so that none
+  is chosen for its wording. An option never says why the result will be what it is: that is the
+  explanation, and it comes after the evidence.
+- **Establish the effect before asking for its cause.** "Is there a difference?" comes before
+  "what explains it?", and the second may well be an investigation rather than a prediction.
+- **Prefer independent evidence**: a total the learner could add up, rows they could read, not
+  a failure inside a program they cannot see.
+- **Offer "I can't tell yet"** where nothing on the page settles the question (`undecided` on the
+  figure). It is marked neither right nor wrong, and its line says what the lab found.
 - **A count is asked as what it means.** None, one, or more than one are explanations; "four or
   five" is a number to hit.
 - **Where the page gives no grounds, ask a choice.** If nothing above the figure lets a learner
@@ -85,8 +103,8 @@ prediction, a change run after a prediction, a sort) gets a row in the chapter's
 - **The lab answers.** A naming probe's answer is a word the option lists under `means`; a
   counting probe's is a count inside the option's `range`. The lesson never stores the answer.
 
-The content tests fail a figure of these kinds that has no row in the notes, and a prediction
-whose option stands for no answer at all.
+The content tests also fail a prediction whose option stands for no answer at all, other than
+"I can't tell yet".
 
 ## Requirements
 
@@ -140,7 +158,8 @@ brief of facts and checked by the managing model for facts only. For a chapter:
 - The model gate: every figure runs a model the book has a note for.
 - `content/lessons/lessons.test.tsx`: every reference passes and every starting point fails; no
   prediction's answer appears in its question, caption, lead or after-text; every prediction has
-  its row in the chapter's notes, and every option stands for an answer or a count; the notes
+  its block in the chapter's notes, with all eight answers, and every option stands for an answer
+  or a count, other than "I can't tell yet"; the notes
   have a "Requirements" section naming every requirement figure; a requirement figure's record
   answers some readings and not all, and no text before its second press names that record; the
   whole chapter renders in jsdom with no figure problem.

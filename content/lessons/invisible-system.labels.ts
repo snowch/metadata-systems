@@ -31,7 +31,7 @@ export const LABELS = {
     platform: "The map: the shop's three systems and the assets each holds.",
     dashboard: "On Monday morning the dashboard shows daily revenue for 7 to 13 September.",
     p1: "Choose what you would store to meet a requirement, see what it could mean, then see what the shop's warehouse holds.",
-    p2: "Predict whether Thursday's rows of orders.parquet add up to the dashboard's figure.",
+    p2: "Predict what Thursday's rows of orders.parquet add up to.",
     inspector: "Browse the seven assets and what storage records about each.",
     c1: "Build a query that rebuilds daily_sales from another asset.",
     change:
@@ -71,17 +71,18 @@ export const LABELS = {
     answers: "Whether the warehouse's owner answers it",
   },
   p2Options: {
-    same: "yes, because Thursday was a slow day, and the raw orders show it too",
-    more: "no, the total is more, because the orders came in and something on the way to daily_sales left some out",
+    same: "51.50: daily_sales holds the total of Thursday's orders",
+    different: "a different total: daily_sales is not simply the total of Thursday's orders",
   },
+  p2Undecided: "I can't tell yet: nothing so far says what daily_sales measures",
   changeOptions: {
     none: "none, so the data no longer points to any query",
     one: "one, so the data still points to a single query",
     twoOrMore: "two or more, so the data fits more than one query",
   },
   p3Options: {
-    one: "yes, because every rule you chose decides some row this week",
-    more: "no, because some rule decides no row this week",
+    one: "yes, a setting that gives clean_orders exactly is the only one that does",
+    more: "no, another setting can give exactly the same rows",
   },
   c1Fields: {
     source: "Asset to read",

@@ -118,8 +118,9 @@ lowest.
 
 ## The two predictions before storage
 
-Each option of a prediction is an explanation the learner could hold, not a fact to guess. The
-learner has seen the map, the dashboard and the words before them, nothing else.
+Each option of a prediction is a result the learner could expect and the belief it reflects,
+never the explanation the result is about to give. The learner has seen the map, the dashboard
+and the words before them, nothing else.
 
 1. **The owner, as a requirement.** The shop has set one requirement for its warehouse, in these
    words: "Every table must have an owner." Suppose you write the program that writes daily_sales
@@ -146,12 +147,17 @@ learner has seen the map, the dashboard and the words before them, nothing else.
      needs a person or a team. The warehouse's owner names neither.
    - The name of a field does not say which question the field answers.
 2. **Thursday.** The dashboard shows 51.50 for Thursday, and daily_sales holds the same figure for
-   Thursday. Add up price times quantity over Thursday's rows of orders.parquet: will the total be
-   51.50 too? Two explanations:
-   - yes: Thursday was a slow day, and the raw orders show it too;
-   - no, more: the orders came in, and something on the way to daily_sales left some out.
-   The lab finds more: 205.50 against 51.50. Thursday's raw total is close to Wednesday's (198.75)
-   and Friday's (204.24), so Thursday was not a slow day in orders.parquet.
+   Thursday. Add up price times quantity over Thursday's rows of orders.parquet: what do you
+   expect the total to be? Three options, each a total and the belief behind it:
+   - 51.50: daily_sales holds the total of Thursday's orders;
+   - a different total: daily_sales is not simply the total of Thursday's orders;
+   - I can't tell yet: nothing so far says what daily_sales measures.
+   Nothing before the result says or hints whether the totals differ, or why they might.
+   The lab finds a different total: 205.50 against 51.50. Only now is there a difference to
+   explain. Thursday's raw total is close to Wednesday's (198.75) and Friday's (204.24), so
+   Thursday was not a slow day in orders.parquet. The totals are equal on three days (Monday,
+   Friday and Sunday) and differ on four, Thursday among them. What explains the difference is
+   for the next section, where the learner reads the rows; the prediction does not say.
 
 ## Adding up orders.parquet per day
 
@@ -228,8 +234,9 @@ clean_orders exactly, and they differ only in the quantity rule, because no orde
 quantity of 0 or less. The shop's program drops such orders. No rebuilding from this week's data
 can find that rule. (Do not state the passing settings in any text a learner reads before
 passing.) After a pass, the learner predicts whether their own setting is the only one that
-passes (every rule they chose decides some row this week) or whether more than one does (some
-rule decides no row this week). The lab answers more than one: 2.
+passes, or whether another setting can match every row too. The options must not name a rule, or
+say that a rule decides no row: that is the explanation the result gives. The lab answers more
+than one: 2.
 
 ## The three groups of questions about daily_sales
 

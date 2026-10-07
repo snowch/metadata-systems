@@ -183,17 +183,41 @@ deliberately produces at least one surprising result: a dependency the lab canno
 that did not join, an event that changed nothing, a duplicate that was or was not harmless. The
 learner learns what metadata systems cannot do, not only what they can.
 
-**A prediction asks for a belief the learner can already hold.** Before a prediction goes in, ask:
-what has the learner seen by this point; what explanations could they reasonably hold; could they
-say why they chose one; and does the lab's answer tell those explanations apart? Each option is
-one such explanation of how the platform works. None is a hidden fact about the shop, a number
-nobody could reason to, an answer that is plainly right, or a guess at what the author decided. A
-count is offered as the explanations it stands for (none, one, more than one), never as an exact
-figure to hit. Where nothing the learner has seen can tell the options apart, as with how this shop
-happened to set up its warehouse, do not ask them to guess: ask what they would do in the shop's
-place, and let the lab show what the shop does beside their choice, called neither right nor
-wrong (the prediction figure's `choose` mode). The chapter's notes answer the four questions for
-every prediction, in a table the content tests check.
+**A prediction is built around what the learner should learn.** Before one is written, its author
+says what the learner should understand, or be able to do differently, afterwards; if that cannot
+be said clearly, the exercise is redesigned. A prediction then asks for a belief the learner can
+already hold, about a result they can observe, and keeps the stages of an investigation apart:
+the question; the plausible hypotheses; the observable result that would tell them apart; the
+evidence, from an independent source wherever there is one; what the result means; and, if it
+shows a discrepancy, the investigation of why. The learner predicts, observes, compares and
+explains; they never guess an explanation the page then reveals.
+
+- **Each option is a result the learner could expect, and the belief it reflects**: "51.50:
+  `daily_sales` holds the total of Thursday's orders". No option contains the explanation the
+  chapter is heading for ("more, because something on the way left some out"), and none is a
+  hidden fact about the shop, a number nobody could reason to, an answer that is plainly right, or
+  a guess at what the author decided.
+- **The effect before its cause.** A chapter never asks for a cause before the learner has
+  evidence that the effect exists: first "is there a discrepancy?", then "why?".
+- **Independent evidence.** A prediction tests a belief against something the learner could check
+  for themselves (what adding up the raw orders gives), not an implementation failure they would
+  have to guess (did the program drop some orders?).
+- **"I can't tell yet" is an option** where nothing the learner has seen settles the question.
+  It is never marked wrong: refusing an unjustified assumption is part of the skill, and its
+  result says what evidence settled the question.
+- **A count is offered as the explanations it stands for** (none, one, more than one), never as an
+  exact figure to hit.
+- **Where nothing the learner has seen can tell the options apart**, as with how this shop happened
+  to set up its warehouse, do not ask them to guess: ask what they would do in the shop's place,
+  and let the lab show what the shop does beside their choice, called neither right nor wrong (the
+  prediction figure's `choose` mode); where the question is what a requirement means, question the
+  requirement (below).
+
+For every prediction, the chapter's notes answer eight questions, and the content tests fail a
+prediction whose notes miss one: what the learner should learn; what they know before answering;
+the plausible hypotheses; how the evidence tells them apart; whether any option gives the
+explanation away; what a wrong answer teaches the learner about their reasoning; what question the
+result raises next; and whether the learner is testing a belief or guessing the author's answer.
 
 **After a result, ask what it proved.** A query that rebuilds an asset suggests how the asset was
 made; it does not show it. A chapter asks what its experiment proved and what the data could not
@@ -272,6 +296,8 @@ Read for these before calling a chapter finished:
 - a table nobody chose for this chapter, rendered because the component had it;
 - a prediction its notes justify but its page does not: read the page above it as the learner, and
   ask whether they could say why they chose their option;
+- an option that carries the explanation its result is about to give, or a cause asked for before
+  the learner has seen its effect;
 - a figure, caption or label that shows what the chapter asks the learner to find;
 - a field's name taken for its meaning: a page that says what a field holds without saying which
   question it answers;

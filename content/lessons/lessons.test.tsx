@@ -197,20 +197,36 @@ describe("the course's chapters", () => {
         }
   });
 
-  it("says in its chapter's notes why every prediction asks for a belief the learner can hold", () => {
-    // Each figure that takes a commitment has a row in the notes' "Predictions" table: what the
-    // learner has seen, the explanations its options stand for, and how the lab tells them apart.
+  it("answers the eight questions in its chapter's notes for every prediction", () => {
+    // Each figure that takes a commitment has a block in the notes' "Predictions" section, with
+    // an answer to each question CLAUDE.md asks of a prediction ("Interaction is the
+    // explanation"), so a prediction cannot go in without its author having asked them.
+    const LABELS = [
+      "Objective",
+      "Known before",
+      "Hypotheses",
+      "Told apart by",
+      "Gives nothing away",
+      "If wrong",
+      "Next question",
+      "A belief, not a guess",
+    ];
     const missing: string[] = [];
     for (const l of LESSONS) {
       const notes = readFileSync(
         `docs/notes/chapter-${String(chapterOf(l)).padStart(2, "0")}.md`,
         "utf8",
       );
-      const table = notes.split("\n## Predictions\n")[1]?.split("\n## ")[0] ?? "";
+      const section = notes.split("\n## Predictions\n")[1]?.split("\n## ")[0] ?? "";
       for (const s of l.sections)
-        for (const x of s.interactives)
-          if (PREDICTION_KINDS.includes(x.kind) && !table.includes(`| \`${x.id}\` |`))
-            missing.push(`${l.id}: ${x.id}`);
+        for (const x of s.interactives) {
+          if (!PREDICTION_KINDS.includes(x.kind)) continue;
+          const block = section.split(`\n### \`${x.id}\`\n`)[1]?.split("\n### ")[0];
+          if (block === undefined) missing.push(`${l.id}: ${x.id} has no block`);
+          for (const label of LABELS)
+            if (block !== undefined && !new RegExp(`\\*\\*${label}:\\*\\* \\S`).test(block))
+              missing.push(`${l.id}: ${x.id} does not answer "${label}"`);
+        }
     }
     expect(missing).toEqual([]);
   });

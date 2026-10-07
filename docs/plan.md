@@ -75,7 +75,8 @@ the platform's ten sections: question, motivation, prediction, investigation, co
 failure experiment, explanation, generalisation, challenge, reflection. Read as the learner meets
 it, the loop asks: a real question; what can I believe about it now; predict; act on the lab;
 observe; what did that prove; what can the data not tell me; what would a system have to record.
-A prediction asks only for a belief the learner can already hold (`CLAUDE.md`). A chapter is finished when
+A prediction is built around what the learner should learn, asks for a belief about a result the
+learner can observe, and never asks for a cause before its effect has been seen (`CLAUDE.md`). A chapter is finished when
 the learner can do something they could not reliably do before, and every major idea in it has an
 explanation, a concrete example, an experiment, a prediction, an observable result, a reflection
 and an application.
@@ -252,6 +253,24 @@ The author reviews the course at five checkpoints:
 5. Before Chapter 32.
 
 ## Decisions since the brief
+
+### 7 October 2026: the author's fourth round: predictions around learnable questions
+
+The author gave a quality test for every interactive question, and `CLAUDE.md` binds it
+("Interaction is the explanation"). A prediction starts from what the learner should learn. Its
+options are results the learner could expect and the beliefs they reflect, never the explanation
+the result is about to give. A cause is never asked for before its effect has been seen, evidence
+is independent wherever it can be, and "I can't tell yet" is an option where nothing seen settles
+the question, never marked wrong. Each prediction's notes answer eight questions, and a content
+test fails one that misses any.
+
+Chapter 1's audit against it. The Thursday prediction asked whether the raw orders would add up
+to 51.50, and its "no" already said that something on the way to `daily_sales` had left orders
+out. It now asks what Thursday's orders add up to, offers 51.50, a different total, or "I can't
+tell yet", and only once the lab shows 205.50 asks what explains the difference, which the
+investigation then finds. The rules prediction's options named a rule that decides no row, the
+very explanation its result gives; they now say only whether another setting can match every
+row. The owner requirement, the change lab and the sort passed.
 
 ### 7 October 2026: the author's third round: question the requirement
 

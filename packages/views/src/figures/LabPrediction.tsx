@@ -12,6 +12,10 @@
 // Where nothing the learner has seen tells the options apart, the figure asks a choice instead:
 // what the learner would do in the shop's place. The lab's answer is then what the shop does, set
 // beside the learner's choice in the lesson's own words, and neither is called right.
+//
+// Where nothing on the page settles the question, the figure offers "I can't tell yet" beside the
+// options. No answer stands for it, and it is marked neither right nor wrong: refusing an
+// unjustified assumption is part of what the course teaches. Its line says what the lab found.
 
 import { z } from "zod";
 
@@ -80,6 +84,10 @@ const Props = z
         lab: z.string().includes("{answer}"),
       })
       .optional(),
+    /** "I can't tell yet": its label, and the line after it, with `{answer}` for the lab's. */
+    undecided: z
+      .object({ value: z.string(), label: z.string(), line: z.string().includes("{answer}") })
+      .optional(),
   })
   .refine((p) => p.mode === "predict" || p.compare !== undefined, {
     message: "a choice needs its compare line",
@@ -132,8 +140,9 @@ export const LabPrediction = withProps(
   }: InteractiveProps & { data: z.infer<typeof Props> }) {
     const strings = useViewStrings();
     const [saved, setStored] = useSlot<{ choice: string }>(store, interactive.id);
+    const offered = data.undecided ? [...data.options, data.undecided] : data.options;
     // A choice saved against options the lesson no longer offers is no commitment at all.
-    const stored = data.options.some((o) => o.value === saved?.choice) ? saved : undefined;
+    const stored = offered.some((o) => o.value === saved?.choice) ? saved : undefined;
     const ready = usePassed(lesson, store, data.requires ?? "") || data.requires === undefined;
     if (!ready)
       return (
@@ -143,13 +152,13 @@ export const LabPrediction = withProps(
       );
     const result = stored ? runProbe(data.probe, week(data.changes)) : undefined;
     const answer = result ? labAnswer(result, data.options) : undefined;
-    const label = (value: string) => data.options.find((o) => o.value === value)?.label ?? value;
+    const label = (value: string) => offered.find((o) => o.value === value)?.label ?? value;
     return (
       <div className="lab-prediction" data-committed={stored ? "true" : "false"}>
         <Prose markdown={data.question} />
         <PredictionChallenge
           name={`${interactive.id}-choice`}
-          options={data.options}
+          options={offered.map(({ value, label }) => ({ value, label }))}
           committed={stored?.choice}
           onCommit={(choice) => setStored({ choice })}
           legend={data.mode === "choose" ? strings.yourChoice : strings.yourPrediction}
@@ -159,7 +168,11 @@ export const LabPrediction = withProps(
         />
         {stored && result && (
           <div className="prediction-outcome">
-            {data.mode === "choose" && data.compare ? (
+            {data.undecided && stored.choice === data.undecided.value ? (
+              <p role="status" className="prediction-compare">
+                {format(data.undecided.line, { answer: answer ? label(answer) : "" })}
+              </p>
+            ) : data.mode === "choose" && data.compare ? (
               <p role="status" className="prediction-compare">
                 {format(data.compare.mine, { choice: label(stored.choice) })}{" "}
                 {format(data.compare.lab, { answer: answer ? label(answer) : "" })}

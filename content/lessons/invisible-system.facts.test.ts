@@ -105,8 +105,14 @@ describe("the facts Chapter 1 states", () => {
       "2026-09-11",
       "2026-09-13",
     ]);
-    expect(PROSE.p2Explain).toContain("three days: Monday, Friday and Sunday");
-    expect(PROSE.p2Explain).toContain("They differ on four, Thursday among them");
+    expect(checks.filter((c) => !c.same).map((c) => c.key)).toEqual([
+      "2026-09-08",
+      "2026-09-09",
+      "2026-09-10",
+      "2026-09-12",
+    ]);
+    expect(PROSE.p2Explain).toContain("equal on three days (Monday, Friday and Sunday)");
+    expect(PROSE.p2Explain).toContain("differ on four (Tuesday, Wednesday, Thursday and Saturday)");
   });
 
   it("asks about Thursday with the figures the dashboard and the raw orders give", () => {
@@ -115,15 +121,16 @@ describe("the facts Chapter 1 states", () => {
     expect(formatValue(thursday[1] ?? null, dash.content.columns[1]!.type)).toBe("51.50");
     expect(revenue()["2026-09-10"]).toBe("51.50");
     expect(PROSE.p2Question).toContain("The dashboard shows 51.50 for Thursday");
-    expect(PROSE.p2Question).toContain("Will the total be 51.50 too?");
+    expect(PROSE.p2Question).toContain("What do you expect the total to be?");
+    expect(LABELS.p2Options.same).toMatch(/^51\.50:/);
     const raw = Object.fromEntries(rawChecks().map((c) => [c.key, c.actual]));
     expect([raw["2026-09-09"], raw["2026-09-10"], raw["2026-09-11"]]).toEqual([
       "198.75",
       "205.50",
       "204.24",
     ]);
-    expect(PROSE.p2Explain).toContain("add up to 205.50. `daily_sales` has 51.50");
-    expect(PROSE.p2Explain).toContain("Wednesday's raw total (198.75) and Friday's (204.24)");
+    expect(PROSE.p2Explain).toContain("add up to 205.50. `daily_sales` holds 51.50 for Thursday");
+    expect(PROSE.p2Explain).toContain("Wednesday's (198.75) and Friday's (204.24)");
   });
 
   it("names etl_service as the owner of all three tables", () => {

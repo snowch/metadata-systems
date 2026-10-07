@@ -136,8 +136,14 @@ export const invisibleSystem: LessonInput = {
           caption: LABELS.captions.p2,
           props: {
             question: PROSE.p2Question,
-            // The same: Thursday was a slow day. More: orders came in and some were left out.
-            options: meaning(LABELS.p2Options, { same: ["same"], more: ["more"] }),
+            // A total and the belief behind it, or "I can't tell yet": what the raw orders add up
+            // to, not why they might differ, which the investigation finds.
+            options: meaning(LABELS.p2Options, { same: ["same"], different: ["more", "less"] }),
+            undecided: {
+              value: "undecided",
+              label: LABELS.p2Undecided,
+              line: PROSE.p2UndecidedLine,
+            },
             probe: {
               kind: "day-total",
               source: "orders.parquet",
