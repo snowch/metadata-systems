@@ -67,8 +67,8 @@ set of cleaning rules compared with `clean_orders` as multisets).
 
 Every figure says what it asks of the learner (`CLAUDE.md`, "Experiments, instruments and
 explanations"), in its `role`, which its badge names; the note the badge opens gives a line on
-what to do with that kind of figure, where there is one, then how the lab made what the figure
-shows (`roleNotes` on the book, `roles` and
+what to do with that kind of figure, where there is one, and nothing else: the lab is explained
+once, where Chapter 1 first names it (`roleNotes` on the book, `roles` and
 `roleBadgeLabel` in `packages/views/src/strings.ts`).
 
 - `experiment`: the learner commits (to a prediction, a choice, a decision or a query they build),

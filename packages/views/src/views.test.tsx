@@ -239,15 +239,19 @@ describe("the figures on Chapter 1's page", () => {
     ).toBeTruthy();
   });
 
-  it("badges every figure by what it asks of the learner, and opens that role's note first", () => {
+  it("badges every figure by what it asks of the learner, and opens that role's line alone", () => {
     const { figure } = show();
     for (const x of lesson.sections.flatMap((s) => s.interactives)) {
       const role = x.role ?? "";
       expect(figure(x.id).dataset["role"], x.id).toBe(role);
-      const badge = within(figure(x.id)).getByRole("button", {
+      expect(figure(x.id).querySelector("figcaption .badge")?.textContent, x.id).toBe(
+        V.roles[role],
+      );
+      // A role with a line opens it; a reference has none, and its badge opens nothing.
+      const toggle = within(figure(x.id)).queryByRole("button", {
         name: format(V.roleBadgeLabel, { role: V.roles[role] ?? "" }),
       });
-      expect(badge.textContent, x.id).toBe(V.roles[role]);
+      expect(toggle !== null, x.id).toBe(Boolean(V.roleNotes[role]));
     }
     const storage = figure("storage");
     fireEvent.click(
@@ -257,9 +261,9 @@ describe("the figures on Chapter 1's page", () => {
     );
     const note = storage.querySelector(".time-model-note")!;
     expect(note.hasAttribute("hidden")).toBe(false);
-    const role = (note.textContent ?? "").indexOf(V.roleNotes["inspect"]!.slice(0, 40));
-    expect(role).toBeGreaterThanOrEqual(0);
-    expect((note.textContent ?? "").indexOf(V.labNote.slice(0, 40))).toBeGreaterThan(role);
+    expect(note.textContent?.trim()).toBe(V.roleNotes["inspect"]);
+    // The lab is explained once, where the chapter first names it, and behind no badge.
+    expect(note.textContent).not.toContain("Metadata Lab");
   });
 
   it("asks where to look, and which explanation to test, only once the answer above is committed", () => {

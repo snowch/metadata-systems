@@ -50,10 +50,13 @@ changed (its full unit suite passes on the moved packages; `snowch/learning-plat
   (events) and 9 (SQL) need it.
 - **A model the book names.** A figure's model is a name the book chooses, here `lab`; `none` stays
   reserved for a figure that runs nothing, and `modelProblems` holds the lessons to the models the
-  book has notes for.
+  book declares. A book may give no note for a model: this course gives none, because Chapter 1
+  explains the lab in its own prose, where it first names it, and the runtime then states no note
+  at the foot of a page.
 - **A figure's role.** A figure may say what it asks of the reader (`role`, a name the book
   chooses); the runtime's badge then names the role instead of the model, and the note it opens
-  gives the book's note for the role (`roleNotes`) before the model's. Every figure in this course
+  is the book's note for the role (`roleNotes`) alone; a role with no note, here `reference`, has
+  a badge that opens nothing. Every figure in this course
   has one: an experiment, an instrument to inspect with, or a reference (`CLAUDE.md`,
   "Experiments, instruments and explanations"). A figure without a role keeps the model's badge,
   as the digital-design course's do.
@@ -64,9 +67,9 @@ changed (its full unit suite passes on the moved packages; `snowch/learning-plat
 - The figures, the choice editor and the grader (`packages/views`).
 - The shell, its look and its words (`apps/course`): the platform shares an interaction
   vocabulary and a lesson format with the author's other courses, not a look.
-- The runtime's words where this course names things differently: the model's badge and note,
-  the roles' badges and notes, and the labels of a failed test (`runtimeStrings` and `createBook`
-  in `packages/views/src/book.tsx`).
+- The runtime's words where this course names things differently: the model's badge, the roles'
+  badges and notes, and the labels of a failed test (`runtimeStrings` and `createBook` in
+  `packages/views/src/book.tsx`).
 
 ## Shared primitives in use
 

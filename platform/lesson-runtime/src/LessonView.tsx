@@ -81,20 +81,20 @@ function InteractiveFigure({
   // figure shows, and opens that model's note where the reader is, not at the foot of the page.
   // A figure that runs nothing gets no badge: a label saying what a figure is not tells nothing.
   // A figure that declares a role (what it asks of the reader) is badged by the role instead, and
-  // its note says what the role asks, then how the model made what the figure shows.
+  // its note is the role's alone: the model's note is stated once, at the foot of the lesson, not
+  // again in every badge. A role with no note gets a badge that opens nothing.
   const simulated = interactive.timeModel !== NO_MODEL;
   const role = interactive.role;
   const badge =
     role !== undefined
       ? (strings.lesson.role[role] ?? role)
       : (strings.lesson.timeModel[interactive.timeModel] ?? interactive.timeModel);
-  const notes = [
-    role !== undefined ? book.roleNotes?.[role] : undefined,
-    simulated
-      ? book.timeModelNotes[interactive.timeModel as keyof Book["timeModelNotes"]]
-      : undefined,
-  ].filter((n): n is string => n !== undefined);
-  const note = notes.length > 0 ? notes.join("\n\n") : undefined;
+  const note =
+    (role !== undefined
+      ? book.roleNotes?.[role]
+      : simulated
+        ? book.timeModelNotes[interactive.timeModel as keyof Book["timeModelNotes"]]
+        : undefined) || undefined;
   const badged = simulated || role !== undefined;
   const [noteOpen, setNoteOpen] = useState(false);
   const noteId = `ix-${interactive.id}-model`;
@@ -155,6 +155,12 @@ function LessonBody({ book, lesson, storage, lessonHref }: Omit<LessonViewProps,
   const strings = useStrings();
   const store = useLessonStore(storage, book.id, lesson.id);
   const models = timeModelsUsed(lesson);
+  // The note on each model the lesson's figures run, once, at its foot. A book that explains its
+  // model in the lessons' own prose gives no note for it, and then the heading goes too.
+  const modelNotes = models.flatMap((model) => {
+    const note = book.timeModelNotes[model as keyof Book["timeModelNotes"]];
+    return note ? [{ model, note }] : [];
+  });
   const byId = new Map(book.lessons.map((l) => [l.id, l]));
   return (
     <article className="lesson" aria-labelledby="lesson-title" data-lesson={lesson.id}>
@@ -211,13 +217,12 @@ function LessonBody({ book, lesson, storage, lessonHref }: Omit<LessonViewProps,
           </section>
         );
       })}
-      {models.length > 0 && (
+      {modelNotes.length > 0 && (
         <aside className="lesson-model-note" aria-labelledby="lesson-model-note">
           <h2 id="lesson-model-note">{strings.lesson.modelNote}</h2>
-          {models.map((m) => {
-            const note = book.timeModelNotes[m as keyof Book["timeModelNotes"]];
-            return note ? <Prose key={m} markdown={note} /> : null;
-          })}
+          {modelNotes.map(({ model, note }) => (
+            <Prose key={model} markdown={note} />
+          ))}
         </aside>
       )}
       <aside className="lesson-model-vs-reality" aria-labelledby="lesson-model-vs-reality">

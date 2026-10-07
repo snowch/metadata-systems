@@ -28,7 +28,6 @@ import {
   sumSql,
   week,
 } from "@ms/lab";
-import { DEFAULT_VIEW_STRINGS } from "@ms/views";
 
 import { LABELS } from "./invisible-system.labels";
 import { PROSE } from "./invisible-system.prose";
@@ -96,18 +95,22 @@ describe("the facts Chapter 1 states", () => {
     expect(DAYS[0]).toBe("2026-09-07");
     expect(DAYS[DAYS.length - 1]).toBe("2026-09-13");
     expect(LABELS.captions.dashboard).toContain("7 to 13 September");
-    expect(DEFAULT_VIEW_STRINGS.labNote).toContain("Monday 7 to Sunday 13 September 2026");
+    expect(PROSE.question).toContain("Monday 7 to Sunday 13 September 2026");
     // The week's last night ends early on the Monday morning the learner arrives: every time
     // storage shows falls inside the week or that night.
     expect(NIGHTS[NIGHTS.length - 1]).toBe("2026-09-14");
     const times = [...week().lastWritten.values()];
     expect(times.every((t) => t >= "2026-09-07" && t < "2026-09-14T06:00")).toBe(true);
-    const note = DEFAULT_VIEW_STRINGS.labNote;
-    expect(note).toContain("The last night ends early on Monday 14 September");
-    // The note says what the week is before any sentence uses it.
-    const said = note.indexOf("13 September 2026");
-    for (const use of ["the week", "each night"])
-      expect(note.toLowerCase().indexOf(use), use).toBeGreaterThan(said);
+    // The lab is explained where the chapter first names it, and says what the week is before any
+    // sentence uses it.
+    const opening = PROSE.question;
+    expect(opening).toContain("The last night ends early on Monday 14 September");
+    const said = opening.indexOf("13 September 2026");
+    for (const use of ["the week", "each night"]) {
+      const at = opening.toLowerCase().indexOf(use);
+      expect(at === -1 || at > said, use).toBe(true);
+    }
+    expect(opening.indexOf("Metadata Lab")).toBeGreaterThan(-1);
   });
 
   it("matches raw orders to daily_sales on three days of seven, the ones the prose names", () => {

@@ -1,8 +1,8 @@
 // Copyright © 2026 Christopher Snow
 
 // The metadata course as a book the platform's runtime can render: its lessons, the figures they
-// name, the challenge editor, the grader, the note for the one model its figures run, the lab, and
-// a note for each role a figure can have. The runtime's own words are kept, except where this
+// name, the challenge editor, the grader, the one model its figures run, the lab, and a note for
+// each role a figure can have. The runtime's own words are kept, except where this
 // course names its model, its roles and its tests differently.
 
 import type { ComponentType } from "react";
@@ -97,7 +97,9 @@ export function createBook(
     interactives,
     ChallengeEditor: ChoiceEditor,
     grade: (challenge, artifact) => grade(challenge, artifact),
-    timeModelNotes: { lab: DEFAULT_VIEW_STRINGS.labNote },
+    // No note on the lab: Chapter 1 explains it in its own prose, where it first names it, so no
+    // badge and no foot of a page says it again.
+    timeModelNotes: {},
     roleNotes: DEFAULT_VIEW_STRINGS.roleNotes,
   };
 }

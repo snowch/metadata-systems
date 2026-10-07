@@ -256,6 +256,13 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 7 October 2026: the lab, explained once, where it is first named
+
+The author found the lab named in Chapter 1's opening without an explanation, and its long note
+repeated behind every figure's badge and at the foot of the page. The opening now explains it
+where the chapter first names it; a badge opens only its role's line (the platform, at 3af8a81),
+and the course gives no model note, so the foot states none.
+
 ### 7 October 2026: silence is preferable to filler
 
 The author found a badge's note that told the learner nothing ("You have what you were told about

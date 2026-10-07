@@ -120,13 +120,15 @@ describe("the course's chapters", () => {
     }
   });
 
-  it("names only figures the book has, running only models the book has notes for", () => {
+  it("names only figures the book has, running only models the book declares", () => {
     for (const l of LESSONS)
       for (const s of l.sections)
         for (const x of s.interactives)
           if (x.kind !== "challenge") expect(Object.keys(INTERACTIVES)).toContain(x.kind);
     expect(modelProblems(LESSONS, [...MODELS])).toEqual([]);
-    for (const m of MODELS) expect(book.timeModelNotes[m]).toBeTruthy();
+    // The lab is explained once, where Chapter 1 first names it: no model note repeats it behind
+    // every badge or at the foot of every page.
+    expect(book.timeModelNotes).toEqual({});
   });
 
   type Option = { value: string; label: string; range?: [number, number]; means?: string[] };

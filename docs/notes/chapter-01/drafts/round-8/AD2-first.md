@@ -1,0 +1,5 @@
+## qLab
+
+Every figure on the page runs the Metadata Lab, a small data platform written for this course. It comes with the page, as code, and runs in your browser: there is nothing to install, open or sign in to. The lab holds the shop, with its first week's data from Monday 7 to Sunday 13 September 2026: real rows in its files, tables and dashboard, and its programs in SQL. The shop and week are invented for the course. Each night of that week the programs run; the last night ends early on Monday 14 September, before you start work.
+
+The lab runs the programs' SQL with a query engine of its own. Nothing about the shop is stored anywhere: each time the page loads, the lab builds the shop's data and runs the whole week, night by night, in memory. Every reader sees the same rows and times, from that week, never from today or your computer's clock. You interact with the lab through the figures on the page only: each figure asks the lab something, and the lab works out its answer. Your browser keeps your predictions, choices and answers to challenges, chapter by chapter. Nothing you do leaves your browser: the page sends none of it anywhere.

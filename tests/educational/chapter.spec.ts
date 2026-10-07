@@ -358,7 +358,7 @@ test.describe("the figures", () => {
     await expect(figure).toContainText("205.50");
   });
 
-  test("every figure's badge says what it asks of the learner, and opens that role's note", async ({
+  test("every figure's badge says what it asks of the learner, and opens that role's line alone", async ({
     page,
   }) => {
     await openChapter(page);
@@ -371,10 +371,13 @@ test.describe("the figures", () => {
     await storage
       .getByRole("button", { name: format(V.roleBadgeLabel, { role: V.roles["inspect"] ?? "" }) })
       .click();
-    await expect(storage.locator(".time-model-note p").first()).toBeVisible();
-    await expect(storage.locator(".time-model-note p").first()).toContainText(
-      V.roleNotes["inspect"]!.slice(0, 40),
-    );
+    await expect(storage.locator(".time-model-note")).toBeVisible();
+    await expect(storage.locator(".time-model-note")).toHaveText(V.roleNotes["inspect"] ?? "");
+    // The lab is explained once, where the chapter first names it: behind no badge, and not
+    // again at the foot. A reference's badge opens nothing.
+    await expect(page.locator(".time-model-note", { hasText: "Metadata Lab" })).toHaveCount(0);
+    await expect(page.locator(".lesson-model-note")).toHaveCount(0);
+    await expect(page.locator("#ix-platform .time-model-toggle")).toHaveCount(0);
   });
 
   test("the investigation starts where the learner chooses to look, and the inspector opens there", async ({

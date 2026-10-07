@@ -846,6 +846,33 @@ rule, which found 13 clear cases and 25 doubtful. Each was judged in its context
   the next sentence needs); the lab note's lines the author asked for; and the pointer to the
   challenge that finds what the left-out orders share.
 
+## The lab, explained once, 7 October 2026
+
+The author found the lab named in the chapter's opening without being explained ("Every figure on
+this page runs the Metadata Lab: a small data platform that holds the shop and runs in your
+browser."), and then explained in full behind every figure's badge and again at the foot of the
+page: since figures took roles, a badge's note was its role's line followed by the model's note,
+and every figure here runs the same model.
+
+- **The platform** (`snowch/learning-platform` at 3af8a81): a figure badged by its role opens its
+  role's line alone, and a role with no line, here `reference`, has a badge that opens nothing. A
+  book may give no note for a model, and the foot then states none.
+- **The course** gives no note for the lab. The opening explains it once, where the chapter first
+  names it: after the paragraphs on the shop's systems, assets and nights, and before the map.
+  `CLAUDE.md`'s list of what no check catches gains the fault: a thing named before the page
+  explains it, or explained again wherever it appears.
+
+| Draft | Wrong, sent back | Dropped, restored with the fewest words |
+| --- | --- | --- |
+| AD (the lab's paragraphs) | "You have the shop", where the lab holds the shop; "Nothing is stored on a server", which turns the author's question about the browser's storage into a different answer (nothing about the shop is stored anywhere); and four dropped facts: that every figure runs the lab, that it comes with the page as code, that there is nothing to install, open or sign in to, and its query engine. Sent back as AD2 | none |
+| AD2 (again) | none | none. Two repeats were cut: "Each night of that week the programs run", which the paragraph above says, and "the page sends none of it anywhere" after "Nothing you do leaves your browser". Haiku rewrote its file after the check had read it, cutting to 170 words by dropping facts ("real rows", "first week", "night by night"); the opening keeps the version it wrote first, saved as `drafts/round-8/AD2-first.md`, at 195 words |
+
+The read of the built page, at 1280 pixels in the light theme and 390 in the dark: the opening
+names the lab, then explains it, then shows the map; the map's badge opens nothing; the
+dashboard's and the experiments' badges open one line each; the foot holds the model-versus-reality
+note and nothing on the lab. The line before "Start this chapter again" still says the browser
+keeps your work, because it names what starting again clears.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,

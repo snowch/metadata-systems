@@ -19,38 +19,40 @@ every number below. Do not add a number that is not here. Do not change a number
   log in as). Call it "the lab".
 - All times are UTC. Write a time like this: Monday 14 September, 02:30.
 
-## The Metadata Lab, as its note describes it
+## The Metadata Lab, where the chapter introduces it
 
-The lab's note opens from every figure's badge, below what the figure asks of you, and closes
-each chapter under the heading "How the figures run". It serves every chapter of the course, so it
-says nothing that only Chapter 1 needs. Read off the code (`packages/lab`, `packages/views`, the
-platform's `state.ts`) on 7 October 2026:
+The chapter explains the lab once, where it first names it: in the opening section, after the
+paragraphs on the shop's systems, its assets and its nights, and before the map. No figure's badge
+and no note at the foot repeats it. Read off the code (`packages/lab`, `packages/views`, the
+platform's `state.ts`) on 7 October 2026. The paragraphs above it already say: you start work on
+Monday 14 September 2026 at 09:00; the shop opened its online store on Monday 7 September; its
+platform has three systems (object storage holds files, the warehouse tables, the reporting tool a
+dashboard); what an asset is; that it has seven assets; that every night the three files are
+written again, then programs write the tables and refresh the dashboard; and that you cannot see
+the programs. In the order the lab's paragraphs give them, each thing named before a sentence uses
+it:
 
-In the order the note gives them, each thing named before a sentence uses it:
-
-1. **What the lab is.** The Metadata Lab is a small data platform written for this course. It
-   comes with the page, as code, and runs in your browser: there is nothing to install, open or
-   sign in to.
-2. **What it holds.** The shop: files, tables and a dashboard with real rows, and programs,
-   written in SQL, that write the tables and the dashboard.
-3. **The week.** The lab holds one week of the shop: its first week online, Monday 7 to Sunday 13
-   September 2026. The shop and its week are invented for the course. Each night of the week the
-   programs run; the last night ends early on Monday 14 September.
-4. **How it runs.** The lab reads and runs the programs' SQL itself, with a query engine of its
-   own. Nothing about the shop is stored: each time the page loads, the lab builds the shop's data
-   and runs the whole week, night by night, in memory. So the rows and times are the same for
-   every reader on any day, and every date and time a figure shows comes from that week, never
-   from today's date or your computer's clock.
-5. **How you use it.** Through the figures: each figure asks the lab something and shows its
-   answer. A figure that shows storage reads what the lab's storage records. When you build a
-   query, the lab runs it with the same query engine. When you change the shop, the lab runs the
-   week again with your change.
+1. **What the lab is.** Every figure on the page runs the Metadata Lab, a small data platform
+   written for this course. It comes with the page, as code, and runs in your browser: there is
+   nothing to install, open or sign in to.
+2. **What it holds.** The shop described above, with real rows in its files, tables and dashboard,
+   and its programs, written in SQL.
+3. **The week.** The shop's first week online, Monday 7 to Sunday 13 September 2026. The shop and
+   its week are invented for the course. The programs run each night of the week; the last night
+   ends early on Monday 14 September, before you start work.
+4. **How it runs.** The lab runs the programs' SQL with a query engine of its own. Nothing about
+   the shop is stored: each time the page loads, the lab builds the shop's data and runs the whole
+   week, night by night, in memory. So the rows and times are the same for every reader on any
+   day, and every date and time a figure shows comes from that week, never from today's date or
+   your computer's clock.
+5. **How you use it.** Only through the figures on the page. The lab works out everything a figure
+   shows: each figure asks the lab something and shows its answer.
 6. **What your browser keeps.** Your own work, chapter by chapter: your predictions, your choices
    and your answers to challenges. Nothing you do leaves your browser: the page sends none of it
    anywhere.
 
-The note does not say how many programs there are, which asset a program reads or writes, or what
-any program does: Chapter 1 shows that storage cannot tell.
+The paragraphs do not say how many programs there are, which asset a program reads or writes, or
+what any program does: the chapter shows that storage cannot tell.
 
 ## The seven assets
 

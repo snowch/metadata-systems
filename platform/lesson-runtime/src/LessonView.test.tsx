@@ -64,7 +64,7 @@ describe("LessonView", () => {
     expect(within(none).queryByRole("button", { expanded: false })).toBeNull();
   });
 
-  it("badges a figure that declares a role by the role, and opens the role's note, then its model's", async () => {
+  it("badges a figure that declares a role by the role, and opens the role's note alone", async () => {
     const user = userEvent.setup();
     const withRole = {
       ...lesson,
@@ -75,7 +75,7 @@ describe("LessonView", () => {
         ),
       })),
     };
-    const roleNote = "An experiment: you commit first, and the model answers.";
+    const roleNote = "Commit first, then compare what the model shows with what you expected.";
     const roleBook = { ...fixtureBook([withRole]), roleNotes: { experiment: roleNote } };
     const strings = {
       ...DEFAULT_STRINGS,
@@ -94,10 +94,39 @@ describe("LessonView", () => {
     const note = loop.querySelector(".time-model-note") as HTMLElement;
     expect(note).toBeVisible();
     expect(note.textContent).toContain(roleNote);
-    expect(note.textContent).toContain(roleBook.timeModelNotes.settle ?? "");
-    expect(note.textContent?.indexOf(roleNote)).toBeLessThan(
-      note.textContent?.indexOf(roleBook.timeModelNotes.settle ?? "") ?? 0,
+    // The model's note is stated once, at the foot, not again in every badge.
+    expect(note.textContent).not.toContain(roleBook.timeModelNotes.settle ?? "");
+    const foot = document.querySelector(".lesson-model-note") as HTMLElement;
+    expect(foot.textContent).toContain(roleBook.timeModelNotes.settle ?? "");
+  });
+
+  it("gives a role with no note a badge that opens nothing", () => {
+    const withRole = {
+      ...lesson,
+      sections: lesson.sections.map((s) => ({
+        ...s,
+        interactives: s.interactives.map((x) =>
+          x.id === "loop" ? { ...x, role: "reference" } : x,
+        ),
+      })),
+    };
+    render(
+      <LessonView book={fixtureBook([withRole])} lesson={withRole} storage={memoryStorage()} />,
     );
+    const loop = document.getElementById("ix-loop") as HTMLElement;
+    expect(loop.querySelector(".badge")).toHaveTextContent("reference");
+    expect(loop.querySelector(".time-model-toggle")).toBeNull();
+    expect(loop.querySelector(".time-model-note")).toBeNull();
+  });
+
+  it("states no model note at the foot when the book gives none", () => {
+    const quiet = { ...fixtureBook([lesson]), timeModelNotes: {} };
+    render(<LessonView book={quiet} lesson={lesson} storage={memoryStorage()} />);
+    expect(document.querySelector(".lesson-model-note")).toBeNull();
+    // A figure badged by its model still names it, and opens nothing.
+    const loop = document.getElementById("ix-loop") as HTMLElement;
+    expect(loop.querySelector(".badge")).not.toBeNull();
+    expect(loop.querySelector(".time-model-toggle")).toBeNull();
   });
 
   it("mounts the challenge section's challenge through the runner", () => {

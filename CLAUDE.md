@@ -347,6 +347,9 @@ Read for these before calling a chapter finished:
   a database's namespace), *model* (the lab, a data model, an ML model), *map* (the platform map;
   no other figure is called one);
 - a definite article in front of a noun the chapter has not introduced;
+- a thing named before the page explains it, or explained again wherever it appears: explain it
+  once, where the reader first meets it (the lab is explained where Chapter 1 first names it, and
+  behind no badge);
 - a term doing work before it is defined;
 - a table nobody chose for this chapter, rendered because the component had it;
 - a prediction its notes justify but its page does not: read the page above it as the learner, and
@@ -379,7 +382,7 @@ reason it exists.
 - **The filler check** fails learner-facing text that uses the commonest forms of filler
   (`docs/style.md`): a backstop for the rule, which only reading enforces.
 - **The term gate** across chapters, and **the model gate**: a figure may name only a model the
-  book has a note for (`modelProblems`).
+  book declares (`modelProblems`).
 - **Every figure declares its role** (an experiment, an instrument to inspect with, or a reference),
   which its badge shows, **and has its block in the chapter's notes** under "Figures": twelve
   answers for an experiment, two for an instrument or a reference.
