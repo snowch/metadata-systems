@@ -665,6 +665,15 @@ test.describe("the figures", () => {
       await expect(figure.locator(".change-outcome")).toBeVisible();
       await expect(figure.locator(".change-fits li")).toHaveCount(fits[change.id!]!);
       if (fits[change.id!] === 0) await expect(figure).toContainText(V.fitsNone);
+      // After the failed night, Sunday's row is the learner's alone: marked as theirs, not as a
+      // difference, and the table still keeps its columns in its box, on a phone too.
+      if (change.id === "failed") {
+        await expect(figure.locator(".days-table tbody tr td:last-child").last()).toHaveText(
+          V.extraRow,
+        );
+        const region = figure.locator(".days-table").last().locator("xpath=..");
+        expect(await region.evaluate((r) => r.scrollWidth <= r.clientWidth + 1)).toBe(true);
+      }
       if (i < changes.length - 1) await expect(figure.locator(".change-after-all")).toHaveCount(0);
     }
     await expect(figure.locator(".change-after-all")).toBeVisible();
@@ -707,7 +716,13 @@ test.describe("the figures", () => {
     await openChapter(page);
     const figure = page.locator("#ix-predict-rules");
     await expect(figure.locator(".figure-locked")).toHaveText(format(V.locked, { title: c.title }));
+    // The rows the rules keep, and how many, wait for a run of the rules on screen.
+    const rules = challenge(page, c.id);
+    await expect(rules.locator(".choice-rows")).toHaveCount(0);
+    await expect(rules.locator(".choice-wait")).toHaveText(V.keptAfterRun);
     await pass(page, c.id);
+    await expect(rules.locator(".choice-rows")).toHaveCount(1);
+    await expect(rules.locator(".choice-wait")).toHaveCount(0);
     const options = figureProps("predict-rules")["options"] as Labelled[];
     // More than one setting passes: the quantity rule decides no row this week.
     await figure

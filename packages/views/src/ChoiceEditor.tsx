@@ -3,6 +3,12 @@
 // A challenge built from choices: one select per field, and below them the query the choices
 // mean, as SQL, run on Monday's storage. The learner builds, runs and inspects in one place; the
 // tests are the runtime's "Run tests".
+//
+// A query's result shows as the learner builds it: comparing its rows with the target, day by day,
+// is how they find the query. The rows a set of cleaning rules keeps, and how many, show only once
+// the learner has run the tests on the rules on screen (the runner drops its verdict at every
+// change): one count, shown as they choose, would let them match it to the target's and skip the
+// rows.
 
 import { useId, useMemo } from "react";
 
@@ -14,7 +20,7 @@ import { DataTable } from "./DataTable";
 import { problemText } from "./grade";
 import { format, useViewStrings } from "./strings";
 
-export function ChoiceEditor({ challenge, artifact, onChange }: ChallengeEditorProps) {
+export function ChoiceEditor({ challenge, artifact, onChange, verdict }: ChallengeEditorProps) {
   const strings = useViewStrings();
   const id = useId();
   const answers = answersOf(challenge, artifact);
@@ -66,6 +72,8 @@ export function ChoiceEditor({ challenge, artifact, onChange }: ChallengeEditorP
             <p className="query-problem" role="status">
               {problemText(outcome.problem, strings)}
             </p>
+          ) : outcome && grader === "same-rows" && !verdict ? (
+            <p className="choice-wait">{strings.keptAfterRun}</p>
           ) : outcome && grader === "same-rows" ? (
             <>
               <p role="status">{format(strings.keptRows, { count: outcome.table.rows.length })}</p>

@@ -156,6 +156,47 @@ describe("the figures on Chapter 1's page", () => {
     expect(figure("changes").querySelectorAll(".change-fits li")).toHaveLength(2);
   });
 
+  it("marks a row only the learner's query gives as extra, not as a difference", () => {
+    const { figure } = show(passing("rebuild-daily-sales"));
+    const f = within(figure("changes"));
+    fireEvent.click(f.getByLabelText(changeLabel("failed")));
+    const options = (props("changes")["prediction"] as { options: Labelled[] }).options;
+    fireEvent.click(f.getByLabelText(options.find((o) => o.value === "one")!.label));
+    fireEvent.click(f.getByRole("button", { name: V.runWithChange }));
+    // Six days the same, and Sunday's row, which daily_sales lacks after the failed night: the
+    // query still rebuilds daily_sales, so Sunday is extra, not a difference.
+    const marks = [...figure("changes").querySelectorAll(".days-table tbody tr")].map(
+      (r) => r.lastElementChild,
+    );
+    expect(marks.map((m) => m?.textContent)).toEqual([...Array<string>(6).fill(V.yes), V.extraRow]);
+    expect(marks[6]?.className).toBe("is-extra");
+  });
+
+  it("shows the rows the rules keep only once the rules on screen are run", () => {
+    const run = runtimeStrings().challenge.run;
+    const section = (container: HTMLElement) =>
+      container.querySelector<HTMLElement>(
+        'section.challenge[data-challenge="clean-orders-rules"]',
+      )!;
+    const fresh = section(show().page.container);
+    expect(fresh.querySelector(".choice-rows")).toBeNull();
+    expect(fresh.textContent).toContain(V.keptAfterRun);
+    fireEvent.click(within(fresh).getByRole("button", { name: run }));
+    expect(fresh.querySelector(".choice-rows")).not.toBeNull();
+    expect(fresh.textContent).not.toContain(V.keptAfterRun);
+    // A change to a rule drops what the run showed until the tests run again.
+    const field = rules.fields[0]!;
+    const select = within(fresh).getByLabelText(field.label) as HTMLSelectElement;
+    const other = (field.options ?? []).find((o) => o.value !== select.value)!;
+    fireEvent.change(select, { target: { value: other.value } });
+    expect(fresh.querySelector(".choice-rows")).toBeNull();
+    expect(fresh.textContent).toContain(V.keptAfterRun);
+    // Saved rules are graded as the page loads, so what they keep shows at once.
+    const saved = section(show(passing("clean-orders-rules")).page.container);
+    const kept = week().tables.get("clean_orders")!.rows.length;
+    expect(saved.textContent).toContain(format(V.keptRows, { count: kept }));
+  });
+
   it("takes the learner's sort of the questions before the lab places them, then moves them by week", () => {
     const { figure } = show();
     const f = within(figure("map"));

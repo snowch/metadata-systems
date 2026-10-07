@@ -127,6 +127,16 @@ pre.sql {
   color: var(--bad);
   font-weight: 600;
 }
+/* A row only the learner's query gives: not a difference, since a rebuild needs only the asset's
+   rows, so in no colour of its own. Its words may take two lines, so that the table keeps its
+   columns in the box on a phone, as it does with "Yes" and "No". */
+.is-extra {
+  color: var(--fg-muted);
+}
+.days-table td.is-extra {
+  white-space: normal;
+  min-width: 4.5em;
+}
 
 /* After the cells' own padding: on a phone the narrow tables keep their columns in the box without scrolling. */
 @media (max-width: 30rem) {

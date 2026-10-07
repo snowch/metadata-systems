@@ -33,3 +33,19 @@ export function weekdayOf(day: string, names: readonly string[]): string {
 export function showDay(day: string, names: readonly string[]): string {
   return `${weekdayOf(day, names)} ${Number(day.slice(8, 10))}`;
 }
+
+/**
+ * A day's mark where a query is set beside the asset it should rebuild: the same, different, or a
+ * row only the query gives. The last does not stop the query rebuilding the asset, which needs
+ * every row the asset has, so it is marked as the query's own, in no colour, not as a difference.
+ * Where the question is whether two totals are equal day by day, a missing day is a difference,
+ * and the table marks it "No" (the Thursday prediction's).
+ */
+export function matchCell(
+  check: { readonly expected: string | null; readonly same: boolean },
+  words: { readonly yes: string; readonly no: string; readonly extraRow: string },
+): { text: string; className: string } {
+  if (check.same) return { text: words.yes, className: "is-same" };
+  if (check.expected === null) return { text: words.extraRow, className: "is-extra" };
+  return { text: words.no, className: "is-different" };
+}

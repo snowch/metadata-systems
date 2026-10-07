@@ -956,6 +956,33 @@ outside their captions.
 | --- | --- | --- |
 | AG (which figures you read) | none sent back. Haiku flagged "asset" used before the page defines it, under the map: ", an asset" was cut, and the sentence still holds, since in the inspector the button you press is an asset's name. "Query" stays: it is plain to the learner, and not a rationed term | "The first three figures," which says where the map, the week and the dashboard are, before the page has shown them |
 
+## For the learner: the rules' rows after a run, and an extra row, 7 October 2026
+
+The author passed on a second review, built from the internal review's findings before the
+revision; nearly all of it was already fixed (`review/verdicts.md`, and "The review" above), and
+its new proposals broke the course's rules (an owner option naming `etl_service`, exact numbers
+as Thursday's options, metadata "kept separately from the data") or the lab (a stale time "could
+mean a quiet night": in the lab a quiet night still writes, and updates the time). Two points held,
+and the author said to do the right thing for the learner:
+
+- **The rules' rows wait for a run.** The challenge on `clean_orders` showed how many rows the
+  learner's rules keep while they chose them, and only one setting keeps the 44 rows
+  `clean_orders` has, so the count could be matched without reading a row (R19's part the revision
+  kept). The editor now shows the SQL as the learner chooses, and the rows the rules keep, with
+  their count, only once the tests have run on the rules on screen; the verdict beside them names
+  the orders the rules drop or keep wrongly. The query challenge keeps its live result: comparing
+  its daily totals with `daily_sales` is how the learner finds the query, and its hints use it.
+- **An extra row is extra.** After the failed night, Sunday's row is the learner's alone, and the
+  table marked it "No" beside the words "Your query still rebuilds `daily_sales`". A row only the
+  learner's result has does not stop a rebuild, which needs every row the target has; the change
+  experiment's table now marks it "Only your query", in no colour (`matchCell`). The Thursday
+  prediction's table keeps "No" for a missing day: there the question is whether two totals are
+  equal day by day, and a missing day is a difference.
+
+| Draft | Wrong, sent back | Dropped, restored with the fewest words |
+| --- | --- | --- |
+| AH (two labels) | none | none. "Only your query" went only where a query is set beside the asset it rebuilds, as the brief described; the first placing in the Thursday prediction's table too was this session's slip, put right before it was committed |
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,

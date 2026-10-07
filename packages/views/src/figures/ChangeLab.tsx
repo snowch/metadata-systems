@@ -39,7 +39,7 @@ import { challengeTitle, usePassed } from "../passed";
 import { withProps } from "../props";
 import { Rich, plain } from "../Rich";
 import { ScrollRegion } from "../ScrollRegion";
-import { showDay, showTime } from "../show";
+import { matchCell, showDay, showTime } from "../show";
 import { format, useViewStrings, type ViewStrings } from "../strings";
 
 const CountOption = z.object({
@@ -213,10 +213,7 @@ export const ChangeLab = withProps(
                   cells: [
                     { text: c.actual ?? strings.noRow },
                     { text: c.expected ?? strings.noRow },
-                    {
-                      text: c.same ? strings.yes : strings.no,
-                      className: c.same ? "is-same" : "is-different",
-                    },
+                    matchCell(c, strings),
                   ],
                 }))}
               />

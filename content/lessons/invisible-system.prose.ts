@@ -113,7 +113,7 @@ export const PROSE = {
     "Keep one row of an order that appears twice. Drop orders with no customer id. Keep cancelled orders. Either choice passes for the quantity rule.",
   ],
   c2Lead:
-    "`clean_orders` is made from `orders.parquet` by rules you cannot read. Recover them from the two files by choosing, for each kind of row that differs between them, whether the rules keep it. The tests compare the rows your rules keep with `clean_orders`. Your rules appear as SQL below the choices, with the number of rows they keep.",
+    "`clean_orders` is made from `orders.parquet` by rules you cannot read. Recover them from the two files by choosing, for each kind of row that differs between them, whether the rules keep it. The tests compare the rows your rules keep with `clean_orders`. Your rules appear as SQL below the choices.",
   p3Question:
     "Your rules pass. Is your setting of the four rules the only one that gives `clean_orders` exactly?",
   p3Explain:

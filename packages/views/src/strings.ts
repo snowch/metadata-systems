@@ -111,6 +111,10 @@ export const DEFAULT_VIEW_STRINGS = {
     other: "The query cannot run.",
   } as Record<string, string>,
   noRow: "no row",
+  /** A row only the learner's query gives, beside the asset it rebuilds (brief AH). */
+  extraRow: "Only your query",
+  /** Before the tests run on the rules on screen, where their rows will show (brief AH). */
+  keptAfterRun: 'You press "Run tests" after each change to see the rows kept.',
   missingRows: "Your rules drop {count} rows that clean_orders keeps, orders {ids}.",
   extraRows: "Your rules keep {count} rows that clean_orders does not, orders {ids}.",
   changeLegend: "Change",
