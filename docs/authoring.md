@@ -34,6 +34,12 @@ Keep the words out of the structure file: the chapter's paragraphs go in `<id>.p
 titles, captions and labels in `<id>.labels.ts`. Captions, titles and option labels render as plain
 text: no Markdown in them.
 
+A figure's `lead` and `after` are chapter prose: the page draws them outside the figure's card, at
+the prose's measure, and the card holds the caption and the lab's view. Write a lead as the text
+that brings the reader to the figure, not as part of the figure. In the figures' own strings
+(`packages/views/src/strings.ts`), a name between backticks is set as code wherever the figure
+draws the sentence itself.
+
 ## The figures
 
 The registry is `INTERACTIVES` in `packages/views/src/book.tsx`. Each figure parses its props with

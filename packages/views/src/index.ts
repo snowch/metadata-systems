@@ -11,6 +11,7 @@ export {
 export { ChoiceEditor } from "./ChoiceEditor";
 export { answersOf, cleanChoiceOf, describeSum, optionLabel, sumChoiceOf } from "./choices";
 export { DataTable } from "./DataTable";
+export { Rich, code, plain } from "./Rich";
 export { ScrollRegion } from "./ScrollRegion";
 export { challengeTitle, usePassed } from "./passed";
 export { Glyph } from "./Glyph";

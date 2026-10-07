@@ -1,6 +1,8 @@
 // Copyright © 2026 Christopher Snow
 
-// Every word the figures put in front of a learner, in one place. Drafted by the course's prose
+// Every word the figures put in front of a learner, in one place. A name between backticks is set
+// as code where the figure draws the sentence itself (`Rich`), and dropped where only plain text
+// will do (`plain`). Drafted by the course's prose
 // process (CLAUDE.md) from the briefs in docs/notes/chapter-01/briefs (F, then the revision's I,
 // J, K and L after the review) and checked against the lab. Slots in braces are filled by
 // `format`.
@@ -77,10 +79,10 @@ export const DEFAULT_VIEW_STRINGS = {
       "Storage records the column names and their types, not how the values were worked out.",
     title: "The reporting tool records the title “{title}”, not how the values were worked out.",
     "owner-role":
-      "The warehouse records the name {role} as the owner, which does not say who is responsible for the table.",
+      "The warehouse records the name `{role}` as the owner, which does not say who is responsible for the table.",
     creator:
-      "The reporting tool records who created it, {person}, not who is responsible for it now.",
-    types: "Storage records {column} as {type}, a number with no unit.",
+      "The reporting tool records who created it, `{person}`, not who is responsible for it now.",
+    types: "Storage records `{column}` as `{type}`, a number with no unit.",
     "time-only": "Storage records the last write, at {time}, not whether a write was due.",
     nothing: "Storage records nothing that answers this.",
   } as Record<string, string>,
@@ -105,22 +107,22 @@ export const DEFAULT_VIEW_STRINGS = {
   storageNowHeading: "What storage holds on Monday morning",
   compareNote:
     "Storage holds only this week's values. Each comparison with the week as it first ran is the lab's, because it ran both weeks.",
-  newAsset: "A new file, {asset}, at {location}, last modified at {time}.",
-  changedTime: "{asset} was last written at {after}; in the week as it first ran, at {before}.",
-  changedRows: "{asset} has {after} rows; in the week as it first ran, {before}.",
+  newAsset: "A new file, `{asset}`, at `{location}`, last modified at {time}.",
+  changedTime: "`{asset}` was last written at {after}; in the week as it first ran, at {before}.",
+  changedRows: "`{asset}` has {after} rows; in the week as it first ran, {before}.",
   changedValue:
-    "In {asset}, the row for {day} reads {after}; in the week as it first ran, {before}.",
+    "In `{asset}`, the row for {day} reads {after}; in the week as it first ran, {before}.",
   noDiff: "Storage holds the same as in the week as it first ran.",
-  yourQueryHeading: "Your query against this week's daily_sales",
-  fitsHeading: "The queries in the builder's choices that rebuild daily_sales",
+  yourQueryHeading: "Your query against this week's `daily_sales`",
+  fitsHeading: "The queries in the builder's choices that rebuild `daily_sales`",
   fitsNone: "None of the builder's choices rebuilds it.",
-  describeQuery: "from {source}, {keep}, add up {measure} per {per}",
+  describeQuery: "from `{source}`, {keep}, add up {measure} per {per}",
   place: {
     storage: "Storage records it",
     suggested: "The data suggests it",
     record: "Only a record kept at the time answers it",
   } as Record<string, string>,
-  sortLegend: "Where each question about {asset} is answered",
+  sortLegend: "Where each question about `{asset}` is answered",
   sortPick: "Choose a group",
   checkSort: "Check my sorting",
   sortScore: "{matching} of {total} questions are where the lab places them.",
@@ -137,7 +139,7 @@ export const DEFAULT_VIEW_STRINGS = {
     time: "Last written at {time}.",
     oneQuery: "One query rebuilds it: {query}.",
     oneQueryHidden: "One query in the builder's choices rebuilds it (no query named).",
-    oneSource: "One asset rebuilds it: {source}.",
+    oneSource: "One asset rebuilds it: `{source}`.",
     oneSourceHidden: "One asset rebuilds it (no asset named).",
     manySources: "{count} assets rebuild it equally well: {sources}.",
     manySourcesHidden: "{count} assets rebuild it equally well (no assets named).",
@@ -148,8 +150,8 @@ export const DEFAULT_VIEW_STRINGS = {
     noReaders: "No other asset shows the same numbers.",
     nightDone: "Last written at {time}, with a row for {day}.",
     nightMissing: "Last written at {time}; the latest row is for {latest}, not {expected}.",
-    account: "Storage records the name {role}, not who is responsible.",
-    types: "The column {column} is {type}, with no unit.",
+    account: "Storage records the name `{role}`, not who is responsible.",
+    types: "The column `{column}` is `{type}`, with no unit.",
     currentOnly: "Storage keeps only the current rows.",
   } as Record<string, string>,
   mapLabel: "The shop's data platform",

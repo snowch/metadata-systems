@@ -365,10 +365,9 @@ details[open] > summary::before {
 .change-status {
   font-weight: 600;
 }
+/* Sentence case: these headings are phrases, and the names in them keep their case. */
 .change-result section h4 {
   font-size: var(--text-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
   color: var(--fg-muted);
 }
 .change-note {

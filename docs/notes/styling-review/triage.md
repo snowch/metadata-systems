@@ -13,7 +13,7 @@ them accessibility. The sceptic's verdicts and severities are the ones acted on.
 | S2, the 48 rows beside an empty column (low) | in part | The 48 rows stay: the section sends the learner to find rows in them. On a wide page the list of assets now travels with the detail (sticky). |
 | S3, the map's button over the page's foot on a phone (low) | in part | The foot has room below it for the button; a browser test checks no foot text is under it from 320 to 414 pixels. |
 | S4, radios beside the middle of long labels (low) | upheld | The radio sits by the label's first line; a one-line label stays centred in its row. |
-| S5, chapter prose inside the figure cards (low) | in part | Not changed: the lead and after text are the figure's own parts in the platform's schema, drawn inside the card by its runtime. For the author: move each lead into its section's prose where the section has one figure, or keep the lead as the figure's instructions. |
+| S5, chapter prose inside the figure cards (low) | in part | Decided for the learner, as the author asked: a figure's lead and after text now sit on the page, at the prose's measure, and the card holds the caption and the lab's view only, so it always means the lab and always opens with its badge. Done in the course's stylesheet (the card is a layer behind two rows of the figure's grid), so the runtime's markup and reading order are unchanged and no platform change was needed. |
 | S6, the badge and caption laid out by the caption's length (medium) | upheld | The badge has its own column and the caption sits beside it at every length, wrapping under itself. |
 | S7, tables framed three ways, frames wider than tables (medium) | upheld | Every table's frame now hugs the table; the record and column tables have the same frame; no two-column table is stretched across the figure. |
 | S8, verdicts at full width and in bold (low) | in part | A verdict keeps the prose's measure and regular weight, with only "The prediction was correct" or "was not correct" in bold. |
@@ -21,7 +21,7 @@ them accessibility. The sceptic's verdicts and severities are the ones acted on.
 | S10, the accent and kind colours overlapping (low) | in part | The sort's columns no longer borrow the table kind's blue, the warning's amber and the accent; their headings carry the meaning. The dashboard's brown against the warning's stays, as the sceptic judged it. |
 | S11, the chosen option looking unavailable (low) | in part | Once committed, the chosen option is bold and the others muted; the locked options lose the pointer and the hover fill. |
 | S12, the LAB badge a button that looks like a tag (low) | in part | The badge takes the accent on hover and focus, and a tinted fill while its note is open. |
-| S13, names in figures set in the prose face (low) | upheld | Not changed yet: the figures' own sentences would need their names set as code, and the option labels and titles are drawn by the platform. A follow-up. |
+| S13, names in figures set in the prose face (low) | upheld | Names in the figures' own sentences (the change lab's results, the sort's evidence, the inspector's answers, two headings) are set as code, as the chapter's prose sets them; the headings that carry names are in sentence case so the names keep their case. Option labels and section titles are drawn by the platform as plain text and stay so. |
 | S14, the section rule at the prose measure | rejected | Nothing. |
 | S15, the disabled button's look | rejected | Nothing. |
 | S16, the dashboard's frame and tracks | rejected | Nothing. |
@@ -46,4 +46,5 @@ The sceptic's own findings:
 | The header's edges off the page column on a desktop | The header's contents now share the page column's edges. |
 | A wrapped button label left-aligned | Button labels are centred. |
 
-Left for the author: S5 (where a figure's lead text belongs), and the follow-ups S13 and S21.
+The author asked for S5 and S13 to be settled for the best learner experience, and both are done.
+Left: S21 (the small labels' three faces), polish for a later pass.

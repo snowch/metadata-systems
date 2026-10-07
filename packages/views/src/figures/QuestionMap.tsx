@@ -32,6 +32,7 @@ import { FaultInjector } from "@platform/primitives";
 import { describeSum } from "../choices";
 import { usePassed } from "../passed";
 import { withProps } from "../props";
+import { Rich, code } from "../Rich";
 import { showDay, showTime } from "../show";
 import { format, useViewStrings, type ViewStrings } from "../strings";
 
@@ -77,7 +78,7 @@ export function evidenceText(
             : (strings.e["oneSourceHidden"] ?? "");
         return format(strings.e[named ? "manySources" : "manySourcesHidden"] ?? "", {
           count: sources.length,
-          sources: listOf(sources),
+          sources: listOf(sources.map(code)),
         });
       }
       if (e.candidates.length === 1)
@@ -86,12 +87,12 @@ export function evidenceText(
           : (strings.e["oneQueryHidden"] ?? "");
       return format(strings.e[named ? "manyQueries" : "manyQueriesHidden"] ?? "", {
         count: e.candidates.length,
-        sources: listOf(sources),
+        sources: listOf(sources.map(code)),
       });
     }
     case "readers":
       return e.assets.length
-        ? format(strings.e["readers"] ?? "", { assets: listOf(e.assets) })
+        ? format(strings.e["readers"] ?? "", { assets: listOf(e.assets.map(code)) })
         : (strings.e["noReaders"] ?? "");
     case "night":
       return e.looksDone
@@ -140,7 +141,9 @@ export const QuestionMap = withProps(
       return (
         <div className="question-sort">
           <fieldset className="sort-questions">
-            <legend>{format(strings.sortLegend, { asset: data.asset })}</legend>
+            <legend>
+              <Rich text={format(strings.sortLegend, { asset: data.asset })} />
+            </legend>
             {QUESTION_IDS.map((q) => (
               <div key={q} className="choice-field">
                 <label className="choice-label" htmlFor={`${id}-${q}`}>
@@ -214,7 +217,9 @@ export const QuestionMap = withProps(
                       <li key={e.question}>
                         <strong className="map-question">{strings.q[e.question]}</strong>
                         <span className="map-evidence">
-                          {evidenceText(e.question, e.evidence, challenge, strings, named)}
+                          <Rich
+                            text={evidenceText(e.question, e.evidence, challenge, strings, named)}
+                          />
                         </span>
                         {place === "record" && (
                           <span className="map-kind">

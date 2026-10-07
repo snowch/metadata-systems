@@ -398,29 +398,49 @@ ol {
 .prose + .prose {
   margin-top: var(--space-4);
 }
-.figure-lead,
-.figure-after {
-  margin: 0 0 var(--space-4);
-}
-.figure-after {
-  margin-top: var(--space-4);
-}
-
+/* A figure: the lab's view in a card, headed by its caption. The text that leads into a figure
+   and the text that follows it stay on the page, at the prose's measure, so the card always means
+   the lab and always opens with its badge. The card is a layer drawn behind the caption and the
+   view only (rows 2 and 3 of the figure's grid), so the reading order stays the runtime's: lead,
+   caption, view, after. */
 figure.interactive {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   margin: var(--space-5) 0;
-  padding: var(--space-4);
+  min-width: 0;
+}
+figure.interactive::before {
+  content: "";
+  grid-row: 2 / 4;
+  grid-column: 1;
   background: var(--bg-raised);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+}
+figure.interactive > * {
+  grid-column: 1;
   min-width: 0;
 }
+figure.interactive > .figure-lead {
+  grid-row: 1;
+  margin: 0 0 var(--space-4);
+}
+figure.interactive > :not(.figure-lead, figcaption, .figure-after) {
+  grid-row: 3;
+  margin: 0 var(--space-4) var(--space-4);
+}
+figure.interactive > .figure-after {
+  grid-row: 4;
+  margin: var(--space-4) 0 0;
+}
 figure.interactive > figcaption {
+  grid-row: 2;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   gap: var(--space-2);
-  margin-bottom: var(--space-4);
+  margin: var(--space-4);
   font-size: var(--text-sm);
   color: var(--fg-muted);
   max-width: var(--measure);

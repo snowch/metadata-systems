@@ -26,6 +26,7 @@ import { StateInspector } from "@platform/primitives";
 import { DataTable } from "../DataTable";
 import { Glyph } from "../Glyph";
 import { withProps } from "../props";
+import { Rich } from "../Rich";
 import { showSize, showTime } from "../show";
 import { format, useViewStrings, type ViewStrings } from "../strings";
 
@@ -153,7 +154,9 @@ export const StorageInspector = withProps(
               {QUESTION_IDS.map((q) => (
                 <div key={q} className="question-answer">
                   <dt>{strings.q[q]}</dt>
-                  <dd>{answerText(current, q, strings)}</dd>
+                  <dd>
+                    <Rich text={answerText(current, q, strings)} />
+                  </dd>
                 </div>
               ))}
             </dl>

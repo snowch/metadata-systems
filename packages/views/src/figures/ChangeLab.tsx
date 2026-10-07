@@ -37,6 +37,7 @@ import { FaultInjector, PredictionChallenge, StateInspector } from "@platform/pr
 import { answersOf, describeSum, sumChoiceOf } from "../choices";
 import { challengeTitle, usePassed } from "../passed";
 import { withProps } from "../props";
+import { Rich, plain } from "../Rich";
 import { ScrollRegion } from "../ScrollRegion";
 import { showDay, showTime } from "../show";
 import { format, useViewStrings, type ViewStrings } from "../strings";
@@ -164,12 +165,16 @@ export const ChangeLab = withProps(
           <p className="change-status">
             {change ? format(strings.ranWith, { change: change.label }) : strings.firstWeekStatus}
           </p>
-          <section aria-label={strings.fitsHeading}>
-            <h4>{strings.fitsHeading}</h4>
+          <section aria-label={plain(strings.fitsHeading)}>
+            <h4>
+              <Rich text={strings.fitsHeading} />
+            </h4>
             {fits.length ? (
               <ul className="change-fits">
                 {fits.map((f) => (
-                  <li key={JSON.stringify(f)}>{describeSum(f, challenge, strings)}</li>
+                  <li key={JSON.stringify(f)}>
+                    <Rich text={describeSum(f, challenge, strings)} />
+                  </li>
                 ))}
               </ul>
             ) : (
@@ -183,7 +188,9 @@ export const ChangeLab = withProps(
               {diffs.length ? (
                 <ul className="change-diffs">
                   {diffs.map((d) => (
-                    <li key={d}>{d}</li>
+                    <li key={d}>
+                      <Rich text={d} />
+                    </li>
                   ))}
                 </ul>
               ) : (
@@ -191,12 +198,14 @@ export const ChangeLab = withProps(
               )}
             </section>
           )}
-          <section aria-label={strings.yourQueryHeading}>
-            <h4>{strings.yourQueryHeading}</h4>
-            <ScrollRegion label={strings.yourQueryHeading}>
+          <section aria-label={plain(strings.yourQueryHeading)}>
+            <h4>
+              <Rich text={strings.yourQueryHeading} />
+            </h4>
+            <ScrollRegion label={plain(strings.yourQueryHeading)}>
               <StateInspector
                 className="days-table"
-                caption={strings.yourQueryHeading}
+                caption={plain(strings.yourQueryHeading)}
                 headings={[strings.day, strings.yours, data.target, strings.same]}
                 rows={checks.map((c) => ({
                   key: c.key,
