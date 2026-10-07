@@ -14,6 +14,7 @@ import { describe, expect, it } from "vitest";
 
 import { optionForCount, runProbe, sumReconstructions, week, type ChangeId } from "@ms/lab";
 import {
+  DEFAULT_VIEW_STRINGS,
   INTERACTIVES,
   MODELS,
   PREDICTION_KINDS,
@@ -26,6 +27,7 @@ import {
 import { LessonView, memoryStorage } from "@platform/lesson-runtime";
 import { learnerText, modelProblems, termPattern, termProblems } from "@platform/lesson-schema";
 
+import { STRINGS } from "../../apps/course/src/strings";
 import { LESSONS, PLAN, TERMS, chapterOf } from "./index";
 
 const book = createBook(LESSONS);
@@ -66,6 +68,40 @@ describe("the course's chapters", () => {
         }
       }
     }
+    expect(found).toEqual([]);
+  });
+
+  it("uses none of the commonest forms of filler", () => {
+    // CLAUDE.md, "Silence is preferable to filler": a sentence the learner would not miss goes.
+    // Only reading applies that test; this is a backstop for the forms the author named.
+    const FILLER = [
+      /\byou have (what you need|everything)\b/i,
+      /\beverything (is )?in place\b/i,
+      /\bnow you can (begin|start)\b/i,
+      /\bwhere things get interesting\b/i,
+      /\basks nothing of you\b/i,
+      /\bkept to hand\b/i,
+      /\b(is|are) (quietly )?waiting\b/i,
+      /\bquietly\b/i,
+      /\byou (have been|were) told\b/i,
+      /\b(as )?you already know\b/i,
+      /\blet's\b/i,
+    ];
+    const strings = (v: unknown): string[] =>
+      typeof v === "string"
+        ? [v]
+        : v && typeof v === "object"
+          ? Object.values(v).flatMap(strings)
+          : [];
+    const texts = [
+      ...LESSONS.flatMap((l) => learnerText(l)),
+      ...strings(DEFAULT_VIEW_STRINGS),
+      ...strings(runtimeStrings()),
+      ...strings(STRINGS),
+    ];
+    const found = texts.flatMap((t) =>
+      FILLER.filter((f) => f.test(t)).map((f) => `${String(f)}: ${t.slice(0, 80)}`),
+    );
     expect(found).toEqual([]);
   });
 

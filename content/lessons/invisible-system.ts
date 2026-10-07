@@ -198,7 +198,6 @@ export const invisibleSystem: LessonInput = {
           timeModel: "lab",
           caption: LABELS.captions.inspector,
           lead: PROSE.inspectorLead,
-          after: PROSE.inspectorAfter,
           props: {
             initial: "orders.parquet",
             from: {

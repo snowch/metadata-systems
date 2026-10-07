@@ -160,6 +160,17 @@ answer it: whether a query that rebuilds an asset shows how the asset was made i
 1's construction and answered by its failure experiment. What a chapter must not do is answer its
 own question in prose before the learner has run the experiment that answers it.
 
+**Silence is preferable to filler.** Write for the learner's next action, not for narrative flow,
+and do not imitate a textbook's teacherly tone. Every sentence tells the learner something
+concrete, changes what they should do, explains why something matters, or sets up a prediction or
+a decision. Test each one: if it were removed, would the learner lose information, understanding
+or a useful instruction? If not, remove it, and put nothing in its place unless the learner needs
+an action there: what to inspect, predict or find out, and why. No reassurance ("you have what you
+need"), no motivation ("this is where things get interesting"), no platform described as a person
+("the system is waiting", a figure that "asks nothing of you"), and nothing about what the learner
+"has been told" or "already knows" unless that fact is the point. `docs/style.md` has the rule
+and its standing example.
+
 **Terms are rationed per chapter.** A term arrives because the lab in front of the learner has
 just raised the question that needs it, never as a definition up front: plain English first, the
 term second. `docs/plan.md` lists the terms each chapter introduces; the term gate
@@ -329,6 +340,8 @@ Read for these before calling a chapter finished:
 
 - a claim about the repository's own state, which rots silently; if the repository can compute
   it, generate it;
+- a sentence the learner would not miss: reassurance, motivation, the platform described as a
+  person, a line about what they were told; silence is preferable to filler;
 - a word that means two things on one page: *table* (the warehouse's and the page's), *record*,
   *event*, *run* (the noun and the verb), *version*, *source*, *owner*, *schema* (a structure and
   a database's namespace), *model* (the lab, a data model, an ML model), *map* (the platform map;
@@ -363,6 +376,8 @@ reason it exists.
 - **`tsc` strict**, with `noUncheckedIndexedAccess` and `verbatimModuleSyntax`.
 - **A lesson without an `originalityNote`, with its sections out of order, or with a challenge
   nobody mounts, fails to parse.** The content tests parse every lesson.
+- **The filler check** fails learner-facing text that uses the commonest forms of filler
+  (`docs/style.md`): a backstop for the rule, which only reading enforces.
 - **The term gate** across chapters, and **the model gate**: a figure may name only a model the
   book has a note for (`modelProblems`).
 - **Every figure declares its role** (an experiment, an instrument to inspect with, or a reference),

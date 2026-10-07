@@ -809,6 +809,43 @@ uses "the week" or "each night" before it gives the week's dates.
 | --- | --- | --- |
 | AB (the note, reordered) | none | "small", "open", what the programs write, "invented for the course", "of its own" (the query engine), and a comma that keeps "a query you build, with the same query engine" from reading as one phrase. Haiku went on editing its file after the check had read it, and cut its draft to 200 words by dropping more facts ("as code", "itself", "date"); the note keeps the fuller version it wrote first, saved as `drafts/round-7/AB-first.md`. It comes to 225 words |
 
+## Silence is preferable to filler, 7 October 2026
+
+The author found filler on the page, "You have what you were told about the platform, kept to
+hand. It asks nothing of you.", the line every reference figure's badge opened, and gave a rule:
+every sentence must tell the learner something concrete, change what they should do, explain why
+something matters, or set up a prediction or a decision; write for the learner's next action, not
+for narrative flow; and remove any sentence the learner would not miss. `CLAUDE.md` ("Voice") and
+`docs/style.md` bind it, and a content test fails the commonest forms the author named.
+
+The whole chapter's text, 598 sentences, went to an independent reviewer on another model with the
+rule, which found 13 clear cases and 25 doubtful. Each was judged in its context, by the same test:
+
+- **Cut, 12 places.** The prediction section's preview of the two figures under it, which their
+  captions and questions already say; "Now there is a difference to explain." and "First, where to
+  look: the next section starts there."; after the check, "If you chose another explanation, the
+  rows have ruled it out. The first explanation you test need not be the right one.", which the
+  check's table already shows and which reassured; the inspector's "The inspector is your
+  instrument for the question above." and its two sentences naming panels the learner can see;
+  its after-text, which the construction's first sentence repeats; "This page has not shown them
+  yet. Later chapters do."; "Back to Thursday." and "The course comes back to Thursday later.";
+  "Real systems keep different things.", where the heading says it; and the reference line itself,
+  so a reference figure's badge opens the lab's note alone. Each is a cut, with words moved only to
+  keep a sentence whole ("It asks" became "The inspector asks", "Some keep" "Some real systems
+  keep").
+- **Redrafted, 2.** The experiment and instrument lines carried filler too ("the lab's evidence
+  answers", "What you take away is..."). Brief AC asked for the next action only; Haiku returned
+  "Commit to a prediction, a choice or a query you build. Compare what the lab shows with what you
+  expected." and "Use this to answer the question just above. Look for the evidence the question
+  needs.", and the check restored "first" ("Commit first"), because the order is the instruction.
+  It dropped "it shows what the platform holds", which the figure shows, and that stays out.
+- **Kept, the rest**, because removing each would lose a fact or an instruction: "The lab tells you
+  this; storage does not." (where a fact comes from is the chapter's point); "How much can you find
+  out from what storage holds?" (the chapter's question); "The data might." (the construction's
+  hypothesis); "Both fit equally well." and "Storage shows the new file." (the reason, and the noun
+  the next sentence needs); the lab note's lines the author asked for; and the pointer to the
+  challenge that finds what the left-out orders share.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,

@@ -18,7 +18,8 @@ export const DEFAULT_VIEW_STRINGS = {
   badge: "Lab",
   badgeLabel: "How this figure works: {model}",
   // What each figure asks of the learner, on its badge, and the note the badge opens, above the
-  // lab's (brief Z; CLAUDE.md, "Experiments, instruments and explanations").
+  // lab's (briefs Z and AC; CLAUDE.md, "Experiments, instruments and explanations"). A reference asks
+  // nothing to be done, so its badge opens the lab's note alone (silence is preferable to filler).
   roles: {
     experiment: "Experiment",
     inspect: "Inspect",
@@ -27,11 +28,9 @@ export const DEFAULT_VIEW_STRINGS = {
   roleBadgeLabel: "What this figure asks of you is {role}",
   roleNotes: {
     experiment:
-      "You commit first, to a prediction, a choice or a query you build. Then you act, and the lab's evidence answers. What you take away is what the evidence shows beside what you expected.",
+      "Commit first to a prediction, a choice or a query you build. Compare what the lab shows with what you expected.",
     inspect:
-      "This is an instrument: it shows what the platform holds, and answers no question by itself. Use it on the question the page has just asked, and look for the evidence that question needs.",
-    reference:
-      "You have what you were told about the platform, kept to hand. It asks nothing of you.",
+      "Use this to answer the question just above. Look for the evidence the question needs.",
   } as Record<string, string>,
   modelNote: "How the figures run",
   modelVsReality: "How this lab differs from a real platform",

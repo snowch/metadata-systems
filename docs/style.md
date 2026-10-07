@@ -22,6 +22,29 @@ measures"). The options of one prediction share a form and run to about the same
 no option looks right because of its wording, and nothing above the options hints at the one the
 lab will support (`CLAUDE.md`, "Interaction is the explanation").
 
+A second rule is this course's own, from the author: **silence is preferable to filler.** Write for
+the learner's next action, not for narrative flow. Every sentence earns its place by telling the
+learner something concrete, changing what they should do, explaining why something matters, or
+setting up a prediction or a decision. Do not imitate the tone of an educational book with
+teacherly prose: the goal is to make the learner think, inspect, predict, test and understand, not
+to sound like a textbook. The test, for every sentence: if it were removed, would the learner lose
+information, understanding or a useful instruction? If not, remove it. Where something must stand
+in its place, say exactly what the learner has, what to inspect, what to predict, what evidence
+they can obtain, or what question they are answering; where nothing must, leave nothing. These are
+filler unless they carry a specific fact the learner needs:
+
+- reassurance and motivation: "You have what you need", "You have everything in place", "Now you
+  can begin", "This is where things get interesting";
+- the platform or a figure described as a person: "The system is waiting", "The platform
+  quietly...", a figure that "asks nothing of you";
+- what the learner "has been told" or "already knows", unless that fact is the point.
+
+The standing example is the note Chapter 1 opened from every reference figure's badge: "You have
+what you were told about the platform, kept to hand. It asks nothing of you." Neither sentence
+told the learner anything to know or do, and the note is gone. The first pass below scans for
+these forms, and a content test fails the commonest of them; the second pass applies the test to
+every sentence, because only reading finds the rest.
+
 The checklist applies to every string a learner reads: chapter prose, hints, the feedback after a
 failed test, model-versus-reality notes and labels inside the figures. Both closing passes run over
 every chapter before it is called finished, and for this course the second pass also asks whether

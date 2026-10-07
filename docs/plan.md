@@ -256,6 +256,17 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 7 October 2026: silence is preferable to filler
+
+The author found a badge's note that told the learner nothing ("You have what you were told about
+the platform, kept to hand. It asks nothing of you.") and gave a style rule, which `CLAUDE.md`
+and `docs/style.md` bind: every sentence tells the learner something concrete, changes what they
+should do, explains why something matters, or sets up a prediction or a decision; prose is
+written for the learner's next action, not for narrative flow; and a sentence the learner would not
+miss is removed, with nothing in its place unless an action belongs there. A content test fails
+the commonest forms of filler. An independent review of Chapter 1 against the rule cut twelve
+passages and redrafted two notes (`docs/notes/chapter-01.md`).
+
 ### 7 October 2026: the author's fifth round: experiments, instruments and explanations
 
 The author gave a guide to designing effective labs, and `CLAUDE.md` binds it ("Experiments,
