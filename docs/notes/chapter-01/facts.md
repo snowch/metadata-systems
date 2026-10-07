@@ -31,22 +31,30 @@ order the page gives them, each thing named before a sentence uses it:
 1. **The situation.** You start work on Monday 14 September 2026 at 09:00 (the lab's `ARRIVAL`).
    You are a data engineer at an online shop that sells bicycle parts. The shop opened its online
    store on Monday 7 September.
-2. **What the lab is.** Every figure on the page runs the Metadata Lab, a small data platform
-   written for this course. It runs in your browser: there is nothing to install, open or sign
-   in to (the author's own words). The lab holds the shop, with real rows in its files, tables
-   and dashboard, and its programs, written in SQL. The shop is invented for the course. Each
-   figure asks the lab something, and the lab works out its answer.
-3. **How the lab runs, behind a control the reader opens.** The lab runs the programs' SQL with a
-   query engine of its own. Nothing about the shop is stored anywhere: each time the page loads,
-   the lab builds the shop's data and runs the shop's first week, night by night, in memory. So
-   the rows and times are the same for every reader on any day, and every date and time a figure
-   shows comes from that week, never from today's date or your computer's clock. Your browser
-   keeps your own work, chapter by chapter: your predictions, your choices and your answers to
-   challenges. Nothing you do leaves your browser: the page sends none of it anywhere.
+2. **What you do with the lab, before what it is made of** (the author's agent guide on the lab,
+   7 October 2026). The figures on this page are how you investigate the shop. They use a small
+   data platform called the Metadata Lab, written for this course and built into it. It runs in
+   your browser: there is nothing to install, open or sign in to (the author's own words). You
+   ask the lab something by using a figure; the lab works out the answer from the shop's data and
+   shows you what it found. Some figures ask you to predict or choose before the lab answers;
+   others let you inspect what the shop's systems hold. You cannot see the shop's programs, only
+   what they leave behind, so you work out what happened from what the lab shows you. The words
+   the page uses for this, in every chapter: you ask, the lab checks, it shows you, you work out
+   what it means.
+3. **How the lab is built, behind a control the reader opens.** The lab holds the shop's first
+   week: real rows in its files, tables and dashboard, and its programs, written in SQL. The shop
+   is invented for the course. The lab runs the programs' SQL, and any query you build, with a
+   query engine of its own. Nothing about the shop is kept between page loads: each time the
+   page loads, the lab builds the shop's data and runs the shop's first week, night by night, in
+   memory. So the rows, results and times are the same for every reader on any day, and every
+   date and time a figure shows comes from that week, never from today's date or your computer's
+   clock. Your browser keeps your own work, chapter by chapter: your predictions, your choices
+   and your answers to challenges. Nothing you do leaves your browser: the page sends none of it
+   anywhere.
 4. **The map** (below, "The map of the platform"). The shop's data platform has three systems.
    The map shows them in the order data moves through them each night, with what each holds,
    and under them a count the lab computes: 3 files + 3 tables + 1 dashboard = 7 assets.
-   Programs move the data from one system to the next; you cannot see the programs. Once you
+   Programs move the data from one system to the next, as the map's own words say. Once you
    scroll past the map, a button at the foot of the window opens it again.
 5. **What an asset is**, under the map. An asset is something in the platform that can be
    stored, described, changed, related to other assets, or depended on. The files, tables and

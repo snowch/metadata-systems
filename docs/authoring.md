@@ -77,8 +77,14 @@ figure is a reference with one job, named in its block under "Figures": the plat
 architecture, its assets, time, a flow, or where the learner stands. It is still a view of the
 lab, and it still shows only what the learner has been told or has built. Detail the next step
 does not need goes in the section's `details`, a control the reader opens, where it first
-matters: Chapter 1 keeps how the lab runs there. A chapter's opening sets up the smallest model
-its first question needs, and adds structure when the investigation makes it relevant.
+matters: Chapter 1 keeps how the lab is built there. A chapter's opening sets up the smallest
+model its first question needs, and adds structure when the investigation makes it relevant.
+
+A mechanism is explained from the learner's side first (`CLAUDE.md`, "Interaction is the
+explanation"): what the learner does and what happens when they do, then how it is built. A brief
+for a figure's words says which is which, and keeps implementation words (SQL, query engine,
+memory, page load) out of the text that says what the learner does. The plain model of a figure,
+in every chapter: you ask, the lab checks, it shows you, you work out what it means.
 
 ## Experiments, instruments and references
 

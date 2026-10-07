@@ -256,6 +256,19 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 7 October 2026: the lab, from the learner's side first
+
+A second agent's guide the author passed on found the Metadata Lab still explained in technical
+terms ("a small data platform written for this course", its programs in SQL) before the learner
+was told what they do with it. Chapter 1's opening now says what the figures are for and what
+happens when you use one (you ask, the lab checks the shop's data, it shows you what it found, you
+work out what it means), and keeps how the lab is built, its SQL, its query engine and its run in
+memory, in the section's details. `CLAUDE.md` binds the rule for the book: explain a mechanism from
+the learner's side first, and the plain model above is the words every chapter uses for a figure.
+Two of the guide's words were not taken: "inspect the shop's data or metadata", because the
+chapter introduces metadata at its end, from the questions the learner could not answer; and "the
+figures on this page are interactive", because the map and the week's figure are only read.
+
 ### 7 October 2026: the opening in short steps, around two figures
 
 An agent's guide the author passed on found Chapter 1's opening right in what it said and wrong in

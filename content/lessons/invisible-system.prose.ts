@@ -14,7 +14,7 @@ export const PROSE = {
   labDetails:
     "The lab runs the programs' SQL with its own query engine. Nothing about the shop is kept between page loads. Each page load, the lab builds the shop's data and runs its first week, night by night, in memory. So every reader sees the same rows and times, on any day. A figure's dates and times come from the first week, never from today's date or your computer's clock. Your browser keeps your work, chapter by chapter: predictions, choices and answers to challenges. Nothing you do leaves your browser.",
   platformLead:
-    "The shop's data platform has three systems. The map shows them in the order data moves through them each night. You cannot see the programs. Once you scroll past the map, a button at the foot of the window opens it again.",
+    "The shop's data platform has three systems. The map shows them in the order data moves through them each night. Once you scroll past the map, a button at the foot of the window opens it again.",
   platformAfter:
     "An asset is something in the platform that can be stored, described, changed, related to other assets, or depended on. In this chapter, storage means all three systems.",
   weekLead:

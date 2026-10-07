@@ -45,6 +45,17 @@ told the learner anything to know or do, and the note is gone. The first pass be
 these forms, and a content test fails the commonest of them; the second pass applies the test to
 every sentence, because only reading finds the rest.
 
+A third rule is the author's too: **explain a mechanism from the learner's side first.** Before a
+page says how anything interactive is built, it says what the learner does with it and what
+happens when they do. First answer "What do I do, and what happens when I do it?"; only then "How
+does the technology behind it work?". The plain model of every figure, in the words the page uses
+for it in every chapter: you ask, the lab checks, it shows you, you work out what it means. Where
+the learner needs "you ask it something and it shows you what it finds", a sentence such as "the
+lab queries the underlying data model" is the wrong one. The standing example is Chapter 1's
+opening, which named the lab as "a small data platform written for this course" and listed its
+SQL before it said what the learner does with it; it now says what the figures are for and what
+happens when you use one, and keeps how the lab is built in the section's details.
+
 The checklist applies to every string a learner reads: chapter prose, hints, the feedback after a
 failed test, model-versus-reality notes and labels inside the figures. Both closing passes run over
 every chapter before it is called finished, and for this course the second pass also asks whether

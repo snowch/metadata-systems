@@ -206,6 +206,15 @@ deliberately produces at least one surprising result: a dependency the lab canno
 that did not join, an event that changed nothing, a duplicate that was or was not harmless. The
 learner learns what metadata systems cannot do, not only what they can.
 
+**Explain a mechanism from the learner's side first.** Before the page says how anything
+interactive is built, it says what the learner does with it and what happens when they do: first
+"What do I do, and what happens when I do it?", only then "How does the technology behind it
+work?". The plain model of every figure, in the words the page uses for it in every chapter: you
+ask, the lab checks, it shows you, you work out what it means. Where the learner needs "you ask it
+something and it shows you what it finds", a sentence such as "the lab queries the underlying data
+model" does not belong. How a mechanism is built comes after, and where the learner's next step
+does not need it, in a section's `details`.
+
 **A prediction is built around what the learner should learn.** Before one is written, its author
 says what the learner should understand, or be able to do differently, afterwards; if that cannot
 be said clearly, the exercise is redesigned. A prediction then asks for a belief the learner can
@@ -356,6 +365,8 @@ Read for these before calling a chapter finished:
   person, a line about what they were told; silence is preferable to filler;
 - a block of description before the learner's first question that a figure could carry, or that
   the question does not need yet;
+- a mechanism explained by how it is built before the page says what the learner does with it and
+  what happens when they do;
 - a word that means two things on one page: *table* (the warehouse's and the page's), *record*,
   *event*, *run* (the noun and the verb), *version*, *source*, *owner*, *schema* (a structure and
   a database's namespace), *model* (the lab, a data model, an ML model), *map* (the platform map;
