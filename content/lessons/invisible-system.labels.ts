@@ -30,7 +30,7 @@ export const LABELS = {
   captions: {
     platform: "The map: the shop's three systems and the assets each holds.",
     dashboard: "On Monday morning the dashboard shows daily revenue for 7 to 13 September.",
-    p1: "Predict whether the owner the warehouse records for daily_sales is someone you could ask.",
+    p1: "Choose what you would store as the owner of daily_sales; then see what the shop's warehouse holds.",
     p2: "Predict whether Thursday's rows of orders.parquet add up to the dashboard's figure.",
     inspector: "Browse the seven assets and what storage records about each.",
     c1: "Build a query that rebuilds daily_sales from another asset.",
@@ -40,9 +40,12 @@ export const LABELS = {
     c2: "Choose which orders the rules keep.",
     p3: "Predict whether your setting of the four rules is the only one that passes.",
   },
+  p1Commit: "Show the warehouse",
   p1Options: {
-    yes: "yes, because an owner field names whoever is responsible for the table",
-    no: "no, because an owner field names the account that writes the table, and programs write the tables",
+    person: "a person, for example whoever built it",
+    team: "a team, for example finance",
+    program: "the program that writes it",
+    account: "an account that programs log in as",
   },
   p2Options: {
     same: "yes, because Thursday was a slow day, and the raw orders show it too",

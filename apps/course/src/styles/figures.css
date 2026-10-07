@@ -418,6 +418,13 @@ details[open] > summary::before {
   background: var(--warn-bg);
   color: var(--warn);
 }
+/* A choice set beside the shop's is neither right nor wrong: no verdict colour. */
+.prediction-compare {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  background: var(--note-bg);
+  color: var(--fg);
+}
 .lab-prediction .button {
   margin-right: var(--space-2);
 }

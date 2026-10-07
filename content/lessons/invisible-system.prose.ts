@@ -17,11 +17,13 @@ export const PROSE = {
   motivation:
     "A data engineer who joins a platform they did not build is asked questions like these:\n\n- Can we delete `products.parquet`?\n- What stops working if the checkout renames a column in `orders.parquet`?\n- Is Thursday's figure wrong, and since when?\n- Who should I ask about `daily_sales`?\n\nA wrong answer to the first breaks a program that still reads the file. A wrong answer to the third can leave a figure wrong for weeks before anybody notices. None of the four can be answered by reading rows alone.",
   prediction:
-    "Before you open storage, make two predictions. Each option is an explanation of how the platform works. Choose the one you think more likely, then press its button to check it.",
+    "Before you open storage, answer two questions.\n\nThe first asks what you would do if you wrote one of the shop's programs. The lab then shows what the shop's warehouse holds.\n\nThe second asks what you expect the data to show. Each of its options is an explanation of how the platform works, and the lab checks it.\n\nFor each, choose an option, then press its button.",
   p1Question:
-    "The warehouse records an owner for every table. Will the owner it records for `daily_sales` name someone you could ask about the table?",
+    "Suppose you write the program that writes `daily_sales` every night. The warehouse keeps an owner for every table. What would you store as the owner of `daily_sales`?",
+  p1Mine: "You would store {choice}.",
+  p1Lab: "The shop's warehouse holds {answer}.",
   p1Explain:
-    "The warehouse records the name `etl_service` as the owner of all three tables. `etl_service` is the account all four of the shop's programs log in as. The lab tells you this; storage does not.\n\nSo the owner field names an account. It does not say which person or team is responsible for the table. A field with the right name answered a different question.",
+    "The warehouse records the name `etl_service` as the owner of all three tables. `etl_service` is the account all four of the shop's programs log in as. The lab tells you this; storage does not.\n\nIf you would store a person or a team, the shop's tables have neither.\n\nSo the owner field names an account. It does not say which person or team is responsible for the table. A field with the right name answered a different question.",
   p2Question:
     "The dashboard shows 51.50 for Thursday. `daily_sales` holds the same figure for Thursday. Add up price times quantity over Thursday's rows of `orders.parquet`. Will the total be 51.50 too?",
   p2Explain:

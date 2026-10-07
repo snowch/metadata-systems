@@ -259,23 +259,52 @@ test.describe("challenges", () => {
 });
 
 test.describe("the figures", () => {
-  test("a prediction must be committed before the lab answers", async ({ page }) => {
+  test("a choice must be committed before the lab answers, and is not marked right or wrong", async ({
+    page,
+  }) => {
     await openChapter(page);
     const figure = page.locator("#ix-predict-owner");
-    const commit = figure.getByRole("button", { name: V.checkPrediction });
+    const props = figureProps("predict-owner");
+    const options = props["options"] as Labelled[];
+    const compare = props["compare"] as { commit: string; mine: string; lab: string };
+    // A choice is not a prediction, and its button does not say so.
+    await expect(figure.getByRole("button", { name: V.checkPrediction })).toHaveCount(0);
+    const commit = figure.getByRole("button", { name: compare.commit });
     await expect(commit).toBeDisabled();
     await expect(figure.locator("[role=status]")).toHaveCount(0);
-    const options = figureProps("predict-owner")["options"] as Labelled[];
-    // No: the owner names the account the programs log in as, not someone to ask.
-    await figure.getByLabel(options.find((o) => o.value === "no")!.label).check();
+    // A team: what many would store, and not what this shop's warehouse holds.
+    const team = options.find((o) => o.value === "team")!.label;
+    const account = options.find((o) => o.value === "account")!.label;
+    await figure.getByLabel(team).check();
     await commit.click();
-    await expect(figure.locator("[role=status]")).toContainText(V.match);
+    const status = figure.locator("[role=status]");
+    await expect(status).toHaveText(
+      `${format(compare.mine, { choice: team })} ${format(compare.lab, { answer: account })}`,
+    );
+    await expect(status).not.toContainText(V.match);
+    await expect(status).not.toContainText(V.noMatch);
     await expect(figure).toContainText("etl_service");
     // A commitment stands: no "Predict again", the options locked, and the same after a reload.
     await expect(figure.getByRole("button")).toHaveCount(1); // the Lab badge alone
     await expect(figure.getByRole("radio").first()).toBeDisabled();
     await page.reload();
-    await expect(page.locator("#ix-predict-owner [role=status]")).toContainText(V.match);
+    await expect(page.locator("#ix-predict-owner [role=status]")).toContainText(account);
+  });
+
+  test("a prediction must be committed before the lab answers, and says whether it was right", async ({
+    page,
+  }) => {
+    await openChapter(page);
+    const figure = page.locator("#ix-predict-days");
+    const commit = figure.getByRole("button", { name: V.checkPrediction });
+    await expect(commit).toBeDisabled();
+    await expect(figure.locator("[role=status]")).toHaveCount(0);
+    const options = figureProps("predict-days")["options"] as Labelled[];
+    await figure.getByLabel(options.find((o) => o.value === "same")!.label).check();
+    await commit.click();
+    await expect(figure.locator("[role=status]")).toContainText(V.noMatch);
+    await page.reload();
+    await expect(page.locator("#ix-predict-days [role=status]")).toContainText(V.noMatch);
   });
 
   test("the Thursday prediction is answered by the raw orders against daily_sales", async ({
@@ -338,7 +367,8 @@ test.describe("the figures", () => {
     await openChapter(page);
     const owner = page.locator("#ix-predict-owner");
     await owner.getByRole("radio").first().check();
-    await owner.getByRole("button", { name: V.checkPrediction }).click();
+    const choice = figureProps("predict-owner")["compare"] as { commit: string };
+    await owner.getByRole("button", { name: choice.commit }).click();
     await pass(page, "rebuild-daily-sales");
     const again = page.getByRole("button", { name: STRINGS.startAgain });
     await again.click();

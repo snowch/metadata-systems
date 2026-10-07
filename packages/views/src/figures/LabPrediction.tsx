@@ -8,6 +8,10 @@
 // count. The answer is computed when the learner commits; the lesson's data never holds it. A
 // prediction about a challenge's result can wait for the learner's own work on that challenge to
 // pass.
+//
+// Where nothing the learner has seen tells the options apart, the figure asks a choice instead:
+// what the learner would do in the shop's place. The lab's answer is then what the shop does, set
+// beside the learner's choice in the lesson's own words, and neither is called right.
 
 import { z } from "zod";
 
@@ -43,26 +47,43 @@ const Probe = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("clean-fits") }),
 ]);
 
-const Props = z.object({
-  question: z.string().min(1),
-  options: z
-    .array(
-      z.object({
-        value: z.string(),
-        label: z.string(),
-        /** For a probe that counts: the counts this option stands for, inclusive. */
-        range: z.tuple([z.number().int().min(0), z.number().int().min(0)]).optional(),
-        /** For a probe that names what it found: the answers this option stands for. */
-        means: z.array(z.string().min(1)).min(1).optional(),
-      }),
-    )
-    .min(2),
-  probe: Probe,
-  explain: z.string().default(""),
-  changes: z.array(z.enum(CHANGE_IDS)).default([]),
-  /** A challenge whose work must pass before the prediction is asked. */
-  requires: z.string().optional(),
-});
+const Props = z
+  .object({
+    question: z.string().min(1),
+    options: z
+      .array(
+        z.object({
+          value: z.string(),
+          label: z.string(),
+          /** For a probe that counts: the counts this option stands for, inclusive. */
+          range: z.tuple([z.number().int().min(0), z.number().int().min(0)]).optional(),
+          /** For a probe that names what it found: the answers this option stands for. */
+          means: z.array(z.string().min(1)).min(1).optional(),
+        }),
+      )
+      .min(2),
+    probe: Probe,
+    explain: z.string().default(""),
+    changes: z.array(z.enum(CHANGE_IDS)).default([]),
+    /** A challenge whose work must pass before the prediction is asked. */
+    requires: z.string().optional(),
+    /** "predict" marks the learner right or not; "choose" sets their choice beside the shop's. */
+    mode: z.enum(["predict", "choose"]).default("predict"),
+    /**
+     * For a choice: the button that keeps it, in words about what it shows, and the line after
+     * it, `{choice}` for the learner's and `{answer}` for the shop's.
+     */
+    compare: z
+      .object({
+        commit: z.string().min(1),
+        mine: z.string().includes("{choice}"),
+        lab: z.string().includes("{answer}"),
+      })
+      .optional(),
+  })
+  .refine((p) => p.mode === "predict" || p.compare !== undefined, {
+    message: "a choice needs its compare line",
+  });
 
 /** The option the lab's result stands for. */
 export function labAnswer(
@@ -131,20 +152,29 @@ export const LabPrediction = withProps(
           options={data.options}
           committed={stored?.choice}
           onCommit={(choice) => setStored({ choice })}
-          legend={strings.yourPrediction}
-          commitLabel={strings.checkPrediction}
+          legend={data.mode === "choose" ? strings.yourChoice : strings.yourPrediction}
+          commitLabel={
+            data.mode === "choose" && data.compare ? data.compare.commit : strings.checkPrediction
+          }
         />
         {stored && result && (
           <div className="prediction-outcome">
-            <p
-              role="status"
-              className={answer === stored.choice ? "prediction-match" : "prediction-nomatch"}
-            >
-              {format(strings.youSaid, { choice: label(stored.choice) })}{" "}
-              {answer === stored.choice
-                ? strings.match
-                : `${format(strings.labFound, { answer: answer ? label(answer) : "" })} ${strings.noMatch}`}
-            </p>
+            {data.mode === "choose" && data.compare ? (
+              <p role="status" className="prediction-compare">
+                {format(data.compare.mine, { choice: label(stored.choice) })}{" "}
+                {format(data.compare.lab, { answer: answer ? label(answer) : "" })}
+              </p>
+            ) : (
+              <p
+                role="status"
+                className={answer === stored.choice ? "prediction-match" : "prediction-nomatch"}
+              >
+                {format(strings.youSaid, { choice: label(stored.choice) })}{" "}
+                {answer === stored.choice
+                  ? strings.match
+                  : `${format(strings.labFound, { answer: answer ? label(answer) : "" })} ${strings.noMatch}`}
+              </p>
+            )}
             <Evidence result={result} strings={strings} />
             {data.explain && <Prose markdown={data.explain} />}
           </div>

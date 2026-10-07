@@ -102,11 +102,16 @@ export const invisibleSystem: LessonInput = {
           caption: LABELS.captions.p1,
           props: {
             question: PROSE.p1Question,
-            // Yes: an owner field names who is responsible. No: it names who writes the table.
+            // Nothing on the page tells the shop's choices apart, so the learner says what they
+            // would store, and the lab shows what the shop's warehouse holds beside it.
+            mode: "choose",
             options: meaning(LABELS.p1Options, {
-              yes: ["person", "team"],
-              no: ["account", "none"],
+              person: ["person"],
+              team: ["team"],
+              program: ["program"],
+              account: ["account"],
             }),
+            compare: { commit: LABELS.p1Commit, mine: PROSE.p1Mine, lab: PROSE.p1Lab },
             probe: { kind: "owner-kind", asset: "daily_sales" },
             explain: PROSE.p1Explain,
           },

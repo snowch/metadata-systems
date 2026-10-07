@@ -20,6 +20,7 @@ export const DEFAULT_VIEW_STRINGS = {
   expected: "Expected",
   checkPrediction: "Check my prediction",
   yourPrediction: "Prediction",
+  yourChoice: "Your choice",
   youSaid: "You predicted: {choice}.",
   labFound: "The lab found: {answer}.",
   match: "The prediction was correct.",

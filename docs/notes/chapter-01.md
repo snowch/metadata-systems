@@ -45,7 +45,7 @@ the lab's answer tells them apart. The content tests fail a prediction without a
 
 | Figure | What the learner has seen | The explanations its options stand for | How the lab tells them apart |
 | --- | --- | --- | --- |
-| `predict-owner` | the map; the words: programs write the tables every night; the warehouse records an owner for each table | an owner field names who is responsible for the table; or it names the account that writes it, and programs write the tables | the probe reads the owner the warehouse records, `etl_service`, and finds an account, not a person or a team |
+| `predict-owner` | the map; the words: programs write the tables every night; the warehouse keeps an owner for each table; their own experience of writing such a program | a choice, not a prediction: what they would store as the owner of `daily_sales` if they wrote its program (a person, a team, the program, or the account it logs in as) | the probe reads the owner the warehouse records, `etl_service`, an account, and the figure sets it beside the learner's choice without calling either right |
 | `predict-days` | the dashboard: Thursday at 51.50, far below the other days; `daily_sales` holds the same figure | Thursday was a slow day, and the raw orders show it; or the orders came in, and something on the way to `daily_sales` left some out | the probe adds up Thursday's rows of `orders.parquet`: 205.50, more than 51.50 and as much as Wednesday or Friday; the table shows every day |
 | `changes` | their own query rebuilding `daily_sales`; what each change does, in its label; the statuses and rows in the inspector; "rebuild" asking only for the rows the asset has | after the change the data points to one query, to more than one, or to none | the lab runs the week with the change and searches every choice the builder offers over every asset in storage: two after the copy, none after the edit, one after the failed night |
 | `map` | storage's answer to each of the eight questions in the inspector; the query that rebuilds `daily_sales`; the changes; the rule for the data's group, stated above the figure | for each question: storage records it, the data suggests it, or only a record kept at the time answers it | the lab places each question by reading storage and trying every query the builder offers, and places them again for each change |
@@ -59,6 +59,14 @@ cancelled order, a repeated one or orders with no customer id, none of which the
 The change lab's edit was labelled "edited for refunds", which said nothing a learner could reason
 from; its label now says what the edit keeps, from Saturday's row on. The rules prediction asked
 for a count (one, two, three or more) where the question is whether every rule decided a row.
+
+The owner question took two rounds. The second round asked whether the owner would name someone
+you could ask, yes or no, and the author found it still a guess: either answer could be right, and
+which one depends on how this shop happened to set up its warehouse, which nothing on the page
+shows. At the author's suggestion it now asks what the learner would store as the owner of
+`daily_sales` if they wrote its program, with the first version's four options, and the lab shows
+the shop's `etl_service` beside their choice, marked neither right nor wrong. The figure's
+`choose` mode carries this, and `CLAUDE.md` now says when to use it.
 
 ## What was built for it
 
@@ -237,6 +245,8 @@ fact sheet updated against the lab. What came back:
 | P (Sections 4 to 6) | the edit's label came back as two sentences beside two one-phrase labels; the lead asserted "your query rebuilds `daily_sales`" above a figure that may still be waiting for it | none |
 | Q (Sections 7 and 8) | none | none |
 | R (Section 9's prediction, Section 10) | none | "Your rules pass"; the options' answers ("yes, because", "no, because"); "in the builder", without which "no matching query" claims more than the lab searched; "for certain", without which storage would be said to tell nothing of what happened, when it showed a stale time |
+| T (the owner question as a choice) | none | none; one sentence it was to keep came back changed ("storage does not show") and was restored |
+| U (a choice's two labels) | the button said "Show the shop's choice", a choice nothing in the lab records | none; the second draft, "Show the warehouse", names this question's subject, so each choice now brings its own button label and only the legend is shared |
 
 Placing them kept the old text wherever a brief kept it: P and Q had merged paragraphs and
 recased a list they were asked to leave alone, and the old layout stands. The arrow's label lost

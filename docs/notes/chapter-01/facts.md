@@ -121,12 +121,12 @@ lowest.
 Each option of a prediction is an explanation the learner could hold, not a fact to guess. The
 learner has seen the map, the dashboard and the words before them, nothing else.
 
-1. **The owner.** The warehouse records an owner for every table. Will the owner it records for
-   daily_sales name someone you could ask about the table? Two explanations:
-   - yes: the owner field names whoever is responsible for the table;
-   - no: the owner field names the account that writes the table, and programs write the tables.
-   The lab finds no: the owner is `etl_service`, the account all four of the shop's programs log in
-   as.
+1. **The owner, as a choice.** Suppose you write the program that writes daily_sales every
+   night; the warehouse keeps an owner for every table: what would you store as the owner? Four
+   options: a person, for example whoever built it; a team, for example finance; the program that
+   writes it; an account that programs log in as. No option is right. The lab shows what the
+   shop's warehouse holds: `etl_service`, the account all four of the shop's programs log in as;
+   the shop's tables have no person or team as owner.
 2. **Thursday.** The dashboard shows 51.50 for Thursday, and daily_sales holds the same figure for
    Thursday. Add up price times quantity over Thursday's rows of orders.parquet: will the total be
    51.50 too? Two explanations:

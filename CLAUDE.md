@@ -186,8 +186,11 @@ say why they chose one; and does the lab's answer tell those explanations apart?
 one such explanation of how the platform works. None is a hidden fact about the shop, a number
 nobody could reason to, an answer that is plainly right, or a guess at what the author decided. A
 count is offered as the explanations it stands for (none, one, more than one), never as an exact
-figure to hit. The chapter's notes answer the four questions for every prediction, in a table the
-content tests check.
+figure to hit. Where nothing the learner has seen can tell the options apart, as with how this shop
+happened to set up its warehouse, do not ask them to guess: ask what they would do in the shop's
+place, and let the lab show what the shop does beside their choice, called neither right nor
+wrong (the prediction figure's `choose` mode). The chapter's notes answer the four questions for
+every prediction, in a table the content tests check.
 
 **After a result, ask what it proved.** A query that rebuilds an asset suggests how the asset was
 made; it does not show it. A chapter asks what its experiment proved and what the data could not
