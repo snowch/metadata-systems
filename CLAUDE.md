@@ -256,6 +256,11 @@ reason it exists.
 - **The chapter's stated numbers are pinned** by its facts test against the lab.
 - **The lab is deterministic.** The same code gives the same rows, times and identifiers on every
   machine: no clock, no `Math.random`, no locale-dependent formatting.
+- **The icon and the manifest keep to the course** (`node scripts/icons.mjs` draws the icon and
+  writes every file). Every icon `index.html` or the manifest names is there at the size it claims,
+  their colours are the tokens', the manifest's paths and identity stay inside the course's own
+  path on an origin the author's courses share, and the maskable icon keeps its mark inside the
+  safe zone.
 - **The Playwright suite drives the built site at desktop and phone widths**: every challenge
   completable with its reference and refusing a wrong attempt, saved work graded again on load
   and not bypassable through storage, resettable, a prediction committed before it is answered,

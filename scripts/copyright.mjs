@@ -6,7 +6,8 @@
 // file cannot land without the line.
 //
 // The line goes first, after only what must come first: a script's `#!` line, an HTML page's
-// doctype, or Vitest's `// @vitest-environment` line, which it reads from the top of a test.
+// doctype, an XML declaration, or Vitest's `// @vitest-environment` line, which it reads from the
+// top of a test.
 
 import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
@@ -27,13 +28,14 @@ const COMMENTS = {
   yml: `# ${NOTICE}`,
   yaml: `# ${NOTICE}`,
   html: `<!-- ${NOTICE} -->`,
+  svg: `<!-- ${NOTICE} -->`,
 };
 
 /** A copyright line in an older wording, which the notice replaces where it stands. */
 const OLDER = /Copyright ©/;
 
 /** Lines that must stay above the notice. */
-const FIRST = [/^#!/, /^<!doctype/i, /^\/\/ @vitest-environment/];
+const FIRST = [/^#!/, /^<!doctype/i, /^<\?xml/, /^\/\/ @vitest-environment/];
 
 const check = process.argv.includes("--check");
 const files = execFileSync("git", ["ls-files", "--cached", "--others", "--exclude-standard"], {

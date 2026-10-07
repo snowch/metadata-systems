@@ -211,6 +211,16 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 7 October 2026: the course's icon
+
+The course has an icon for a browser's tab and for installing it on a phone's home screen or a
+computer: a white label tag on the accent, drawn in `scripts/icons.mjs`, with a web app manifest
+(`docs/sources.md`). The manifest names no `id`, because an id resolves against the origin, which
+the author's courses share; each course's start URL is its identity. The browser's own bar takes
+the header's colour in the theme the learner picks. There is no service worker, so an installed
+course does not promise to work offline; that would be a decision of its own, with the question
+of how a learner gets a changed chapter.
+
 ### 7 October 2026: the author's second round on Chapter 1
 
 1. **A prediction asks for a belief the learner can already hold**, course-wide. Each option is an

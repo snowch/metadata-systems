@@ -1,0 +1,26 @@
+{
+  "name": "Metadata Systems",
+  "short_name": "Metadata",
+  "description": "Metadata Systems: From Raw Files to a Working Metadata Platform. An interactive course in which you build a small metadata system inside a data platform that runs in your browser.",
+  "lang": "en-GB",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f2f4f3",
+  "theme_color": "#ffffff",
+  "color_scheme_dark": {
+    "background_color": "#0e1312",
+    "theme_color": "#151b19"
+  },
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

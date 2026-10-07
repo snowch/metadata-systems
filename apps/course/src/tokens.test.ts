@@ -4,7 +4,8 @@
 // stylesheets set it on, and a control's edge at 3:1 or more on the surfaces controls sit on
 // (non-text contrast). Read from tokens.css itself, so a changed value is checked the day it
 // lands; the explicit dark block is the one the dark theme's toggle uses, and the system-dark
-// block must say the same.
+// block must say the same. The colours index.html and the web app manifest give a browser are
+// held to the same tokens.
 
 import { readFileSync } from "node:fs";
 
@@ -60,6 +61,21 @@ const TEXT: readonly [string, readonly string[]][] = [
 /** A control's edge, and the surfaces controls sit on. */
 const EDGES: readonly [string, readonly string[]][] = [["border-control", ["bg", "bg-raised"]]];
 
+// The colours a browser takes from outside the stylesheets: index.html's theme-color tags, for the
+// browser's own bar, and the web app manifest's, for an installed course's title bar and the
+// screen it shows while the course loads. Each is the page's: the bar is the header's colour, the
+// loading screen the page's ground.
+const manifest = JSON.parse(readFileSync("apps/course/public/manifest.webmanifest", "utf8")) as {
+  theme_color: string;
+  background_color: string;
+  color_scheme_dark: { theme_color: string; background_color: string };
+};
+const html = readFileSync("apps/course/index.html", "utf8");
+const bars = [...html.matchAll(/<meta\s[^>]*name="theme-color"[^>]*>/g)].map((m) => ({
+  colour: /content="([^"]*)"/.exec(m[0])?.[1],
+  media: /media="([^"]*)"/.exec(m[0])?.[1],
+}));
+
 describe("the colour tokens", () => {
   it("defines the same tokens for the dark theme whether chosen or from the system", () => {
     expect(systemDark).toEqual(dark);
@@ -94,4 +110,24 @@ describe("the colour tokens", () => {
       expect(short).toEqual([]);
     });
   }
+});
+
+describe("the colours a browser takes from outside the stylesheets", () => {
+  it("gives the browser's bar the header's colour in each theme", () => {
+    expect(bars).toEqual([
+      { colour: light["bg-raised"], media: "(prefers-color-scheme: light)" },
+      { colour: dark["bg-raised"], media: "(prefers-color-scheme: dark)" },
+    ]);
+  });
+
+  it("gives an installed course the header's colour and the page's ground in each theme", () => {
+    expect([manifest.theme_color, manifest.background_color]).toEqual([
+      light["bg-raised"],
+      light.bg,
+    ]);
+    expect(manifest.color_scheme_dark).toEqual({
+      theme_color: dark["bg-raised"],
+      background_color: dark.bg,
+    });
+  });
 });

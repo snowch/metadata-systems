@@ -11,8 +11,18 @@
       name="description"
       content="Metadata Systems: From Raw Files to a Working Metadata Platform. An interactive course in which you build a small metadata system inside a data platform that runs in your browser."
     />
-    <!-- No icon yet: an empty one stops every page asking for /favicon.ico and logging a 404. -->
-    <link rel="icon" href="data:," />
+    <!--
+      The course's icon (scripts/icons.mjs draws it): the SVG for a tab, a PNG for a browser that
+      takes no SVG, a square for iOS's home screen, and the manifest for installing the course.
+      The browser's own bar takes the header's colour; theme.ts keeps it to the learner's theme.
+    -->
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="apple-mobile-web-app-title" content="Metadata" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#151b19" media="(prefers-color-scheme: dark)" />
     <title>Metadata Systems</title>
   </head>
   <body>

@@ -163,6 +163,39 @@ Read 6 October 2026, for one sentence of Chapter 1's model-versus-reality note:
   history command returns "the operations, user, timestamp, and so on for each write to a Delta
   table"; "By default table history is retained for 30 days."
 
+## The web app manifest and home-screen icons (the course's icon)
+
+Read 7 October 2026, for the course's icon and its manifest (`scripts/icons.mjs`,
+`apps/course/public`). w3.org, web.dev and developer.chrome.com were not reachable from the build
+environment, so each is read from its source or its publisher's own copy:
+
+- **Web Application Manifest**, the W3C Editor's Draft, from its source in `w3c/manifest` at the
+  commit `8ae3046`. `start_url` and `scope` are resolved against the manifest's own address, and
+  without a `scope` the scope is the start URL's directory. An `id` is resolved against the start
+  URL's origin, not its path, and without one the id is the start URL: so on an origin the
+  author's courses share, the course leaves `id` out. An icon's `purpose` is `any` (the default),
+  `maskable` or `monochrome`. A maskable icon's safe zone, the part always visible whatever mask a
+  platform applies, is a circle about the icon's centre with a radius of two fifths of its size.
+  `theme_color` is the application's default theme colour, which a page's `theme-color` tag may
+  override; `background_color` is drawn while the application loads, before its stylesheet is
+  there. `color_scheme_dark` gives either colour for a system in dark mode; it is new in the draft,
+  and a browser may not yet honour it. `standalone` display opens the application without the
+  browser's own controls, such as the address bar.
+- **Apple, Safari Web Content Guide, "Configuring Web Applications"** (developer.apple.com,
+  archived documentation). A `link` with `rel="apple-touch-icon"` names the icon iOS puts on the
+  home screen; with none, iOS looks for `apple-touch-icon.png` at the site's root, which on
+  `snowch.github.io` is not this course's. The sizes it lists run up to 180 pixels, and a device
+  without an icon of the size it wants takes the smallest larger one.
+- **Apple, Human Interface Guidelines, "App icons"** (developer.apple.com, read as the page's
+  data). On iOS an icon is square and the system masks it to rounded corners; the main content is
+  kept centred, so the mask does not cut it. This is why the course's iOS icon is filled to its
+  edges.
+- **MDN, "Making PWAs installable"**, from `mdn/content` at the commit `306f0d1`. Chromium-based
+  browsers offer to install a site whose manifest has a `name` or `short_name`, icons of 192 and
+  512 pixels, a `start_url`, a `display` (or `display_override`), and no
+  `prefer_related_applications` set to true, served over HTTPS; a service worker is not required.
+  MDN documents browsers rather than defining them; Chrome's own page was not reachable.
+
 ## Still to be read
 
 Each chapter that relies on one of these reads it first and adds an entry above:
@@ -181,3 +214,5 @@ Each chapter that relies on one of these reads it first and adds an entry above:
   of open licences on every `npm run check`.
 - Typefaces: IBM Plex Sans, IBM Plex Sans Condensed and IBM Plex Mono, under the SIL Open Font
   License 1.1, through the `@fontsource` packages.
+- The course's icon: drawn for the course in `scripts/icons.mjs`, a label tag on the course's
+  accent, copyright Christopher Snow like its code. It copies no icon set.
