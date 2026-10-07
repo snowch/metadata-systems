@@ -256,6 +256,16 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 7 October 2026: the lab's mark
+
+The author asked whether the lab should sit in a coloured box or carry an icon, so that a reader
+can tell what the lab is. Every figure runs it, and since the badges name roles, none said so. A
+tinted box was tried on the page and set aside: the notes, the outcomes and the marked rows inside
+the figures already use the accent's tint, a faded button nearly vanished on it, and a colour
+says nothing in words. Every figure that runs the lab now carries a mark above its badge: a flask
+drawn for the course, in the accent, and the name "Metadata Lab", the name the opening explains.
+Screen readers skip the mark, because the opening tells them every figure runs the lab.
+
 ### 7 October 2026: the lab, explained once, where it is first named
 
 The author found the lab named in Chapter 1's opening without an explanation, and its long note

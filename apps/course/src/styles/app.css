@@ -445,6 +445,36 @@ figure.interactive > figcaption {
   color: var(--fg-muted);
   max-width: var(--measure);
 }
+/* The lab's mark: every figure that runs the Metadata Lab says so above its badge, with the
+   course's flask and the lab's name, the name the chapter's opening explains. The badge says what
+   the figure asks of the reader; the mark says what the figure is. The flask takes the accent
+   through a mask, so it follows the theme. The name is hidden from screen readers (the empty
+   alternative text), which hear in the opening that every figure runs the lab; a browser without
+   alternative text keeps the first declaration. */
+figure.interactive[data-time-model="lab"] > figcaption::before,
+figure.interactive[data-time-model="lab"] > figcaption::after {
+  grid-area: 1 / 1 / 2 / -1;
+  align-self: center;
+}
+figure.interactive[data-time-model="lab"] > figcaption::before {
+  content: "";
+  justify-self: start;
+  width: 15px;
+  height: 15px;
+  background-color: var(--accent);
+  -webkit-mask: var(--lab-flask) center / contain no-repeat;
+  mask: var(--lab-flask) center / contain no-repeat;
+}
+figure.interactive[data-time-model="lab"] > figcaption::after {
+  content: "Metadata Lab";
+  content: "Metadata Lab" / "";
+  padding-left: 21px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
 .time-model-toggle {
   display: inline-flex;
   align-items: center;

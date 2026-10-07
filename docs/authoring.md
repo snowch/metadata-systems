@@ -47,6 +47,10 @@ draws the sentence itself.
 The registry is `INTERACTIVES` in `packages/views/src/book.tsx`. Each figure parses its props with
 a zod schema and says so in its place when they do not fit.
 
+Every figure that runs the lab carries the lab's mark above its badge: the course's flask and the
+lab's name, the name the chapter's opening explains (`apps/course/src/styles/app.css`). The mark
+says what a figure is, a view of the lab; the badge says what it asks of the learner.
+
 | kind | props | what it does |
 | --- | --- | --- |
 | `platform-map` | `changes?`, `dock?` | the platform as the lab's `platformMap` computes it: the systems in the order data moves through them, the assets each holds, and between two systems the programs the learner cannot see, never a link from one asset to another; once the learner scrolls past it, a button at the foot of the window opens the same map over the page, unless `dock` is false |

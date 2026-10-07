@@ -873,6 +873,15 @@ dashboard's and the experiments' badges open one line each; the foot holds the m
 note and nothing on the lab. The line before "Start this chapter again" still says the browser
 keeps your work, because it names what starting again clears.
 
+## The lab's mark, 7 October 2026
+
+The author asked for the lab to be clear on the page, by a coloured box or an icon. Both were
+mocked on the built page at phone width: the tinted box washed out the figures' own tinted notes
+and outcomes and nearly hid a faded button, so the figures keep their white ground and every
+figure that runs the lab carries a mark above its badge, a flask and the name "Metadata Lab"
+(`docs/plan.md`). A Playwright test holds that every lab figure carries it, under the name the
+opening explains.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,

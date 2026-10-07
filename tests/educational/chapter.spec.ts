@@ -380,6 +380,34 @@ test.describe("the figures", () => {
     await expect(page.locator("#ix-platform .time-model-toggle")).toHaveCount(0);
   });
 
+  test("every figure that runs the lab carries the lab's mark, named as the opening names it", async ({
+    page,
+  }) => {
+    await openChapter(page);
+    const marks = await page
+      .locator('figure.interactive[data-time-model="lab"]')
+      .evaluateAll((fs) =>
+        fs.map((f) => {
+          const caption = f.querySelector("figcaption")!;
+          const flask = getComputedStyle(caption, "::before");
+          return {
+            name: getComputedStyle(caption, "::after").content,
+            flask: flask.maskImage || flask.webkitMaskImage,
+            width: flask.width,
+          };
+        }),
+      );
+    const figures = CHAPTER.sections.flatMap((s) => s.interactives);
+    expect(marks).toHaveLength(figures.length);
+    for (const m of marks) {
+      expect(m.name).toContain("Metadata Lab");
+      expect(m.flask).toMatch(/^url\(/);
+      expect(m.width).toBe("15px");
+    }
+    // The name is the one the opening explains, where the chapter first names the lab.
+    expect(CHAPTER.sections[0]!.prose).toContain("Metadata Lab");
+  });
+
   test("the investigation starts where the learner chooses to look, and the inspector opens there", async ({
     page,
   }) => {
