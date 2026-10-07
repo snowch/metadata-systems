@@ -48,10 +48,12 @@ every sentence, because only reading finds the rest.
 A third rule is the author's too: **explain a mechanism from the learner's side first.** Before a
 page says how anything interactive is built, it says what the learner does with it and what
 happens when they do. First answer "What do I do, and what happens when I do it?"; only then "How
-does the technology behind it work?". The plain model of every figure, in the words the page uses
-for it in every chapter: you ask, the lab checks, it shows you, you work out what it means. Where
-the learner needs "you ask it something and it shows you what it finds", a sentence such as "the
-lab queries the underlying data model" is the wrong one. The standing example is Chapter 1's
+does the technology behind it work?". The plain model, in the words every chapter uses: in a
+figure the learner uses, you ask, the lab checks, it shows you, you work out what it means; a
+figure they only read shows what the lab works out. Say which figures are which, and how the
+learner asks, in the actions on the page (choose an answer and press a button), never only that
+they ask. Where the learner needs "you ask it something and it shows you what it finds", a
+sentence such as "the lab queries the underlying data model" is the wrong one. The standing example is Chapter 1's
 opening, which named the lab as "a small data platform written for this course" and listed its
 SQL before it said what the learner does with it; it now says what the figures are for and what
 happens when you use one, and keeps how the lab is built in the section's details.

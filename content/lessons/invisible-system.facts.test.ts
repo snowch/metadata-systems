@@ -147,11 +147,20 @@ describe("the facts Chapter 1 states", () => {
     // The opening's own prose: what the figures are for and what happens when you use one, in the
     // plain model every chapter uses (you ask, the lab checks, it shows you, you work it out).
     const own = PROSE.question.toLowerCase();
-    for (const word of ["sql", "query", "engine", "memory", "page load", "code"])
+    // "Query" is not among them: the parts of a query are something you choose, later on.
+    for (const word of ["sql", "engine", "memory", "page load", "code"])
       expect(new RegExp(`\\b${word}\\b`).test(own), word).toBe(false);
     expect(own).toMatch(/you ask/);
-    expect(own).toMatch(/shows you/);
     expect(own).toMatch(/work out/);
+    // It says which figures you only read, the first three, and how you ask in the others.
+    const first = invisibleSystem.sections[0]!.interactives!.map((x) => [x.id, x.role]);
+    expect(first).toEqual([
+      ["platform", "reference"],
+      ["week", "reference"],
+      ["dashboard", "inspect"],
+    ]);
+    for (const named of ["map", "week", "dashboard", "read"]) expect(own, named).toContain(named);
+    for (const action of ["choose", "press"]) expect(own, action).toContain(action);
     // How the lab is built: in the section's details, which the reader opens.
     const built = PROSE.labDetails.toLowerCase();
     for (const word of ["sql", "query engine", "memory", "page load"])

@@ -269,6 +269,13 @@ Two of the guide's words were not taken: "inspect the shop's data or metadata", 
 chapter introduces metadata at its end, from the questions the learner could not answer; and "the
 figures on this page are interactive", because the map and the week's figure are only read.
 
+The author then read "You ask the lab a question by using a figure." and asked how, since the
+first figure asks nothing. Both points held: the map, the shop's week and the dashboard have no
+control, and the page never said how one asks in the others. The paragraph now says which figures
+you only read and how you ask in the others (you choose an answer, an asset or the parts of a
+query, and press a button), read off the built page's controls, and the rule in `CLAUDE.md` says
+the plain model is for a figure the learner uses, with the actions that ask.
+
 ### 7 October 2026: the opening in short steps, around two figures
 
 An agent's guide the author passed on found Chapter 1's opening right in what it said and wrong in

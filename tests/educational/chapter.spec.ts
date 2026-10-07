@@ -425,6 +425,20 @@ test.describe("the figures", () => {
     expect(
       await opening.locator("figure.interactive").evaluateAll((fs) => fs.map((f) => f.id)),
     ).toEqual(["ix-platform", "ix-week", "ix-dashboard"]);
+    // The three the opening says you only read have no control outside their captions (a badge's
+    // note is the page's, not the figure's); the next asks for a choice and a press of a button.
+    const controls = (id: string) =>
+      page
+        .locator(`#ix-${id}`)
+        .evaluate(
+          (f) =>
+            [...f.querySelectorAll("button, input, select, textarea")].filter(
+              (e) => !e.closest("figcaption"),
+            ).length,
+        );
+    for (const id of ["platform", "week", "dashboard"]) expect(await controls(id), id).toBe(0);
+    await expect(page.locator("#ix-predict-owner").getByRole("radio").first()).toBeVisible();
+    expect(await controls("predict-owner")).toBeGreaterThan(1);
     // The week keeps every name whole and inside its figure, with a bar for every night.
     const week = page.locator("#ix-week");
     await expect(week.locator(".week-night")).toHaveCount(7);

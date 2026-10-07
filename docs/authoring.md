@@ -83,8 +83,11 @@ model its first question needs, and adds structure when the investigation makes 
 A mechanism is explained from the learner's side first (`CLAUDE.md`, "Interaction is the
 explanation"): what the learner does and what happens when they do, then how it is built. A brief
 for a figure's words says which is which, and keeps implementation words (SQL, query engine,
-memory, page load) out of the text that says what the learner does. The plain model of a figure,
-in every chapter: you ask, the lab checks, it shows you, you work out what it means.
+memory, page load) out of the text that says what the learner does. The plain model, in every
+chapter: in a figure the learner uses, you ask, the lab checks, it shows you, you work out what
+it means; a figure they only read shows what the lab works out. A brief takes which figures are
+which, and the actions that ask (the answers, lists and buttons), from the built page, not from
+memory of the components.
 
 ## Experiments, instruments and references
 

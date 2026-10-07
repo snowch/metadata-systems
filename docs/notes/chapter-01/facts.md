@@ -32,15 +32,22 @@ order the page gives them, each thing named before a sentence uses it:
    You are a data engineer at an online shop that sells bicycle parts. The shop opened its online
    store on Monday 7 September.
 2. **What you do with the lab, before what it is made of** (the author's agent guide on the lab,
-   7 October 2026). The figures on this page are how you investigate the shop. They use a small
-   data platform called the Metadata Lab, written for this course and built into it. It runs in
-   your browser: there is nothing to install, open or sign in to (the author's own words). You
-   ask the lab something by using a figure; the lab works out the answer from the shop's data and
-   shows you what it found. Some figures ask you to predict or choose before the lab answers;
-   others let you inspect what the shop's systems hold. You cannot see the shop's programs, only
-   what they leave behind, so you work out what happened from what the lab shows you. The words
-   the page uses for this, in every chapter: you ask, the lab checks, it shows you, you work out
-   what it means.
+   and the author's question on it, 7 October 2026). The figures on this page let you investigate
+   the shop. They use the Metadata Lab, a small data platform written for and built into this
+   course. It runs in your browser: there is nothing to install, open or sign in to (the
+   author's own words). The first three figures, the map, the shop's week and its dashboard, only
+   show you the shop: you read them, and they have no controls. In each of the others you ask the
+   lab something: you choose an answer, an asset or the parts of a query, and press a button. The
+   lab works out the result from the shop's data and shows it in the figure. Many of them ask you
+   to predict or choose before the lab answers. You cannot see the shop's programs, only what they
+   leave behind, so you work out what happened from what the figures show you. The words the page
+   uses for a figure you use, in every chapter: you ask, the lab checks, it shows you, you work
+   out what it means; a figure you only read shows you what the lab works out, and you work out
+   what it means. Read off the built page on 7 October 2026: as the page loads, the map, the week
+   and the dashboard have no control; the owner's figure has five answers and the button "Show
+   what this could mean"; the Thursday prediction three answers and "Check my prediction"; the
+   inspector a button per asset; the query builder four lists and "Run tests"; the sort a list per
+   question and "Check my sorting"; the rest wait for an answer or a passing query above them.
 3. **How the lab is built, behind a control the reader opens.** The lab holds the shop's first
    week: real rows in its files, tables and dashboard, and its programs, written in SQL. The shop
    is invented for the course. The lab runs the programs' SQL, and any query you build, with a
