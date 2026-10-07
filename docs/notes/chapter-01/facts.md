@@ -33,8 +33,8 @@ the programs. In the order the lab's paragraphs give them, each thing named befo
 it:
 
 1. **What the lab is.** Every figure on the page runs the Metadata Lab, a small data platform
-   written for this course. It comes with the page, as code, and runs in your browser: there is
-   nothing to install, open or sign in to.
+   written for this course. It runs in your browser: there is nothing to install, open or sign
+   in to.
 2. **What it holds.** The shop described above, with real rows in its files, tables and dashboard,
    and its programs, written in SQL.
 3. **The week.** The shop's first week online, Monday 7 to Sunday 13 September 2026. The shop and

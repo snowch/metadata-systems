@@ -882,6 +882,12 @@ figure that runs the lab carries a mark above its badge, a flask and the name "M
 (`docs/plan.md`). A Playwright test holds that every lab figure carries it, under the name the
 opening explains.
 
+## The author's cut to the lab's paragraph, 7 October 2026
+
+The author cut "It comes with the page, as code," from the opening: the lab's paragraph now
+says "It runs in your browser: there is nothing to install, open or sign in to." The words are
+the author's, so no brief went to Haiku; `facts.md` follows.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,
