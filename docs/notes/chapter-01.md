@@ -941,6 +941,21 @@ engine, memory, a page load, code), and holds them in the details.
 The second pass, on the built page with the details closed and open, cut "You work out what it
 means.", which the paragraph's last sentence says again.
 
+## Which figures you read, and how you ask, 7 October 2026
+
+The author read "You ask the lab a question by using a figure." and asked how, since the first
+figure asks nothing. Both points held, read off the built page: the map, the shop's week and the
+dashboard have no control, and the page never said how one asks in the others. The paragraph now
+says the first three only show you the shop, and that in the others you choose an answer or the
+parts of a query and press a button. `CLAUDE.md`'s plain model is now the model of a figure the
+learner uses; a figure they only read shows what the lab works out. The facts test holds the
+first three figures and the words for them, and the browser test that they have no control
+outside their captions.
+
+| Draft | Wrong, sent back | Dropped, restored with the fewest words |
+| --- | --- | --- |
+| AG (which figures you read) | none sent back. Haiku flagged "asset" used before the page defines it, under the map: ", an asset" was cut, and the sentence still holds, since in the inspector the button you press is an asset's name. "Query" stays: it is plain to the learner, and not a rationed term | "The first three figures," which says where the map, the week and the dashboard are, before the page has shown them |
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,
