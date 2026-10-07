@@ -923,6 +923,24 @@ move data between them." above the map, whose arrows say it; "The files, tables 
 the map are the shop's seven assets." under the map's count; and, in the week's key, what a
 night's work does, which the sentence above the figure says.
 
+## The lab, from the learner's side first, 7 October 2026
+
+A second agent's guide the author passed on found the lab still explained in technical terms
+before the learner was told what they do with it (`docs/plan.md` has the decision, and which of
+the guide's words were not taken). The lab's paragraphs now say what the figures are for and what
+happens when you use one, in the plain model every chapter uses: you ask, the lab checks, it shows
+you, you work out what it means. How the lab is built moved behind the control, now "How the lab
+is built". The map's lead lost "You cannot see the programs.", which the lab's paragraph says. The
+facts test now fails the opening's own prose if it names the lab's insides (SQL, a query, an
+engine, memory, a page load, code), and holds them in the details.
+
+| Draft | Wrong, sent back | Dropped, restored with the fewest words |
+| --- | --- | --- |
+| AF (the lab, learner's side first) | none sent back. One wrong word put right: the lab runs the shop's first week "nightly", which says every night; it runs it night by night, at each page load. Haiku shortened fact 3 to its cap ("The shop is invented", "dashboard values" for the dashboard's rows, which is the more exact) and flagged that "a small data platform" names the lab as the shop's own platform is named; kept, since the lab is that platform and the author's guide uses the word | "The ... on this page" in "The figures on this page let you investigate the shop." |
+
+The second pass, on the built page with the details closed and open, cut "You work out what it
+means.", which the paragraph's last sentence says again.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,

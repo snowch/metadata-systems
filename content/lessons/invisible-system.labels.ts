@@ -44,8 +44,8 @@ export const LABELS = {
     c2: "Choose which orders the rules keep.",
     p3: "Predict whether your setting of the four rules is the only one that passes.",
   },
-  /** The control that opens how the lab runs: the label the author's agent guide gave it. */
-  labDetails: "About the Metadata Lab",
+  /** The control that opens how the lab is built (brief AF). */
+  labDetails: "How the lab is built",
   // The requirement, in the author's words, and the figure that questions it (brief V).
   p1Requirement: "Every table must have an owner.",
   p1Commit: "Show what this could mean",

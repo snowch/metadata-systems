@@ -143,6 +143,25 @@ describe("the facts Chapter 1 states", () => {
     }
   });
 
+  it("says what you do with the lab before how it is built, and keeps how it is built behind a control", () => {
+    // The opening's own prose: what the figures are for and what happens when you use one, in the
+    // plain model every chapter uses (you ask, the lab checks, it shows you, you work it out).
+    const own = PROSE.question.toLowerCase();
+    for (const word of ["sql", "query", "engine", "memory", "page load", "code"])
+      expect(new RegExp(`\\b${word}\\b`).test(own), word).toBe(false);
+    expect(own).toMatch(/you ask/);
+    expect(own).toMatch(/shows you/);
+    expect(own).toMatch(/work out/);
+    // How the lab is built: in the section's details, which the reader opens.
+    const built = PROSE.labDetails.toLowerCase();
+    for (const word of ["sql", "query engine", "memory", "page load"])
+      expect(built, word).toContain(word);
+    expect(invisibleSystem.sections[0]!.details).toEqual({
+      summary: LABELS.labDetails,
+      prose: PROSE.labDetails,
+    });
+  });
+
   it("matches raw orders to daily_sales on three days of seven, the ones the prose names", () => {
     const checks = rawChecks();
     expect(checks.filter((c) => c.same).map((c) => c.key)).toEqual([
