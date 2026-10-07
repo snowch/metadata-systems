@@ -124,3 +124,54 @@ test("the map keeps every name whole at every width, and its systems even", asyn
     if (width <= 480) expect(found.row, `at ${width} pixels`).toBe(false);
   }
 });
+
+test("the map's button never covers the page's foot on a phone", async ({ page, isMobile }) => {
+  test.skip(isMobile, "the test sets each width itself");
+  await openChapter(page);
+  for (const width of [320, 360, 375, 390, 414]) {
+    await page.setViewportSize({ width, height: 800 });
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await expect(page.locator(".map-dock")).toBeVisible();
+    const covered = await page.evaluate(() => {
+      const dock = document.querySelector(".map-dock")!.getBoundingClientRect();
+      const out: string[] = [];
+      for (const p of document.querySelectorAll(".shell-footer p, .pager, .start-again")) {
+        const range = document.createRange();
+        range.selectNodeContents(p);
+        for (const r of range.getClientRects())
+          if (
+            r.right > dock.left &&
+            r.left < dock.right &&
+            r.bottom > dock.top &&
+            r.top < dock.bottom
+          )
+            out.push((p.textContent ?? "").trim().slice(0, 30));
+      }
+      return out;
+    });
+    expect(covered, `at ${width} pixels`).toEqual([]);
+  }
+});
+
+test("a challenge's choices fill their rows: never three and one left over", async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, "the test sets each width itself");
+  await openChapter(page);
+  for (const width of [480, 640, 700, 768, 834, 960, 1024, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    const rows = await page.evaluate(() =>
+      [...document.querySelectorAll(".choice-fields")].map((g) => {
+        const perRow = new Map<number, number>();
+        for (const f of g.querySelectorAll(".choice-field")) {
+          const top = Math.round(f.getBoundingClientRect().top);
+          perRow.set(top, (perRow.get(top) ?? 0) + 1);
+        }
+        return [...perRow.values()];
+      }),
+    );
+    for (const counts of rows)
+      expect(new Set(counts).size, `at ${width} pixels: ${counts}`).toBe(1);
+  }
+});

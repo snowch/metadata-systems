@@ -100,7 +100,7 @@ function Evidence({ result, strings }: { result: ProbeResult; strings: ViewStrin
   // explanations say it.
   if (result.kind !== "day-total") return null;
   return (
-    <ScrollRegion label={strings.daysCaption}>
+    <ScrollRegion label={strings.daysCaption} title={strings.daysCaption}>
       <StateInspector
         className="days-table"
         caption={strings.daysCaption}
@@ -170,9 +170,14 @@ export const LabPrediction = withProps(
                 className={answer === stored.choice ? "prediction-match" : "prediction-nomatch"}
               >
                 {format(strings.youSaid, { choice: label(stored.choice) })}{" "}
-                {answer === stored.choice
-                  ? strings.match
-                  : `${format(strings.labFound, { answer: answer ? label(answer) : "" })} ${strings.noMatch}`}
+                {answer === stored.choice ? (
+                  <strong>{strings.match}</strong>
+                ) : (
+                  <>
+                    {format(strings.labFound, { answer: answer ? label(answer) : "" })}{" "}
+                    <strong>{strings.noMatch}</strong>
+                  </>
+                )}
               </p>
             )}
             <Evidence result={result} strings={strings} />

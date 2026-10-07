@@ -18,7 +18,7 @@ export function DataTable({
   mark?: ReadonlyMap<number, string>;
 }) {
   return (
-    <ScrollRegion label={caption}>
+    <ScrollRegion label={caption} title={caption}>
       <table className="data-table">
         <caption>{caption}</caption>
         <thead>

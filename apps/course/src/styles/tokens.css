@@ -13,6 +13,9 @@
  * a run, an event) has a colour, and the colour never carries meaning alone: every mark sits
  * beside its name.
  *
+ * Text meets WCAG's 4.5:1 on every surface it sits on, and a control's edge (--border-control)
+ * meets the 3:1 a control needs to be seen as one; `tokens.test.ts` computes both, in each theme.
+ *
  * With prefers-reduced-motion every transition collapses to an instant change; nothing in a
  * chapter depends on seeing motion.
  */
@@ -29,6 +32,7 @@
   --fg-faint: #6b7570;
   --border: #d3dad6;
   --border-strong: #a5b0ab;
+  --border-control: #7c8782;
 
   --accent: #0a6658;
   --accent-strong: #064d42;
@@ -36,7 +40,7 @@
   --accent-fg: #ffffff;
   --focus: #c2410c;
 
-  --ok: #1a7f37;
+  --ok: #187734;
   --ok-bg: #e5f3e9;
   --bad: #b42318;
   --bad-bg: #fbe9e7;
@@ -89,6 +93,7 @@
     --fg-faint: #8a958f;
     --border: #26302c;
     --border-strong: #43504a;
+    --border-control: #606c66;
     --accent: #5ec5b2;
     --accent-strong: #93dfd0;
     --accent-soft: #11302a;
@@ -119,6 +124,7 @@
   --fg-faint: #8a958f;
   --border: #26302c;
   --border-strong: #43504a;
+  --border-control: #606c66;
   --accent: #5ec5b2;
   --accent-strong: #93dfd0;
   --accent-soft: #11302a;

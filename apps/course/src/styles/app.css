@@ -102,7 +102,8 @@ textarea {
   gap: var(--space-2) var(--space-5);
   align-items: center;
   min-height: 3.5rem;
-  padding: var(--space-2) var(--gutter);
+  /* The same left and right edges as the page column below it. */
+  padding: var(--space-2) max(var(--gutter), calc((100% - var(--page)) / 2 + var(--gutter)));
   border-bottom: 1px solid var(--border);
   background: var(--bg-raised);
 }
@@ -138,8 +139,22 @@ textarea {
   min-height: var(--control);
   padding: 0 var(--space-3);
   background: var(--bg-raised);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-control);
   border-radius: var(--radius);
+}
+/* On a phone the picker keeps its name for a screen reader, and the header keeps one row. */
+@media (max-width: 30rem) {
+  .shell-header {
+    column-gap: var(--space-4);
+  }
+  .theme-picker > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
 
 .shell-main {
@@ -148,7 +163,7 @@ textarea {
   margin: 0 auto;
 }
 .shell-footer {
-  padding: var(--space-4) var(--gutter);
+  padding: var(--space-4) var(--gutter) calc(var(--space-4) * 3 + var(--control));
   color: var(--fg-muted);
   font-size: var(--text-sm);
   border-top: 1px solid var(--border);
@@ -206,9 +221,10 @@ ol {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
   min-height: var(--control);
   padding: 0 var(--space-4);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border-control);
   border-radius: var(--radius);
   background: var(--bg-raised);
   color: var(--fg);
@@ -292,6 +308,13 @@ ol {
   padding: var(--space-3) 0;
   min-height: var(--control);
 }
+@media (max-width: 36rem) {
+  .chapter-link,
+  .chapter-to-write {
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+}
 .chapter-link {
   text-decoration: none;
   color: var(--fg);
@@ -330,6 +353,9 @@ ol {
   color: var(--fg-muted);
   margin-left: auto;
   text-align: right;
+}
+.pager-not-yet a {
+  white-space: nowrap;
 }
 
 /* The lesson page, as the platform's runtime renders it */
@@ -390,8 +416,8 @@ figure.interactive {
   min-width: 0;
 }
 figure.interactive > figcaption {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   gap: var(--space-2);
   margin-bottom: var(--space-4);
@@ -408,6 +434,16 @@ figure.interactive > figcaption {
   border: none;
   cursor: pointer;
 }
+/* The badge opens a note, so it answers the pointer and shows when it is open. */
+.time-model-toggle:hover .badge,
+.time-model-toggle:focus-visible .badge,
+.time-model-toggle[aria-expanded="true"] .badge {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.time-model-toggle[aria-expanded="true"] .badge {
+  background: var(--accent-soft);
+}
 .badge-mark::after {
   content: "+";
 }
@@ -415,10 +451,10 @@ figure.interactive > figcaption {
   content: "−";
 }
 .time-model-note {
-  flex-basis: 100%;
+  grid-column: 1 / -1;
   padding: var(--space-3);
   background: var(--note-bg);
-  border-radius: var(--radius);
+  border-left: 3px solid var(--accent);
   color: var(--fg);
 }
 .time-model-note[hidden] {
@@ -471,6 +507,7 @@ figure.interactive > figcaption {
   padding: 0;
 }
 .verdict-failure {
+  max-width: calc(var(--measure) + 2 * var(--space-3));
   margin: var(--space-3) 0;
   padding: var(--space-3);
   border-left: 3px solid var(--bad);
@@ -546,10 +583,12 @@ figure.interactive > figcaption {
 .prediction-option,
 .fault-choice {
   display: flex;
-  align-items: center;
+  /* The control sits by the first line of its label, however many lines the label takes; the
+     padding centres a one-line label in a row a finger can hit. */
+  align-items: flex-start;
   gap: var(--space-3);
   min-height: var(--control);
-  padding: var(--space-1) var(--space-2);
+  padding: calc((var(--control) - 1.6em) / 2) var(--space-2);
   border-radius: var(--radius);
   cursor: pointer;
 }
@@ -560,8 +599,22 @@ figure.interactive > figcaption {
 input[type="radio"] {
   width: 1.15rem;
   height: 1.15rem;
+  margin-top: calc((1.6em - 1.15rem) / 2);
   accent-color: var(--accent);
   flex: none;
+}
+/* Once committed, the options are locked: no pointer, no hover, and the one chosen reads as
+   chosen, not as unavailable. */
+.prediction-options:disabled .prediction-option {
+  cursor: default;
+  color: var(--fg-muted);
+}
+.prediction-options:disabled .prediction-option:hover {
+  background: none;
+}
+.prediction-options:disabled .prediction-option:has(input:checked) {
+  color: var(--fg);
+  font-weight: 600;
 }
 
 /* Start a chapter again: at the foot of the chapter, above the pager, deliberately quiet. */

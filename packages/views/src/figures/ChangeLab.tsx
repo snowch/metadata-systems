@@ -249,9 +249,16 @@ export const ChangeLab = withProps(
                     className={answer === committed ? "prediction-match" : "prediction-nomatch"}
                   >
                     {format(strings.youSaid, { choice: label(committed) })}{" "}
-                    {answer === committed
-                      ? strings.match
-                      : `${format(strings.labFound, { answer: answer ? label(answer) : fits.length })} ${strings.noMatch}`}
+                    {answer === committed ? (
+                      <strong>{strings.match}</strong>
+                    ) : (
+                      <>
+                        {format(strings.labFound, {
+                          answer: answer ? label(answer) : fits.length,
+                        })}{" "}
+                        <strong>{strings.noMatch}</strong>
+                      </>
+                    )}
                   </p>
                 )
               }

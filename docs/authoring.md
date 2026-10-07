@@ -118,6 +118,10 @@ brief of facts and checked by the managing model for facts only. For a chapter:
   rung at a time; a prediction is committed before the lab answers; a change's outcome waits for
   its run.
 - `tests/educational/aesthetics.spec.ts`: no visible text under 11 pixels, every phone control at
-  least 40 pixels tall, no line of prose much over 85 characters.
+  least 40 pixels tall, no line of prose much over 85 characters; the map's names whole and its
+  systems even at every width; the map's button clear of the page's foot on a phone; a
+  challenge's choices filling their rows.
+- `apps/course/src/tokens.test.ts`: text at 4.5:1 on every surface it sits on, and a control's
+  edge at 3:1, in both themes, computed from `tokens.css`.
 
 A commit carries the tests for the code it changes, so every commit passes the check on its own.
