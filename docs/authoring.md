@@ -89,7 +89,8 @@ brief of facts and checked by the managing model for facts only. For a chapter:
    it; a wrong fact goes back with a note; nothing is rewritten. Record what the check caught in
    the chapter's note.
 4. Place the strings, then read the whole chapter from a dump of the built page
-   (`docs/notes/chapter-NN/review/page.md`), start to finish.
+   (`docs/notes/chapter-NN/review/page.md`), start to finish, in every state its figures reach:
+   before and after each commitment, and after each change.
 5. Review: a reader on another model, then an independent sceptic on each finding, then fixes:
    code first, fact briefs for wording second, then one more read.
 

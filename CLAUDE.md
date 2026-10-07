@@ -10,6 +10,12 @@ course on metadata and data lineage, built on the author's shared learning platf
 small one inside a small data platform, break it, and repair it.
 
 Every chapter follows one loop: **predict, build, run, inspect, explain, change, run again.**
+Read as the learner meets it, the loop is a sequence of questions: here is a real question; what
+can I believe about it now; predict; act on the lab; what did I see; what did that prove; what can
+the data not tell me; what would a system have to record? Every chapter protects one principle
+above the rest: do not teach the learner what metadata systems contain; make them experience the
+information gap that makes such a system necessary.
+
 Every figure uses one vocabulary, shared with the author's other courses: inspect, predict, step,
 experiment, break, explain, drill down, replay.
 
@@ -64,6 +70,13 @@ something the lab does not compute, the lab is where the work goes first.
 A number in a learner-facing string is a number the lab produced, and a facts test pins it. A
 prediction's answer comes from running the lab, never from the lesson's data.
 
+**A figure shows only what the learner has been told or has built.** It never draws a relation the
+chapter asks the learner to find, and no caption, label or text gives away a challenge's or a
+prediction's answer before the learner has worked for it. The platform map is the standing
+example. It stays to hand through every chapter, and in Chapter 1 it has no arrow from one asset to
+another, because which asset is made from which is what that chapter shows storage cannot tell.
+The map gains a relation only once something the learner built records it.
+
 ## Accuracy
 
 - **Check every technical claim** about a standard or a system against its authoritative source,
@@ -74,6 +87,10 @@ prediction's answer comes from running the lab, never from the lesson's data.
 - **Distinguish facts, design choices and hypotheses**, on the page and in the documents. The
   lab's own choices are labelled as the lab's; the model-versus-reality note of every chapter says
   where the lab differs from a real platform.
+- **A definition is a technical claim**, and must hold for every case the course will meet, not
+  only for the chapter's example. "Metadata is information kept apart from the data" failed this:
+  a Parquet file carries its own column names and types, and a warehouse keeps its tables' types
+  inside itself. Check a definition against the sources as you would any other claim.
 - **Never invent behaviour for an open standard.** Where a specification is silent (OpenLineage
   says nothing on what a consumer does with a duplicate event), say that it is silent and show
   what the lab does and why.
@@ -117,7 +134,9 @@ also drops facts and gets them wrong. So the work splits four ways:
    carry it. Do not rewrite Haiku's sentences. If a draft is wrong, send it back with a note.
 4. **Then read the whole chapter, start to finish.** This is `docs/style.md`'s second pass, where
    repeats and broken joins show. It also asks whether each figure showed the mechanism the prose
-   claims it shows.
+   claims it shows. Read it from the built page in every state its figures reach, before and after
+   each commitment and after each change: some faults show only there, such as a correct
+   prediction printing its long option twice.
 
 The mechanism is the Agent tool with `model: "haiku"`. Engineering documents (this file, the plan,
 `docs/lab.md`, `docs/platform.md`) are written directly. They still pass the checklist.
@@ -133,6 +152,11 @@ revealing, no roundabout purpose. Prefer: here is the problem; here is the small
 solves it; here is where that model fails; here is what we must add; now the model explains this
 real behaviour.
 
+That is a rule for sentences, not for experiments. A chapter may ask a question and let the lab
+answer it: whether a query that rebuilds an asset shows how the asset was made is asked in Chapter
+1's construction and answered by its failure experiment. What a chapter must not do is answer its
+own question in prose before the learner has run the experiment that answers it.
+
 **Terms are rationed per chapter.** A term arrives because the lab in front of the learner has
 just raised the question that needs it, never as a definition up front: plain English first, the
 term second. `docs/plan.md` lists the terms each chapter introduces; the term gate
@@ -142,7 +166,10 @@ at the end of Chapter 1, by the questions the learner could not answer.
 
 **Length follows the material.** The ten sections of the lesson format (question, motivation,
 prediction, investigation, construction, failure experiment, explanation, generalisation,
-challenge, reflection) stay whatever the length.
+challenge, reflection) stay whatever the length. A chapter closes with a short summary of what its
+experiments showed and could not show, said once and not explained again, then reflective
+questions that carry it to new situations and lead into the next chapter. To improve a chapter,
+sharpen what its interactions ask before adding material.
 
 ## Interaction is the explanation
 
@@ -172,8 +199,9 @@ metadata is for before they have needed it.
 A review has two halves, and the test suite does neither on its own.
 
 - **The mechanical half** drives the built page at phone and desktop widths and in the dark
-  theme, presses every control, moves every input to both ends, runs every challenge with the
-  reference and with plausible wrong attempts, and writes down what broke.
+  theme, presses every control, moves every input to both ends, reaches each part of the page by a
+  jump as well as by scrolling, runs every challenge with the reference and with plausible wrong
+  attempts, and writes down what broke.
 - **The reading half** gives each chapter to its own reviewer with a written brief, reading as a
   learner who has done every earlier chapter and none after. Every finding quotes the page;
   a finding suggests a direction and never rewrites; a number or a cross-reference is checked
@@ -192,10 +220,14 @@ Read for these before calling a chapter finished:
   it, generate it;
 - a word that means two things on one page: *table* (the warehouse's and the page's), *record*,
   *event*, *run* (the noun and the verb), *version*, *source*, *owner*, *schema* (a structure and
-  a database's namespace), *model* (the lab, a data model, an ML model);
+  a database's namespace), *model* (the lab, a data model, an ML model), *map* (the platform map;
+  no other figure is called one);
 - a definite article in front of a noun the chapter has not introduced;
 - a term doing work before it is defined;
 - a table nobody chose for this chapter, rendered because the component had it;
+- a prediction its notes justify but its page does not: read the page above it as the learner, and
+  ask whether they could say why they chose their option;
+- a figure, caption or label that shows what the chapter asks the learner to find;
 - the same argument made twice, far apart;
 - a number spelled as a word that the lab did not produce;
 - a claim about a standard or a product that `docs/sources.md` does not support.
