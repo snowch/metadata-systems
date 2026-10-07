@@ -260,6 +260,16 @@ fixed:
 The screenshots at both widths and in both themes showed the map's lists wrapping two names to a
 line where the names were short; each system now lists its assets one to a line.
 
+After the merge, the author's screenshot at a tablet's width, about 830 pixels, showed the map in
+its row with every name broken mid-word. Each arrow took a fixed 7rem for its words, which left
+the first two systems too narrow and the last, with no arrow beside it, too wide; and the names
+were allowed to break anywhere. The arrows now take only their own width, one line under the row
+says what they mean, every system in the row gets the same width, and no name breaks. Between the
+phone's layout and the row, each system lists its assets across, on one line. A browser test holds
+the names whole and the systems even at thirteen widths from 320 to 1280 pixels; run against the
+old styles, it fails as the screenshot did. The phone and desktop screenshots this round took had
+missed it: neither is a width where the row is crowded.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,

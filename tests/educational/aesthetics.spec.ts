@@ -1,7 +1,8 @@
 // Copyright © 2026 Christopher Snow
 
 // The look of the page, held to rules a reader needs: no visible text under 11 pixels, every
-// control at least 40 pixels tall on a phone, and no line of prose much over 85 characters.
+// control at least 40 pixels tall on a phone, no line of prose much over 85 characters, and a map
+// of the platform whose names stay whole and whose systems stay even at every width.
 
 import { expect, test } from "@playwright/test";
 
@@ -78,4 +79,48 @@ test("no line of prose is much over 85 characters", async ({ page, isMobile }) =
     return out;
   });
   expect(long).toEqual([]);
+});
+
+test("the map keeps every name whole at every width, and its systems even", async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(isMobile, "the test sets each width itself");
+  await openChapter(page);
+  for (const width of [320, 360, 390, 480, 560, 600, 640, 700, 768, 800, 834, 1024, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    const found = await page.evaluate(() => {
+      const map = document.querySelector("#ix-platform .platform-map");
+      if (!map) return { problems: ["no map"], row: false, widths: [] as number[] };
+      const problems: string[] = [];
+      const systems = [...map.querySelectorAll(".map-system")];
+      for (const s of systems) {
+        const box = s.getBoundingClientRect();
+        const assets = [...s.querySelectorAll(".map-asset")];
+        for (const a of assets) {
+          const name = a.querySelector("span");
+          if (!name) continue;
+          const r = name.getBoundingClientRect();
+          if (r.height > parseFloat(getComputedStyle(name).lineHeight) * 1.5)
+            problems.push(`${name.textContent} breaks`);
+          if (r.right > box.right - 1) problems.push(`${name.textContent} leaves its box`);
+        }
+        // One name to a line, or all on one line: never a line of two over a line of one.
+        const lines = new Set(assets.map((a) => Math.round(a.getBoundingClientRect().top))).size;
+        if (lines !== 1 && lines !== assets.length)
+          problems.push(`${s.querySelector(".map-system-name")?.textContent} mixes lines`);
+      }
+      const tops = systems.map((s) => Math.round(s.getBoundingClientRect().top));
+      return {
+        problems,
+        row: new Set(tops).size === 1,
+        widths: systems.map((s) => Math.round(s.getBoundingClientRect().width)),
+      };
+    });
+    expect(found.problems, `at ${width} pixels`).toEqual([]);
+    // In a row, the systems share one width, whichever has an arrow beside it.
+    if (found.row) expect(new Set(found.widths).size, `at ${width} pixels`).toBe(1);
+    if (width >= 1024) expect(found.row, `at ${width} pixels`).toBe(true);
+    if (width <= 480) expect(found.row, `at ${width} pixels`).toBe(false);
+  }
 });

@@ -486,11 +486,18 @@ details[open] > summary::before {
 }
 
 /* The map of the platform: the systems stacked, with an arrow down between two that programs
-   join, on a narrow figure or in the map that opens over the page; in a row, with the arrow
-   turned to point across, where the figure is wide enough for three names side by side. */
+   join and the words beside it, on a narrow figure or in the map that opens over the page, one
+   asset to a line. From 36rem, wide enough for any system's names on one line, each system lists
+   its assets across. Where the figure is wide enough for three systems side by side, from 44rem
+   (three of the widest system plus two arrows), they sit in a row: the arrows turn to point
+   across and lose their words to one line under the row, and every system takes the same width
+   (each step but the last starts from its arrow's width, and all share the rest equally). No name
+   ever breaks, and no system mixes a line of two names with a line of one: the browser tests hold
+   both at every width. */
 .platform-map-place,
 .map-dock-panel {
   container-type: inline-size;
+  --map-arrow-width: 3rem;
 }
 .platform-map {
   list-style: none;
@@ -529,49 +536,81 @@ details[open] > summary::before {
   gap: var(--space-1);
 }
 .map-asset {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: var(--space-2);
   font-family: var(--font-mono);
   font-size: var(--text-sm);
-  overflow-wrap: anywhere;
+  white-space: nowrap;
 }
-.map-flow {
+.map-flow,
+.map-legend {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   margin: 0;
-  padding-left: var(--space-3);
   font-size: var(--text-sm);
   color: var(--fg-muted);
+}
+.map-flow {
+  padding-left: var(--space-3);
+}
+.map-legend {
+  display: none;
 }
 .map-arrow {
   flex: none;
   color: var(--accent);
 }
+@container (min-width: 36rem) {
+  .map-assets {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-5);
+  }
+}
 @container (min-width: 44rem) {
+  .map-assets {
+    flex-direction: column;
+    gap: var(--space-1);
+  }
   .platform-map {
     flex-direction: row;
     align-items: stretch;
+    gap: 0;
   }
   .map-step {
-    flex-direction: row;
     flex: 1 1 0;
+    flex-direction: row;
     align-items: stretch;
+    gap: 0;
+  }
+  .map-step.has-flow {
+    flex-basis: var(--map-arrow-width);
   }
   .map-system {
     flex: 1 1 0;
   }
   .map-flow {
     flex: none;
-    flex-direction: column;
     justify-content: center;
-    width: 7rem;
+    width: var(--map-arrow-width);
     padding: 0;
-    text-align: center;
+  }
+  .map-flow-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
   .map-arrow {
     transform: rotate(-90deg);
+  }
+  .map-legend {
+    display: flex;
+    margin-top: var(--space-3);
   }
 }
 

@@ -27,51 +27,72 @@ const Props = z.object({
   dock: z.boolean().default(true),
 });
 
+/** An arrow pointing down; turned to point across where the map lays its systems in a row. */
+function FlowArrow() {
+  return (
+    <svg
+      className="map-arrow"
+      viewBox="0 0 16 16"
+      width="16"
+      height="16"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M8 1.5v12 M3.5 9l4.5 4.5 4.5-4.5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/**
+ * The systems, each with its assets, and an arrow between two that programs join. Where the map
+ * is wide enough to lay the systems in a row, the arrows carry no words, so that every system
+ * gets the same width and no name breaks; one line under the row says what an arrow means. A
+ * screen reader hears the words at each arrow either way.
+ */
 function MapBody({ map, strings }: { map: Map; strings: ViewStrings }) {
   return (
-    <ol className="platform-map" aria-label={strings.mapLabel}>
-      {map.systems.map((s, i) => {
-        const next = map.systems[i + 1];
-        const flows = next && map.flows.some((f) => f.from === s.system && f.to === next.system);
-        return (
-          <li key={s.system} className="map-step">
-            <div className="map-system">
-              <p className="map-system-name">{strings.systems[s.system] ?? s.system}</p>
-              <ul className="map-assets">
-                {s.assets.map((a) => (
-                  <li key={a.id} className="map-asset">
-                    <Glyph kind={a.kind} />
-                    <span>{a.id}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            {flows && (
-              <p className="map-flow">
-                <svg
-                  className="map-arrow"
-                  viewBox="0 0 16 16"
-                  width="16"
-                  height="16"
-                  aria-hidden="true"
-                  focusable="false"
-                >
-                  <path
-                    d="M8 1.5v12 M3.5 9l4.5 4.5 4.5-4.5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                <span>{strings.mapFlow}</span>
-              </p>
-            )}
-          </li>
-        );
-      })}
-    </ol>
+    <>
+      <ol className="platform-map" aria-label={strings.mapLabel}>
+        {map.systems.map((s, i) => {
+          const next = map.systems[i + 1];
+          const flows = next && map.flows.some((f) => f.from === s.system && f.to === next.system);
+          return (
+            <li key={s.system} className={flows ? "map-step has-flow" : "map-step"}>
+              <div className="map-system">
+                <p className="map-system-name">{strings.systems[s.system] ?? s.system}</p>
+                <ul className="map-assets">
+                  {s.assets.map((a) => (
+                    <li key={a.id} className="map-asset">
+                      <Glyph kind={a.kind} />
+                      <span>{a.id}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              {flows && (
+                <p className="map-flow">
+                  <FlowArrow />
+                  <span className="map-flow-label">{strings.mapFlow}</span>
+                </p>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+      {map.flows.length > 0 && (
+        <p className="map-legend" aria-hidden="true">
+          <FlowArrow />
+          <span>{strings.mapFlow}</span>
+        </p>
+      )}
+    </>
   );
 }
 
