@@ -19,6 +19,34 @@ every number below. Do not add a number that is not here. Do not change a number
   log in as). Call it "the lab".
 - All times are UTC. Write a time like this: Monday 14 September, 02:30.
 
+## The Metadata Lab, as its note describes it
+
+The lab's note opens from every figure's badge, below what the figure asks of you, and closes
+each chapter under the heading "How the figures run". It serves every chapter of the course, so it
+says nothing that only Chapter 1 needs. Read off the code (`packages/lab`, `packages/views`, the
+platform's `state.ts`) on 7 October 2026:
+
+- The Metadata Lab is a small data platform written for this course. It comes with the page, as
+  code, and runs in your browser: there is nothing to install, open or sign in to.
+- You use it through the figures. Each figure asks the lab something and shows its answer. A
+  figure that shows storage reads what the lab's storage records; a query you build, the lab runs;
+  a change to the shop makes the lab run the week again.
+- It holds the shop: files, tables and a dashboard with real rows, and programs, written in SQL,
+  that run each night and write the tables and the dashboard. The lab reads and runs that SQL
+  itself, with a query engine of its own, and runs the queries you build the same way.
+- Nothing about the shop is stored. Each time the page loads, the lab builds the shop's data and
+  runs the whole week, night by night, in memory. So the shop's rows and times are the same for
+  every reader, on any day.
+- The week is the shop's first week online, Monday 7 to Sunday 13 September 2026. The shop and its
+  week are invented for the course.
+- Every date and time a figure shows comes from the week the lab runs, whose last night ends early
+  on Monday 14 September. None comes from today's date or your computer's clock.
+- Your browser keeps your own work, chapter by chapter: your predictions, your choices and your
+  answers to challenges. Nothing you do leaves your browser: the page sends none of it anywhere.
+
+The note does not say how many programs there are, which asset a program reads or writes, or what
+any program does: Chapter 1 shows that storage cannot tell.
+
 ## The seven assets
 
 An asset is something in the platform that can be stored, described, changed, related to other

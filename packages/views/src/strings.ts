@@ -10,8 +10,10 @@
 import { createContext, useContext } from "react";
 
 export const DEFAULT_VIEW_STRINGS = {
+  // What the lab is, how a reader uses it, what its week is and what the browser keeps (briefs
+  // AA and AA2). It opens from every badge and closes every chapter.
   labNote:
-    "Every figure in this chapter runs the Metadata Lab, a small data platform in your browser. The lab holds the shop's files and tables for the week of 7 to 13 September 2026. Its programs run in SQL over the rows you see. What a figure shows is worked out from those rows each time. The lab's clock is the week's own, not real time. Nothing leaves your browser.",
+    "The Metadata Lab is a small data platform written for this course. It comes as code with the page and runs in your browser: nothing to install, open or sign in to.\n\nYou use it through figures, each asking the lab something and showing its answer. A figure showing storage reads what the lab records. A query you build, the lab runs. You change the shop and the lab runs the week again. The lab holds the shop's files, tables and a dashboard, with real rows. Programs written in SQL run each night and write the tables and dashboard. The lab reads and runs that SQL with its own query engine, and your queries the same way.\n\nNothing about the shop is stored. Each time the page loads, the lab builds the data and runs the whole week in memory. Rows and times are the same for every reader. The week is the shop's first week online: Monday 7 to Sunday 13 September 2026, invented for the course. Every date and time a figure shows comes from that week, ending early Monday 14 September, not today or your clock. Your browser keeps your predictions, choices and answers. Nothing you do leaves your browser.",
   badge: "Lab",
   badgeLabel: "How this figure works: {model}",
   // What each figure asks of the learner, on its badge, and the note the badge opens, above the

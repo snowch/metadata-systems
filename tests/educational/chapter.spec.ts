@@ -443,6 +443,30 @@ test.describe("the figures", () => {
     ]);
   });
 
+  test("nothing the learner does leaves the browser: the page asks only for the course's files", async ({
+    page,
+    baseURL,
+  }) => {
+    // The lab's note says so; the lab runs in the page and the learner's work stays in the browser.
+    const sent: string[] = [];
+    page.on("request", (r) => {
+      if (r.method() !== "GET" || !r.url().startsWith(baseURL ?? ""))
+        sent.push(`${r.method()} ${r.url()}`);
+    });
+    await openChapter(page);
+    await commitThursday(page);
+    const where = page.locator("#ix-where-first");
+    await where.getByRole("radio").first().check();
+    await where
+      .getByRole("button", { name: figureProps("where-first")["commit"] as string })
+      .click();
+    await page.locator("#ix-storage").getByRole("button", { name: "daily_sales" }).click();
+    await pass(page, "rebuild-daily-sales");
+    await page.reload();
+    await expect(page.locator("section.lesson-section")).toHaveCount(10);
+    expect(sent).toEqual([]);
+  });
+
   test("the map stays to hand: a button opens it once its place is scrolled past", async ({
     page,
   }) => {

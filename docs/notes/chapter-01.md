@@ -771,6 +771,31 @@ learner to the asset they chose, which that first task had done. The restatement
 51.50 in the choice of an explanation, after the long inspector, stays: each decision states the
 facts its question needs.
 
+## The lab's note, 7 October 2026
+
+The author read the lab's note ("Every figure in this chapter runs the Metadata Lab, a small data
+platform in your browser...") and could not tell from it what the lab is, whether its data sits in
+the browser's storage, what the dates mean, or how a reader gets to the lab. The note now says:
+the lab is a small data platform written for the course, which comes with the page as code and
+runs in the browser; you use it through the figures, each of which asks it something; it holds the
+shop, and runs the shop's SQL and yours with a query engine of its own; nothing about the shop is
+stored, because each load builds the data and runs the week in memory; the week is the shop's
+first week online, invented, and every date and time a figure shows comes from it; and the browser
+keeps the learner's work, none of which leaves it. It serves every chapter, so it names no
+figure and no chapter. A Playwright test now holds the last claim: while a learner works through
+the chapter, the page asks only for the course's own files and sends nothing.
+
+| Draft | Wrong, sent back | Dropped, restored with the fewest words |
+| --- | --- | --- |
+| AA (the note) | "programs that run each night and write them" said the programs write the files, which the shop's export writes; and the draft dropped seven facts, among them the shop's first week online, the answer to what the dates mean, and wrote "Nothing leaves it", which the page's own requests make untrue. Sent back as AA2, with the limit raised from 130 words to 170 | none |
+| AA2 (the note again) | none | "the shop's" and "with real rows" (what the lab holds), "query" (its engine), "open" (nothing to open), and the sentence that the browser keeps your predictions, choices and answers, which AA2 dropped and AA had: AA's own sentence was put back. The note came to 203 words, over the 170 the brief allowed; each sentence carries one of the facts the author asked about, and the badge holds it behind a press, so it stays |
+
+The read of the built page, at 1280 pixels in the light theme and 390 in the dark, in the map's
+and the Thursday prediction's badges and at the foot of the chapter, found one repeat at the
+foot: the note's last two sentences and, two paragraphs later, the line before "Start this
+chapter again", which also says the browser keeps your work. The second names what starting again
+clears, and the badges show the first without it, so both stay.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,

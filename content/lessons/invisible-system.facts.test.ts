@@ -9,6 +9,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   DAYS,
+  NIGHTS,
   PROGRAM_IDS,
   QUESTION_IDS,
   catalogueFor,
@@ -95,7 +96,13 @@ describe("the facts Chapter 1 states", () => {
     expect(DAYS[0]).toBe("2026-09-07");
     expect(DAYS[DAYS.length - 1]).toBe("2026-09-13");
     expect(LABELS.captions.dashboard).toContain("7 to 13 September");
-    expect(DEFAULT_VIEW_STRINGS.labNote).toContain("7 to 13 September 2026");
+    expect(DEFAULT_VIEW_STRINGS.labNote).toContain("Monday 7 to Sunday 13 September 2026");
+    // The week's last night ends early on the Monday morning the learner arrives: every time
+    // storage shows falls inside the week or that night.
+    expect(NIGHTS[NIGHTS.length - 1]).toBe("2026-09-14");
+    const times = [...week().lastWritten.values()];
+    expect(times.every((t) => t >= "2026-09-07" && t < "2026-09-14T06:00")).toBe(true);
+    expect(DEFAULT_VIEW_STRINGS.labNote).toContain("ending early Monday 14 September");
   });
 
   it("matches raw orders to daily_sales on three days of seven, the ones the prose names", () => {
