@@ -140,13 +140,12 @@ test.describe("the chapter pages", () => {
     );
     await expect(page.locator(".chapter-to-write")).toHaveCount(PLAN.length - LESSONS.length);
     // The band shows the question the course starts from: Chapter 1's dashboard, live from the
-    // lab, with the lab's mark and no control; then the parts in reading order; then the
-    // contents by part, the part of the chapter the button names open and the rest closed.
+    // lab, with the lab's mark and no control; then the contents by part, the part of the
+    // chapter the button names open and the rest closed.
     const hero = page.locator("#ix-cover-dashboard");
     await expect(hero).toHaveAttribute("data-time-model", "lab");
     await expect(hero.locator(".bars li")).toHaveCount(7);
     expect(await hero.locator("button, input, select").count()).toBe(0);
-    await expect(page.locator(".journey-part .part-name")).toHaveText([...PARTS]);
     const parts = page.locator("details.part");
     await expect(parts).toHaveCount(PARTS.length);
     expect(await parts.evaluateAll((ds) => ds.map((d) => (d as HTMLDetailsElement).open))).toEqual(

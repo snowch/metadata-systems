@@ -94,43 +94,6 @@ function Cover({
 /** The chapters of a part, from the plan. */
 const chaptersOf = (part: number) => PLAN.filter((c) => c.part === part);
 
-const chapterRange = (part: number) => {
-  const chapters = chaptersOf(part);
-  const from = chapters[0]?.number ?? 0;
-  const to = chapters[chapters.length - 1]?.number ?? from;
-  return chapters.length === 1
-    ? fill(STRINGS.cover.partChapters.one, { from })
-    : fill(STRINGS.cover.partChapters.other, { from, to });
-};
-
-/** The eight parts in reading order, one line each, with the parts not yet written marked. */
-function Journey({ written }: { written: ReadonlySet<number> }) {
-  return (
-    <section className="journey" aria-labelledby="journey-heading">
-      <h2 id="journey-heading">{STRINGS.cover.partsHeading}</h2>
-      <p className="journey-lead">{STRINGS.cover.partsLead}</p>
-      <ol className="journey-parts">
-        {PARTS.map((title, i) => {
-          const any = chaptersOf(i + 1).some((c) => written.has(c.number));
-          return (
-            <li key={title} className={any ? "journey-part" : "journey-part part-to-write"}>
-              <span className="part-number" aria-hidden="true">
-                {i + 1}
-              </span>
-              <span className="part-text">
-                <span className="part-name">{title}</span>
-                <span className="part-chapters">{chapterRange(i + 1)}</span>
-                <span className="part-about">{STRINGS.cover.parts[i]}</span>
-                {!any && <span className="part-status">{STRINGS.toWrite}</span>}
-              </span>
-            </li>
-          );
-        })}
-      </ol>
-    </section>
-  );
-}
-
 export function ChapterList({ book, storage }: { book: Book; storage: Storage }) {
   const written = new Map(book.lessons.map((l) => [chapterOf(l), l]));
   const completion = new Map(
@@ -159,7 +122,6 @@ export function ChapterList({ book, storage }: { book: Book; storage: Storage })
           started={started && unfinished !== undefined}
         />
       )}
-      <Journey written={new Set(written.keys())} />
       <h2 className="contents-heading">{STRINGS.contents}</h2>
       {PARTS.map((title, i) => {
         const chapters = chaptersOf(i + 1);
