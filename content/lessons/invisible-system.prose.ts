@@ -29,7 +29,7 @@ export const PROSE = {
   prediction:
     "Before you inspect anything, answer two questions. For each, choose an option, then press the button below it.",
   p1Question:
-    "\"Who should I ask about `daily_sales`?\" was one of the questions at the start of this chapter. What gets stored as the owner decides whether the field answers it. The requirement above is yours to meet: you write the program that writes `daily_sales` every night, so the owner is yours to choose. What would you store?",
+    '"Who should I ask about `daily_sales`?" was one of the questions at the start of this chapter. What gets stored as the owner decides whether the field answers it. The requirement above is yours to meet: you write the program that writes `daily_sales` every night, so the owner is yours to choose. What would you store?',
   p1Mine: "You would store {choice}.",
   p1Undecided: "You would ask what the owner is for before storing anything.",
   p1Meanings:
