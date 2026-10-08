@@ -23,7 +23,7 @@ export const DEFAULT_VIEW_STRINGS = {
   roleBadgeLabel: "What this figure asks of you is {role}",
   roleNotes: {
     experiment:
-      "Commit first to a prediction, a choice or a query you build. Compare what the lab shows with what you expected.",
+      "Commit first: predict, choose, or build your query, then compare what the lab shows with what you expected.",
     inspect:
       "Use this to answer the question just above. Look for the evidence the question needs.",
   } as Record<string, string>,

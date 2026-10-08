@@ -14,7 +14,7 @@ export const LABELS = {
   titles: {
     question: "A week of questions",
     motivation: "Why these questions matter",
-    prediction: "What you expect the systems to tell you",
+    prediction: "Two questions before you look",
     investigation: "What the systems record",
     construction: "Rebuilding daily_sales",
     failureExperiment: "The shop changed three ways",
@@ -31,7 +31,7 @@ export const LABELS = {
     platform: "The pipeline: the shop's three systems and what each holds.",
     week: "The shop's first week: order days, a night's work after each, and the morning you start.",
     dashboard: "On Monday morning the dashboard shows daily revenue for 7 to 13 September.",
-    p1: "Choose what you would store to meet a requirement, see what it could mean, then see what the shop's warehouse holds.",
+    p1: "Choose what you would store as the owner of daily_sales, then see what the shop's warehouse holds.",
     p2: "Predict what Thursday's rows of orders.parquet add up to.",
     where: "Decide which asset you would inspect first, and what you would look for there.",
     hypothesis: "Choose the explanation you will test for the difference on Thursday.",
@@ -48,7 +48,7 @@ export const LABELS = {
   labDetails: "How the lab is built",
   // The requirement, in the author's words, and the figure that questions it (brief V).
   p1Requirement: "Every table must have an owner.",
-  p1Commit: "Show what this could mean",
+  p1Commit: "Show what each choice would answer",
   p1Show: "Show the warehouse",
   p1Options: {
     person: "a person, for example whoever built it",

@@ -27,9 +27,9 @@ export const PROSE = {
   motivation:
     "A data engineer who joins a platform they did not build is asked questions like these:\n\n- Can we delete `products.parquet`?\n- What stops working if the checkout renames a column in `orders.parquet`?\n- Is Thursday's total wrong, and since when?\n- Who should I ask about `daily_sales`?\n\nA wrong answer to the first breaks a program that still reads the file. A wrong answer to the third can leave a total wrong for weeks before anybody notices. None of the four can be answered by reading rows alone.",
   prediction:
-    "Before you open the systems, answer two questions. For each, choose an option, then press the button below it.",
+    "Before you inspect anything, answer two questions. For each, choose an option, then press the button below it.",
   p1Question:
-    "Suppose you write the program that writes `daily_sales` every night. What would you store as the owner of `daily_sales`?",
+    "The requirement above is yours to meet: you write the program that writes `daily_sales` every night, so the owner is yours to choose. What would you store?",
   p1Mine: "You would store {choice}.",
   p1Undecided: "You would ask what the owner is for before storing anything.",
   p1Meanings:
