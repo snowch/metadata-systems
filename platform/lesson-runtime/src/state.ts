@@ -42,6 +42,8 @@ export interface Storage {
   get(key: string): string | null;
   set(key: string, value: string): void;
   remove(key: string): void;
+  /** Every key this storage holds, so a whole book's work can be cleared at once. */
+  keys(): readonly string[];
 }
 
 export function memoryStorage(): Storage {
@@ -50,6 +52,7 @@ export function memoryStorage(): Storage {
     get: (k) => map.get(k) ?? null,
     set: (k, v) => void map.set(k, v),
     remove: (k) => void map.delete(k),
+    keys: () => [...map.keys()],
   };
 }
 
@@ -89,6 +92,17 @@ export function browserStorage(): Storage {
         local()?.removeItem(key);
       } catch {
         // Nothing to do; the memory copy is gone.
+      }
+    },
+    keys() {
+      try {
+        const s = local();
+        if (!s) return fallback.keys();
+        const out = new Set<string>(fallback.keys());
+        for (let i = 0; i < s.length; i++) out.add(s.key(i) ?? "");
+        return [...out];
+      } catch {
+        return fallback.keys();
       }
     },
   };
@@ -186,6 +200,17 @@ export class LessonStore {
     this.value = EMPTY;
     this.storage.remove(storageKey(this.bookId, this.lessonId));
     for (const l of this.listeners) l();
+  }
+}
+
+/**
+ * Forgets every lesson's stored work for one book: every key the book's storage holds, so a
+ * reader can start the whole course again. The caller remounts what reads the state.
+ */
+export function resetBook(storage: Storage, bookId: string): void {
+  const prefix = `${bookId}:v${STATE_VERSION}:`;
+  for (const key of storage.keys()) {
+    if (key.startsWith(prefix)) storage.remove(key);
   }
 }
 

@@ -841,6 +841,20 @@ input[type="radio"] {
   font-weight: 600;
 }
 
+/* The link to it at the head of a chapter, quieter still: a reader who wants it finds it. */
+.chapter-start-again {
+  max-width: var(--measure);
+  margin: 0 auto var(--space-2);
+  font-size: var(--text-sm);
+  text-align: right;
+}
+.chapter-start-again a {
+  color: var(--fg-muted);
+}
+.chapter-start-again a:hover {
+  color: var(--fg);
+}
+
 /* Start a chapter again: at the foot of the chapter, above the pager, deliberately quiet. */
 .start-again {
   max-width: var(--measure);

@@ -61,6 +61,15 @@ export const STRINGS = {
   startAgainConfirm: "Clear everything in this chapter",
   startAgainCancel: "Keep my work",
   startAgainDone: "This chapter's work is cleared.",
+  // The link at the top of a chapter to the start-again control at its foot.
+  startAgainTop: "Start this chapter again",
+  // The course-wide start again, on the front page: clears every chapter's work.
+  startCourseAgain: "Start the course again",
+  startCourseAgainNote:
+    "Every chapter keeps your predictions, sorts and challenge work in your browser. Starting the course again clears them all, in every chapter, and cannot be undone.",
+  startCourseAgainConfirm: "Clear all my work in every chapter",
+  startCourseAgainCancel: "Keep my work",
+  startCourseAgainDone: "All your work is cleared.",
   missing: "There is no page at {path}.",
   noLesson: "There is no chapter called {id}.",
   back: "Back to chapters",

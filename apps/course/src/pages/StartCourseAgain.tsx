@@ -1,48 +1,41 @@
 // Copyright © 2026 Christopher Snow
 
-// At the foot of a chapter: start the chapter again. A prediction, once committed, stays as the
-// record of what the learner expected, so this is the one way to clear it: everything the chapter
-// keeps in the browser (predictions, sorts, challenge work, hints) goes, after a second press. The
-// shell then mounts the chapter afresh, so every figure reads the cleared state.
-
+// On the front page: start the whole course again. Every chapter's stored work goes, after a
+// second press; the shell then mounts every page afresh on the cleared state.
 import { useState } from "react";
-
-import { LessonStore, type Storage } from "@platform/lesson-runtime";
-
+import { resetBook, type Storage } from "@platform/lesson-runtime";
 import { STRINGS } from "../strings";
 
-export function StartAgain({
+export function StartCourseAgain({
   storage,
   bookId,
-  lessonId,
   onCleared,
 }: {
   storage: Storage;
   bookId: string;
-  lessonId: string;
   onCleared: () => void;
 }) {
   const [confirming, setConfirming] = useState(false);
   const [cleared, setCleared] = useState(false);
   return (
-    <section id="start-again" className="start-again" aria-label={STRINGS.startAgain}>
-      <p className="start-again-note">{STRINGS.startAgainNote}</p>
+    <section className="start-again start-course-again" aria-label={STRINGS.startCourseAgain}>
+      <p className="start-again-note">{STRINGS.startCourseAgainNote}</p>
       {confirming ? (
-        <span className="start-again-confirm" role="group" aria-label={STRINGS.startAgain}>
+        <span className="start-again-confirm" role="group" aria-label={STRINGS.startCourseAgain}>
           <button
             type="button"
             className="button danger"
             onClick={() => {
-              new LessonStore(storage, bookId, lessonId).reset();
+              resetBook(storage, bookId);
               setConfirming(false);
               setCleared(true);
               onCleared();
             }}
           >
-            {STRINGS.startAgainConfirm}
+            {STRINGS.startCourseAgainConfirm}
           </button>
           <button type="button" className="button secondary" onClick={() => setConfirming(false)}>
-            {STRINGS.startAgainCancel}
+            {STRINGS.startCourseAgainCancel}
           </button>
         </span>
       ) : (
@@ -54,11 +47,11 @@ export function StartAgain({
             setCleared(false);
           }}
         >
-          {STRINGS.startAgain}
+          {STRINGS.startCourseAgain}
         </button>
       )}
       <p className="start-again-status" role="status">
-        {cleared ? STRINGS.startAgainDone : ""}
+        {cleared ? STRINGS.startCourseAgainDone : ""}
       </p>
     </section>
   );
