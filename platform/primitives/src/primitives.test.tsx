@@ -34,32 +34,34 @@ describe("PredictionChallenge", () => {
         options={OPTIONS}
         committed={committed}
         onCommit={setCommitted}
-        onAgain={() => setCommitted(undefined)}
         legend="Your prediction"
         commitLabel="Check my prediction"
-        againLabel="Predict again"
         {...(verdict ? { verdict: <p role="status">You said {committed}.</p> } : {})}
       />
     );
   }
 
-  it("offers no 'Predict again' when the figure keeps the commitment", async () => {
+  it("keeps the options live after a commitment, so another can be tested", async () => {
+    const commits: string[] = [];
     render(
       <PredictionChallenge
         name="kept"
         options={OPTIONS}
         committed="1"
-        onCommit={() => {}}
+        onCommit={(c) => void commits.push(c)}
         legend="Your prediction"
         commitLabel="Check my prediction"
       />,
     );
     expect(screen.getByRole("radio", { name: "One" })).toBeChecked();
-    expect(screen.getByRole("radio", { name: "One" })).toBeDisabled();
-    expect(screen.queryAllByRole("button")).toEqual([]);
+    expect(screen.getByRole("radio", { name: "One" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Check my prediction" })).toBeDisabled();
+    await userEvent.click(screen.getByRole("radio", { name: "Zero" }));
+    await userEvent.click(screen.getByRole("button", { name: "Check my prediction" }));
+    expect(commits).toEqual(["0"]);
   });
 
-  it("commits only once an option is chosen, then locks the options", async () => {
+  it("commits only once an option is chosen, and allows a different one afterwards", async () => {
     render(<Harness />);
     const commit = screen.getByRole("button", { name: "Check my prediction" });
     expect(commit).toBeDisabled();
@@ -67,21 +69,27 @@ describe("PredictionChallenge", () => {
     expect(commit).toBeEnabled();
     await userEvent.click(commit);
     expect(screen.getByRole("radio", { name: "One" })).toBeChecked();
-    expect(screen.getByRole("radio", { name: "One" })).toBeDisabled();
-    expect(screen.queryByRole("button", { name: "Check my prediction" })).toBeNull();
+    expect(screen.getByRole("radio", { name: "One" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Check my prediction" })).toBeDisabled();
+    await userEvent.click(screen.getByRole("radio", { name: "Zero" }));
+    await userEvent.click(screen.getByRole("button", { name: "Check my prediction" }));
+    expect(screen.getByRole("radio", { name: "Zero" })).toBeChecked();
   });
 
-  it("shows the verdict before 'Predict again', which clears the choice", async () => {
+  it("shows the verdict beside the commit, which a new choice re-arms", async () => {
     render(<Harness verdict />);
     await userEvent.click(screen.getByRole("radio", { name: "Zero" }));
     await userEvent.click(screen.getByRole("button", { name: "Check my prediction" }));
     const verdict = screen.getByRole("status");
-    const again = screen.getByRole("button", { name: "Predict again" });
+    const again = screen.getByRole("button", { name: "Check my prediction" });
     expect(verdict).toHaveTextContent("You said 0.");
     expect(verdict.compareDocumentPosition(again) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(again).toBeDisabled();
+    await userEvent.click(screen.getByRole("radio", { name: "One" }));
+    expect(again).toBeEnabled();
     await userEvent.click(again);
-    expect(screen.getByRole("radio", { name: "Zero" })).not.toBeChecked();
-    expect(screen.getByRole("button", { name: "Check my prediction" })).toBeDisabled();
+    expect(screen.getByRole("radio", { name: "One" })).toBeChecked();
+    expect(screen.getByRole("status")).toHaveTextContent("You said 1.");
   });
 });
 

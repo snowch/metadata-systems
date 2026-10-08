@@ -1,9 +1,9 @@
 // Copyright © 2026 Christopher Snow
 
-// Predict, commit, see, and (if the figure allows it) predict again: the controls every
+// Predict, commit, see, predict again: the controls every
 // prediction figure shares. The learner picks one option and commits to it before anything is
-// shown. A figure that passes `onAgain` offers "Predict again", which clears the commitment; one
-// that does not keeps the commitment as the record of what the learner expected. What is
+// shown, then may pick another and commit again: these are hypothesis tests, not quizzes, and
+// changing one's answer is a normal investigative action, not an error. What is
 // predicted, and how its answer is worked out and drawn, stays with the figure: the choice is a
 // string, and the verdict and the outcome are the figure's to show.
 
@@ -46,7 +46,7 @@ export function PredictionChallenge({
   const [pick, setPick] = useState<string | undefined>();
   return (
     <>
-      <fieldset className="prediction-options" disabled={committed !== undefined}>
+      <fieldset className="prediction-options" data-committed={committed !== undefined}>
         <legend className="visually-hidden">{legend}</legend>
         {options.map((o) => (
           <label key={o.value} className="prediction-option">
@@ -54,7 +54,7 @@ export function PredictionChallenge({
               type="radio"
               name={name}
               value={o.value}
-              checked={(committed ?? pick) === o.value}
+              checked={(pick ?? committed) === o.value}
               onChange={() => setPick(o.value)}
             />
             <span>{o.label}</span>
@@ -73,7 +73,15 @@ export function PredictionChallenge({
       ) : (
         <>
           {verdict}
-          {onAgain && againLabel && (
+          <button
+            type="button"
+            className="button secondary"
+            disabled={pick === undefined || pick === committed}
+            onClick={() => pick !== undefined && onCommit(pick)}
+          >
+            {commitLabel}
+          </button>
+          {onAgain && (
             <button
               type="button"
               className="button secondary"
