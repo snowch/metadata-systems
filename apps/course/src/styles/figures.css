@@ -778,8 +778,9 @@ details[open] > summary::before {
 }
 .week-key-night {
   flex: none;
-  width: 3px;
+  width: max(var(--week-night-width, 3px), 3px);
   height: 1.5rem;
+  box-sizing: content-box;
 }
 .week-key-start {
   flex: none;

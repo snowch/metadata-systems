@@ -42,6 +42,10 @@ export const WeekTimeline = withProps(
     const at = (time: string) => `${(((msOf(time) - from) / length) * 100).toFixed(3)}%`;
     const across = (a: string, b: string) =>
       `${(((msOf(b) - msOf(a)) / length) * 100).toFixed(3)}%`;
+    // The key's bar for a night's work is as wide as the diagram's, in container query units so
+    // both resolve against the same width, whatever the figure's own. The diagram's bar keeps a
+    // 3px floor; the key's swatch keeps the same one.
+    const nightWidth = `${(((msOf(lastNight.finished) - msOf(lastNight.started)) / length) * 100).toFixed(3)}cqw`;
     const day = (d: string) =>
       format(strings.weekDay, {
         weekday: weekdayOf(d, strings.weekdays),
@@ -49,7 +53,12 @@ export const WeekTimeline = withProps(
       });
     const time = t.arrival.slice(11, 16);
     return (
-      <div className="week-timeline" style={{ "--week-columns": columns.length } as CSSProperties}>
+      <div
+        className="week-timeline"
+        style={
+          { "--week-columns": columns.length, "--week-night-width": nightWidth } as CSSProperties
+        }
+      >
         <div
           className="week-strip"
           role="img"
