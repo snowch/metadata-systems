@@ -38,6 +38,7 @@ import { answersOf, describeSum, sumChoiceOf } from "../choices";
 import { challengeTitle, usePassed } from "../passed";
 import { withProps } from "../props";
 import { Rich, plain } from "../Rich";
+import { LabelledOption } from "../Rich";
 import { ScrollRegion } from "../ScrollRegion";
 import { matchCell, showDay, showTime } from "../show";
 import { format, useViewStrings, type ViewStrings } from "../strings";
@@ -241,6 +242,7 @@ export const ChangeLab = withProps(
           <div className="change-prediction">
             <Prose markdown={data.prediction.question} />
             <PredictionChallenge
+              renderLabel={(label) => <LabelledOption label={label} />}
               key={change.id}
               name={`${interactive.id}-${change.id}`}
               options={data.prediction.options}

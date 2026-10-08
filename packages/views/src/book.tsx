@@ -16,6 +16,8 @@ import {
 } from "@platform/lesson-runtime";
 
 import { ChoiceEditor } from "./ChoiceEditor";
+import { Glyph } from "./Glyph";
+import { ASSET_KINDS } from "./Rich";
 import { ChangeLab } from "./figures/ChangeLab";
 import { Dashboard } from "./figures/Dashboard";
 import { Decision, HypothesisCheck } from "./figures/HypothesisLab";
@@ -76,6 +78,20 @@ export function runtimeStrings(v: ViewStrings = DEFAULT_VIEW_STRINGS): Strings {
       badgeLabel: v.badgeLabel,
       role: v.roles,
       roleBadgeLabel: v.roleBadgeLabel,
+    },
+    // A name the lab holds as an asset carries its kind's mark before it in prose, as Rich draws
+    // it in the figures' own sentences. The mark is decoration; the words are the same.
+    code: ({ children }) => {
+      const name = typeof children === "string" ? children : String(children ?? "");
+      const kind = ASSET_KINDS.get(name);
+      return kind ? (
+        <code>
+          <Glyph kind={kind} />
+          {name}
+        </code>
+      ) : (
+        <code>{children}</code>
+      );
     },
     challenge: {
       ...DEFAULT_STRINGS.challenge,

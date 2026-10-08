@@ -20,6 +20,7 @@ import { PredictionChallenge } from "@platform/primitives";
 import { challengeTitle, figureCaption, usePassed } from "../passed";
 import { withProps } from "../props";
 import { plain, Rich } from "../Rich";
+import { LabelledOption } from "../Rich";
 import { ScrollRegion } from "../ScrollRegion";
 import { format, useViewStrings } from "../strings";
 
@@ -75,6 +76,7 @@ export const Decision = withProps(
       <div className="decision" data-committed={chosen ? "true" : "false"}>
         <Prose markdown={data.question} />
         <PredictionChallenge
+          renderLabel={(label) => <LabelledOption label={label} />}
           name={`${interactive.id}-choice`}
           options={data.options.map(({ value, label }) => ({ value, label }))}
           committed={chosen?.value}

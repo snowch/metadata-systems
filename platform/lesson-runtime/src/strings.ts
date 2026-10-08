@@ -5,6 +5,7 @@
 // The sentences were drafted by the course's prose process (see CLAUDE.md) from a brief of facts,
 // and checked against the code that uses them. Slots in braces are filled by `format`. A book
 // may replace any of them through LessonView's `strings` prop.
+import type { ReactNode } from "react";
 
 export interface Strings {
   readonly section: Readonly<Record<string, string>>;
@@ -25,6 +26,8 @@ export interface Strings {
     readonly unknownInteractive: string;
     readonly brokenInteractive: string;
   };
+  /** How a course draws inline code in prose, if it draws more than the words. */
+  readonly code?: (props: { readonly children: ReactNode }) => ReactNode;
   readonly challenge: {
     readonly run: string;
     readonly notRun: string;

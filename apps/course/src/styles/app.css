@@ -51,6 +51,25 @@ code {
   padding: 0.05em 0.3em;
   border-radius: var(--radius-sm);
 }
+/* Glyphs: one mark per kind of thing, beside its name (packages/views/src/Glyph.tsx). Inside
+   code, the mark sits on the text baseline, a size below the name it marks: decoration, not
+   meaning. A screen reader hears the name alone; the kind is told in words where it matters. */
+.glyph {
+  flex: none;
+  width: 0.9em;
+  height: 0.9em;
+  vertical-align: -0.12em;
+  margin-right: 0.15em;
+}
+.glyph-file {
+  color: var(--kind-file);
+}
+.glyph-table {
+  color: var(--kind-table);
+}
+.glyph-dashboard {
+  color: var(--kind-dashboard);
+}
 pre {
   overflow-x: auto;
   padding: var(--space-3) var(--space-4);

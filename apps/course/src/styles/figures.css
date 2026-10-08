@@ -201,21 +201,6 @@ pre.sql {
   text-align: right;
 }
 
-/* Glyphs: one mark per kind of thing, beside its name. */
-.glyph {
-  flex: none;
-  vertical-align: -0.15em;
-}
-.glyph-file {
-  color: var(--kind-file);
-}
-.glyph-table {
-  color: var(--kind-table);
-}
-.glyph-dashboard {
-  color: var(--kind-dashboard);
-}
-
 /* The storage inspector */
 .inspector {
   display: grid;

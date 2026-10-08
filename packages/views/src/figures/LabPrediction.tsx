@@ -34,6 +34,7 @@ import { Prose, useSlot, type InteractiveProps } from "@platform/lesson-runtime"
 import { PredictionChallenge, StateInspector } from "@platform/primitives";
 
 import { challengeTitle, usePassed } from "../passed";
+import { LabelledOption } from "../Rich";
 import { withProps } from "../props";
 import { ScrollRegion } from "../ScrollRegion";
 import { showDay } from "../show";
@@ -160,6 +161,7 @@ export const LabPrediction = withProps(
       <div className="lab-prediction" data-committed={stored ? "true" : "false"}>
         <Prose markdown={data.question} />
         <PredictionChallenge
+          renderLabel={(label) => <LabelledOption label={label} />}
           name={`${interactive.id}-choice`}
           options={offered.map(({ value, label }) => ({ value, label }))}
           committed={stored?.choice}

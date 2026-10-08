@@ -28,6 +28,8 @@ export interface PredictionChallengeProps {
   readonly commitLabel: string;
   /** The label of "Predict again"; needed only with `onAgain`. */
   readonly againLabel?: string;
+  /** How an option's label is drawn; plain text unless a course draws marks in labels. */
+  readonly renderLabel?: (label: string) => ReactNode;
   /** Shown just before "Predict again" once committed, where a figure gives its verdict there. */
   readonly verdict?: ReactNode;
 }
@@ -42,6 +44,7 @@ export function PredictionChallenge({
   commitLabel,
   againLabel,
   verdict,
+  renderLabel,
 }: PredictionChallengeProps) {
   const [pick, setPick] = useState<string | undefined>();
   return (
@@ -57,7 +60,7 @@ export function PredictionChallenge({
               checked={(pick ?? committed) === o.value}
               onChange={() => setPick(o.value)}
             />
-            <span>{o.label}</span>
+            <span>{renderLabel ? renderLabel(o.label) : o.label}</span>
           </label>
         ))}
       </fieldset>
