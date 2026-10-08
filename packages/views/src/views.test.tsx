@@ -283,6 +283,7 @@ describe("the figures on Chapter 1's page", () => {
       "ix-platform",
       "ix-week",
       "ix-dashboard",
+      "ix-explore",
     ]);
     // The map counts what it shows, kind by kind and in all, as the lab counts it.
     const tally = mapTally(platformMap(week()));

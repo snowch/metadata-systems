@@ -157,6 +157,7 @@ describe("the facts Chapter 1 states", () => {
       ["platform", "reference"],
       ["week", "reference"],
       ["dashboard", "inspect"],
+      ["explore", "inspect"],
     ]);
     for (const named of ["pipeline", "week", "dashboard"]) expect(own, named).toContain(named);
     // The chapter's premise: the programs cannot be seen, only the data they write.

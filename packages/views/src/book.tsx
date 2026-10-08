@@ -19,6 +19,7 @@ import { ChoiceEditor } from "./ChoiceEditor";
 import { Glyph } from "./Glyph";
 import { ASSET_KINDS } from "./Rich";
 import { ChangeLab } from "./figures/ChangeLab";
+import { AssetCards } from "./figures/AssetCards";
 import { Dashboard } from "./figures/Dashboard";
 import { Decision, HypothesisCheck } from "./figures/HypothesisLab";
 import { LabPrediction } from "./figures/LabPrediction";
@@ -33,6 +34,7 @@ import { DEFAULT_VIEW_STRINGS, type ViewStrings } from "./strings";
 /** The figures a lesson may name, by kind. */
 export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProps>>> = {
   "platform-map": PlatformMap,
+  "asset-cards": AssetCards,
   "week-timeline": WeekTimeline,
   dashboard: Dashboard,
   "lab-prediction": LabPrediction,

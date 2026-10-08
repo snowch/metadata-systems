@@ -105,6 +105,24 @@ export const invisibleSystem: LessonInput = {
           lead: PROSE.dashboardLead,
           after: PROSE.dashboardAfter,
         },
+        {
+          id: "explore",
+          role: "inspect",
+          kind: "asset-cards",
+          timeModel: "lab",
+          caption: LABELS.captions.explore,
+          lead: PROSE.exploreLead,
+          props: {
+            // The four assets the chapter works through, one card each: see what the platform
+            // holds before any question. Nothing is asked or scored here.
+            cards: [
+              { id: "orders.parquet", role: LABELS.roles.orders },
+              { id: "clean_orders", role: LABELS.roles.clean },
+              { id: "daily_sales", role: LABELS.roles.daily },
+              { id: "sales_dashboard", role: LABELS.roles.dashboard },
+            ],
+          },
+        },
       ],
     },
     { kind: "motivation", title: LABELS.titles.motivation, prose: PROSE.motivation },

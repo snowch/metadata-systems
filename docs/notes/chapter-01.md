@@ -81,6 +81,19 @@ role, without a block, or with a question unanswered.
 - **Why now:** the investigation starts from an observation, and every later step tests what this
   figure seems to say.
 
+### `explore`
+
+- **Role:** inspect
+- **Serves:** the learner's first meeting with each kind of thing the platform holds: the raw
+  file, the cleaned tables, the reporting view. Each card names its asset with its kind's mark
+  and one line on what it is and where it sits; opening one shows a small head of its rows, or
+  the dashboard's own view. Nothing is asked, marked or scored.
+- **Why now:** the Thursday question that opens the investigation names these four assets, and
+  the where-first decision asks the learner to choose among them. Meeting them first, with no
+  question attached, makes that decision an informed one instead of a guess at names. The cards
+  say what each asset is, never what went wrong on Thursday: the investigation establishes
+  that.
+
 ### `predict-days`
 
 - **Role:** experiment

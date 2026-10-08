@@ -422,7 +422,7 @@ test.describe("the figures", () => {
     await expect(body).toBeHidden();
     expect(
       await opening.locator("figure.interactive").evaluateAll((fs) => fs.map((f) => f.id)),
-    ).toEqual(["ix-platform", "ix-week", "ix-dashboard"]);
+    ).toEqual(["ix-platform", "ix-week", "ix-dashboard", "ix-explore"]);
     // The three the opening says you only read have no control outside their captions (a badge's
     // note is the page's, not the figure's); the next asks for a choice and a press of a button.
     const controls = (id: string) =>

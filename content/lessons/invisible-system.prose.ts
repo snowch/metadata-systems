@@ -22,6 +22,8 @@ export const PROSE = {
   weekAfter: "The last night ends early on Monday 14 September, before you start work.",
   dashboardLead:
     "The dashboard shows revenue per day for the shop's first week. Thursday is far lower than the other days. The head of the shop asks you why.",
+  exploreLead:
+    "The platform holds three kinds of thing, and you have met each: a file in object storage, tables in the warehouse, a dashboard in the reporting tool. Open a card to see a little of what it holds. Nothing is asked here; the questions start below.",
   dashboardAfter:
     "Assume you can read everything the systems hold, and nothing else: no code, not when each program is due to run, not anybody's notes. How much can you find out from what the systems hold?",
   motivation:

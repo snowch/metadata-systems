@@ -31,6 +31,7 @@ export const LABELS = {
     platform: "The pipeline: the shop's three systems and what each holds.",
     week: "The shop's first week: order days, a night's work after each, and the morning you start.",
     dashboard: "On Monday morning the dashboard shows daily revenue for 7 to 13 September.",
+    explore: "Open each card to see what the platform holds: a file, two tables and a dashboard.",
     p1: "Conclude what the warehouse's record establishes about who to ask about daily_sales.",
     p2: "Predict what Thursday's rows of orders.parquet add up to.",
     where: "Decide which asset you would inspect first, and what you would look for there.",
@@ -67,10 +68,18 @@ export const LABELS = {
   // Where the learner looks first for Thursday's difference: an asset, and the evidence sought
   // there (brief Z).
   wOptions: {
-    orders: "orders.parquet, for the orders that make up Thursday's 205.50",
-    clean: "clean_orders, to set its Thursday orders beside the raw ones",
-    daily: "daily_sales, for how its 51.50 was worked out",
-    dashboard: "the dashboard, for where its 51.50 comes from",
+    orders: "orders.parquet, to inspect the raw Thursday orders that make up 205.50",
+    clean:
+      "clean_orders, to inspect whether the Thursday orders changed between the raw file and the cleaned table",
+    daily: "daily_sales, to inspect how the 51.50 total is recorded",
+    dashboard: "the dashboard, to inspect whether the difference appears in the reporting layer",
+  },
+  /** Each exploration card's one line: what the asset is and where it sits, never what went wrong. */
+  roles: {
+    orders: "The raw orders the shop took, written each night to a file",
+    clean: "Orders after the cleaning step, held in the warehouse",
+    daily: "One row per day: the totals the dashboard reports",
+    dashboard: "The reporting view built from the data",
   },
   wCommit: "I'll start here",
   // The explanation the learner tests for Thursday, and its check (brief Y).
