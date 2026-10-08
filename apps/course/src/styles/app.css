@@ -484,6 +484,31 @@ details.part .chapter-list {
 .prose > *:last-child {
   margin-bottom: 0;
 }
+/* What we established: the durable record an interaction leaves, set as a box so it reads as a
+   thing kept, not as more prose. The heading and the list it introduces are one unit. */
+.prose h3:has(+ ul) {
+  margin: var(--space-5) 0 var(--space-2);
+  padding: var(--space-3) var(--space-4) 0;
+  border-left: 3px solid var(--accent);
+  background: var(--note-bg);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  border-top-left-radius: var(--radius-sm);
+  border-top-right-radius: var(--radius-sm);
+}
+.prose h3:has(+ ul) + ul {
+  margin: 0 0 var(--space-4);
+  padding: var(--space-2) var(--space-4) var(--space-3);
+  border-left: 3px solid var(--accent);
+  background: var(--note-bg);
+  border-bottom-left-radius: var(--radius-sm);
+  border-bottom-right-radius: var(--radius-sm);
+}
+.prose h3:has(+ ul) + ul > li:last-child {
+  margin-bottom: 0;
+}
 .prose + figure,
 .prose + .prose {
   margin-top: var(--space-4);
