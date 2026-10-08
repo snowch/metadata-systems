@@ -9,7 +9,7 @@
 
 import { expect, test, type Page } from "@playwright/test";
 
-import { PLAN } from "@ms/content";
+import { PARTS, PLAN } from "@ms/content";
 
 import { STRINGS } from "../../apps/course/src/strings";
 import { testCount } from "@platform/lesson-schema";
@@ -139,6 +139,21 @@ test.describe("the chapter pages", () => {
       `0 of ${CHAPTER.challenges.length} challenges complete`,
     );
     await expect(page.locator(".chapter-to-write")).toHaveCount(PLAN.length - LESSONS.length);
+    // The band shows the question the course starts from: Chapter 1's dashboard, live from the
+    // lab, with the lab's mark and no control; then the parts in reading order; then the
+    // contents by part, the part of the chapter the button names open and the rest closed.
+    const hero = page.locator("#ix-cover-dashboard");
+    await expect(hero).toHaveAttribute("data-time-model", "lab");
+    await expect(hero.locator(".bars li")).toHaveCount(7);
+    expect(await hero.locator("button, input, select").count()).toBe(0);
+    await expect(page.locator(".journey-part .part-name")).toHaveText([...PARTS]);
+    const parts = page.locator("details.part");
+    await expect(parts).toHaveCount(PARTS.length);
+    expect(await parts.evaluateAll((ds) => ds.map((d) => (d as HTMLDetailsElement).open))).toEqual(
+      PARTS.map((_, i) => i === 0),
+    );
+    await parts.nth(1).locator("summary").click();
+    await expect(parts.nth(1).locator(".chapter-to-write").first()).toBeVisible();
   });
 });
 

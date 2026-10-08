@@ -1,15 +1,135 @@
 // Copyright © 2026 Christopher Snow
 
-// The front page: what the course is, the way in (the first chapter, or the first one not
-// finished for a reader who has passed a challenge), then every chapter the plan has, by part,
-// each linked with its progress or marked as still to be written.
+// The front page: a band with what the course is, the way in (the first chapter, or the first one
+// not finished for a reader who has passed a challenge) and what the course assumes, beside a
+// real figure from Chapter 1, the shop's dashboard, which shows the question the course starts
+// from; then the eight parts in reading order, one line each; then every chapter the plan has, by
+// part, each part one line until it is pressed, the part of the chapter the button names already
+// open (the author, 8 October 2026: the page was a title, a paragraph and thirty-one lines of
+// "still to be written").
+
+import { useMemo } from "react";
 
 import { PARTS, PLAN, chapterOf } from "@ms/content";
-import { LessonStore, verifyCompletion, type Book, type Storage } from "@platform/lesson-runtime";
+import { DEFAULT_VIEW_STRINGS, Dashboard } from "@ms/views";
+import {
+  LessonStore,
+  verifyCompletion,
+  type Book,
+  type InteractiveProps,
+  type Storage,
+} from "@platform/lesson-runtime";
 
 import { fill } from "../fill";
 import { chapterHref } from "../route";
 import { STRINGS } from "../strings";
+
+type Lesson = Book["lessons"][number];
+
+/** The dashboard as Chapter 1 shows it: a reference, on the week as it first ran. */
+const COVER_FIGURE: InteractiveProps["interactive"] = {
+  id: "cover-dashboard",
+  kind: "dashboard",
+  timeModel: "lab",
+  role: "reference",
+  caption: STRINGS.cover.figureCaption,
+  props: {},
+};
+
+/**
+ * The band at the top: the title, what you do, the way in, what the course assumes, and the
+ * dashboard live from the lab, with the lab's mark and a plain badge, as a chapter shows it.
+ */
+function Cover({
+  book,
+  storage,
+  first,
+  next,
+  started,
+}: {
+  book: Book;
+  storage: Storage;
+  first: Lesson;
+  next: Lesson;
+  started: boolean;
+}) {
+  const store = useMemo(() => new LessonStore(storage, book.id, first.id), [storage, book, first]);
+  const [title, subtitle] = STRINGS.courseTitle.split(/:\s+/, 2);
+  return (
+    <section className="cover-hero" aria-labelledby="cover-title">
+      <div className="hero-text">
+        <h1 id="cover-title">
+          {subtitle ? `${title}:` : title}
+          {subtitle && <span className="hero-title-sub">{subtitle}</span>}
+        </h1>
+        <p className="hero-promise">{STRINGS.cover.promise}</p>
+        <p className="cover-lead">{STRINGS.lead}</p>
+        <p className="cover-start">
+          <a className="button primary hero-start" href={chapterHref(next.id)}>
+            {fill(started ? STRINGS.continueWith : STRINGS.start, {
+              number: chapterOf(next),
+              title: next.title,
+            })}
+          </a>
+        </p>
+        <p className="course-assumes">{STRINGS.cover.assumes}</p>
+      </div>
+      <figure
+        className="interactive hero-figure"
+        id={`ix-${COVER_FIGURE.id}`}
+        data-kind={COVER_FIGURE.kind}
+        data-time-model={COVER_FIGURE.timeModel}
+        data-role={COVER_FIGURE.role}
+      >
+        <figcaption>
+          <span className="badge time-model">{DEFAULT_VIEW_STRINGS.roles["reference"]}</span>{" "}
+          {COVER_FIGURE.caption}
+        </figcaption>
+        <Dashboard lesson={first} interactive={COVER_FIGURE} store={store} />
+      </figure>
+    </section>
+  );
+}
+
+/** The chapters of a part, from the plan. */
+const chaptersOf = (part: number) => PLAN.filter((c) => c.part === part);
+
+const chapterRange = (part: number) => {
+  const chapters = chaptersOf(part);
+  const from = chapters[0]?.number ?? 0;
+  const to = chapters[chapters.length - 1]?.number ?? from;
+  return chapters.length === 1
+    ? fill(STRINGS.cover.partChapters.one, { from })
+    : fill(STRINGS.cover.partChapters.other, { from, to });
+};
+
+/** The eight parts in reading order, one line each, with the parts not yet written marked. */
+function Journey({ written }: { written: ReadonlySet<number> }) {
+  return (
+    <section className="journey" aria-labelledby="journey-heading">
+      <h2 id="journey-heading">{STRINGS.cover.partsHeading}</h2>
+      <p className="journey-lead">{STRINGS.cover.partsLead}</p>
+      <ol className="journey-parts">
+        {PARTS.map((title, i) => {
+          const any = chaptersOf(i + 1).some((c) => written.has(c.number));
+          return (
+            <li key={title} className={any ? "journey-part" : "journey-part part-to-write"}>
+              <span className="part-number" aria-hidden="true">
+                {i + 1}
+              </span>
+              <span className="part-text">
+                <span className="part-name">{title}</span>
+                <span className="part-chapters">{chapterRange(i + 1)}</span>
+                <span className="part-about">{STRINGS.cover.parts[i]}</span>
+                {!any && <span className="part-status">{STRINGS.toWrite}</span>}
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+  );
+}
 
 export function ChapterList({ book, storage }: { book: Book; storage: Storage }) {
   const written = new Map(book.lessons.map((l) => [chapterOf(l), l]));
@@ -25,55 +145,66 @@ export function ChapterList({ book, storage }: { book: Book; storage: Storage })
     const c = completion.get(l.id);
     return c !== undefined && c.total > 0 && c.passed < c.total;
   });
-  const next = started ? (unfinished ?? ordered[0]) : ordered[0];
+  const first = ordered[0];
+  const next = started ? (unfinished ?? first) : first;
+  const openPart = next ? (PLAN.find((c) => c.number === chapterOf(next))?.part ?? 1) : 1;
   return (
     <>
-      <div className="cover">
-        <h1>{STRINGS.courseTitle}</h1>
-        <p className="cover-lead">{STRINGS.lead}</p>
-        {next && (
-          <p className="cover-start">
-            <a className="button primary" href={chapterHref(next.id)}>
-              {fill(started && unfinished ? STRINGS.continueWith : STRINGS.start, {
-                number: chapterOf(next),
-                title: next.title,
-              })}
-            </a>
-          </p>
-        )}
-      </div>
+      {first && next && (
+        <Cover
+          book={book}
+          storage={storage}
+          first={first}
+          next={next}
+          started={started && unfinished !== undefined}
+        />
+      )}
+      <Journey written={new Set(written.keys())} />
       <h2 className="contents-heading">{STRINGS.contents}</h2>
-      {PARTS.map((title, i) => (
-        <section key={title} className="part" aria-labelledby={`part-${i + 1}`}>
-          <h3 id={`part-${i + 1}`}>{fill(STRINGS.part, { number: i + 1, title })}</h3>
-          <ol className="chapter-list">
-            {PLAN.filter((c) => c.part === i + 1).map((c) => {
-              const lesson = written.get(c.number);
-              const label = fill(STRINGS.chapter, { number: c.number, title: c.title });
-              if (!lesson)
+      {PARTS.map((title, i) => {
+        const chapters = chaptersOf(i + 1);
+        const count = chapters.filter((c) => written.has(c.number)).length;
+        return (
+          <details key={title} className="part" open={i + 1 === openPart}>
+            <summary>
+              <span className="part-heading">{fill(STRINGS.part, { number: i + 1, title })}</span>
+              <span className="meta">
+                {count > 0
+                  ? fill(STRINGS.cover.partCount.some, { written: count, total: chapters.length })
+                  : chapters.length === 1
+                    ? STRINGS.cover.partCount.noneOne
+                    : fill(STRINGS.cover.partCount.none, { total: chapters.length })}
+              </span>
+            </summary>
+            <ol className="chapter-list">
+              {chapters.map((c) => {
+                const lesson = written.get(c.number);
+                const label = fill(STRINGS.chapter, { number: c.number, title: c.title });
+                if (!lesson)
+                  return (
+                    <li key={c.number} className="chapter-to-write">
+                      <span className="chapter-title">{label}</span>
+                      <span className="meta">{STRINGS.toWrite}</span>
+                    </li>
+                  );
+                const done = completion.get(lesson.id);
                 return (
-                  <li key={c.number} className="chapter-to-write">
-                    <span className="chapter-title">{label}</span>
-                    <span className="meta">{STRINGS.toWrite}</span>
+                  <li key={c.number}>
+                    <a className="chapter-link" href={chapterHref(lesson.id)}>
+                      <span className="chapter-title">{label}</span>
+                      <span className="meta">
+                        {done && done.total > 0
+                          ? fill(STRINGS.progress, { passed: done.passed, total: done.total })
+                          : STRINGS.noChallenges}
+                      </span>
+                    </a>
                   </li>
                 );
-              const done = completion.get(lesson.id);
-              return (
-                <li key={c.number}>
-                  <a className="chapter-link" href={chapterHref(lesson.id)}>
-                    <span className="chapter-title">{label}</span>
-                    <span className="meta">
-                      {done && done.total > 0
-                        ? fill(STRINGS.progress, { passed: done.passed, total: done.total })
-                        : STRINGS.noChallenges}
-                    </span>
-                  </a>
-                </li>
-              );
-            })}
-          </ol>
-        </section>
-      ))}
+              })}
+            </ol>
+          </details>
+        );
+      })}
     </>
   );
 }

@@ -272,32 +272,195 @@ ol {
   background: var(--ok-bg);
 }
 
-/* The front page */
-.cover {
+/* The front page: a band in the accent's green with what the course is, the way in and the
+   dashboard live from the lab; then the eight parts in reading order; then the contents by part. */
+.cover-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: center;
+  margin: var(--space-4) 0 var(--space-6);
+  padding: var(--space-5) var(--space-4);
+  border-radius: var(--radius);
+  background: linear-gradient(140deg, var(--hero-bg-1), var(--hero-bg-2));
+  color: var(--hero-fg);
+}
+@media (min-width: 56rem) {
+  .cover-hero {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    padding: var(--space-6);
+  }
+}
+.hero-text {
+  min-width: 0;
   max-width: var(--measure);
 }
-.cover-lead {
+.cover-hero h1 {
+  margin: 0 0 var(--space-4);
+  color: var(--hero-fg);
+}
+.hero-title-sub {
+  display: block;
+  color: var(--hero-sub);
+}
+.hero-promise {
+  margin: 0 0 var(--space-3);
   font-size: var(--text-lg);
+  font-weight: 600;
+}
+.cover-hero .cover-lead {
+  margin: 0 0 var(--space-4);
+  color: var(--hero-muted);
+}
+.cover-start {
+  margin: 0;
+}
+.hero-start.button.primary {
+  background: var(--hero-action);
+  border-color: var(--hero-action);
+  color: var(--hero-action-fg);
+  font-weight: 600;
+}
+.hero-start.button.primary:hover {
+  background: var(--hero-sub);
+  border-color: var(--hero-sub);
+  color: var(--hero-action-fg);
+}
+.hero-start:focus-visible {
+  outline-color: var(--hero-sub);
+}
+.course-assumes {
+  margin: var(--space-4) 0 0;
+  font-size: var(--text-sm);
+  color: var(--hero-muted);
+}
+figure.interactive.hero-figure {
+  margin: 0;
+  /* The card keeps the page's colours inside the band, so its words show in both themes. */
+  color: var(--fg);
+}
+figure.interactive.hero-figure > figcaption {
+  max-width: none;
+}
+
+/* The eight parts: a list down a phone, two across from 44rem and four across from 64rem. A rule
+   closes them, so they do not run on into the contents. */
+.journey {
+  margin: 0 0 var(--space-6);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--border-strong);
+}
+.journey-lead {
+  max-width: var(--measure);
   color: var(--fg-muted);
 }
-.contents-heading {
-  margin-top: var(--space-7);
+.journey-parts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
 }
-.part h3 {
+@media (min-width: 44rem) {
+  .journey-parts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+}
+@media (min-width: 64rem) {
+  .journey-parts {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.journey-part {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+}
+.part-number {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-weight: 650;
+  color: var(--accent);
+}
+.part-to-write .part-number {
+  border-style: dashed;
+  border-color: var(--border-strong);
+  color: var(--fg-muted);
+}
+.part-text {
+  display: grid;
+  gap: 2px;
+}
+.part-name {
+  font-family: var(--font-display);
+  font-weight: 650;
+}
+.part-chapters {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--fg-muted);
+}
+.part-about {
+  font-size: var(--text-sm);
+}
+.part-status {
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--fg-muted);
+}
+
+/* The contents, by part: each part one line until it is pressed, with how many of its chapters
+   are written beside its name. */
+.contents-heading {
+  margin-top: 0;
+}
+details.part {
+  border-bottom: 1px solid var(--border);
+}
+details.part > summary {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-2) 0;
+  color: var(--fg);
+  text-decoration: none;
+}
+details.part > summary::before {
+  color: var(--accent);
+}
+/* On a phone the count goes under the part's name, in the name's column. */
+@media (max-width: 36rem) {
+  details.part > summary {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  details.part > summary .meta {
+    grid-column: 2;
+  }
+}
+.part-heading {
   font-size: var(--text-md);
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--fg-muted);
-  border-bottom: 1px solid var(--border);
-  padding-bottom: var(--space-2);
+}
+details.part .chapter-list {
+  margin: 0 0 var(--space-3) var(--space-5);
 }
 .chapter-list {
   list-style: none;
   padding: 0;
-  margin: 0 0 var(--space-5);
 }
 .chapter-list li {
-  border-bottom: 1px solid var(--border);
+  border-top: 1px solid var(--border);
 }
 .chapter-link,
 .chapter-to-write {

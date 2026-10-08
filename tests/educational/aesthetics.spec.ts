@@ -40,26 +40,32 @@ for (const where of ["#/", `#/chapter/${CHAPTER.id}`]) {
   });
 }
 
-test("every control is at least 40 pixels tall on a phone", async ({ page, isMobile }) => {
-  test.skip(!isMobile, "the rule is for touch");
-  await openChapter(page);
-  const short = await page.evaluate(() => {
-    const out: string[] = [];
-    const controls = document.querySelectorAll(
-      "button, select, summary, a.button, .prediction-option, .fault-choice, .shell-header nav a",
-    );
-    for (const el of controls) {
-      const r = el.getBoundingClientRect();
-      if (r.width === 0 || r.height === 0) continue;
-      if (r.height < 40)
-        out.push(
-          `${Math.round(r.height)}px: ${el.tagName} ${(el.textContent ?? "").trim().slice(0, 40)}`,
-        );
-    }
-    return out;
+for (const where of ["#/", `#/chapter/${CHAPTER.id}`]) {
+  test(`every control is at least 40 pixels tall on a phone, on ${where}`, async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(!isMobile, "the rule is for touch");
+    if (where === "#/") await page.goto(where);
+    else await openChapter(page);
+    const short = await page.evaluate(() => {
+      const out: string[] = [];
+      const controls = document.querySelectorAll(
+        "button, select, summary, a.button, .prediction-option, .fault-choice, .shell-header nav a",
+      );
+      for (const el of controls) {
+        const r = el.getBoundingClientRect();
+        if (r.width === 0 || r.height === 0) continue;
+        if (r.height < 40)
+          out.push(
+            `${Math.round(r.height)}px: ${el.tagName} ${(el.textContent ?? "").trim().slice(0, 40)}`,
+          );
+      }
+      return out;
+    });
+    expect(short).toEqual([]);
   });
-  expect(short).toEqual([]);
-});
+}
 
 test("no line of prose is much over 85 characters", async ({ page, isMobile }) => {
   test.skip(isMobile, "a phone's lines are shorter");

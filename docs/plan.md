@@ -256,6 +256,26 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 8 October 2026: the front page shows the course's question
+
+The author set the digital-design course's front page beside this one, which was a title, a
+paragraph, a button and thirty-one lines of "still to be written", and asked whether this course
+should have an intro and a graphic. It now has both, under the course's own rules: the graphic
+is a view of the lab, not decoration. A band at the top holds the title, one line that says what
+you do, the way in, what the course assumes of you (a short SQL query; files, tables and a
+dashboard; nothing about metadata or lineage), and Chapter 1's dashboard live from the lab, with
+the lab's mark and its badge, showing the question the course starts from and nothing of what the
+chapter finds. Under the band, the eight parts in reading order, one line each, with the parts
+not yet written marked; then the contents by part, each part one line until it is pressed, with
+how many of its chapters are written, the part of the chapter the button names open. No
+animation, no background art: a tinted band, and the dashboard is the graphic. The words came
+from Haiku's draft of brief AJ (`docs/notes/chapter-01/briefs/round-14`), checked for facts only:
+two dropped facts restored with the fewest words (Part VI builds the lineage graph, not "the graph
+of relations"; Part VII includes metadata for ML and AI), "the lab" named as the Metadata Lab
+where the page first says it, and a count for a part of one chapter added. A "before you start"
+page, as the digital-design course has, is a candidate for later; the line on what the course
+assumes is its first form.
+
 ### 8 October 2026: "figure" names a box, and the six actions stay internal
 
 An agent's rule for the interactions proposed calling them labs, naming each by its object

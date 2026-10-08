@@ -146,6 +146,21 @@ check after the learner's own work, gives **Part of** and that experiment's id i
 twelve. The content tests fail a figure without a role, a commitment that is not an experiment, a
 block missing, out of the page's order or not repeating the figure's role, and an answer missing.
 
+## The front page
+
+The front page (`apps/course/src/pages/ChapterList.tsx`) is the course's own, like the rest of
+the shell. It holds a band with the course's title, one bold line on what the learner does, the
+lead, the way in (the first chapter, or the first one not finished once a challenge has passed),
+and what the course assumes of the learner; beside them, Chapter 1's dashboard as the chapter
+shows it, mounted from the book's own figure with the lab's mark and a plain badge. The rule for
+that figure is the chapters' rule: a view of the lab, never decoration, showing nothing a chapter
+asks the learner to find. Under the band, the eight parts of `PLAN` in reading order, one line
+each, then the contents by part, each a `details` with how many of its chapters are written. The
+page's words are the shell's (`apps/course/src/strings.ts`, `cover`), drafted through the prose
+process like every other string a learner reads; the browser tests hold the band's figure, the
+parts' order and the contents' state, and the aesthetics tests run on the front page as well as
+on a chapter.
+
 ## Predictions
 
 A prediction is an experiment, built around what the learner should learn (`CLAUDE.md`,
