@@ -286,7 +286,7 @@ describe("the facts Chapter 1 states", () => {
     expect(sumReconstructions(week(["copy"]), "daily_sales", "covers")).toHaveLength(2);
     // The lead says the builder's choices cover every asset in storage that week.
     expect(sumSources(week(["copy"]), "daily_sales")).toContain("clean_orders_copy.parquet");
-    expect(PROSE.changeLead).toContain("cover every asset in storage that week");
+    expect(PROSE.changeLead).toContain("cover every asset in the systems that week");
     expect(PROSE.outcomeCopy).toContain("last modified at 02:15, with the same 44 rows");
     expect(PROSE.outcomeCopy).toContain("Now 2 queries rebuild");
     expect(PROSE.afterAll).toContain("two assets fit equally well");

@@ -14,8 +14,8 @@ export const LABELS = {
   titles: {
     question: "A week of questions",
     motivation: "Why these questions matter",
-    prediction: "What you expect storage to tell you",
-    investigation: "What storage records",
+    prediction: "What you expect the systems to tell you",
+    investigation: "What the systems record",
     construction: "Rebuilding daily_sales",
     failureExperiment: "The shop changed three ways",
     explanation: "What each system keeps",
@@ -36,10 +36,10 @@ export const LABELS = {
     where: "Decide which asset you would inspect first, and what you would look for there.",
     hypothesis: "Choose the explanation you will test for the difference on Thursday.",
     check: "Check the explanation you chose against Thursday's rows.",
-    inspector: "Inspect what storage records about each asset, starting with the one you chose.",
+    inspector: "Inspect what the systems record about each asset, starting with the one you chose.",
     c1: "Build a query that rebuilds daily_sales from another asset.",
     change:
-      "Choose a change to the shop, predict how many queries will rebuild daily_sales afterwards, run the week again with it, and read what storage holds.",
+      "Choose a change to the shop, predict how many queries will rebuild daily_sales afterwards, run the week again with it, and read what the systems hold.",
     map: "Sort the eight questions about daily_sales by what can answer them, then let the lab place them.",
     c2: "Choose which orders the rules keep.",
     p3: "Predict whether your setting of the four rules is the only one that passes.",
