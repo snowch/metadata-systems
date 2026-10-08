@@ -36,7 +36,7 @@ export const PROSE = {
     "You said you could not tell yet, and you cannot: who is responsible for `daily_sales` is not in the record. But you can tell what the record holds: {answer}.",
 
   p2Question:
-    "The dashboard shows 51.50 for Thursday. `daily_sales` holds the same total for Thursday. Add up price times quantity over Thursday's rows of `orders.parquet`. What do you expect the total to be?",
+    "The dashboard shows 51.50 for Thursday. `daily_sales` holds the same total for Thursday. If you add up price times quantity over Thursday's rows in the `orders.parquet` file, what total do you expect?",
   p2UndecidedLine:
     "You said you could not tell yet. Nothing so far says how `daily_sales` was made, so you cannot tell from the page; adding up Thursday\'s rows can. The lab found {answer}.",
 
@@ -57,7 +57,7 @@ export const PROSE = {
       "The dashboard keeps the values it shows, one per day. It shows 51.50, and nothing about orders.",
   },
   wNext:
-    "The inspector below opens on the asset you chose. Look there first, then at any other asset.",
+    "The inspector below opens on the asset you chose. Inspect it first, then inspect any other asset you need.",
   hQuestion:
     "Thursday's `orders.parquet` rows add up to 205.50, but `daily_sales` holds 51.50. Which explanation will you test?",
   hMine: "You will test: {choice}.",
@@ -69,7 +69,7 @@ export const PROSE = {
   cExplain:
     "The rows support one explanation. Some of Thursday's orders are not counted.\n\nThey rule out the other two. No order is counted at a lower value, and none on another day.\n\nThe rows do not say why those orders were left out. Ask: what do they have in common?\n\nThe challenge at the end of this chapter asks which rows the cleaning keeps.\n\nThree words to keep apart, now that you have all three in front of you:\n\n**Fact.** `daily_sales` contains 51.50 for Thursday. You read that in the table.\n\n**Evidence.** A query over `clean_orders` reproduces that result. You ran it yourself.\n\n**Explanation.** The shop's program creates `daily_sales` from completed orders. The first two you observed; the third the query does not establish, and the next section tests it.\n\n### What we established\n\n- A query over `clean_orders` that keeps completed orders and adds up price times quantity per day gives `daily_sales` exactly: the data is evidence for how `daily_sales` was made.\n- The evidence does not show why the left-out rows are left out, nor that this is the query the shop runs.",
   inspectorLead:
-    "Choose an asset from the list. The inspector asks every asset the same eight questions.\n\nThen, if you like, try one of these:\n\n- compare `orders.parquet` with `clean_orders`;\n- put the seven assets in the order they were last written, and say what that order suggests and what it cannot prove;\n- open `daily_sales` and read what the systems say about each question.",
+    "Choose an asset from the list. The inspector asks every asset the same eight questions.\n\nThen, if you like, try one of these:\n\n- open `orders.parquet` and `clean_orders` in turn, and set their rows beside each other to find which rows are missing or duplicated;\n- open each of the seven assets in turn, note the last time each was written, and say what that order suggests and what it cannot prove;\n- open `daily_sales` in the inspector and check what the systems record for each question.",
   construction:
     "The systems do not say where `daily_sales` comes from. The data might.\n\nA query **rebuilds** an asset when it gives every row the asset has, with the same values.\n\nBuild one with the query builder below. It writes your choices as SQL and runs the query on Monday morning's data.\n\nIf your query rebuilds `daily_sales`, have you found out how `daily_sales` was made?",
   c1Task:
@@ -105,7 +105,7 @@ export const PROSE = {
   c2Task:
     "Choose four rules that turn `orders.parquet` into `clean_orders`. The tests check that your rules keep every row `clean_orders` has, and no row it lacks.",
   c2Hints: [
-    "Compare `orders.parquet` with `clean_orders` row by row. Which rows are missing, and which appear fewer times?",
+    "Open `orders.parquet` and `clean_orders` in the inspector, in turn, and set their rows beside each other. Which rows are missing, and which appear fewer times?",
     "A common mistake: dropping cancelled orders. `clean_orders` keeps them; `daily_sales` leaves them out later.",
     "On Wednesday, order 7015 appears twice in `orders.parquet` and once in `clean_orders`.",
     "Keep one row of an order that appears twice. Drop orders with no customer id.",
