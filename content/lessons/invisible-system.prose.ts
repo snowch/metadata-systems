@@ -9,12 +9,12 @@
 
 export const PROSE = {
   question:
-    "You start work on Monday 14 September 2026 at 09:00. You are a data engineer at an online shop selling bicycle parts. The shop opened its online store on Monday 7 September.\n\nThe figures on this page let you investigate the shop. They use the Metadata Lab, a small data platform written for and built into this course. It runs in your browser: there is nothing to install, open or sign in to.\n\nThe first three figures, the map, the shop's week and the dashboard, show you the shop: you read them. In the other figures you ask something: you choose an answer or the parts of a query, and press a button. You cannot see the shop's programs, only what they leave behind, so you work out what happened from the figures.",
+    "You start work on Monday 14 September 2026 at 09:00. You are a data engineer at an online shop selling bicycle parts. The shop opened its online store on Monday 7 September.\n\nThe figures on this page let you investigate the shop. They use the Metadata Lab, a small data platform written for and built into this course. It runs in your browser: there is nothing to install, open or sign in to.\n\nThe first three figures, the pipeline, the shop's week and the dashboard, show you the shop: you read them. In the other figures you ask something: you choose an answer or the parts of a query, and press a button. You cannot see the shop's programs, only what they leave behind, so you work out what happened from the figures.",
   /** How the lab is built, behind the control the reader opens (brief AF). */
   labDetails:
     "The lab holds the shop's first week: real rows in files and tables, dashboard values and SQL programs. The shop is invented. The lab's query engine runs the programs and your queries. Nothing about the shop is kept between page loads: each load builds its data and runs its first week night by night, in memory. Every reader sees the same rows, results and times on any day. Dates and times come from the shop's first week, not from today or your computer's clock. Your browser keeps your work by chapter: predictions, choices and challenge answers. Nothing you do leaves your browser.",
   platformLead:
-    "The shop's data platform has three systems. The map shows them in the order data moves through them each night. Once you scroll past the map, a button at the foot of the window opens it again.",
+    "The shop's data platform has three systems. The pipeline shows them in the order data moves through them each night. Once you scroll past the pipeline, a button at the foot of the window opens it again.",
   platformAfter:
     "An asset is something in the platform that can be stored, described, changed, related to other assets, or depended on. In this chapter, storage means all three systems.",
   weekLead:

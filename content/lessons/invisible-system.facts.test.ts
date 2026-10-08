@@ -159,7 +159,8 @@ describe("the facts Chapter 1 states", () => {
       ["week", "reference"],
       ["dashboard", "inspect"],
     ]);
-    for (const named of ["map", "week", "dashboard", "read"]) expect(own, named).toContain(named);
+    for (const named of ["pipeline", "week", "dashboard", "read"])
+      expect(own, named).toContain(named);
     for (const action of ["choose", "press"]) expect(own, action).toContain(action);
     // How the lab is built: in the section's details, which the reader opens.
     const built = PROSE.labDetails.toLowerCase();

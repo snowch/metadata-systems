@@ -28,7 +28,7 @@ export const LABELS = {
     c2: "Which rules filter orders.parquet?",
   },
   captions: {
-    platform: "The map: the shop's three systems and what each holds.",
+    platform: "The pipeline: the shop's three systems and what each holds.",
     week: "The shop's first week: order days, a night's work after each, and the morning you start.",
     dashboard: "On Monday morning the dashboard shows daily revenue for 7 to 13 September.",
     p1: "Choose what you would store to meet a requirement, see what it could mean, then see what the shop's warehouse holds.",
