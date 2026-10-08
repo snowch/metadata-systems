@@ -122,9 +122,9 @@ export const DEFAULT_VIEW_STRINGS = {
   firstWeekStatus: "This is the week as it first ran, the one you have been reading.",
   runWithChange: "Run with this change",
   ranWith: "The lab ran the whole week again with this change: {change}.",
-  locked: "This figure starts once your answer to the challenge called “{title}” passes its tests.",
+  locked: "Pass the challenge “{title}” first.",
   // In place of a figure that waits for an answer above it (brief Z3).
-  waits: "This figure starts once your answer to “{caption}”, above, is committed.",
+  waits: "Answer “{caption}”, above, first.",
   storageNowHeading: "What storage holds on Monday morning",
   compareNote:
     "Storage holds only this week's values. Each comparison with the week as it first ran is the lab's, because it ran both weeks.",

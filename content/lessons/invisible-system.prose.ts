@@ -9,7 +9,7 @@
 
 export const PROSE = {
   question:
-    "You start work on Monday 14 September 2026 at 09:00. You are a data engineer at an online shop selling bicycle parts. The shop opened its online store on Monday 7 September.\n\nThe figures on this page let you investigate the shop. They use the Metadata Lab, a small data platform written for and built into this course. It runs in your browser: there is nothing to install, open or sign in to.\n\nThe first three figures, the map, the shop's week and the dashboard, only show you the shop: you read them. You ask the lab something in the other figures: you choose an answer or the parts of a query, and press a button. The lab works out what the figure shows from the shop's data. Many figures ask you to predict or choose before the lab answers. You cannot see the shop's programs, only what they leave behind, so you work out what happened from the figures.",
+    "You start work on Monday 14 September 2026 at 09:00. You are a data engineer at an online shop selling bicycle parts. The shop opened its online store on Monday 7 September.\n\nThe figures on this page let you investigate the shop. They use the Metadata Lab, a small data platform written for and built into this course. It runs in your browser: there is nothing to install, open or sign in to.\n\nYou read the map, the shop's week and the dashboard. In the other figures you ask the lab something: you choose an answer or the parts of a query, and press a button. You cannot see the shop's programs, only what they leave behind, so you work out what happened from the figures.",
   /** How the lab is built, behind the control the reader opens (brief AF). */
   labDetails:
     "The lab holds the shop's first week: real rows in files and tables, dashboard values and SQL programs. The shop is invented. The lab's query engine runs the programs and your queries. Nothing about the shop is kept between page loads: each load builds its data and runs its first week night by night, in memory. Every reader sees the same rows, results and times on any day. Dates and times come from the shop's first week, not from today or your computer's clock. Your browser keeps your work by chapter: predictions, choices and challenge answers. Nothing you do leaves your browser.",
@@ -70,7 +70,7 @@ export const PROSE = {
   cExplain:
     "The rows support one explanation. Some of Thursday's orders are not counted.\n\nThey rule out the other two. No order is counted at a lower value, and none on another day.\n\nThe rows do not say why those orders were left out. Ask: what do they have in common?\n\nThe challenge at the end of this chapter asks which rows the cleaning keeps.",
   inspectorLead:
-    "Choose an asset from the list. The inspector asks every asset the same eight questions.\n\nThen try one of these:\n\n- compare `orders.parquet` with `clean_orders`;\n- put the seven assets in the order they were last written, and say what that order suggests and what it cannot prove;\n- open `daily_sales` and read what storage says about each question.",
+    "Choose an asset from the list. The inspector asks every asset the same eight questions.\n\nThen, if you like, try one of these:\n\n- compare `orders.parquet` with `clean_orders`;\n- put the seven assets in the order they were last written, and say what that order suggests and what it cannot prove;\n- open `daily_sales` and read what storage says about each question.",
   construction:
     "Storage does not say where `daily_sales` comes from. The data might.\n\nA query **rebuilds** an asset when it gives every row the asset has, with the same values.\n\nBuild one with the query builder below. It writes your choices as SQL and runs the query on Monday morning's data.\n\nIf your query rebuilds `daily_sales`, have you found out how `daily_sales` was made?",
   c1Task:
@@ -84,7 +84,7 @@ export const PROSE = {
   ],
   c1Lead: "Your query appears below as SQL, with its result, before you run the tests.",
   changeLead:
-    "This experiment tests whether rebuilding `daily_sales` with a query shows how it was made.\n\nIt runs your query from the construction section again, so it starts once your query passes its tests.\n\nEach change gives a different week: the lab runs the whole week again from Monday with that change.\n\nBefore a change runs, you predict what the data will then say about where `daily_sales` comes from: how many queries in the builder's choices will rebuild it. The builder's choices cover every asset in storage that week.\n\nAfter it runs, the figure shows those queries, what storage holds on Monday morning, and your query's rows against the new `daily_sales`.",
+    "This experiment tests whether rebuilding `daily_sales` with a query shows how it was made.\n\nIt runs your query from the construction section again, so it starts once your query passes its tests.\n\nEach change gives a different week: the lab runs the whole week again from Monday with that change. The builder's choices cover every asset in storage that week.\n\nAfter a change runs, the figure shows the queries in the builder's choices, what storage holds on Monday morning, and your query's rows against the new `daily_sales`.",
   changeQuestion:
     "After this change, how many queries in the builder's choices will rebuild `daily_sales`?",
   outcomeCopy:
