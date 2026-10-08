@@ -144,24 +144,24 @@ describe("the facts Chapter 1 states", () => {
   });
 
   it("says what you do with the lab before how it is built, and keeps how it is built behind a control", () => {
-    // The opening's own prose: what the figures are for and what happens when you use one, in the
-    // plain model every chapter uses (you ask, the lab checks, it shows you, you work it out).
+    // The opening's own prose: what the figures are for and the chapter's premise, that the
+    // programs exist but cannot be seen, said in plain words (you work it out).
     const own = PROSE.question.toLowerCase();
     // "Query" is not among them: the parts of a query are something you choose, later on.
     for (const word of ["sql", "engine", "memory", "page load", "code"])
       expect(new RegExp(`\\b${word}\\b`).test(own), word).toBe(false);
-    expect(own).toMatch(/you ask/);
     expect(own).toMatch(/work out/);
-    // It says which figures you only read, the first three, and how you ask in the others.
+    // It names the first three figures, the ones that introduce the shop.
     const first = invisibleSystem.sections[0]!.interactives!.map((x) => [x.id, x.role]);
     expect(first).toEqual([
       ["platform", "reference"],
       ["week", "reference"],
       ["dashboard", "inspect"],
     ]);
-    for (const named of ["pipeline", "week", "dashboard", "read"])
-      expect(own, named).toContain(named);
-    for (const action of ["choose", "press"]) expect(own, action).toContain(action);
+    for (const named of ["pipeline", "week", "dashboard"]) expect(own, named).toContain(named);
+    // The chapter's premise: the programs cannot be seen, only the data they write.
+    expect(own).toContain("cannot see");
+    expect(own).toContain("data they write");
     // How the lab is built: in the section's details, which the reader opens.
     const built = PROSE.labDetails.toLowerCase();
     for (const word of ["sql", "query engine", "memory", "page load"])
