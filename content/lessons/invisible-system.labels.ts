@@ -14,8 +14,8 @@ export const LABELS = {
   titles: {
     question: "A week of questions",
     motivation: "Why these questions matter",
-    prediction: "Two questions before you look",
-    investigation: "What the systems record",
+    prediction: "What you expect the data to show",
+    investigation: "What the systems record, and what they do not",
     construction: "Rebuilding daily_sales",
     failureExperiment: "The shop changed three ways",
     explanation: "What each system keeps",
@@ -31,7 +31,7 @@ export const LABELS = {
     platform: "The pipeline: the shop's three systems and what each holds.",
     week: "The shop's first week: order days, a night's work after each, and the morning you start.",
     dashboard: "On Monday morning the dashboard shows daily revenue for 7 to 13 September.",
-    p1: "Choose what you would store as the owner of daily_sales, then see what the shop's warehouse holds.",
+    p1: "Conclude what the warehouse's record establishes about who to ask about daily_sales.",
     p2: "Predict what Thursday's rows of orders.parquet add up to.",
     where: "Decide which asset you would inspect first, and what you would look for there.",
     hypothesis: "Choose the explanation you will test for the difference on Thursday.",
@@ -46,36 +46,14 @@ export const LABELS = {
   },
   /** The control that opens how the lab is built (brief AF). */
   labDetails: "How the lab is built",
-  // The requirement, in the author's words, and the figure that questions it (brief V).
-  p1Requirement: "Every table must have an owner.",
-  p1Commit: "Show what each choice would answer",
-  p1Show: "Show the warehouse",
+  /** What the learner can conclude from the warehouse's record about who to ask. */
   p1Options: {
-    person: "a person, for example whoever built it",
-    team: "a team, for example finance",
-    program: "the program that writes it",
-    account: "an account that programs log in as",
+    person: "the record names a person to ask",
+    team: "the record names a team to ask",
+    none: "the record does not say who to ask",
+    account: "the record names an account, but not a person or a team",
   },
-  p1Undecided: "nothing yet; ask what the owner is for",
-  /** What each reading needs stored, for the figure's table. */
-  p1Short: {
-    person: "a person",
-    team: "a team",
-    program: "the program that writes it",
-    account: "an account that programs log in as",
-  },
-  /** The question each reading asks; names between backticks, which the figure sets as code. */
-  p1Asks: {
-    person: "Who is responsible for `daily_sales`?",
-    team: "Which team is responsible for `daily_sales`?",
-    program: "Which program writes `daily_sales`?",
-    account: "Which account controls `daily_sales` in the warehouse?",
-  },
-  p1Headings: {
-    asks: "The question the owner would answer",
-    store: "What you would store for it",
-    answers: "Whether the warehouse's owner answers it",
-  },
+  p1Undecided: "I can't tell yet",
   p2Options: {
     same: "51.50: daily_sales holds the total of Thursday's orders",
     different: "a different total: daily_sales is not simply the total of Thursday's orders",

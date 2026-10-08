@@ -114,41 +114,6 @@ export const invisibleSystem: LessonInput = {
       prose: PROSE.prediction,
       interactives: [
         {
-          id: "predict-owner",
-          role: "experiment",
-          kind: "requirement",
-          timeModel: "lab",
-          caption: LABELS.captions.p1,
-          props: {
-            // A requirement that does not say what it is for (CLAUDE.md, "Question the
-            // requirement"): the learner chooses what to store, then sees the four questions it
-            // could be asking, then what the warehouse records and which question that answers.
-            requirement: LABELS.p1Requirement,
-            question: PROSE.p1Question,
-            options: meaning(LABELS.p1Options, {
-              person: ["person"],
-              team: ["team"],
-              program: ["program"],
-              account: ["account"],
-            }).map((o) => ({
-              ...o,
-              short: LABELS.p1Short[o.value as keyof typeof LABELS.p1Short],
-              asks: LABELS.p1Asks[o.value as keyof typeof LABELS.p1Asks],
-            })),
-            undecided: { value: "undecided", label: LABELS.p1Undecided },
-            probe: { kind: "owner-kind", asset: "daily_sales" },
-            buttons: { choose: LABELS.p1Commit, show: LABELS.p1Show },
-            headings: LABELS.p1Headings,
-            text: {
-              mine: PROSE.p1Mine,
-              undecided: PROSE.p1Undecided,
-              meanings: PROSE.p1Meanings,
-              lab: PROSE.p1Lab,
-              explain: PROSE.p1Explain,
-            },
-          },
-        },
-        {
           id: "predict-days",
           role: "experiment",
           kind: "lab-prediction",
@@ -222,6 +187,33 @@ export const invisibleSystem: LessonInput = {
                 dashboard: "sales_dashboard",
               },
             },
+          },
+        },
+        {
+          id: "predict-owner",
+          role: "experiment",
+          kind: "lab-prediction",
+          timeModel: "lab",
+          caption: LABELS.captions.p1,
+          props: {
+            // Ownership, from evidence (the user's redesign): the learner has just read what the
+            // warehouse records about daily_sales, so each option is a conclusion they could draw
+            // from it, and the lab says which the record supports. The requirement wording stays
+            // in the authoring notes, not on the page.
+            question: PROSE.p1Question,
+            options: meaning(LABELS.p1Options, {
+              person: ["person"],
+              team: ["team"],
+              none: ["none"],
+              account: ["account"],
+            }),
+            undecided: {
+              value: "undecided",
+              label: LABELS.p1Undecided,
+              line: PROSE.p1UndecidedLine,
+            },
+            probe: { kind: "owner-kind", asset: "daily_sales" },
+            explain: PROSE.p1Explain,
           },
         },
         {
@@ -476,6 +468,6 @@ export const invisibleSystem: LessonInput = {
     textbookExample:
       "A tour of a data catalogue's screens over a ready-made sample project, such as dbt's jaffle shop (the café dbt's guides use: its quickstart's data is customers, orders and payments, and its structure guide builds staging, intermediate and marts models), with its documentation and its dependency diagram already generated for the reader.",
     howThisDiffers:
-      "Nothing is generated for the learner: they get storage alone, and a map of the platform's systems and assets that shows no asset made from another, and try to recover what a catalogue would hold, by rebuilding one asset from the others with a query and the raw orders' cleaning rules from their output. Each prediction offers explanations of how the platform works, not numbers to guess. Where a catalogue's tour shows an owner field already filled in, this chapter starts from a requirement in words, \"Every table must have an owner.\": the learner chooses what to store, meets the four questions the requirement could be asking, and only then sees the warehouse's own meaning and which question it answers. The failure experiment then makes that inference ambiguous (an analyst's copy), out of the builder's reach (an unrecorded edit to a program) and misleading (a failed night that leaves the dashboard looking up to date), each after the learner predicts it; and the learner sorts the chapter's questions before the lab places them in three groups, computed, not listed. The shop, a bicycle-parts retailer with no payments table, its data, its Thursday incident and its programs in the course's own SQL are invented for the course.",
+      "Nothing is generated for the learner: they get the systems alone, and a pipeline of the platform's systems and assets that shows no asset made from another, and try to recover what a catalogue would hold, by rebuilding one asset from the others with a query and the raw orders' cleaning rules from their output. Each prediction offers conclusions the evidence could support, not facts about the shop to guess: the owner prediction asks what the warehouse's record, read moments before in the inspector, establishes about who to ask, and its options are the conclusions that record could support. Where a catalogue's tour shows an owner field already filled in, this chapter makes the learner read the record and conclude from it that the field names an account, not a person, so the question stays open. The failure experiment then makes that inference ambiguous (an analyst's copy), out of the builder's reach (an unrecorded edit to a program) and misleading (a failed night that leaves the dashboard looking up to date), each after the learner predicts it; and the learner sorts the chapter's questions before the lab places them in three groups, computed, not listed. The shop, a bicycle-parts retailer with no payments table, its data, its Thursday incident and its programs in the course's own SQL are invented for the course.",
   },
 };

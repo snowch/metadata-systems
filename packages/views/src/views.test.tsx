@@ -237,49 +237,36 @@ describe("the figures on Chapter 1's page", () => {
     ).toBeTruthy();
   });
 
-  it("questions the requirement before it shows the warehouse, and marks only what it answers", () => {
-    type Reading = { value: string; label: string; short: string; means: string[] };
+  it("concludes from the warehouse's record only what it establishes about who to ask", () => {
     const p = props("predict-owner") as {
-      options: Reading[];
+      options: { value: string; label: string; means: string[] }[];
       undecided: Labelled;
-      buttons: { choose: string; show: string };
     };
     const { figure } = show();
     const f = within(figure("predict-owner"));
-    expect(figure("predict-owner").querySelector("table")).toBeNull();
-    const team = p.options.find((o) => o.value === "team")!;
-    fireEvent.click(f.getByLabelText(team.label));
-    fireEvent.click(f.getByRole("button", { name: p.buttons.choose }));
-    // The four meanings, the learner's own marked, and nothing yet of what the warehouse holds.
-    const rows = () => [...figure("predict-owner").querySelectorAll("tbody tr")];
-    expect(rows()).toHaveLength(4);
-    expect(rows().filter((r) => r.classList.contains("is-chosen"))).toHaveLength(1);
-    expect(figure("predict-owner").querySelectorAll("thead th")).toHaveLength(2);
+    // A prediction, not a choice: it asks what the record supports, and the answer is the lab's.
+    expect(figure("predict-owner").textContent).toContain(V.checkPrediction);
+    // Nothing the learner reads before committing names the account the record holds.
     expect(figure("predict-owner").textContent).not.toContain("etl_service");
-    fireEvent.click(f.getByRole("button", { name: p.buttons.show }));
-    expect(figure("predict-owner").querySelectorAll("thead th")).toHaveLength(3);
-    expect(rows().map((r) => r.lastElementChild?.textContent)).toEqual([V.no, V.no, V.no, V.yes]);
+    const none = p.options.find((o) => o.value === "none")!;
+    fireEvent.click(f.getByLabelText(none.label));
+    fireEvent.click(f.getByRole("button", { name: V.checkPrediction }));
+    const status = figure("predict-owner").querySelector(".prediction-nomatch");
+    expect(status?.textContent).toContain(V.noMatch);
+    // The account itself, and what it is, arrives in the explanation below.
     expect(figure("predict-owner").textContent).toContain("etl_service");
-    expect(f.queryByRole("button", { name: p.buttons.show })).toBeNull();
   });
-
-  it("takes 'nothing yet' as a choice, and forgets one the lesson no longer offers", () => {
-    const p = props("predict-owner") as { undecided: Labelled; buttons: { choose: string } };
-    const { page, figure } = show();
+  it("takes 'I can't tell yet' as an answer that is marked neither right nor wrong", () => {
+    const p = props("predict-owner") as { undecided: Labelled };
+    const { figure } = show();
     const f = within(figure("predict-owner"));
     fireEvent.click(f.getByLabelText(p.undecided.label));
-    fireEvent.click(f.getByRole("button", { name: p.buttons.choose }));
-    expect(figure("predict-owner").querySelectorAll("tbody tr")).toHaveLength(4);
-    expect(figure("predict-owner").querySelector(".is-chosen")).toBeNull();
-    page.unmount();
-
-    const stale = show((store) => store.setSlot("predict-owner", { choice: "some", shown: true }));
-    expect(stale.figure("predict-owner").querySelector("table")).toBeNull();
-    expect(
-      within(stale.figure("predict-owner")).getByRole("button", { name: p.buttons.choose }),
-    ).toBeTruthy();
+    fireEvent.click(f.getByRole("button", { name: V.checkPrediction }));
+    const status = figure("predict-owner").querySelector(".prediction-compare");
+    expect(status?.textContent).toContain("the record names an account");
+    expect(figure("predict-owner").querySelector(".prediction-match")).toBeNull();
+    expect(figure("predict-owner").querySelector(".prediction-nomatch")).toBeNull();
   });
-
   it("opens on the situation and the lab, then the map with its count, then the week", () => {
     const { page, figure } = show();
     const opening = page.container.querySelector<HTMLElement>('section[data-kind="question"]')!;

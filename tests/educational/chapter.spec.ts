@@ -280,50 +280,34 @@ test.describe("challenges", () => {
 });
 
 test.describe("the figures", () => {
-  test("a requirement is questioned before the warehouse answers, and no reading is called wrong", async ({
+  test("the owner conclusion is drawn from the record the learner has just read", async ({
     page,
   }) => {
     await openChapter(page);
     const figure = page.locator("#ix-predict-owner");
     const props = figureProps("predict-owner");
-    const options = props["options"] as (Labelled & { short: string })[];
-    const buttons = props["buttons"] as { choose: string; show: string };
-    const text = props["text"] as { mine: string };
-    // A choice is not a prediction, and its button does not say so.
-    await expect(figure.getByRole("button", { name: V.checkPrediction })).toHaveCount(0);
-    const choose = figure.getByRole("button", { name: buttons.choose });
-    await expect(choose).toBeDisabled();
-    await expect(figure.locator("[role=status]")).toHaveCount(0);
-    await expect(figure.locator("table")).toHaveCount(0);
-    // A team: what many would store, and not what this shop's warehouse holds.
-    const team = options.find((o) => o.value === "team")!;
-    await figure.getByLabel(team.label).check();
-    await choose.click();
-    await expect(figure.locator("[role=status]")).toHaveText(
-      format(text.mine, { choice: team.label }),
-    );
-    // What the requirement could mean, the learner's own reading marked, before the warehouse.
-    await expect(figure.locator("tbody tr")).toHaveCount(options.length);
-    await expect(figure.locator("tr.is-chosen")).toContainText(team.short);
+    const options = props["options"] as Labelled[];
+    const undecided = props["undecided"] as Labelled;
+    // A prediction: it asks what the record supports, and nothing before the press names the
+    // account the record holds.
     await expect(figure).not.toContainText("etl_service");
-    await figure.getByRole("button", { name: buttons.show }).click();
-    await expect(figure.locator("[role=status]").last()).toContainText("etl_service");
-    const answers = figure.locator("tbody tr td:last-child");
-    await expect(answers).toHaveText([V.no, V.no, V.no, V.yes]);
+    const none = options.find((o) => (o as { value: string }).value === "none")!;
+    await figure.getByLabel(none.label).check();
+    await figure.getByRole("button", { name: V.checkPrediction }).click();
+    await expect(figure.locator("[role=status]")).toContainText("etl_service");
+    await expect(figure).toContainText(V.noMatch);
+    // The prediction stands after a reload, its answer with it.
+    await page.reload();
+    await expect(page.locator("#ix-predict-owner [role=status]")).toContainText("etl_service");
+    // "I can't tell yet" is marked neither right nor wrong.
+    await page.evaluate((key) => localStorage.removeItem(key), storageKey());
+    await page.reload();
+    await figure.getByLabel(undecided.label).check();
+    await figure.getByRole("button", { name: V.checkPrediction }).click();
+    await expect(figure.locator("[role=status]")).toContainText("etl_service");
     await expect(figure).not.toContainText(V.match);
     await expect(figure).not.toContainText(V.noMatch);
-    // Both presses stand: the options locked, no button but the badge, the same after a reload.
-    await expect(figure.getByRole("button")).toHaveCount(1);
-    await expect(figure.getByRole("radio").first()).toBeDisabled();
-    await page.reload();
-    await expect(page.locator("#ix-predict-owner tbody tr td:last-child")).toHaveText([
-      V.no,
-      V.no,
-      V.no,
-      V.yes,
-    ]);
   });
-
   test("a prediction must be committed before the lab answers, and says whether it was right", async ({
     page,
   }) => {

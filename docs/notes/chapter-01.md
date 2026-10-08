@@ -81,37 +81,6 @@ role, without a block, or with a question unanswered.
 - **Why now:** the investigation starts from an observation, and every later step tests what this
   figure seems to say.
 
-### `predict-owner`
-
-- **Role:** experiment
-- **Objective:** recognise that a requirement's word does not fix its meaning: ask what "owner" is
-  for before deciding what to store, and judge a platform's record against each meaning.
-- **Known before:** the map; the requirement in its words, "Every table must have an owner.";
-  programs write the tables every night; the motivation's question "Who should I ask about
-  `daily_sales`?"; their own experience of writing such a program.
-- **Driving question:** what would you store as the owner of `daily_sales`? Behind it: what is the
-  owner for?
-- **The action:** choose what to store, or nothing until they know what the owner is for; read the
-  four questions the requirement could be asking; then ask the lab what the warehouse holds.
-- **Why the action:** committing first exposes the gap: the learner's own reading meets three they
-  did not choose, before the warehouse's answer can stand in for the requirement's meaning.
-- **Evidence:** the four readings, each beside what it needs stored; then the warehouse's owner,
-  `etl_service`, an account, and which reading it answers: the last.
-- **Consequence:** before, "owner" seemed to name one thing; after, the learner has seen it name
-  four, and the platform's record answer one. A learner who would store a person or a team sees
-  that their reading was reasonable and the platform's was different.
-- **Predictable:** no, by design: how this shop set up its warehouse is not on the page, so the
-  figure asks what the learner would do, not what the shop did.
-- **Gives nothing away:** the options say what to store, not what the warehouse holds; nothing
-  before the second press names `etl_service`, which a content test checks.
-- **Not knowing:** yes, and offered: "nothing yet; ask what the owner is for" is the response the
-  experiment teaches.
-- **Next question:** what is the owner for? The explanation sends the learner to ask whoever set
-  the requirement, and "Who should I ask about `daily_sales`?" stays open until a record answers
-  it.
-- **An experiment:** yes: the learner decides, the lab answers, and the gap between the two is the
-  lesson.
-
 ### `predict-days`
 
 - **Role:** experiment
@@ -179,6 +148,34 @@ role, without a block, or with a question unanswered.
   learner chooses next: it shows what storage records about each asset, its columns and its rows,
   and storage's answer to eight questions.
 - **Why now:** the learner has just decided where to look first, and it opens on that asset.
+
+### `predict-owner`
+
+- **Role:** experiment
+- **Objective:** conclude only what a record establishes: the warehouse's owner field names an
+  account, not a person or a team, so it does not answer "who should I ask about `daily_sales`?".
+- **Known before:** the inspector's record for `daily_sales`, read moments before: its owner
+  `etl_service`, its rows and columns, and storage's answer to each of the eight questions; the
+  motivation's question "Who should I ask about `daily_sales`?".
+- **Driving question:** from the warehouse's record, what can you conclude about who to ask?
+- **The action:** commit to a conclusion the record could support: it names a person, a team, an
+  account (but neither a person nor a team), nothing, or "I can't tell yet"; the lab then says
+  which conclusion the record supports.
+- **Why the action:** the learner has the evidence in hand; committing tests whether they read
+  it as what it is (an account name) or as what the question wanted (a person or a team).
+- **Evidence:** the lab's owner-kind probe: `etl_service`, an account, and which options its
+  answer supports. The account is not on the page before the press, which a content test checks.
+- **Consequence:** before, "the warehouse has an owner field" sounded like the question was
+  answered; after, the learner has seen a field with the right name answer a different question,
+  and knows the chapter's question needs a record the warehouse does not keep.
+- **Predictable:** yes, from evidence: the learner has just read the record, and the options are
+  the conclusions it could support. A wrong answer teaches that an account is not a person.
+- **Gives nothing away:** no option names `etl_service`; nothing before the press does.
+- **Not knowing:** yes, and offered: "I can't tell yet" is marked neither right nor wrong.
+- **Next question:** what record would answer "who should I ask?" for certain? The
+  generalisation's first kind: a record of what the asset is, including who is responsible.
+- **An experiment:** yes: the learner commits to a conclusion from evidence, and the lab says
+  which the record supports.
 
 ### `why-thursday`
 
@@ -368,28 +365,15 @@ warehouse; "Requirements", below, has the whole of it.
 
 ## Requirements
 
-The requirement this chapter questions (`CLAUDE.md`, "Question the requirement"), and how its
-figure keeps the five things apart. The content tests fail these notes without this section, and
-a requirement figure it does not name.
-
-**"Every table must have an owner."**, in Section 3, the figure `predict-owner` (kind
-`requirement`):
-
-1. What it literally says: every table has an owner.
-2. What it might mean: who is responsible for `daily_sales`; which team is; which program writes
-   it; which account controls it in the warehouse.
-3. What each meaning needs stored: a person; a team; the program; an account.
-4. What the platform records: the lab's warehouse records `etl_service`, the account all four
-   programs log in as, as the owner of each of its three tables; its own meaning is the account
-   that controls the table, as a table's owner is in PostgreSQL (`docs/sources.md`).
-5. Whether that meets the requirement: as written, yes, every table has an owner; as meant, only
-   under the fourth meaning. The motivation's "Who should I ask about `daily_sales`?" needed the
-   first or the second, and the warehouse's owner names neither.
-
-The learner commits before they see the meanings, may choose to store nothing until they know
-what the owner is for, and sees the meanings before the warehouse. Nothing calls a meaning wrong;
-the table marks only which question the warehouse's owner answers, in plain words, without colour.
-
+None, by design. Chapter 1's owner figure began as a requirement, "Every table must have an
+owner.", shown to the learner; the redesign removed it. The requirement told the learner that
+ownership was recorded before they had looked, and asked them to guess what the shop happened to
+store, which no evidence on the page could support. The figure is now an evidence-driven
+prediction (kind `lab-prediction`) placed directly after the storage inspector: the learner
+reads the warehouse's record for `daily_sales` first, then commits to a conclusion that record
+could support, and the lab says which it does. The requirement survives here, in the authoring
+notes, as the implementation constraint it always was: the lab's warehouse records an owner for
+every table, so the record exists to be found.
 ## What was built for it
 
 - **The lab** (`packages/lab`): typed values with money as whole pennies; the course's SQL subset

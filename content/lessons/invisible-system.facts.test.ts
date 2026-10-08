@@ -239,36 +239,30 @@ describe("the facts Chapter 1 states", () => {
   it("names etl_service as the owner of all three tables", () => {
     for (const t of ["clean_customers", "clean_orders", "daily_sales"] as const)
       expect(recordOf(storage(), t).ownerRole).toBe("etl_service");
-    // The figure's own line says it from the lab ("an owner for 3 of its 3 tables"), and the
-    // explanation names the account the programs share.
-    expect(PROSE.p1Lab).toContain("an owner for {owned} of its {tables} tables");
     expect(PROGRAM_IDS).toHaveLength(4);
     expect(PROSE.p1Explain).toContain("all four of the shop's programs");
   });
-
-  it("meets the owner requirement as written, and answers only the last of its four readings", () => {
+  it("concludes only what the warehouse's record establishes about who to ask", () => {
     const found = runProbe({ kind: "owner-kind", asset: "daily_sales" }, week());
-    // Every table in the warehouse records an owner: the requirement as written is met.
-    expect(found).toMatchObject({ value: "etl_service", tables: 3, owned: 3 });
-    expect(PROSE.p1Explain).toContain("Every table has an owner");
-    // Of the four readings, in the table's order, only the last is answered by an account.
-    const readings = Object.keys(LABELS.p1Asks);
-    expect(readings).toEqual(Object.keys(LABELS.p1Options));
-    expect(readings).toHaveLength(4);
-    expect(found.kind === "owner-kind" && found.answer).toBe(readings[readings.length - 1]);
-    expect(PROSE.p1Explain).toContain(
-      "Of the four questions above, `etl_service` answers only the last",
-    );
-    expect(PROSE.p1Meanings).toContain("Each of the first four choices");
+    // The record names an account: not a person, not a team, not nothing.
+    expect(found).toMatchObject({ answer: "account", value: "etl_service" });
+    // The options are the conclusions the record could support; one of them it supports, the
+    // others it does not, and nothing the learner reads before committing names the account.
+    const options = Object.keys(LABELS.p1Options);
+    expect(options).toEqual(["person", "team", "none", "account"]);
+    expect(LABELS.p1Options.account).toContain("an account");
+    expect(LABELS.p1Options.none).toContain("does not say");
+    expect(PROSE.p1Question).toContain("what the warehouse records");
+    expect(PROSE.p1Question).toContain("what can you conclude");
+    expect(PROSE.p1Explain).toContain("A name is not a person");
+    expect(PROSE.p1Explain).toContain("who is responsible for `daily_sales`");
     // The questions it quotes from the start of the chapter are the motivation's own, word for
     // word: the four list items there each open a list item in the reflection.
     expect(PROSE.motivation).toContain("Who should I ask about `daily_sales`?");
     const asked = PROSE.motivation.split("\n").filter((line) => line.startsWith("- "));
     expect(asked).toHaveLength(4);
     for (const q of asked) expect(PROSE.reflection, q).toContain(q);
-    expect(PROSE.p1Explain).toContain('"Who should I ask about `daily_sales`?"');
   });
-
   it("has one query that rebuilds daily_sales, the one the hints give", () => {
     expect(sumReconstructions(week(), "daily_sales")).toEqual([
       { source: "clean_orders", keep: "completed", measure: "revenue", per: "day" },

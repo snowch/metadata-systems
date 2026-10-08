@@ -27,17 +27,12 @@ export const PROSE = {
   motivation:
     "A data engineer who joins a platform they did not build is asked questions like these:\n\n- Can we delete `products.parquet`?\n- What stops working if the checkout renames a column in `orders.parquet`?\n- Is Thursday's total wrong, and since when?\n- Who should I ask about `daily_sales`?\n\nA wrong answer to the first breaks a program that still reads the file. A wrong answer to the third can leave a total wrong for weeks before anybody notices. None of the four can be answered by reading rows alone.",
   prediction:
-    "Before you inspect anything, answer two questions. For each, choose an option, then press the button below it.",
+    "Before you inspect anything, commit to a belief about Thursday: choose an option, then press the button below it. A wrong belief, once tested, tells you something; an untested one tells you nothing.",
   p1Question:
-    '"Who should I ask about `daily_sales`?" was one of the questions at the start of this chapter. What gets stored as the owner decides whether the field answers it. The requirement above is yours to meet: you write the program that writes `daily_sales` every night, so the owner is yours to choose. What would you store?',
-  p1Mine: "You would store {choice}.",
-  p1Undecided: "You would ask what the owner is for before storing anything.",
-  p1Meanings:
-    "Each of the first four choices meets the requirement as written. Each puts an owner on the table and answers a different question about `daily_sales`, listed below. The requirement does not say which question the owner must answer, so it does not say which to store.",
-  p1Lab:
-    "The warehouse records `{value}` as the owner of `daily_sales` and an owner for {owned} of its {tables} tables.",
+    '"Who should I ask about `daily_sales`?" was one of the questions at the start of this chapter. You have just read what the warehouse records about `daily_sales`. From that record, what can you conclude about who to ask?',
   p1Explain:
-    '`etl_service` is the account all four of the shop\'s programs log in as. The lab tells you this; the systems do not.\n\nEvery table has an owner, so the warehouse meets the requirement as written.\n\nThe warehouse defines "owner" as the account that controls the table. Of the four questions above, `etl_service` answers only the last.\n\nThe requirement did not say which meaning it wanted. The name of a field does not say which question the field answers.\n\n"Who should I ask about `daily_sales`?" is one of the questions at the start of this chapter. It needs a person or a team. The warehouse\'s owner names neither.\n\nBefore you decide what to store, ask whoever set the requirement what the owner is for.',
+    '`etl_service` is the account all four of the shop\'s programs log in as. The lab tells you this; the systems do not.\n\nThe warehouse\'s record names an account. A name is not a person: an account that several programs share tells you who to ask about the account, not who is responsible for the table.\n\nThe field is called "owner", but the name of a field does not say which question the field answers. This one answers "which account controls the table?", not "who should I ask about it?".\n\nSo the chapter\'s question stays open. Answering it needs a record the warehouse does not keep: who is responsible for `daily_sales`, kept as it happens.',
+  p1UndecidedLine: "You said you could not tell yet. What the record supports: {answer}.",
   p2Question:
     "The dashboard shows 51.50 for Thursday. `daily_sales` holds the same total for Thursday. Add up price times quantity over Thursday's rows of `orders.parquet`. What do you expect the total to be?",
   p2UndecidedLine: "You said you could not tell yet. The lab found {answer}.",
