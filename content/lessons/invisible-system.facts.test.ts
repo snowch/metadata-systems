@@ -254,7 +254,13 @@ describe("the facts Chapter 1 states", () => {
     expect(LABELS.p1Options.none).toContain("does not say");
     expect(PROSE.p1Question).toContain("what the warehouse records");
     expect(PROSE.p1Question).toContain("what can you conclude");
-    expect(PROSE.p1Explain).toContain("A name is not a person");
+    // The feedback names the evidence, then separates what the record establishes from what
+    // only the lab knows, and says which question the field answers.
+    expect(PROSE.p1Explain).toContain(
+      "names the account `etl_service`. You read that in the inspector",
+    );
+    expect(PROSE.p1Explain).toContain("The lab tells you this; the systems do not");
+    expect(PROSE.p1Explain).toContain("does not say which question the field answers");
     expect(PROSE.p1Explain).toContain("who is responsible for `daily_sales`");
     // The questions it quotes from the start of the chapter are the motivation's own, word for
     // word: the four list items there each open a list item in the reflection.

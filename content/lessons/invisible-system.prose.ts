@@ -31,11 +31,15 @@ export const PROSE = {
   p1Question:
     '"Who should I ask about `daily_sales`?" was one of the questions at the start of this chapter. You have just read what the warehouse records about `daily_sales`. From that record, what can you conclude about who to ask?',
   p1Explain:
-    '`etl_service` is the account all four of the shop\'s programs log in as. The lab tells you this; the systems do not.\n\nThe warehouse\'s record names an account. A name is not a person: an account that several programs share tells you who to ask about the account, not who is responsible for the table.\n\nThe field is called "owner", but the name of a field does not say which question the field answers. This one answers "which account controls the table?", not "who should I ask about it?".\n\nSo the chapter\'s question stays open. Answering it needs a record the warehouse does not keep: who is responsible for `daily_sales`, kept as it happens.',
-  p1UndecidedLine: "You said you could not tell yet. What the record supports: {answer}.",
+    'The record establishes this much: the warehouse\'s owner field for `daily_sales` names the account `etl_service`. You read that in the inspector.\n\nWhat it does not establish: `etl_service` is the account all four of the shop\'s programs log in as. The lab tells you this; the systems do not.\n\nThe field is called "owner", but the name of a field does not say which question the field answers. This one answers "which account controls the table?", not "who should I ask about it?". An account that several programs share tells you who to ask about the account, not who is responsible for the table.\n\nSo the chapter\'s question stays open. Answering it needs a record the warehouse does not keep: who is responsible for `daily_sales`, kept as it happens.',
+  p1UndecidedLine:
+    "You said you could not tell yet, and you cannot: who is responsible for `daily_sales` is not in the record. But you can tell what the record holds: {answer}.",
+
   p2Question:
     "The dashboard shows 51.50 for Thursday. `daily_sales` holds the same total for Thursday. Add up price times quantity over Thursday's rows of `orders.parquet`. What do you expect the total to be?",
-  p2UndecidedLine: "You said you could not tell yet. The lab found {answer}.",
+  p2UndecidedLine:
+    "You said you could not tell yet. Nothing so far says how `daily_sales` was made, so you cannot tell from the page; adding up Thursday\'s rows can. The lab found {answer}.",
+
   p2Explain:
     "Thursday's rows of `orders.parquet` add up to 205.50. `daily_sales` holds 51.50 for Thursday. So `daily_sales` is not simply the total of Thursday's orders in `orders.parquet`.\n\nThursday's raw total of 205.50 is close to Wednesday's (198.75) and Friday's (204.24). In `orders.parquet`, Thursday was not a slow day.\n\nThe table shows every day: the totals are equal on three days (Monday, Friday and Sunday) and differ on four (Tuesday, Wednesday, Thursday and Saturday).",
   wQuestion:
