@@ -108,6 +108,12 @@ once, where Chapter 1 first names it (`roleNotes` on the book, `roles` and
 - `reference`: what the learner has been told, kept to hand, such as the platform map. It asks
   nothing.
 
+These three are the labels the learner sees, and the only ones. Designing or reviewing a figure,
+use the finer list in `CLAUDE.md` ("Experiments, instruments and explanations"): show, inspect,
+predict, test, investigate, experiment, which a figure may combine. It is a lens for the notes,
+never a label on the page. On the page, "figure" names an interactive box and nothing else: a
+number is a total, a value or a count, and the content tests fail "figure" used for one.
+
 Before a figure is built, it gets a block in the chapter's notes, under "Figures", in the page's
 order: a heading with its id, its role, and for an experiment twelve answers, each under its own
 label.
@@ -116,7 +122,9 @@ label.
 ### `predict-days`
 
 - **Role:** experiment
-- **Objective:** what the learner should understand, discover or be able to do afterwards.
+- **Objective:** what the learner should understand, discover or be able to do afterwards,
+  never what the figure displays ("the learner discovers that the warehouse's owner, an account,
+  does not say who is responsible", not "the learner sees what storage records").
 - **Known before:** what is on the page above the figure, not what the lab knows.
 - **Driving question:** the question, hypothesis or decision that drives it.
 - **The action:** what the learner does.

@@ -259,8 +259,12 @@ describe("the facts Chapter 1 states", () => {
       "Of the four questions above, `etl_service` answers only the last",
     );
     expect(PROSE.p1Meanings).toContain("Each of the first four choices");
-    // The question it quotes from the start of the chapter is the motivation's own.
+    // The questions it quotes from the start of the chapter are the motivation's own, word for
+    // word: the four list items there each open a list item in the reflection.
     expect(PROSE.motivation).toContain("Who should I ask about `daily_sales`?");
+    const asked = PROSE.motivation.split("\n").filter((line) => line.startsWith("- "));
+    expect(asked).toHaveLength(4);
+    for (const q of asked) expect(PROSE.reflection, q).toContain(q);
     expect(PROSE.p1Explain).toContain('"Who should I ask about `daily_sales`?"');
   });
 

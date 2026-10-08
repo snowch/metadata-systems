@@ -115,10 +115,10 @@ role, without a block, or with a question unanswered.
 ### `predict-days`
 
 - **Role:** experiment
-- **Objective:** recognise that what a derived figure means is an assumption, and test it against
+- **Objective:** recognise that what a derived total means is an assumption, and test it against
   an independent source: add up the raw orders and compare.
 - **Known before:** the dashboard: Thursday at 51.50, far below the other days; `daily_sales`
-  holds the same figure; the head of the shop asks why; the question says what to add up, price
+  holds the same total; the head of the shop asks why; the question says what to add up, price
   times quantity over Thursday's rows of `orders.parquet`.
 - **Driving question:** what do Thursday's orders in `orders.parquet` add up to? Is `daily_sales`
   simply that total?
@@ -982,6 +982,27 @@ and the author said to do the right thing for the learner:
 | Draft | Wrong, sent back | Dropped, restored with the fewest words |
 | --- | --- | --- |
 | AH (two labels) | none | none. "Only your query" went only where a query is set beside the asset it rebuilds, as the brief described; the first placing in the Thursday prediction's table too was this session's slip, put right before it was committed |
+
+## "Figure" names a box; the action list stays internal, 8 October 2026
+
+The author passed on an agent's design rule for the interactions, and then its own reply to this
+session's reading of it. What held: on the page "figure" meant an interactive box in nine places
+("The first three figures", "What this figure asks of you") and a number in five ("Is Thursday's
+figure wrong", "Saturday's figure", "the same figure"), a word with two meanings on one page
+(`CLAUDE.md`, "What no check can catch"). The five now say "total". What was kept as it was: "the
+lab" is the Metadata Lab and nothing else, so the interactions are not called labs; the three
+badges stay, and the agent's six actions (show, inspect, predict, test, investigate, experiment)
+are a lens for designing and reviewing a figure, written into `CLAUDE.md` and `docs/authoring.md`
+for the notes, never a label on the page. The author also asked that every block's objective say
+what the learner should understand or discover, not what the figure displays: read against that,
+all nine objectives above do (recognise that a requirement's word does not fix its meaning; see
+that rebuilding an output does not identify the rules that made it), and the reference and
+inspect figures' "Serves" lines name the question each serves. A content test now fails an
+objective written as what the figure shows, and "figure" used for a number, as backstops.
+
+| Draft | Wrong, sent back | Dropped, restored with the fewest words |
+| --- | --- | --- |
+| AI (five sentences, "total") | none | none |
 
 ## Known gaps
 

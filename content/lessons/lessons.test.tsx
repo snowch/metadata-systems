@@ -318,6 +318,22 @@ describe("the course's chapters", () => {
         }
   });
 
+  it('uses "figure" for an interactive box only, never for a number', () => {
+    // CLAUDE.md, "What no check can catch": a word that means two things on one page. The
+    // badges say "What this figure asks of you", so a number is a total, a value or a count. A
+    // backstop: the commonest shapes of the other sense.
+    const number =
+      /\b(\w+'s|same|wrong|that|whose|its|this week's|the day's) figure\b|\bfigure (is|was|wrong|of \d)/i;
+    const strings = (v: unknown): string[] =>
+      typeof v === "string"
+        ? [v]
+        : v && typeof v === "object"
+          ? Object.values(v).flatMap(strings)
+          : [];
+    const text = [...LESSONS.flatMap((l) => learnerText(l)), ...strings(DEFAULT_VIEW_STRINGS)];
+    expect(text.filter((s) => number.test(s)).map((s) => s.slice(0, 80))).toEqual([]);
+  });
+
   it("gives every figure a role, and its block in the chapter's notes, in the page's order", () => {
     // CLAUDE.md, "Experiments, instruments and explanations": a figure says what it asks of the
     // learner, and the notes' "Figures" section says why it is on the page. An experiment answers
@@ -377,6 +393,17 @@ describe("the course's chapters", () => {
         }
         for (const label of role === "experiment" ? EXPERIMENT : OTHER)
           if (!answers(block, label)) missing.push(`${l.id}: ${x.id} does not answer "${label}"`);
+        // An objective says what the learner understands or discovers, never what the figure
+        // displays (CLAUDE.md): a backstop for the commonest shapes; only reading catches the rest.
+        const objective = /\*\*Objective:\*\* ([^\n]*(?:\n  [^\n]*)*)/.exec(block)?.[1] ?? "";
+        if (
+          /^(see|show|display|look at|read) (what|the|how)|the figure (shows|displays|lists)/i.test(
+            objective,
+          )
+        )
+          missing.push(
+            `${l.id}: ${x.id}'s objective says what the figure shows, not what is learnt`,
+          );
       }
     }
     expect(missing).toEqual([]);

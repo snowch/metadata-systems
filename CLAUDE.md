@@ -271,7 +271,22 @@ A figure is one of three things, and its badge says which (its `role`):
   uses the system to answer it. Prefer it.
 
 What the author's guide calls a lab, the page calls an experiment: on the page, "the lab" is the
-Metadata Lab, which every figure runs, and one word must not mean two things.
+Metadata Lab, which every figure runs, and one word must not mean two things. "Figure" is the
+page's word for one interactive box, and nothing else: a number is a total, a value or a count.
+
+The three roles are the only labels the learner sees. When a figure is designed or reviewed, a
+finer list of what a figure can do is the lens, and it stays in the notes: show (a system, a
+relation, a stretch of time), inspect (examine data or what storage records), predict (commit
+before the evidence), test (a hypothesis or an expectation), investigate (evidence that lets the
+learner work out what happened), experiment (change something and observe the consequence). A
+figure may combine them (show, then predict, then inspect, compare, explain). A figure need not
+ask a question or take a prediction: sometimes the right first step is something important to
+observe. But it must have a learning purpose and a learner action that serves it, and its notes
+say both. A notes block's objective says what the learner should understand or discover, never
+what the figure displays. Weak: "the learner sees what storage records about a table". Strong:
+"the learner discovers that the warehouse's owner, an account, does not say who is responsible
+for the table". The content tests fail an objective written as what the figure shows; only
+reading catches the rest.
 
 An experiment has a learning job: what the learner will understand, discover or be able to do
 because they did it, and the action that causes that learning. "They can see the metadata" is an
@@ -374,7 +389,7 @@ Read for these before calling a chapter finished:
 - a word that means two things on one page: *table* (the warehouse's and the page's), *record*,
   *event*, *run* (the noun and the verb), *version*, *source*, *owner*, *schema* (a structure and
   a database's namespace), *model* (the lab, a data model, an ML model), *map* (the platform map;
-  no other figure is called one);
+  no other figure is called one), *figure* (an interactive box; a number is a total);
 - a definite article in front of a noun the chapter has not introduced;
 - a thing named before the page explains it, or explained again wherever it appears: explain it
   once, where the reader first meets it (the lab is explained where Chapter 1 first names it, and

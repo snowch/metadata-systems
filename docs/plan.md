@@ -256,6 +256,18 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 8 October 2026: "figure" names a box, and the six actions stay internal
+
+An agent's rule for the interactions proposed calling them labs, naming each by its object
+(diagram, table, timeline, data browser) and sorting them by six actions (show, inspect, predict,
+test, investigate, experiment). The author, reading this session's check of it, kept "the lab" as
+the Metadata Lab alone, kept the three badges, and took the six actions as a lens for designing
+and reviewing a figure, in the notes and never on the page (`CLAUDE.md`, "Experiments,
+instruments and explanations"). The one fault the check found on the page is fixed: "figure"
+named an interactive box and, five times, a number; a number is now a total. Every notes block's
+objective was read against the author's test, what the learner understands or discovers rather
+than what the figure displays, and holds; a content test backstops both rules.
+
 ### 7 October 2026: the lab, from the learner's side first
 
 A second agent's guide the author passed on found the Metadata Lab still explained in technical
