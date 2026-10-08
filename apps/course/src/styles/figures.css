@@ -781,6 +781,12 @@ details[open] > summary::before {
   width: 3px;
   height: 1.5rem;
 }
+.week-key-start {
+  flex: none;
+  width: 2px;
+  height: 1.5rem;
+  background: var(--accent-strong);
+}
 @container (max-width: 34rem) {
   .week-weekday,
   .week-date {

@@ -93,6 +93,10 @@ export const WeekTimeline = withProps(
             <span className="week-key-night" aria-hidden="true" />
             {strings.weekNight}
           </li>
+          <li>
+            <span className="week-key-start" aria-hidden="true" />
+            {strings.weekStartLegend}
+          </li>
         </ul>
       </div>
     );

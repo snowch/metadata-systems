@@ -16,7 +16,7 @@ export const PROSE = {
   platformLead:
     "The shop's data platform has three systems. The pipeline shows them in the order data moves through them each night. Once you scroll past the pipeline, a button at the foot of the window opens it again.",
   platformAfter:
-    "An asset is something in the platform that can be stored, described, changed, related to other assets, or depended on. In this chapter, storage means all three systems.",
+    "An asset is something in the platform that can be stored, described, changed, related to other assets, or depended on. One of the systems above is called object storage; throughout this chapter, \"storage\" means all three systems together, not that one.",
   weekLead:
     "The shop's first week ran from Monday 7 to Sunday 13 September 2026. After each day, in the early hours of the next day, the three files are written again, then the programs write the tables and refresh the dashboard.",
   weekAfter: "The last night ends early on Monday 14 September, before you start work.",

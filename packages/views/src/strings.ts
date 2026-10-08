@@ -196,6 +196,7 @@ export const DEFAULT_VIEW_STRINGS = {
   weekOrders: "the days the shop took orders",
   weekNight: "a night's work",
   weekStart: "You start work at {time}",
+  weekStartLegend: "the morning you start work",
   mapOpen: "The pipeline",
   mapClose: "Close",
   scrollCue: "Scroll sideways to see every column.",
