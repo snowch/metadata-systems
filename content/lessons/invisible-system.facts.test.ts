@@ -204,7 +204,9 @@ describe("the facts Chapter 1 states", () => {
       "205.50",
       "204.24",
     ]);
-    expect(PROSE.p2Explain).toContain("add up to 205.50. `daily_sales` holds 51.50 for Thursday");
+    expect(PROSE.p2Explain).toContain(
+      "add up to 205.50, but the reported total for Thursday is 51.50",
+    );
     expect(PROSE.p2Explain).toContain("Wednesday's (198.75) and Friday's (204.24)");
   });
 
