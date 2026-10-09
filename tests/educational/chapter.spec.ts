@@ -280,34 +280,6 @@ test.describe("challenges", () => {
 });
 
 test.describe("the figures", () => {
-  test("the owner conclusion is drawn from the record the learner has just read", async ({
-    page,
-  }) => {
-    await openChapter(page);
-    const figure = page.locator("#ix-predict-owner");
-    const props = figureProps("predict-owner");
-    const options = props["options"] as Labelled[];
-    const undecided = props["undecided"] as Labelled;
-    // A prediction: it asks what the record supports, and nothing before the press names the
-    // account the record holds.
-    await expect(figure).not.toContainText("etl_service");
-    const none = options.find((o) => (o as { value: string }).value === "none")!;
-    await figure.getByLabel(none.label).check();
-    await figure.getByRole("button", { name: V.checkPrediction }).click();
-    await expect(figure.locator("[role=status]")).toContainText("etl_service");
-    await expect(figure).toContainText(V.noMatch);
-    // The prediction stands after a reload, its answer with it.
-    await page.reload();
-    await expect(page.locator("#ix-predict-owner [role=status]")).toContainText("etl_service");
-    // "I can't tell yet" is marked neither right nor wrong.
-    await page.evaluate((key) => localStorage.removeItem(key), storageKey());
-    await page.reload();
-    await figure.getByLabel(undecided.label).check();
-    await figure.getByRole("button", { name: V.checkPrediction }).click();
-    await expect(figure.locator("[role=status]")).toContainText("etl_service");
-    await expect(figure).not.toContainText(V.match);
-    await expect(figure).not.toContainText(V.noMatch);
-  });
   test("a prediction must be committed before the lab answers, and says whether it was right", async ({
     page,
   }) => {
@@ -365,12 +337,12 @@ test.describe("the figures", () => {
       await expect(figure).toHaveAttribute("data-role", x.role ?? "");
       await expect(figure.locator("figcaption .badge")).toHaveText(V.roles[x.role ?? ""] ?? "");
     }
-    const storage = page.locator("#ix-storage");
-    await storage
+    const explore = page.locator("#ix-explore");
+    await explore
       .getByRole("button", { name: format(V.roleBadgeLabel, { role: V.roles["inspect"] ?? "" }) })
       .click();
-    await expect(storage.locator(".time-model-note")).toBeVisible();
-    await expect(storage.locator(".time-model-note")).toHaveText(V.roleNotes["inspect"] ?? "");
+    await expect(explore.locator(".time-model-note")).toBeVisible();
+    await expect(explore.locator(".time-model-note")).toHaveText(V.roleNotes["inspect"] ?? "");
     // The lab is explained once, where the chapter first names it: behind no badge, and not
     // again at the foot. A reference's badge opens nothing.
     await expect(page.locator(".time-model-note", { hasText: "Metadata Lab" })).toHaveCount(0);
@@ -434,9 +406,12 @@ test.describe("the figures", () => {
               (e) => !e.closest("figcaption"),
             ).length,
         );
-    for (const id of ["platform", "week", "dashboard"]) expect(await controls(id), id).toBe(0);
-    await expect(page.locator("#ix-predict-owner").getByRole("radio").first()).toBeVisible();
-    expect(await controls("predict-owner")).toBeGreaterThan(1);
+    for (const id of ["platform", "week"]) expect(await controls(id), id).toBe(0);
+    // The dashboard and the exploration cards take the learner's hand.
+    expect(await controls("dashboard")).toBeGreaterThan(0);
+    expect(await controls("explore")).toBeGreaterThan(0);
+    // The prediction's radios wait in the next section.
+    await expect(page.locator("#ix-predict-days").getByRole("radio").first()).toBeVisible();
     // The week keeps every name whole and inside its figure, with a bar for every night.
     const week = page.locator("#ix-week");
     await expect(week.locator(".week-night")).toHaveCount(7);
@@ -461,72 +436,6 @@ test.describe("the figures", () => {
     expect(problems).toEqual([]);
   });
 
-  test("the investigation starts where the learner chooses to look, and the inspector opens there", async ({
-    page,
-  }) => {
-    await openChapter(page);
-    const decide = page.locator("#ix-where-first");
-    const props = figureProps("where-first");
-    const dashboard = (props["options"] as Labelled[]).find((o) => o.value === "dashboard")!;
-    const opened = page.locator("#ix-storage .asset-button[aria-pressed=true]");
-    await expect(opened).toHaveText("orders.parquet");
-    // It states what the Thursday prediction found, so it waits for that answer.
-    await expect(decide.locator(".figure-locked")).toBeVisible();
-    await expect(decide).not.toContainText("205.50");
-    await commitThursday(page);
-    await decide.getByLabel(dashboard.label).check();
-    await decide.getByRole("button", { name: props["commit"] as string }).click();
-    await expect(decide.locator("[role=status]")).toHaveText(
-      format(props["mine"] as string, { choice: dashboard.label }),
-    );
-    await expect(decide).not.toContainText("154.00");
-    await expect(opened).toHaveText("sales_dashboard");
-    await page.reload();
-    await expect(page.locator("#ix-storage .asset-button[aria-pressed=true]")).toHaveText(
-      "sales_dashboard",
-    );
-  });
-
-  test("an explanation for Thursday is chosen, tested by the learner, and checked after the rebuild", async ({
-    page,
-  }) => {
-    await openChapter(page);
-    await commitThursday(page);
-    const where = page.locator("#ix-where-first");
-    await where.getByRole("radio").first().check();
-    await where
-      .getByRole("button", { name: figureProps("where-first")["commit"] as string })
-      .click();
-    const choose = page.locator("#ix-why-thursday");
-    const props = figureProps("why-thursday");
-    const options = props["options"] as Labelled[];
-    const moved = options.find((o) => o.value === "moved")!.label;
-    await choose.getByLabel(moved).check();
-    await choose.getByRole("button", { name: props["commit"] as string }).click();
-    await expect(choose.locator("[role=status]")).toHaveText(
-      format(props["mine"] as string, { choice: moved }),
-    );
-    await expect(choose).not.toContainText("154.00");
-    // The rows are read only after the learner's own query rebuilds daily_sales.
-    const check = page.locator("#ix-why-thursday-check");
-    await expect(check.locator(".figure-locked")).toHaveText(
-      format(V.locked, { title: challengeData("rebuild-daily-sales").title }),
-    );
-    await pass(page, "rebuild-daily-sales");
-    await check
-      .getByRole("button", { name: figureProps("why-thursday-check")["button"] as string })
-      .click();
-    await expect(check.locator("tbody tr td:last-child")).toHaveText([V.yes, V.no, V.no]);
-    await expect(check.locator("tr.is-chosen")).toContainText(moved);
-    await expect(check.locator("[role=status]")).toContainText("154.00");
-    await page.reload();
-    await expect(page.locator("#ix-why-thursday-check tbody tr td:last-child")).toHaveText([
-      V.yes,
-      V.no,
-      V.no,
-    ]);
-  });
-
   test("nothing the learner does leaves the browser: the page asks only for the course's files", async ({
     page,
     baseURL,
@@ -539,12 +448,6 @@ test.describe("the figures", () => {
     });
     await openChapter(page);
     await commitThursday(page);
-    const where = page.locator("#ix-where-first");
-    await where.getByRole("radio").first().check();
-    await where
-      .getByRole("button", { name: figureProps("where-first")["commit"] as string })
-      .click();
-    await page.locator("#ix-storage").getByRole("button", { name: "daily_sales" }).click();
     await pass(page, "rebuild-daily-sales");
     await page.reload();
     await expect(page.locator("section.lesson-section")).toHaveCount(10);
@@ -586,7 +489,7 @@ test.describe("the figures", () => {
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.reload();
     await expect(page.locator("section.lesson-section")).toHaveCount(10);
-    await page.locator("#ix-predict-rules").scrollIntoViewIfNeeded();
+    await page.locator("#ix-build-rules").scrollIntoViewIfNeeded();
     await expect(open).toBeVisible();
     const [scroll, client] = await pageWidth(page);
     expect(scroll).toBeLessThanOrEqual(client + 1);
@@ -596,34 +499,22 @@ test.describe("the figures", () => {
     page,
   }) => {
     await openChapter(page);
-    const owner = page.locator("#ix-predict-owner");
-    await owner.getByRole("radio").first().check();
-    const buttons = figureProps("predict-owner")["buttons"] as { choose: string };
-    await owner.getByRole("button", { name: buttons.choose }).click();
+    const days = page.locator("#ix-predict-days");
+    await days.getByRole("radio").first().check();
+    await days.getByRole("button", { name: V.checkPrediction }).click();
     await pass(page, "rebuild-daily-sales");
     const again = page.getByRole("button", { name: STRINGS.startAgain });
     await again.click();
     await page.getByRole("button", { name: STRINGS.startAgainCancel }).click();
-    await expect(owner.locator("[role=status]")).toHaveCount(1);
+    await expect(days.locator("[role=status]")).toHaveCount(1);
     await again.click();
     await page.getByRole("button", { name: STRINGS.startAgainConfirm }).click();
     await expect(page.locator(".start-again [role=status]")).toHaveText(STRINGS.startAgainDone);
-    await expect(page.locator("#ix-predict-owner [role=status]")).toHaveCount(0);
+    await expect(page.locator("#ix-predict-days [role=status]")).toHaveCount(0);
     await expect(challenge(page, "rebuild-daily-sales").locator(".challenge-complete")).toHaveCount(
       0,
     );
     expect(await page.evaluate((key) => localStorage.getItem(key), storageKey())).toBeNull();
-  });
-
-  test("the inspector shows each asset's record, and the rows with no customer id", async ({
-    page,
-  }) => {
-    await openChapter(page);
-    const figure = page.locator("#ix-storage");
-    await expect(figure.locator(".cell-null")).toHaveCount(3);
-    await figure.getByRole("button", { name: "daily_sales" }).click();
-    await expect(figure.locator(".record-table")).toContainText("etl_service");
-    await expect(figure.locator(".data-table tbody tr")).toHaveCount(7);
   });
 
   test("the failure experiment waits for the learner's own query to pass", async ({ page }) => {
@@ -678,55 +569,5 @@ test.describe("the figures", () => {
     // A prediction is kept: back on the first change, its result is still there.
     await figure.getByLabel(changes[0]!.label, { exact: true }).check();
     await expect(figure.locator(".change-fits li")).toHaveCount(2);
-  });
-
-  test("the questions are sorted before the lab places them, and they move with the week", async ({
-    page,
-  }) => {
-    await openChapter(page);
-    const figure = page.locator("#ix-map");
-    const check = figure.getByRole("button", { name: V.checkSort });
-    await expect(check).toBeDisabled();
-    await expect(figure.locator(".question-map")).toHaveCount(0);
-    const selects = figure.locator("select");
-    for (let i = 0; i < (await selects.count()); i++)
-      await selects.nth(i).selectOption("suggested");
-    await check.click();
-    await expect(figure.locator("[role=status]")).toHaveText(
-      format(V.sortScore, { matching: 4, total: 8 }),
-    );
-    const record = figure.locator(".map-record");
-    await expect(record).not.toContainText(V.q["made-from"]!);
-    const weeks = figureProps("map")["weeks"] as Labelled[];
-    await figure.getByLabel(weeks.find((w) => w.id === "refunds")!.label, { exact: true }).check();
-    await expect(record).toContainText(V.q["made-from"]!);
-    await expect(record).toContainText(format(V.movedFrom, { place: V.place["suggested"]! }));
-    await page.reload();
-    await expect(page.locator("#ix-map [role=status]")).toHaveText(
-      format(V.sortScore, { matching: 4, total: 8 }),
-    );
-  });
-
-  test("the rules prediction waits for the learner's rules to pass, then the lab answers it", async ({
-    page,
-  }) => {
-    const c = challengeData("clean-orders-rules");
-    await openChapter(page);
-    const figure = page.locator("#ix-predict-rules");
-    await expect(figure.locator(".figure-locked")).toHaveText(format(V.locked, { title: c.title }));
-    // The rows the rules keep, and how many, wait for a run of the rules on screen.
-    const rules = challenge(page, c.id);
-    await expect(rules.locator(".choice-rows")).toHaveCount(0);
-    await expect(rules.locator(".choice-wait")).toHaveText(V.keptAfterRun);
-    await pass(page, c.id);
-    await expect(rules.locator(".choice-rows")).toHaveCount(1);
-    await expect(rules.locator(".choice-wait")).toHaveCount(0);
-    const options = figureProps("predict-rules")["options"] as Labelled[];
-    // More than one setting passes: the quantity rule decides no row this week.
-    await figure
-      .getByLabel(options.find((o) => o.value === "more")!.label, { exact: true })
-      .check();
-    await figure.getByRole("button", { name: V.checkPrediction }).click();
-    await expect(figure.locator("[role=status]")).toContainText(V.match);
   });
 });

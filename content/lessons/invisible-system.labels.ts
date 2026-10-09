@@ -1,27 +1,27 @@
 // Copyright © 2026 Christopher Snow
 
-// Titles, objectives, captions and labels of Chapter 1, drafted by the prose process from the
-// briefs in docs/notes/chapter-01/briefs and checked against the lab (CLAUDE.md). Captions,
-// titles and option labels are plain text: no Markdown.
+// Titles, objectives, captions and labels of Chapter 1, written as a book: titles name the
+// story's movements, captions say what a view shows. Captions, titles and option labels are
+// plain text: no Markdown.
 
 export const LABELS = {
   objectives: [
-    "Read what each of the shop's three systems keeps about a file, a table and a dashboard.",
-    "Rebuild one asset from another with a query, and test what that shows.",
-    "Change the shop in three ways and see what the data can still tell you.",
-    "Sort questions about an asset by what can answer them, then check your sort against the lab.",
+    "See what a platform's current state can and cannot tell you about how its data came to be.",
+    "Rebuild an asset from the data, and test what that reconstruction establishes.",
+    "Break your own evidence: a copy, an edit, a failed write.",
+    "Name the records that would have answered what the state could not.",
   ],
   titles: {
-    question: "A week of questions",
-    motivation: "Why these questions matter",
-    prediction: "What you expect the data to show",
-    investigation: "What the systems record, and what they do not",
-    construction: "Rebuilding daily_sales",
-    failureExperiment: "The shop changed three ways",
+    question: "Your first Monday",
+    motivation: "The questions anybody can ask",
+    prediction: "A number on your own model",
+    investigation: "What the systems hold",
+    construction: "A reconstruction",
+    failureExperiment: "The evidence breaks",
     explanation: "What each system keeps",
-    generalisation: "Data and the records around it",
-    challenge: "Recovering the rules of clean_orders",
-    reflection: "What you could not find out",
+    generalisation: "What would have answered",
+    challenge: "The rules nobody wrote down",
+    reflection: "What you would write down",
   },
   challengeTitles: {
     c1: "Rebuild daily_sales",
@@ -30,31 +30,16 @@ export const LABELS = {
   captions: {
     platform: "The pipeline: the shop's three systems and what each holds.",
     week: "The shop's first week: order days, a night's work after each, and the morning you start.",
-    dashboard: "On Monday morning the dashboard shows daily revenue for 7 to 13 September.",
-    explore: "Open each card to see what the platform holds: a file, two tables and a dashboard.",
-    p1: "Conclude what the warehouse's record establishes about who to ask about daily_sales.",
-    p2: "Predict what Thursday's rows of orders.parquet add up to.",
-    where: "Decide which asset you would inspect first, and what you would look for there.",
-    hypothesis: "Choose the explanation you will test for the difference on Thursday.",
-    check: "Check the explanation you chose against Thursday's rows.",
-    inspector: "Inspect what the systems record about each asset, starting with the one you chose.",
+    dashboard: "Monday morning's dashboard: revenue per day, 7 to 13 September.",
+    explore: "The four assets this chapter works with. Open each to see what it holds.",
+    p2: "Put a number on Thursday before you look.",
     c1: "Build a query that rebuilds daily_sales from another asset.",
     change:
       "Choose a change to the shop, predict how many queries will rebuild daily_sales afterwards, run the week again with it, and read what the systems hold.",
-    map: "Sort the eight questions about daily_sales by what can answer them, then let the lab place them.",
     c2: "Choose which orders the rules keep.",
-    p3: "Predict whether your setting of the four rules is the only one that passes.",
   },
   /** The control that opens how the lab is built (brief AF). */
   labDetails: "How the lab is built",
-  /** What the learner can conclude from the warehouse's record about who to ask. */
-  p1Options: {
-    person: "the record names a person to ask",
-    team: "the record names a team to ask",
-    none: "the record does not say who to ask",
-    account: "the record names an account, but not a person or a team",
-  },
-  p1Undecided: "I can't tell yet",
   p2Options: {
     same: "51.50, the same total",
     different: "a different total",
@@ -65,39 +50,9 @@ export const LABELS = {
     one: "one, so the data still points to a single query",
     twoOrMore: "two or more, so the data fits more than one query",
   },
-  // Where the learner looks first for Thursday's difference: an asset, and the evidence sought
-  // there (brief Z).
-  wOptions: {
-    orders: "orders.parquet, to inspect the raw Thursday orders behind the dashboard's total",
-    clean:
-      "clean_orders, to inspect whether the Thursday orders changed between the raw file and the cleaned table",
-    daily: "daily_sales, to inspect how the day's total is recorded",
-    dashboard: "the dashboard, to inspect whether the difference appears in the reporting layer",
-  },
-  /** Each exploration card's one line: what the asset is and where it sits, never what went wrong. */
-  roles: {
-    orders: "The raw orders the shop took, written each night to a file",
-    clean: "Orders after the cleaning step, held in the warehouse",
-    daily: "One row per day: the totals the dashboard reports",
-    dashboard: "The reporting view built from the data",
-  },
-  wCommit: "I'll start here",
-  // The explanation the learner tests for Thursday, and its check (brief Y).
-  hOptions: {
-    left: "some of Thursday's orders are not counted in daily_sales",
-    lower: "Thursday's orders are counted, but at lower values",
-    moved: "some of Thursday's orders are counted on another day",
-  },
-  hCommit: "Test this explanation",
+  hOptions: {},
   cButton: "Read Thursday's rows",
-  cHeadings: {
-    explanation: "The explanation",
-    supported: "Whether Thursday's rows support it",
-  },
-  p3Options: {
-    one: "yes, a setting that gives clean_orders exactly is the only one that does",
-    more: "no, another setting can give exactly the same rows",
-  },
+  cHeadings: {},
   c1Fields: {
     source: "Asset to read",
     keep: "Rows to keep",

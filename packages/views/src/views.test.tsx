@@ -197,24 +197,6 @@ describe("the figures on Chapter 1's page", () => {
     expect(saved.textContent).toContain(format(V.keptRows, { count: kept }));
   });
 
-  it("takes the learner's sort of the questions before the lab places them, then moves them by week", () => {
-    const { figure } = show();
-    const f = within(figure("map"));
-    const check = f.getByRole("button", { name: V.checkSort });
-    expect(check).toHaveProperty("disabled", true);
-    for (const select of f.getAllByRole("combobox"))
-      fireEvent.change(select, { target: { value: "storage" } });
-    fireEvent.click(check);
-    expect(f.getByRole("status").textContent).toBe(format(V.sortScore, { matching: 1, total: 8 }));
-    const weeks = props("map")["weeks"] as Labelled[];
-    fireEvent.click(f.getByLabelText(weeks.find((w) => w.id === "refunds")!.label));
-    const record = figure("map").querySelector(".map-record")!;
-    expect(record.textContent).toContain(V.q["made-from"]);
-    expect(record.textContent).toContain(
-      format(V.movedFrom, { place: V.place["suggested"] ?? "" }),
-    );
-  });
-
   it('answers "I can\'t tell yet" with what the lab found, and marks it neither right nor wrong', () => {
     const p = props("predict-days") as {
       options: Labelled[];
@@ -237,36 +219,6 @@ describe("the figures on Chapter 1's page", () => {
     ).toBeTruthy();
   });
 
-  it("concludes from the warehouse's record only what it establishes about who to ask", () => {
-    const p = props("predict-owner") as {
-      options: { value: string; label: string; means: string[] }[];
-      undecided: Labelled;
-    };
-    const { figure } = show();
-    const f = within(figure("predict-owner"));
-    // A prediction, not a choice: it asks what the record supports, and the answer is the lab's.
-    expect(figure("predict-owner").textContent).toContain(V.checkPrediction);
-    // Nothing the learner reads before committing names the account the record holds.
-    expect(figure("predict-owner").textContent).not.toContain("etl_service");
-    const none = p.options.find((o) => o.value === "none")!;
-    fireEvent.click(f.getByLabelText(none.label));
-    fireEvent.click(f.getByRole("button", { name: V.checkPrediction }));
-    const status = figure("predict-owner").querySelector(".prediction-nomatch");
-    expect(status?.textContent).toContain(V.noMatch);
-    // The account itself, and what it is, arrives in the explanation below.
-    expect(figure("predict-owner").textContent).toContain("etl_service");
-  });
-  it("takes 'I can't tell yet' as an answer that is marked neither right nor wrong", () => {
-    const p = props("predict-owner") as { undecided: Labelled };
-    const { figure } = show();
-    const f = within(figure("predict-owner"));
-    fireEvent.click(f.getByLabelText(p.undecided.label));
-    fireEvent.click(f.getByRole("button", { name: V.checkPrediction }));
-    const status = figure("predict-owner").querySelector(".prediction-compare");
-    expect(status?.textContent).toContain("the record names an account");
-    expect(figure("predict-owner").querySelector(".prediction-match")).toBeNull();
-    expect(figure("predict-owner").querySelector(".prediction-nomatch")).toBeNull();
-  });
   it("opens on the situation and the lab, then the map with its count, then the week", () => {
     const { page, figure } = show();
     const opening = page.container.querySelector<HTMLElement>('section[data-kind="question"]')!;
@@ -282,8 +234,8 @@ describe("the figures on Chapter 1's page", () => {
     expect([...opening.querySelectorAll("figure.interactive")].map((f) => f.id)).toEqual([
       "ix-platform",
       "ix-week",
-      "ix-dashboard",
       "ix-explore",
+      "ix-dashboard",
     ]);
     // The map counts what it shows, kind by kind and in all, as the lab counts it.
     const tally = mapTally(platformMap(week()));
@@ -336,92 +288,17 @@ describe("the figures on Chapter 1's page", () => {
       });
       expect(toggle !== null, x.id).toBe(Boolean(V.roleNotes[role]));
     }
-    const storage = figure("storage");
+    const explore = figure("explore");
     fireEvent.click(
-      within(storage).getByRole("button", {
+      within(explore).getByRole("button", {
         name: format(V.roleBadgeLabel, { role: V.roles["inspect"] ?? "" }),
       }),
     );
-    const note = storage.querySelector(".time-model-note")!;
+    const note = explore.querySelector(".time-model-note")!;
     expect(note.hasAttribute("hidden")).toBe(false);
     expect(note.textContent?.trim()).toBe(V.roleNotes["inspect"]);
     // The lab is explained once, where the chapter first names it, and behind no badge.
     expect(note.textContent).not.toContain("Metadata Lab");
-  });
-
-  it("offers the where-first and hypothesis choices without gating the page behind them", () => {
-    const { figure } = show();
-    // An engineer can read the chapter without committing: the decisions show their options
-    // at once, and neither states the Thursday prediction's result before it is committed.
-    for (const id of ["where-first", "why-thursday"]) {
-      const f = figure(id);
-      expect(within(f).queryAllByRole("radio").length, id).toBeGreaterThan(0);
-      expect(f.textContent, id).not.toContain("205.50");
-    }
-  });
-
-  it("opens the inspector on the asset the learner chose to look at first", () => {
-    const p = props("where-first") as {
-      options: (Labelled & { after: string })[];
-      commit: string;
-      test: string;
-    };
-    const { figure } = show((store) => store.setSlot("predict-days", { choice: "different" }));
-    const opened = () =>
-      figure("storage").querySelector(".asset-button[aria-pressed='true']")?.textContent;
-    expect(opened()).toBe("orders.parquet");
-    const daily = p.options.find((o) => o.value === "daily")!;
-    const f = within(figure("where-first"));
-    fireEvent.click(f.getByLabelText(daily.label));
-    fireEvent.click(f.getByRole("button", { name: p.commit }));
-    expect(f.getByRole("status").textContent).toContain(daily.label);
-    expect(figure("where-first").textContent).toContain("one row per day");
-    expect(figure("where-first").textContent).not.toContain("154.00");
-    expect(opened()).toBe("daily_sales");
-    // The learner's own choice in the inspector wins over the decision's.
-    fireEvent.click(within(figure("storage")).getByRole("button", { name: "clean_orders" }));
-    expect(opened()).toBe("clean_orders");
-  });
-
-  it("keeps the learner's explanation for Thursday, and shows nothing of the rows at the choice", () => {
-    const p = props("why-thursday") as { options: Labelled[]; commit: string };
-    const { figure } = show((store) => {
-      store.setSlot("predict-days", { choice: "different" });
-      store.setSlot("where-first", { choice: "orders" });
-    });
-    const f = within(figure("why-thursday"));
-    fireEvent.click(f.getByLabelText(p.options.find((o) => o.value === "lower")!.label));
-    fireEvent.click(f.getByRole("button", { name: p.commit }));
-    expect(f.getByRole("status").textContent).toContain(
-      p.options.find((o) => o.value === "lower")!.label,
-    );
-    expect(figure("why-thursday").textContent).not.toContain("154.00");
-  });
-
-  it("checks that explanation only once the learner's rebuild passes, then reads the rows", () => {
-    const p = props("why-thursday-check") as { button: string };
-    const locked = show((store) => store.setSlot("why-thursday", { choice: "lower" }));
-    expect(locked.figure("why-thursday-check").textContent).toContain(
-      format(V.locked, { title: rebuild.title }),
-    );
-    locked.page.unmount();
-
-    const { figure } = show((store) => {
-      store.setSlot("why-thursday", { choice: "lower" });
-      passing("rebuild-daily-sales")(store);
-    });
-    expect(figure("why-thursday-check").querySelector("table")).toBeNull();
-    fireEvent.click(within(figure("why-thursday-check")).getByRole("button", { name: p.button }));
-    const rows = [...figure("why-thursday-check").querySelectorAll("tbody tr")];
-    expect(rows.map((r) => r.lastElementChild?.textContent)).toEqual([V.yes, V.no, V.no]);
-    expect(rows.map((r) => r.classList.contains("is-chosen"))).toEqual([false, true, false]);
-    expect(figure("why-thursday-check").textContent).toContain("154.00");
-  });
-
-  it("asks how many rule settings pass only once the learner's rules pass", () => {
-    expect(show().figure("predict-rules").textContent).toContain(
-      format(V.locked, { title: rules.title }),
-    );
   });
 });
 

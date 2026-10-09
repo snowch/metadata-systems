@@ -45,336 +45,148 @@ platform they did not build. As it stands after the author's fifth round, in the
 
 ## Figures
 
-Every figure on the page, in its order, with its role (`CLAUDE.md`, "Experiments, instruments and
-explanations"). An experiment answers twelve questions; an instrument or a reference answers two;
-a figure that completes another experiment names it. The content tests fail a figure without a
-role, without a block, or with a question unanswered.
+Chapter 1 is written as a book: the prose carries the investigation, and a figure appears only
+where the story needs the learner's own hands or eyes. Every figure on the page, in its order,
+with its role (`CLAUDE.md`, "Experiments, instruments and explanations"). An experiment answers
+twelve questions; an instrument or a reference answers two. The content tests fail a figure
+without a role, without a block, or with a question unanswered.
 
 ### `platform`
 
 - **Role:** reference
 - **Serves:** every question in the chapter that needs to know which systems hold which assets, in
-  the order data moves through them. It draws no asset made from another: that is what the
-  chapter shows storage cannot tell. Under its systems it counts what it shows, as the lab counts
-  it (3 files + 3 tables + 1 dashboard = 7 assets): the count gives the word "asset", and the
-  sentence under the map says what the word covers.
-- **Why now:** the learner meets the shop before any question, and keeps it to hand afterwards,
-  through the button at the foot of the window. It carries the systems and the assets that the
-  opening's prose carried before, so the first question comes sooner.
+  the order data moves through them. It draws no asset made from another: that is what the chapter
+  shows the systems cannot tell. Under its systems it counts what it shows (3 files + 3 tables +
+  1 dashboard = 7 assets), and the sentence under it gives the word "asset".
+- **Why now:** the story's first morning needs the ground under it before the head of the shop's
+  line arrives.
 
 ### `week`
 
 - **Role:** reference
 - **Serves:** every question that needs to place a day or a time: which days the dashboard shows,
-  when each night's work happened, and where the learner stands, on Monday at 09:00 after the
-  last night. It shows when the nights were, from the lab's own week, and nothing about what a
-  night wrote or which asset is made from which.
-- **Why now:** the dashboard just below shows those seven days, and the chapter's questions ask
-  "since when"; every time storage shows falls inside this week. It carries the dates and the
-  nights that the opening's prose carried before.
-
-### `dashboard`
-
-- **Role:** inspect
-- **Serves:** the chapter's first question, why Thursday is so far below the other days: it is the
-  evidence the head of the shop asks about.
-- **Why now:** the investigation starts from an observation, and every later step tests what this
-  figure seems to say.
+  when each night's work happened, and where the learner stands. It shows when the nights were,
+  from the lab's own week, and nothing about what a night wrote.
+- **Why now:** the story happens on a Monday morning after a first week; the view carries the
+  dates the prose no longer needs to.
 
 ### `explore`
 
 - **Role:** inspect
-- **Serves:** the learner's first meeting with each kind of thing the platform holds: the raw
-  file, the cleaned tables, the reporting view. Each card names its asset with its kind's mark
-  and one line on what it is and where it sits; opening one shows a small head of its rows, or
-  the dashboard's own view. Nothing is asked, marked or scored.
-- **Why now:** the Thursday question that opens the investigation names these four assets, and
-  the where-first decision asks the learner to choose among them. Meeting them first, with no
-  question attached, makes that decision an informed one instead of a guess at names. The cards
-  say what each asset is, never what went wrong on Thursday: the investigation establishes
-  that.
+- **Serves:** the learner's first meeting with the four assets the chapter works through: the raw
+  file, the cleaned orders, the daily totals, the reporting view. Opening a card shows a small
+  head of its rows - or, for the dashboard, the reporting view itself - with the asset's true row
+  count in the caption. Nothing is asked or scored.
+- **Why now:** the investigation names these four assets from the first discrepancy onward;
+  meeting them with no question attached makes what follows readable instead of a tour of names.
+
+### `dashboard`
+
+- **Role:** inspect
+- **Serves:** the discrepancy itself: Thursday at 51.50 against the days either side. Its own
+  last-refreshed record is on it, which the failed night later makes quietly important.
+- **Why now:** the head of the shop's one line points here; the learner needs to see what the
+  shop's management sees each morning.
 
 ### `predict-days`
 
 - **Role:** experiment
-- **Objective:** recognise that what a derived total means is an assumption, and test it against
-  an independent source: add up the raw orders and compare.
-- **Known before:** the dashboard: Thursday at 51.50, far below the other days; `daily_sales`
-  holds the same total; the head of the shop asks why; the question says what to add up, price
-  times quantity over Thursday's rows of `orders.parquet`.
-- **Driving question:** what do Thursday's orders in `orders.parquet` add up to? Is `daily_sales`
-  simply that total?
-- **The action:** predict the total, a different total, or that they cannot tell yet; then let the
-  lab add the orders up.
-- **Why the action:** a total the learner could work out from the raw rows is independent of
-  `daily_sales`; predicting it first turns the dashboard's apparent meaning into a belief to test.
-- **Evidence:** 205.50 against 51.50, and every day's two totals: equal on three days, different
-  on four.
-- **Consequence:** before, `daily_sales` appeared to be the day's total; after, that is no longer
-  justified, and there is a difference to explain. A learner who expected 51.50 sees that the
-  name and the matching dashboard were an assumption, not evidence.
-- **Predictable:** yes: the learner can hold either belief about what `daily_sales` means, or none.
-- **Gives nothing away:** no option says why a total might differ, and the question says nothing of
-  a difference; the explanation waits for the investigation.
-- **Not knowing:** yes, and offered: "I can't tell yet: nothing so far says what daily_sales
-  measures", marked neither right nor wrong.
-- **Next question:** where did the difference enter, and what explains it? The investigation starts
-  with where to look.
-- **An experiment:** yes: predict, observe, compare.
-
-### `where-first`
-
-- **Role:** experiment
-- **Objective:** decide what evidence to gather first for a question, and which source can supply
-  it: the habit "I have a question; what observation would answer it; where can I obtain it?".
-- **Known before:** the difference, 205.50 against 51.50; the seven assets on the map; no record of
-  which asset is made from which.
-- **Driving question:** where could Thursday's difference have entered, and which asset would you
-  inspect first to find out?
-- **The action:** choose an asset and what to look for there; the inspector below then opens on
-  it, and the learner reads it, and any other.
-- **Why the action:** assets differ in what they can show at all: an asset of orders can show which
-  orders make a total, a table of one row per day cannot. Choosing first makes the learner think
-  about that before the instrument shows it.
-- **Evidence:** a line on what the chosen asset can show, a fact of its shape; then the asset
-  itself, in the inspector.
-- **Consequence:** the learner finds out whether their first source can answer the question. One
-  who chose `daily_sales` or the dashboard learns that a total cannot show its parts, and moves to
-  an asset of orders.
-- **Predictable:** yes: what each asset can show follows from what it is, a file of orders, a table
-  of one row per day, a dashboard of values.
-- **Gives nothing away:** the options name assets and what to look for, never where the total
-  changed; the line after the choice describes the asset's shape, never what it shows for
-  Thursday; the map still draws no asset made from another.
-- **Not knowing:** where the difference entered cannot be settled from storage, which records no
-  path from one asset to another: the chapter goes on to show it. Where to look first is a decision
-  anyone can make, so the figure offers no "I can't tell yet".
-- **Next question:** what could explain the difference? The decision after the inspector asks which
-  explanation to test.
-- **An experiment:** yes, with the inspector as its instrument: the decision gives the inspector a
-  question.
-
-### `storage`
-
-- **Role:** inspect
-- **Serves:** the decision above, where the difference could have entered, and the explanation the
-  learner chooses next: it shows what storage records about each asset, its columns and its rows,
-  and storage's answer to eight questions.
-- **Why now:** the learner has just decided where to look first, and it opens on that asset.
-
-### `predict-owner`
-
-- **Role:** experiment
-- **Objective:** conclude only what a record establishes: the warehouse's owner field names an
-  account, not a person or a team, so it does not answer "who should I ask about `daily_sales`?".
-- **Known before:** the inspector's record for `daily_sales`, read moments before: its owner
-  `etl_service`, its rows and columns, and storage's answer to each of the eight questions; the
-  motivation's question "Who should I ask about `daily_sales`?".
-- **Driving question:** from the warehouse's record, what can you conclude about who to ask?
-- **The action:** commit to a conclusion the record could support: it names a person, a team, an
-  account (but neither a person nor a team), nothing, or "I can't tell yet"; the lab then says
-  which conclusion the record supports.
-- **Why the action:** the learner has the evidence in hand; committing tests whether they read
-  it as what it is (an account name) or as what the question wanted (a person or a team).
-- **Evidence:** the lab's owner-kind probe: `etl_service`, an account, and which options its
-  answer supports. The account is not on the page before the press, which a content test checks.
-- **Consequence:** before, "the warehouse has an owner field" sounded like the question was
-  answered; after, the learner has seen a field with the right name answer a different question,
-  and knows the chapter's question needs a record the warehouse does not keep.
-- **Predictable:** yes, from evidence: the learner has just read the record, and the options are
-  the conclusions it could support. A wrong answer teaches that an account is not a person.
-- **Gives nothing away:** no option names `etl_service`; nothing before the press does.
-- **Not knowing:** yes, and offered: "I can't tell yet" is marked neither right nor wrong.
-- **Next question:** what record would answer "who should I ask?" for certain? The
-  generalisation's first kind: a record of what the asset is, including who is responsible.
-- **An experiment:** yes: the learner commits to a conclusion from evidence, and the lab says
-  which the record supports.
-
-### `why-thursday`
-
-- **Role:** experiment
-- **Objective:** having seen an effect and looked at the evidence, choose an explanation, test it
-  with the tools on the page, and compare.
-- **Known before:** the difference; what they found in the inspector; nothing yet of how
-  `daily_sales` is made.
-- **Driving question:** which explanation will you test: some of Thursday's orders not counted,
-  counted at lower values, or counted on another day?
-- **The action:** choose one; test it in the next section's query builder; once the query rebuilds
-  `daily_sales`, check it.
-- **Why the action:** committing to one explanation turns the query builder into a test of it,
-  instead of a search for any query that fits.
-- **Evidence:** the learner's own queries, day by day against `daily_sales`, and then the check's
-  reading of Thursday's orders against the rows the query keeps: 4 of 7 kept, 3 not, worth
-  154.00, the whole difference.
-- **Consequence:** the learner learns which explanation the rows support and which they rule out.
-  One who chose another learns that the first explanation tested need not be the right one, and
-  that the rows decide.
-- **Predictable:** yes: each explanation is one an engineer could reason to from the difference and
-  the rows.
-- **Gives nothing away:** the three explanations come before the check's evidence, and the figure
-  reveals nothing at the choice; the check names no source before the construction is solved, and
-  never says why the orders were left out, which the rules challenge asks.
-- **Not knowing:** the figure asks which explanation to test, not which is true, so every learner
-  can choose one; it offers no "I can't tell yet".
-- **Next question:** what do the left-out orders have in common, and did anybody mean to leave them
-  out? The rules challenge finds the rule; the reflection says what no data can.
-- **An experiment:** yes: hypothesis, test, compare.
+- **Objective:** put a number on the learner's own model of the shop before the evidence arrives:
+  the raw total is not knowable from the page, but both defensible readings (it matches; it
+  differs) are real hypotheses, and "I can't tell yet" is an honest third.
+- **Known before:** the dashboard's 51.50 and the table's matching total; the pipeline, which
+  shows programs run between the file and the chart.
+- **Driving question:** what do Thursday's raw orders add up to?
+- **The action:** commit to one of the three, then let the lab add the rows up.
+- **Why the action:** the committed number is the learner's model made checkable; the lab's
+  205.50 then lands on a belief they own, not on a fact they were told.
+- **Evidence:** the lab's per-day comparison table, every day of the week, and the raw totals
+  beside the reported ones.
+- **Consequence:** the difference is real (205.50 vs 51.50), systematic (four days differ), and
+  enters between the file and the chart - and the raw total was never unusually low, so the
+  checkout is not the suspect.
+- **Predictable:** partially, from the pipeline's shape: a data engineer can defend either
+  reading, which is the point of asking.
+- **Gives nothing away:** no option names the lab's answer, and nothing above the commit does.
+- **Not knowing:** yes, and offered: "I can't tell yet", answered with what the lab found and
+  marked neither right nor wrong.
+- **Next question:** where between the file and the chart does the total change? The
+  investigation section takes it.
+- **An experiment:** yes: the learner commits, the lab shows, and the gap between the two is
+  the morning's first finding.
 
 ### `build-daily-sales`
 
 - **Role:** experiment
-- **Objective:** build a query that rebuilds an asset, as evidence of how it might have been made,
-  and use it to test an explanation.
-- **Known before:** the difference; what the inspector showed; the explanation they chose to test;
-  what "rebuild" means, defined just above.
-- **Driving question:** can a query over another asset give every row `daily_sales` has?
-- **The action:** choose an asset to read, which rows to keep, what to add up and per what, and run
-  the tests.
-- **Why the action:** a rebuild is the strongest evidence the data can give of how `daily_sales`
-  was made, and building one tests the explanation they chose.
-- **Evidence:** the query's rows against `daily_sales`, one day at a time.
-- **Consequence:** before, the learner had an explanation; after, they have a query that fits, and
-  the construction asks whether fitting shows how `daily_sales` was made.
-- **Predictable:** yes: each choice can be reasoned from the rows and the difference.
-- **Gives nothing away:** the hints come one rung at a time, and nothing on the page names the
-  passing choice before the learner passes.
-- **Not knowing:** not here: the tests decide, and a query that does not fit says which days
-  differ.
-- **Next question:** does a query that rebuilds `daily_sales` show how it was made? The failure
-  experiment answers it.
-- **An experiment:** yes: build, run, compare.
-
-### `why-thursday-check`
-
-- **Role:** experiment
-- **Part of:** `why-thursday`, whose choice it reads once the learner's rebuild passes: that
-  experiment's evidence, read against the learner's explanation.
+- **Objective:** reconstruct the reported total from the data, and feel what a reconstruction
+  establishes: a query that gives every row, with the same values.
+- **Known before:** the discrepancy's shape; the inspector's record of each asset; the four
+  assets' contents from the exploration cards.
+- **Driving question:** can another asset give `daily_sales` exactly?
+- **The action:** build the query in the builder: source, rows to keep, measure, per what.
+- **Why the action:** the reconstruction is the chapter's pivot; doing it with the learner's own
+  hands is what makes the next section's three failures theirs.
+- **Evidence:** the builder's SQL and result, the day-by-day tests, and the kept-rows table the
+  check reads.
+- **Consequence:** `clean_orders`, completed only, price times quantity, per day, reproduces
+  `daily_sales` exactly - and the query, the learner now knows, is evidence and not proof.
+- **Predictable:** from the evidence: the raw file's rows that fail the tests point at the
+  cleaned table.
+- **Gives nothing away:** the hints ladder from concept to full solution, one rung at a time.
+- **Not knowing:** no "I can't tell yet" here; the builder's result table shows every attempt.
+- **Next question:** what does that reconstruction prove about how the table was made? The
+  failure experiment tests it.
+- **An experiment:** yes: the learner builds, the lab grades day by day, and the pass is the
+  learner's own.
 
 ### `changes`
 
 - **Role:** experiment
-- **Objective:** see that a query that rebuilds an asset is evidence, and that changes to the shop
-  can make it ambiguous, absent or misleading: a rebuild does not show how an asset was made.
-- **Known before:** their own query rebuilding `daily_sales`; what each change does, in its label;
-  the statuses and rows in the inspector; "rebuild" asking only for the rows the asset has.
-- **Driving question:** after this change, how many of the builder's queries will rebuild
-  `daily_sales`?
-- **The action:** choose a change, predict how many queries will fit, run the week again with it,
-  and read what storage holds.
-- **Why the action:** only by changing the shop and running it again can the learner watch the
-  evidence of a rebuild move while nothing records the change.
-- **Evidence:** the queries that fit after the change, two after the copy, none after the edit,
-  one after the failed night; storage on Monday morning; their own query's rows against the new
-  `daily_sales`.
-- **Consequence:** before, a fitting query looked like the answer; after, it is one piece of
-  evidence that a copy, an edit or a failed night can undo. A learner who expected one query
-  after the copy sees a second asset fit as well.
-- **Predictable:** yes: each change's label gives what the learner needs to reason about the count.
-- **Gives nothing away:** the options are counts, each with what the count means for the data; none
-  says what the change does to `daily_sales` or why.
-- **Not knowing:** not offered: each change's label is enough to reason about the count, so the
-  learner can commit to one.
-- **Next question:** what would have recorded the change? The closing words say that none of the
-  changes left a record of itself.
-- **An experiment:** yes: predict, change, run again, compare.
-
-### `map`
-
-- **Role:** experiment
-- **Objective:** tell apart what storage records, what the data only suggests, and what only a
-  record kept at the time can answer.
-- **Known before:** storage's answer to each of the eight questions in the inspector; the query that
-  rebuilds `daily_sales`; the changes; the rule for the data's group, stated above the figure.
-- **Driving question:** for each of eight questions about `daily_sales`, what can answer it?
-- **The action:** sort the eight questions into three groups, check the sort, then let the lab
-  place them, for the week as it ran and for each change.
-- **Why the action:** sorting makes the learner apply what they found to each question in turn,
-  before the lab's placement can do it for them.
-- **Evidence:** the lab's placement, from storage and from every query the builder offers, and how
-  it moves with each change.
-- **Consequence:** a question the learner put with the data that the lab places elsewhere shows
-  that evidence they took for an answer was a suggestion, or that storage held more than they
-  thought; the questions left over need a record.
-- **Predictable:** yes: every placement can be reasoned from the inspector and the builder.
-- **Gives nothing away:** the groups are defined by a rule the learner applies, not by examples of
-  the answers, and the lab's placement shows only after the learner's sort is checked.
-- **Not knowing:** in effect, yes: "only a record kept at the time answers it" is the group for
-  what neither storage nor the data can tell.
-- **Next question:** what kind of record would answer the questions only a record answers? The
-  generalisation tags each with its kind.
-- **An experiment:** yes: sort, check, compare with the lab's placement.
+- **Objective:** break the reconstruction's evidence three ways - ambiguity (a copy), erasure
+  (an edit), and staleness (a failed night) - and discover that a rebuild is evidence, never
+  proof, and that the systems record no change itself.
+- **Known before:** the learner's own passing query; the pattern of matching and differing days.
+- **Driving question:** after each change, how many of the builder's queries still reproduce the
+  new `daily_sales`?
+- **The action:** predict the count, run the week with the change, read what the systems hold.
+- **Why the action:** each prediction commits the learner to what their evidence is worth;
+  each run shows it breaking in a way reading alone would not.
+- **Evidence:** the queries that still fit, the Monday-morning state, the learner's own rows
+  against the new table - all from the lab's rerun of the week.
+- **Consequence:** a copy fits equally; an edit leaves nothing that fits; a failed night looks
+  current while stale. In no changed week does any system record the change itself.
+- **Predictable:** yes, from the learner's own query and the change's description - which is
+  what makes the wrong predictions instructive.
+- **Gives nothing away:** the outcome text describes the state, never the lesson; the closing
+  paragraph is the chapter's, after all three.
+- **Not knowing:** offered in the prediction; the lab answers with the count it found.
+- **Next question:** why did the evidence fail? The explanation section answers: the systems
+  keep only what they need.
+- **An experiment:** yes: three perturbations, each a different failure of the same evidence.
 
 ### `build-rules`
 
 - **Role:** experiment
-- **Objective:** recover the rules that made one asset from another by comparing their rows, and
-  meet the limit of doing so.
-- **Known before:** `orders.parquet` and `clean_orders`, row by row, in the inspector; the kinds of
-  row that differ between them; the Thursday orders the check found left out.
-- **Driving question:** which rules turn `orders.parquet` into `clean_orders`?
-- **The action:** for each kind of row that differs, choose whether the rules keep it, and run the
-  tests.
-- **Why the action:** deciding each rule from the rows is the only way to rebuild a cleaning step
-  that nothing records.
-- **Evidence:** the rows each setting keeps, against `clean_orders`.
-- **Consequence:** the learner finds rules that fit, the one that left out Thursday's orders among
-  them, and is then asked whether their setting is the only one that fits.
-- **Predictable:** yes: each rule can be decided from the rows that differ.
-- **Gives nothing away:** the hints come one rung at a time, and nothing names the passing settings
-  before the learner passes.
-- **Not knowing:** not here: the tests decide each setting.
-- **Next question:** is this setting the only one that gives `clean_orders` exactly? The rules
-  prediction asks.
-- **An experiment:** yes: build, run, compare.
-
-### `predict-rules`
-
-- **Role:** experiment
-- **Objective:** see that rebuilding an output does not identify the rules that made it: a setting
-  can match every row without being the only one that does.
-- **Known before:** their own passing rules; the rows each rule keeps as they change it; the
-  quantities in `orders.parquet`.
-- **Driving question:** is your setting of the four rules the only one that gives `clean_orders`
-  exactly?
-- **The action:** predict yes or no, then let the lab try all sixteen settings.
-- **Why the action:** the learner's own passing setting feels like the answer; predicting before
-  the lab tries every setting makes that feeling a belief to test.
-- **Evidence:** two settings pass, differing only in the rule for a quantity of 0 or less, which no
-  order this week has.
-- **Consequence:** before, matching every row seemed to pin down every rule; after, the learner
-  knows this week's data cannot show one rule at all. A learner who said yes learns why.
-- **Predictable:** yes: the learner can test it on their own rules before committing.
-- **Gives nothing away:** the options say whether another setting can match, not which rule leaves
-  it open or why. Before the author's fourth round they named a rule that decides no row, the very
-  explanation the result gives.
-- **Not knowing:** not offered: the learner can find out by changing their own rules before
-  committing.
-- **Next question:** what would show the rule this week's data cannot? The reflection answers: a
-  record somebody kept of it.
-- **An experiment:** yes: predict, then the lab tries every setting.
-
-Before the second round, two predictions failed this rule. The owner prediction offered four
-kinds of owner (a person, a team, the program, an account), a fact about how this shop set up its
-warehouse that nothing on the page let a learner reason to. The days prediction asked on how many
-of seven days the raw orders equal `daily_sales`, a number that depended on which days held a
-cancelled order, a repeated one or orders with no customer id, none of which the learner had seen.
-The change lab's edit was labelled "edited for refunds", which said nothing a learner could reason
-from; its label now says what the edit keeps, from Saturday's row on. The rules prediction asked
-for a count (one, two, three or more) where the question is whether every rule decided a row.
-
-The owner question took two rounds. The second round asked whether the owner would name someone
-you could ask, yes or no, and the author found it still a guess: either answer could be right, and
-which one depends on how this shop happened to set up its warehouse, which nothing on the page
-shows. At the author's suggestion it now asks what the learner would store as the owner of
-`daily_sales` if they wrote its program, with the first version's four options, and the lab shows
-the shop's `etl_service` beside their choice, marked neither right nor wrong. The figure's
-`choose` mode carries this, and `CLAUDE.md` now says when to use it.
-
-In the third round the author asked for more than a fair choice: the question should teach the
-learner to question a requirement. It now gives the requirement in words, "Every table must have
-an owner.", asks what the learner would store, lets them choose nothing until they know what the
-owner is for, then shows the four questions the requirement could be asking before it shows the
-warehouse; "Requirements", below, has the whole of it.
+- **Objective:** recover rules that are not written anywhere readable, and meet
+  underdetermination: two settings pass, because this week's data never exercises the rule the
+  shop's program really has.
+- **Known before:** the two files' rows, from the inspector and the exploration cards; the
+  duplicate order and the missing customer ids.
+- **Driving question:** which rows do the cleaning rules keep?
+- **The action:** choose four rules, run the tests against `clean_orders`, read the SQL.
+- **Why the action:** the recovery is the chapter's last act of reading state as if it were
+  history - and its last failure of exactly that.
+- **Evidence:** the kept rows the rules produce, compared with `clean_orders` row by row.
+- **Consequence:** a setting that fits the data can be wrong about rules the data never
+  exercises: two pass, differing only where no order this week goes.
+- **Predictable:** from the row-by-row comparison, which the inspector and the cards make
+  possible - the underdetermination is the discovery, not the difficulty.
+- **Gives nothing away:** the hints ladder; the last rung still names the quantity rule's
+  freedom, which the learner has earned by then.
+- **Not knowing:** not offered; the comparison is the work.
+- **Next question:** none: the reflection closes the morning.
+- **An experiment:** yes: the learner chooses, the lab grades rows, and the passing pair is the
+  lesson.
 
 ## Requirements
 

@@ -1,12 +1,13 @@
 // Copyright © 2026 Christopher Snow
 
-// Chapter 1: The invisible data system (Part I, Why metadata exists).
+// Chapter 1: The invisible data system (Part I, Why metadata exists), written as a book.
 //
-// The learner gets the shop's storage and nothing else, and tries to answer the questions anybody
-// asks of a platform they did not build. The structure is here; the words are in
-// invisible-system.prose.ts and invisible-system.labels.ts. Every figure runs the lab; every
-// answer, expected value and number is computed by it, and the chapter's facts test pins the
-// numbers the prose states.
+// The prose carries the investigation; a lab appears only where the story needs the learner's
+// own hands: the Thursday prediction (put a number on your model before you look), the rebuild
+// (the reconstruction), the failure experiment (the evidence breaks), and the cleaning rules
+// (the reconstruction underdetermined). The pipeline, the week, the dashboard and the asset
+// cards are the book's diagrams. Everything else is prose and a table, both computed by the lab
+// and pinned by the facts test.
 
 import { DAYS } from "@ms/lab";
 import type { LessonInput } from "@platform/lesson-schema";
@@ -16,20 +17,6 @@ import { PROSE } from "./invisible-system.prose";
 
 const options = (labels: Readonly<Record<string, string>>) =>
   Object.entries(labels).map(([value, label]) => ({ value, label }));
-
-/**
- * Options that stand for what a probe names: each label with the answers it stands for. Each
- * option is an explanation the learner could hold; the lab's answer picks one.
- */
-const meaning = (
-  labels: Readonly<Record<string, string>>,
-  means: Readonly<Record<string, readonly string[]>>,
-) =>
-  Object.entries(labels).map(([value, label]) => {
-    const m = means[value];
-    if (!m) throw new Error(`no answers for the option ${value}`);
-    return { value, label, means: [...m] };
-  });
 
 /** Options that stand for counts: each label with the counts it covers, inclusive. */
 const counted = (
@@ -41,9 +28,6 @@ const counted = (
     if (!range) throw new Error(`no range for the option ${value}`);
     return { value, label, range: [range[0], range[1]] as [number, number] };
   });
-
-/** The explanations the learner can test for Thursday, and what the rows must show for each. */
-const THURSDAY = meaning(LABELS.hOptions, { left: ["left"], lower: ["lower"], moved: ["moved"] });
 
 /** The assets a query in the builder may read: every file or table except the one to rebuild. */
 const SOURCES = [
@@ -94,16 +78,6 @@ export const invisibleSystem: LessonInput = {
           timeModel: "lab",
           caption: LABELS.captions.week,
           lead: PROSE.weekLead,
-          after: PROSE.weekAfter,
-        },
-        {
-          id: "dashboard",
-          role: "inspect",
-          kind: "dashboard",
-          timeModel: "lab",
-          caption: LABELS.captions.dashboard,
-          lead: PROSE.dashboardLead,
-          after: PROSE.dashboardAfter,
         },
         {
           id: "explore",
@@ -113,21 +87,35 @@ export const invisibleSystem: LessonInput = {
           caption: LABELS.captions.explore,
           lead: PROSE.exploreLead,
           props: {
-            // The four assets the chapter works through, one card each: see what the platform
-            // holds before any question. Nothing is asked or scored here. A card shows up to
-            // seven rows, so the two small tables appear whole; the two large files show a head.
+            // The four assets the chapter works through, one card each. A card shows up to
+            // seven rows, so the two small tables appear whole; the large files show a head.
             head: 7,
             cards: [
-              { id: "orders.parquet", role: LABELS.roles.orders },
-              { id: "clean_orders", role: LABELS.roles.clean },
-              { id: "daily_sales", role: LABELS.roles.daily },
-              { id: "sales_dashboard", role: LABELS.roles.dashboard },
+              {
+                id: "orders.parquet",
+                role: "The raw orders the shop took, written each night to a file",
+              },
+              { id: "clean_orders", role: "Orders after the cleaning step, held in the warehouse" },
+              { id: "daily_sales", role: "One row per day: the totals the dashboard reports" },
+              { id: "sales_dashboard", role: "The reporting view built from the data" },
             ],
           },
         },
+        {
+          id: "dashboard",
+          role: "inspect",
+          kind: "dashboard",
+          timeModel: "lab",
+          caption: LABELS.captions.dashboard,
+          after: PROSE.dashboardAfter,
+        },
       ],
     },
-    { kind: "motivation", title: LABELS.titles.motivation, prose: PROSE.motivation },
+    {
+      kind: "motivation",
+      title: LABELS.titles.motivation,
+      prose: PROSE.motivation,
+    },
     {
       kind: "prediction",
       title: LABELS.titles.prediction,
@@ -142,9 +130,10 @@ export const invisibleSystem: LessonInput = {
           props: {
             known: PROSE.p2Known,
             question: PROSE.p2Question,
-            // A total and the belief behind it, or "I can't tell yet": what the raw orders add up
-            // to, not why they might differ, which the investigation finds.
-            options: meaning(LABELS.p2Options, { same: ["same"], different: ["more", "less"] }),
+            options: options(LABELS.p2Options).map((o) => ({
+              ...o,
+              means: o.value === "same" ? ["same"] : ["more", "less"],
+            })),
             undecided: {
               value: "undecided",
               label: LABELS.p2Undecided,
@@ -165,94 +154,7 @@ export const invisibleSystem: LessonInput = {
     {
       kind: "investigation",
       title: LABELS.titles.investigation,
-      prose: "",
-      interactives: [
-        {
-          id: "where-first",
-          role: "experiment",
-          kind: "decision",
-          timeModel: "lab",
-          caption: LABELS.captions.where,
-          props: {
-            // The effect is established; first, where to look. Each option is an asset and the
-            // evidence sought there; the line after the choice says what that asset can show, a
-            // fact of its shape, never what it shows for Thursday. The inspector opens on it.
-            question: PROSE.wQuestion,
-            options: Object.entries(LABELS.wOptions).map(([value, label]) => ({
-              value,
-              label,
-              after: PROSE.wAfter[value as keyof typeof PROSE.wAfter],
-            })),
-            commit: LABELS.wCommit,
-            mine: PROSE.wMine,
-            test: PROSE.wNext,
-          },
-        },
-        {
-          id: "storage",
-          role: "inspect",
-          kind: "storage-inspector",
-          timeModel: "lab",
-          caption: LABELS.captions.inspector,
-          lead: PROSE.inspectorLead,
-          props: {
-            initial: "orders.parquet",
-            from: {
-              figure: "where-first",
-              assets: {
-                orders: "orders.parquet",
-                clean: "clean_orders",
-                daily: "daily_sales",
-                dashboard: "sales_dashboard",
-              },
-            },
-          },
-        },
-        {
-          id: "predict-owner",
-          role: "experiment",
-          kind: "lab-prediction",
-          timeModel: "lab",
-          caption: LABELS.captions.p1,
-          props: {
-            // Ownership, from evidence (the user's redesign): the learner has just read what the
-            // warehouse records about daily_sales, so each option is a conclusion they could draw
-            // from it, and the lab says which the record supports. The requirement wording stays
-            // in the authoring notes, not on the page.
-            known: PROSE.p1Known,
-            question: PROSE.p1Question,
-            options: meaning(LABELS.p1Options, {
-              person: ["person"],
-              team: ["team"],
-              none: ["none"],
-              account: ["account"],
-            }),
-            undecided: {
-              value: "undecided",
-              label: LABELS.p1Undecided,
-              line: PROSE.p1UndecidedLine,
-            },
-            probe: { kind: "owner-kind", asset: "daily_sales" },
-            explain: PROSE.p1Explain,
-          },
-        },
-        {
-          id: "why-thursday",
-          role: "experiment",
-          kind: "decision",
-          timeModel: "lab",
-          caption: LABELS.captions.hypothesis,
-          props: {
-            // Then the cause, as an explanation the learner chooses and tests with the figures
-            // that follow, checked after their rebuild passes.
-            question: PROSE.hQuestion,
-            options: THURSDAY,
-            commit: LABELS.hCommit,
-            mine: PROSE.hMine,
-            test: PROSE.hTest,
-          },
-        },
-      ],
+      prose: PROSE.investigation,
     },
     {
       kind: "construction",
@@ -268,40 +170,12 @@ export const invisibleSystem: LessonInput = {
           lead: PROSE.c1Lead,
           props: { challengeId: "rebuild-daily-sales" },
         },
-        {
-          id: "why-thursday-check",
-          role: "experiment",
-          kind: "hypothesis-check",
-          timeModel: "lab",
-          caption: LABELS.captions.check,
-          props: {
-            of: "why-thursday",
-            options: THURSDAY,
-            requires: "rebuild-daily-sales",
-            probe: {
-              kind: "day-gap",
-              source: "orders.parquet",
-              via: "clean_orders",
-              keep: "completed",
-              target: "daily_sales",
-              day: "2026-09-10",
-            },
-            button: LABELS.cButton,
-            headings: LABELS.cHeadings,
-            text: {
-              mine: PROSE.cMine,
-              none: PROSE.cNone,
-              lab: PROSE.cLab,
-              explain: PROSE.cExplain,
-            },
-          },
-        },
       ],
     },
     {
       kind: "failureExperiment",
       title: LABELS.titles.failureExperiment,
-      prose: "",
+      prose: PROSE.changeLead,
       interactives: [
         {
           id: "changes",
@@ -309,7 +183,6 @@ export const invisibleSystem: LessonInput = {
           kind: "change-lab",
           timeModel: "lab",
           caption: LABELS.captions.change,
-          lead: PROSE.changeLead,
           props: {
             challengeId: "rebuild-daily-sales",
             changes: [
@@ -334,30 +207,16 @@ export const invisibleSystem: LessonInput = {
       kind: "explanation",
       title: LABELS.titles.explanation,
       prose: PROSE.explanation,
-      interactives: [
-        {
-          id: "map",
-          role: "experiment",
-          kind: "question-map",
-          timeModel: "lab",
-          caption: LABELS.captions.map,
-          lead: PROSE.mapLead,
-          after: PROSE.mapAfter,
-          props: {
-            challengeId: "rebuild-daily-sales",
-            weeks: (["copy", "refunds", "failed"] as const).map((id) => ({
-              id,
-              label: LABELS.changeLabels[id],
-            })),
-          },
-        },
-      ],
     },
-    { kind: "generalisation", title: LABELS.titles.generalisation, prose: PROSE.generalisation },
+    {
+      kind: "generalisation",
+      title: LABELS.titles.generalisation,
+      prose: PROSE.generalisation,
+    },
     {
       kind: "challenge",
       title: LABELS.titles.challenge,
-      prose: "",
+      prose: PROSE.c2Lead,
       interactives: [
         {
           id: "build-rules",
@@ -365,28 +224,15 @@ export const invisibleSystem: LessonInput = {
           kind: "challenge",
           timeModel: "lab",
           caption: LABELS.captions.c2,
-          lead: PROSE.c2Lead,
           props: { challengeId: "clean-orders-rules" },
-        },
-        {
-          id: "predict-rules",
-          role: "experiment",
-          kind: "lab-prediction",
-          timeModel: "lab",
-          caption: LABELS.captions.p3,
-          props: {
-            question: PROSE.p3Question,
-            // Asked once the learner's rules pass, so the count is at least one: theirs alone,
-            // or more than one, of the sixteen settings.
-            options: counted(LABELS.p3Options, { one: [1, 1], more: [2, 16] }),
-            probe: { kind: "clean-fits" },
-            explain: PROSE.p3Explain,
-            requires: "clean-orders-rules",
-          },
         },
       ],
     },
-    { kind: "reflection", title: LABELS.titles.reflection, prose: PROSE.reflection },
+    {
+      kind: "reflection",
+      title: LABELS.titles.reflection,
+      prose: PROSE.reflection,
+    },
   ],
   challenges: [
     {
@@ -484,8 +330,8 @@ export const invisibleSystem: LessonInput = {
   modelVsReality: PROSE.modelVsReality,
   originalityNote: {
     textbookExample:
-      "A tour of a data catalogue's screens over a ready-made sample project, such as dbt's jaffle shop (the café dbt's guides use: its quickstart's data is customers, orders and payments, and its structure guide builds staging, intermediate and marts models), with its documentation and its dependency diagram already generated for the reader.",
+      "A tour of a data catalogue's screens over a ready-made sample project, such as dbt's jaffle shop, with its documentation and its dependency diagram already generated for the reader.",
     howThisDiffers:
-      "Nothing is generated for the learner: they get the systems alone, and a pipeline of the platform's systems and assets that shows no asset made from another, and try to recover what a catalogue would hold, by rebuilding one asset from the others with a query and the raw orders' cleaning rules from their output. Each prediction offers conclusions the evidence could support, not facts about the shop to guess: the owner prediction asks what the warehouse's record, read moments before in the inspector, establishes about who to ask, and its options are the conclusions that record could support. Where a catalogue's tour shows an owner field already filled in, this chapter makes the learner read the record and conclude from it that the field names an account, not a person, so the question stays open. The failure experiment then makes that inference ambiguous (an analyst's copy), out of the builder's reach (an unrecorded edit to a program) and misleading (a failed night that leaves the dashboard looking up to date), each after the learner predicts it; and the learner sorts the chapter's questions before the lab places them in three groups, computed, not listed. The shop, a bicycle-parts retailer with no payments table, its data, its Thursday incident and its programs in the course's own SQL are invented for the course.",
+      "This chapter is a first morning told as a story: the learner is handed an undocumented platform and one line from the head of the shop, and every conclusion is one they reconstruct from the data themselves. The chapter's spine is the gap between a reconstruction that fits and the truth: the rebuild is evidence, and the copy, the edit and the failed night each break that evidence in a way the data alone cannot repair. The shop, a bicycle-parts retailer, its data, its Thursday incident and its programs in the course's own SQL are invented for the course.",
   },
 };
