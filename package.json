@@ -25,6 +25,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "./scripts/check.sh",
+    "check:prose": "node scripts/prose.mjs && node --test scripts/prose.test.mjs",
     "sync-platform": "node scripts/sync-platform.mjs"
   },
   "devDependencies": {

@@ -647,3 +647,25 @@ If not, simplify the sentence or split the paragraph.
 
 The objective is not to make the subject easy. The objective is to make the writing stop getting
 in the way of the subject.
+
+## The writing standard for this course (from AGENTS.md)
+
+Write clear, natural technical English: a knowledgeable engineer explaining something accurately
+to another person. Prefer concrete meaning over rhetorical effect, and reject, specifically:
+
+- pseudo-profound aphorisms (explain the activity instead);
+- artificially dramatic fragments ("One thing to take away");
+- forced contrasts, symmetry and wordplay that obscure the actual distinction;
+- personification of systems, data, rows or questions ("Nothing says who made it" becomes "The
+  available metadata does not identify who created it");
+- vague references ("the rest", "what survives", "nothing else"): name the object;
+- meta-commentary about what an exercise or section is doing;
+- feedback that marks an answer wrong without stating the correct conclusion and the evidence
+  for it;
+- overstatement: evidence that supports an explanation does not prove a cause;
+- repetition, atmospheric emphasis and formulaic closing slogans;
+- awkward or unnatural English: a grammatically valid sentence is not necessarily good prose.
+
+`scripts/prose.mjs` (in `npm run check`, and alone as `npm run check:prose`) fails on confirmed
+regressions of these, one entry per phrase with the rule it breaks. When a review finds a new
+one, add it there. The review pass itself is `docs/prompts/review-learner-facing-prose.md`.

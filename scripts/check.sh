@@ -35,6 +35,11 @@ echo "== unit and integration tests =="
 # pinned to the lab, and it renders whole.
 npx vitest run
 
+echo "== learner-facing prose =="
+# The known-bad phrases the writing standard (AGENTS.md) rejects: a narrow regression check for
+# confirmed wording, not a style judge. Its own tests run with it.
+npm run check:prose
+
 echo "== the course builds =="
 # The production bundle, under the base path GitHub Pages serves it from.
 npm run build -w @ms/course

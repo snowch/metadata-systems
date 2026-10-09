@@ -172,6 +172,20 @@ answer it: whether a query that rebuilds an asset shows how the asset was made i
 1's construction and answered by its failure experiment. What a chapter must not do is answer its
 own question in prose before the learner has run the experiment that answers it.
 
+**Clear, natural technical English.** The prose sounds like a knowledgeable engineer
+explaining something accurately to another person, never like writing trying to sound insightful.
+Prefer concrete meaning over rhetorical effect: specific nouns and verbs over vague abstractions,
+ordinary English over manufactured slogans, dramatic phrasing or literary flourishes. Reject
+pseudo-profound aphorisms ("a wrong belief, once tested, tells you something" - explain the
+activity instead), artificially dramatic fragments ("one thing to take away"), forced contrasts
+and wordplay, personification of systems or data ("nothing says who made it" - say what the
+metadata does not hold), vague references ("the rest", "what survives"), meta-commentary about
+what an exercise is doing, feedback that marks an answer wrong without explaining the correct
+conclusion, overstatement of what evidence shows, and closing slogans. `scripts/prose.mjs`
+(`npm run check:prose`, run by `npm run check`) fails on confirmed regressions of these; the
+editorial review pass in `docs/prompts/review-learner-facing-prose.md` catches the rest.
+`AGENTS.md` states the same rules for agents and where the checks live.
+
 **Silence is preferable to filler.** Write for the learner's next action, not for narrative flow,
 and do not imitate a textbook's teacherly tone. Every sentence tells the learner something
 concrete, changes what they should do, explains why something matters, or sets up a prediction or

@@ -310,7 +310,7 @@ describe("the facts Chapter 1 states", () => {
     expect(PROSE.outcomeRefunds).toContain("Saturday's row now reads 215.49");
     expect(PROSE.outcomeRefunds).toContain("it read 191.49");
     expect(PROSE.outcomeRefunds).toContain("unchanged, 97.75");
-    expect(PROSE.outcomeRefunds).toContain("the same 7 rows");
+    expect(PROSE.outcomeRefunds).toContain("`daily_sales` still has 7 rows");
   });
 
   it("states the failed night as the lab makes it", () => {
