@@ -71,6 +71,16 @@ test("suspicious but legitimate wording is not a hard failure", () => {
   assert.equal(code, 0, "legitimate wording must not fail the check");
 });
 
+test("the personifying nothing-says construction is rejected", () => {
+  const { code, out } = runCheck({
+    "packages/views/src/strings.ts":
+      'export const V = { q: "Nothing so far says who created it." };\n',
+  });
+  assert.notEqual(code, 0);
+  assert.match(out, /Nothing so far says/);
+  assert.match(out, /rule 4/);
+});
+
 test("the whole-file scan reports the file and enough context to find the line", () => {
   const { code, out } = runCheck({
     "apps/course/src/strings.ts":

@@ -40,6 +40,12 @@ const PROHIBITED = [
     phrase: "current state is not history",
     rule: "a closing slogan (rule 9): state the conclusion plainly, once, where it belongs",
   },
+  // Rule 4: personification. "Nothing" as the subject of "says" names no metadata and no system;
+  // name what does not show the answer. Found in p2UndecidedLine and an option label.
+  {
+    phrase: "Nothing so far says",
+    rule: "personification (rule 4): name what does not show it - the page, the metadata, the record",
+  },
 ];
 
 /**

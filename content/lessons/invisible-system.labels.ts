@@ -59,7 +59,7 @@ export const LABELS = {
     same: "51.50: daily_sales holds the total of Thursday's orders",
     different: "a different total: daily_sales is not simply the total of Thursday's orders",
   },
-  p2Undecided: "I can't tell yet: nothing so far says what daily_sales measures",
+  p2Undecided: "I can't tell yet: nothing so far shows what daily_sales measures",
   changeOptions: {
     none: "none, so the data no longer points to any query",
     one: "one, so the data still points to a single query",
