@@ -234,9 +234,10 @@ describe("the facts Chapter 1 states", () => {
     expect(PROSE.wAfter.clean).toContain("with the same columns as `orders.parquet`");
     expect(PROSE.wAfter.daily).toContain("one row per day: the day and its revenue");
     expect(PROSE.wAfter.dashboard).toContain("the values it shows, one per day");
-    expect(PROSE.wQuestion).toContain(
-      "add up to 205.50. `daily_sales` and the dashboard both show 51.50",
-    );
+    // The where-first question does not state the prediction's answer: it frames the
+    // discrepancy from the dashboard, which the page already shows, so a learner who has not
+    // committed the prediction is not told its result.
+    expect(PROSE.wQuestion).toContain("the difference appears somewhere between the two");
   });
 
   it("names etl_service as the owner of all three tables", () => {
@@ -289,7 +290,7 @@ describe("the facts Chapter 1 states", () => {
     expect(sumReconstructions(week(["copy"]), "daily_sales", "covers")).toHaveLength(2);
     // The lead says the builder's choices cover every asset in storage that week.
     expect(sumSources(week(["copy"]), "daily_sales")).toContain("clean_orders_copy.parquet");
-    expect(PROSE.changeLead).toContain("cover every asset in the systems that week");
+    expect(PROSE.changeLead).toContain("which queries still reproduce the new `daily_sales`");
     expect(PROSE.outcomeCopy).toContain("last modified at 02:15, with the same 44 rows");
     expect(PROSE.outcomeCopy).toContain("Now 2 queries rebuild");
     expect(PROSE.afterAll).toContain("two assets fit equally well");

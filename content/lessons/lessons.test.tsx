@@ -166,13 +166,14 @@ describe("the course's chapters", () => {
         const w = waits(id);
         return w !== undefined && (w === earlier || waitsFor(w, earlier));
       };
+      // A figure that waits (for a challenge pass) names an earlier challenge; nothing else
+      // gates content behind a commitment: an engineer can read the chapter without committing.
       placed.forEach(({ x }, i) => {
         const w = waits(x.id);
         if (w === undefined) return;
         const at = placed.findIndex((f) => f.x.id === w);
         expect(at, `${x.id} waits for an earlier figure`).toBeGreaterThanOrEqual(0);
         expect(at, `${x.id} waits for an earlier figure`).toBeLessThan(i);
-        expect(PREDICTION_KINDS, `${x.id} waits for an answer`).toContain(placed[at]?.x.kind);
       });
       placed.forEach(({ s, x }, i) => {
         if (x.kind !== "lab-prediction") return;

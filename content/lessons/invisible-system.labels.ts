@@ -68,10 +68,10 @@ export const LABELS = {
   // Where the learner looks first for Thursday's difference: an asset, and the evidence sought
   // there (brief Z).
   wOptions: {
-    orders: "orders.parquet, to inspect the raw Thursday orders that make up 205.50",
+    orders: "orders.parquet, to inspect the raw Thursday orders behind the dashboard's total",
     clean:
       "clean_orders, to inspect whether the Thursday orders changed between the raw file and the cleaned table",
-    daily: "daily_sales, to inspect how the 51.50 total is recorded",
+    daily: "daily_sales, to inspect how the day's total is recorded",
     dashboard: "the dashboard, to inspect whether the difference appears in the reporting layer",
   },
   /** Each exploration card's one line: what the asset is and where it sits, never what went wrong. */

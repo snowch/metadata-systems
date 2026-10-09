@@ -186,8 +186,6 @@ export const invisibleSystem: LessonInput = {
             commit: LABELS.wCommit,
             mine: PROSE.wMine,
             test: PROSE.wNext,
-            // Its question states what the Thursday prediction found, so it waits for it.
-            waits: "predict-days",
           },
         },
         {
@@ -252,8 +250,6 @@ export const invisibleSystem: LessonInput = {
             commit: LABELS.hCommit,
             mine: PROSE.hMine,
             test: PROSE.hTest,
-            // Where to look comes before what could explain it.
-            waits: "where-first",
           },
         },
       ],

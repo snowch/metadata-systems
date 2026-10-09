@@ -349,25 +349,15 @@ describe("the figures on Chapter 1's page", () => {
     expect(note.textContent).not.toContain("Metadata Lab");
   });
 
-  it("asks where to look, and which explanation to test, only once the answer above is committed", () => {
-    const caption = (id: string) =>
-      lesson.sections
-        .flatMap((s) => s.interactives)
-        .find((x) => x.id === id)!
-        .caption.replace(/\.$/, "");
-    const before = show();
-    expect(before.figure("where-first").textContent).toContain(
-      format(V.waits, { caption: caption("predict-days") }),
-    );
-    expect(before.figure("where-first").textContent).not.toContain("205.50");
-    expect(before.figure("where-first").querySelector("input")).toBeNull();
-    before.page.unmount();
-
-    const { figure } = show((store) => store.setSlot("predict-days", { choice: "same" }));
-    expect(figure("where-first").querySelector("input")).not.toBeNull();
-    expect(figure("why-thursday").textContent).toContain(
-      format(V.waits, { caption: caption("where-first") }),
-    );
+  it("offers the where-first and hypothesis choices without gating the page behind them", () => {
+    const { figure } = show();
+    // An engineer can read the chapter without committing: the decisions show their options
+    // at once, and neither states the Thursday prediction's result before it is committed.
+    for (const id of ["where-first", "why-thursday"]) {
+      const f = figure(id);
+      expect(within(f).queryAllByRole("radio").length, id).toBeGreaterThan(0);
+      expect(f.textContent, id).not.toContain("205.50");
+    }
   });
 
   it("opens the inspector on the asset the learner chose to look at first", () => {

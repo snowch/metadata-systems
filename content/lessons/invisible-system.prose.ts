@@ -47,12 +47,12 @@ export const PROSE = {
   p2Explain:
     "Thursday's rows of `orders.parquet` add up to 205.50, but the reported total for Thursday is 51.50. The two numbers describe the same day, so the change happened somewhere between the raw orders and the reported total.\n\nThursday's raw total is not unusually low: it is close to Wednesday's (198.75) and Friday's (204.24). That is evidence against a slow day of orders. It does not show what changed the total on the way to the dashboard.\n\nThe table compares every day: the totals are equal on three days (Monday, Friday and Sunday) and differ on four (Tuesday, Wednesday, Thursday and Saturday). Three days match and four differ, so this is not one day's oddity to explain away: the pattern across the week is the next thing to inspect.\n\n### What we established\n\n- Thursday's raw total is 205.50; the reported total is 51.50.\n- The reported total is not simply each day's raw total.\n- The change happened somewhere between `orders.parquet` and `daily_sales`.",
   wQuestion:
-    "Thursday's orders in `orders.parquet` add up to 205.50. `daily_sales` and the dashboard both show 51.50. Somewhere between them, the total changed. Which asset would you inspect first to find where, and what would you look for there?",
+    "The dashboard's Thursday is far lower than the raw orders behind it, and the difference appears somewhere between the two. Which asset would you inspect first to find where the total changed, and what would you look for there?",
   wMine: "You will start with: {choice}.",
   /** What the chosen asset can show: a fact of its shape, never what it shows for Thursday. */
   wAfter: {
     orders:
-      "Each row of `orders.parquet` is an order, with its price, quantity and status. It shows what Thursday's 205.50 is made of. It does not say which orders `daily_sales` counts.",
+      "Each row of `orders.parquet` is an order, with its price, quantity and status. It shows what Thursday's raw total is made of. It does not say which orders `daily_sales` counts.",
     clean:
       "Each row of `clean_orders` is an order too, with the same columns as `orders.parquet`. Compared with the raw file, it shows which orders the two hold differently.",
     daily:
@@ -63,7 +63,7 @@ export const PROSE = {
   wNext:
     "The inspector below opens on the asset you chose. Inspect it first, then inspect any other asset you need.",
   hQuestion:
-    "Thursday's `orders.parquet` rows add up to 205.50, but `daily_sales` holds 51.50. Which explanation will you test?",
+    "The dashboard's Thursday does not match the raw orders behind it. Which explanation will you test?",
   hMine: "You will test: {choice}.",
   hTest:
     "In the next section, the query builder adds up an asset's rows and compares each day with `daily_sales`. Once your query rebuilds `daily_sales`, a check at the end of that section reads the rows and says which explanations they support.",
@@ -87,7 +87,7 @@ export const PROSE = {
   ],
   c1Lead: "Your query appears below as SQL, with its result, before you run the tests.",
   changeLead:
-    "This experiment tests whether rebuilding `daily_sales` with a query shows how it was made.\n\nIt runs your query from the construction section again, so it starts once your query passes its tests.\n\nEach change gives a different week: the lab runs the whole week again from Monday with that change. The builder's choices cover every asset in the systems that week.\n\nAfter a change runs, the experiment shows the queries in the builder's choices, what the systems hold on Monday morning, and your query's rows against the new `daily_sales`.",
+    "Your query reproduced `daily_sales`, which is evidence for how it was made. Each change below breaks that evidence in a different way: the lab reruns the whole week with the change, then shows which queries still reproduce the new `daily_sales`, what the systems hold on Monday morning, and your query's rows against it.",
   changeQuestion:
     "After this change, how many queries in the builder's choices will rebuild `daily_sales`?",
   outcomeCopy:
