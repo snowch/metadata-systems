@@ -64,13 +64,15 @@ export const AssetCards = withProps(
                   aria-pressed={selected}
                   onClick={() => setOpen(selected ? null : { id: c.id })}
                 >
-                  <Glyph kind={r.kind} />
-                  <span className="asset-card-name">{c.id}</span>
-                  <span className="asset-card-kind">{kinds[r.kind]}</span>
+                  <span className="asset-card-head">
+                    <Glyph kind={r.kind} />
+                    <span className="asset-card-name">{c.id}</span>
+                    <span className="asset-card-kind">{kinds[r.kind]}</span>
+                  </span>
+                  <span className="asset-card-role">
+                    <Rich text={c.role} />
+                  </span>
                 </button>
-                <p className="asset-card-role">
-                  <Rich text={c.role} />
-                </p>
                 {selected && r.kind !== "dashboard" && (
                   <DataTable
                     table={head(r.content, data.head)}

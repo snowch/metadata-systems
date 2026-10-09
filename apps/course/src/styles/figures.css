@@ -928,9 +928,7 @@ details[open] > summary::before {
   border-color: var(--accent);
 }
 .asset-card-button {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
+  display: block;
   width: 100%;
   padding: 0;
   background: none;
@@ -938,6 +936,13 @@ details[open] > summary::before {
   cursor: pointer;
   font: inherit;
   text-align: left;
+}
+/* The whole tile is the button: the head names the asset, the role sits under it, and either
+   opens the card. */
+.asset-card-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
 }
 .asset-card-name {
   font-family: var(--font-mono);
@@ -951,6 +956,7 @@ details[open] > summary::before {
   color: var(--fg-muted);
 }
 .asset-card-role {
+  display: block;
   margin: var(--space-2) 0 0;
   font-size: var(--text-sm);
   color: var(--fg-muted);
