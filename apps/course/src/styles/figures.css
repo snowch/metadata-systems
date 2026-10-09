@@ -428,6 +428,28 @@ details[open] > summary::before {
   color: var(--fg-muted);
 }
 
+/* A lab's facts, set apart from its question: a quiet label above each, space between them,
+   nothing else. The question must not read as the context's last sentence. */
+.prediction-label {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-muted);
+}
+.prediction-known {
+  margin-bottom: var(--space-4);
+}
+.prediction-known .prose {
+  margin-bottom: 0;
+}
+.prediction-ask {
+  margin-bottom: var(--space-2);
+}
+.prediction-ask .prose {
+  margin-bottom: 0;
+}
+
 /* Predictions */
 .prediction-outcome {
   margin-top: var(--space-3);

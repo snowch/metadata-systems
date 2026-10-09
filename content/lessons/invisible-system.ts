@@ -140,6 +140,7 @@ export const invisibleSystem: LessonInput = {
           timeModel: "lab",
           caption: LABELS.captions.p2,
           props: {
+            known: PROSE.p2Known,
             question: PROSE.p2Question,
             // A total and the belief behind it, or "I can't tell yet": what the raw orders add up
             // to, not why they might differ, which the investigation finds.
@@ -220,6 +221,7 @@ export const invisibleSystem: LessonInput = {
             // warehouse records about daily_sales, so each option is a conclusion they could draw
             // from it, and the lab says which the record supports. The requirement wording stays
             // in the authoring notes, not on the page.
+            known: PROSE.p1Known,
             question: PROSE.p1Question,
             options: meaning(LABELS.p1Options, {
               person: ["person"],

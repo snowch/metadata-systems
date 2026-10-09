@@ -195,9 +195,9 @@ describe("the facts Chapter 1 states", () => {
     const thursday = dash.content.rows.find((r) => r[0] === "2026-09-10")!;
     expect(formatValue(thursday[1] ?? null, dash.content.columns[1]!.type)).toBe("51.50");
     expect(revenue()["2026-09-10"]).toBe("51.50");
-    expect(PROSE.p2Question).toContain("The dashboard shows 51.50 for Thursday");
+    expect(PROSE.p2Known).toContain("The dashboard shows 51.50 for Thursday");
     expect(PROSE.p2Question).toContain("what total do you expect?");
-    expect(LABELS.p2Options.same).toMatch(/^51\.50:/);
+    expect(LABELS.p2Options.same).toMatch(/^51\.50/);
     const raw = Object.fromEntries(rawChecks().map((c) => [c.key, c.actual]));
     expect([raw["2026-09-09"], raw["2026-09-10"], raw["2026-09-11"]]).toEqual([
       "198.75",
@@ -253,7 +253,7 @@ describe("the facts Chapter 1 states", () => {
     expect(options).toEqual(["person", "team", "none", "account"]);
     expect(LABELS.p1Options.account).toContain("an account");
     expect(LABELS.p1Options.none).toContain("does not say");
-    expect(PROSE.p1Question).toContain("what the warehouse records");
+    expect(PROSE.p1Known).toContain("what the warehouse records");
     expect(PROSE.p1Question).toContain("what can you conclude");
     // The feedback names the evidence, then separates what the record establishes from what
     // only the lab knows, and says which question the field answers.

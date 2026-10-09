@@ -35,6 +35,9 @@ export const DEFAULT_VIEW_STRINGS = {
   expected: "Expected",
   checkPrediction: "Check my prediction",
   yourPrediction: "Prediction",
+  /** The two labels that separate a lab's facts from its question. */
+  known: "What you know",
+  prediction: "Your prediction",
   yourChoice: "Your choice",
   // Set small above a requirement's own words (brief V).
   requirement: "Requirement",

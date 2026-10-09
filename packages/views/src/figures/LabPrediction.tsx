@@ -55,6 +55,8 @@ const Probe = z.discriminatedUnion("kind", [
 const Props = z
   .object({
     question: z.string().min(1),
+    /** The facts the learner already has, set apart from the question when the two read as one. */
+    known: z.string().min(1).optional(),
     options: z
       .array(
         z.object({
@@ -159,7 +161,16 @@ export const LabPrediction = withProps(
     const label = (value: string) => offered.find((o) => o.value === value)?.label ?? value;
     return (
       <div className="lab-prediction" data-committed={stored ? "true" : "false"}>
-        <Prose markdown={data.question} />
+        {data.known && (
+          <div className="prediction-known">
+            <p className="prediction-label">{strings.known}</p>
+            <Prose markdown={data.known} />
+          </div>
+        )}
+        <div className="prediction-ask">
+          <p className="prediction-label">{strings.prediction}</p>
+          <Prose markdown={data.question} />
+        </div>
         <PredictionChallenge
           renderLabel={(label) => <LabelledOption label={label} />}
           name={`${interactive.id}-choice`}

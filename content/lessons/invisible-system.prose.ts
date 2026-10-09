@@ -30,15 +30,17 @@ export const PROSE = {
     "A data engineer who joins a platform they did not build is asked questions like these:\n\n- Can we delete `products.parquet`?\n- What stops working if the checkout renames a column in `orders.parquet`?\n- Is Thursday's total wrong, and since when?\n- Who should I ask about `daily_sales`?\n\nA wrong answer to the first breaks a program that still reads the file. A wrong answer to the third can leave a total wrong for weeks before anybody notices. None of the four can be answered by reading rows alone.",
   prediction:
     "Before you inspect anything, commit to a belief about Thursday: choose an option, then press the button below it. The lab then shows you the evidence, and you can compare what you expected with what it shows.",
-  p1Question:
-    '"Who should I ask about `daily_sales`?" was one of the questions at the start of this chapter. You have just read what the warehouse records about `daily_sales`. From that record, what can you conclude about who to ask?',
+  p1Known:
+    '"Who should I ask about `daily_sales`?" was one of the questions at the start of this chapter. You have just read what the warehouse records about `daily_sales`.',
+  p1Question: "From that record, what can you conclude about who to ask?",
   p1Explain:
     'The record establishes this much: the warehouse\'s owner field for `daily_sales` names the account `etl_service`. You read that in the inspector.\n\nWhat it does not establish: `etl_service` is the account all four of the shop\'s programs log in as. The lab tells you this; the systems do not.\n\nThe field is called "owner", but the name of a field does not say which question the field answers. This one records which account is named as the owner of the table, not who is responsible for it. An account that several programs share tells you who to ask about the account, not who is responsible for the table.\n\n### What we established\n\n- The warehouse records `etl_service` in the owner field for `daily_sales`.\n- That record names an account, not a person or a team.\n- The record therefore does not establish who is responsible for `daily_sales`.\n- \"Who should I ask?\" remains unanswered by this metadata: answering it needs a record the warehouse does not keep.',
   p1UndecidedLine:
     "You said you could not tell yet, and you cannot: who is responsible for `daily_sales` is not in the record. But you can tell what the record holds: {answer}.",
 
+  p2Known: "The dashboard shows 51.50 for Thursday. `daily_sales` holds the same total.",
   p2Question:
-    "The dashboard shows 51.50 for Thursday. `daily_sales` holds the same total for Thursday. If you add up price times quantity over Thursday's rows in the `orders.parquet` file, what total do you expect?",
+    "If you add up price times quantity over Thursday's rows in the `orders.parquet` file, what total do you expect?",
   p2UndecidedLine:
     "You said you could not tell yet. The page so far does not show how `daily_sales` was made, so you cannot tell from it; adding up Thursday\'s rows can. The lab found {answer}.",
 
