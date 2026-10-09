@@ -25,7 +25,7 @@ export const PROSE = {
   exploreLead:
     "The platform holds three kinds of thing, and you have met each: a file in object storage, tables in the warehouse, a dashboard in the reporting tool. Open a card to see a little of what it holds. Nothing is asked here; the questions start below.",
   dashboardAfter:
-    "Assume you can read everything the systems hold, and nothing else: no code, not when each program is due to run, not anybody's notes. How much can you find out from what the systems hold?",
+    "The shop's programs are not yours to read. You can read everything the systems hold: the files, the tables and the dashboard. How much can you find out from that?",
   motivation:
     "A data engineer who joins a platform they did not build is asked questions like these:\n\n- Can we delete `products.parquet`?\n- What stops working if the checkout renames a column in `orders.parquet`?\n- Is Thursday's total wrong, and since when?\n- Who should I ask about `daily_sales`?\n\nA wrong answer to the first breaks a program that still reads the file. A wrong answer to the third can leave a total wrong for weeks before anybody notices. None of the four can be answered by reading rows alone.",
   prediction:
