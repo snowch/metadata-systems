@@ -78,6 +78,8 @@ export const DEFAULT_VIEW_STRINGS = {
   rowsCaption: "The {count} rows",
   /** An exploration card's head: the first rows only, and how many the asset holds. */
   assetHead: "The first {shown} of {total} rows",
+  /** An exploration card small enough to show whole: every row it holds. */
+  assetAllRows: "{asset}: all {count} rows",
   valuesCaption: "The values the dashboard shows",
   questionsHeading: "What the systems say",
   q: {

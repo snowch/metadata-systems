@@ -114,7 +114,9 @@ export const invisibleSystem: LessonInput = {
           lead: PROSE.exploreLead,
           props: {
             // The four assets the chapter works through, one card each: see what the platform
-            // holds before any question. Nothing is asked or scored here.
+            // holds before any question. Nothing is asked or scored here. A card shows up to
+            // seven rows, so the two small tables appear whole; the two large files show a head.
+            head: 7,
             cards: [
               { id: "orders.parquet", role: LABELS.roles.orders },
               { id: "clean_orders", role: LABELS.roles.clean },

@@ -13,6 +13,8 @@ import { useSlot, type InteractiveProps } from "@platform/lesson-runtime";
 import { DataTable } from "../DataTable";
 import { Glyph } from "../Glyph";
 import { Rich } from "../Rich";
+import { showDay, showTime } from "../show";
+import { formatValue } from "@ms/lab";
 import { withProps } from "../props";
 import { format, useViewStrings } from "../strings";
 
@@ -27,7 +29,7 @@ const Props = z.object({
     )
     .min(2),
   /** How many rows a data-bearing card's head shows. */
-  head: z.number().int().min(1).max(5).default(3),
+  head: z.number().int().min(1).max(8).default(3),
 });
 
 function head(t: Table, rows: number): Table {
@@ -75,18 +77,49 @@ export const AssetCards = withProps(
                 </button>
                 {selected && r.kind !== "dashboard" && (
                   <DataTable
-                    table={head(r.content, data.head)}
-                    caption={format(strings.assetHead, {
-                      asset: c.id,
-                      shown: data.head,
-                      total: r.rows,
-                    })}
+                    table={head(r.content, Math.min(data.head, r.rows))}
+                    caption={
+                      r.rows <= data.head
+                        ? format(strings.assetAllRows, { asset: c.id, count: r.rows })
+                        : format(strings.assetHead, {
+                            asset: c.id,
+                            shown: data.head,
+                            total: r.rows,
+                          })
+                    }
                   />
                 )}
                 {selected && r.kind === "dashboard" && (
-                  <p className="asset-card-dashboard-note">
-                    {r.title}: {strings.valuesCaption.replace(/{count}/, String(r.rows))}
-                  </p>
+                  <div className="dashboard asset-card-dashboard" aria-label={strings.reporting}>
+                    <div className="dashboard-head">
+                      <span className="dashboard-title">{r.title}</span>
+                      <span className="dashboard-meta">
+                        {format(strings.refreshed, { time: showTime(r.lastWritten) })}
+                      </span>
+                    </div>
+                    <ol className="bars" aria-hidden="true">
+                      {r.content.rows.map((row) => {
+                        const value = Number(row[1] ?? 0);
+                        const max = Math.max(1, ...r.content.rows.map((w) => Number(w[1] ?? 0)));
+                        return (
+                          <li key={String(row[0])} className="bar-item">
+                            <span className="bar-label">
+                              {showDay(String(row[0]), strings.weekdays)}
+                            </span>
+                            <span className="bar-track">
+                              <span
+                                className="bar"
+                                style={{ width: `${Math.round((value / max) * 100)}%` }}
+                              />
+                            </span>
+                            <span className="bar-value">
+                              {formatValue(row[1] ?? null, r.content.columns[1]!.type)}
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </ol>
+                  </div>
                 )}
               </li>
             );
