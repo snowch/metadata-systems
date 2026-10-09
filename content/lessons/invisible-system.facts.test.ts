@@ -196,7 +196,7 @@ describe("the facts Chapter 1 states", () => {
     expect(formatValue(thursday[1] ?? null, dash.content.columns[1]!.type)).toBe("51.50");
     expect(revenue()["2026-09-10"]).toBe("51.50");
     expect(PROSE.p2Known).toContain("The dashboard shows 51.50 for Thursday");
-    expect(PROSE.p2Question).toContain("what total do you expect?");
+    expect(PROSE.p2Question).toContain("What total do you expect for Thursday\'s orders");
     expect(LABELS.p2Options.same).toMatch(/^51\.50/);
     const raw = Object.fromEntries(rawChecks().map((c) => [c.key, c.actual]));
     expect([raw["2026-09-09"], raw["2026-09-10"], raw["2026-09-11"]]).toEqual([

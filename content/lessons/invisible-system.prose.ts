@@ -40,7 +40,7 @@ export const PROSE = {
 
   p2Known: "The dashboard shows 51.50 for Thursday. `daily_sales` holds the same total.",
   p2Question:
-    "If you add up price times quantity over Thursday's rows in the `orders.parquet` file, what total do you expect?",
+    "What total do you expect for Thursday's orders, if you add up price times quantity over Thursday's rows in `orders.parquet`?",
   p2UndecidedLine:
     "You said you could not tell yet. The page so far does not show how `daily_sales` was made, so you cannot tell from it; adding up Thursday\'s rows can. The lab found {answer}.",
 
