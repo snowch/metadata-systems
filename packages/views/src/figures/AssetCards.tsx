@@ -14,7 +14,7 @@ import { DataTable } from "../DataTable";
 import { Glyph } from "../Glyph";
 import { Rich } from "../Rich";
 import { withProps } from "../props";
-import { useViewStrings } from "../strings";
+import { format, useViewStrings } from "../strings";
 
 const Props = z.object({
   /** Each card: the asset, its one-line role, and what its head shows. */
@@ -76,7 +76,11 @@ export const AssetCards = withProps(
                 {selected && r.kind !== "dashboard" && (
                   <DataTable
                     table={head(r.content, data.head)}
-                    caption={`${c.id} (${strings.rowsCaption.replace(/{count}/, String(data.head))})`}
+                    caption={format(strings.assetHead, {
+                      asset: c.id,
+                      shown: data.head,
+                      total: r.rows,
+                    })}
                   />
                 )}
                 {selected && r.kind === "dashboard" && (

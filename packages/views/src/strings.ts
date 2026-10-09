@@ -76,6 +76,8 @@ export const DEFAULT_VIEW_STRINGS = {
   column: "Column",
   type: "Type",
   rowsCaption: "The {count} rows",
+  /** An exploration card's head: the first rows only, and how many the asset holds. */
+  assetHead: "The first {shown} of {total} rows",
   valuesCaption: "The values the dashboard shows",
   questionsHeading: "What the systems say",
   q: {
