@@ -20,7 +20,6 @@ import {
   createBook,
   evidenceText,
   format,
-  grade,
   runtimeStrings,
   showTime,
   storageDifferences,
@@ -29,37 +28,6 @@ import { listOf } from "./figures/QuestionMap";
 
 const lesson = parseLesson(LESSONS[0]!);
 const rebuild = lesson.challenges.find((c) => c.id === "rebuild-daily-sales") as Challenge;
-const rules = lesson.challenges.find((c) => c.id === "clean-orders-rules") as Challenge;
-
-describe("the grader", () => {
-  it("says why a query cannot run, instead of failing every day", () => {
-    const v = grade(rebuild, {
-      answers: { source: "customers.parquet", keep: "all", measure: "revenue", per: "day" },
-    });
-    expect(v.passed).toBe(false);
-    expect(v.failures).toEqual([]);
-    // The first column the query needs, in the order it is written, is the day it groups by.
-    expect(v.blocked).toBe("customers.parquet has no column called ordered_at.");
-  });
-
-  it("reports a day with no row in the learner's result as 'no row'", () => {
-    const v = grade(rebuild, {
-      answers: { source: "clean_orders", keep: "cancelled", measure: "revenue", per: "day" },
-    });
-    expect(v.failures.length).toBeGreaterThan(0);
-    expect(Object.values(v.failures[0]!.actual)).toEqual([V.noRow]);
-  });
-
-  it("names the orders a set of cleaning rules drops or keeps wrongly", () => {
-    const v = grade(rules, {
-      answers: { duplicates: "one", missingCustomer: "drop", cancelled: "drop", quantity: "keep" },
-    });
-    expect(v.failures).toHaveLength(1);
-    expect(v.failures[0]!.detail).toBe(
-      "Your rules drop 2 rows that clean_orders keeps, orders 7009, 7037.",
-    );
-  });
-});
 
 describe("what storage shows differently", () => {
   it("names the new file, the changed rows and the changed times, with the first run's values", () => {
@@ -116,86 +84,6 @@ describe("the figures on Chapter 1's page", () => {
     const figure = (id: string) => page.container.querySelector<HTMLElement>(`#ix-${id}`)!;
     return { page, figure };
   };
-  type Labelled = { id?: string; value?: string; label: string };
-  const props = (id: string) =>
-    lesson.sections.flatMap((s) => s.interactives).find((x) => x.id === id)?.props as Record<
-      string,
-      unknown
-    >;
-  const changeLabel = (id: string) =>
-    (props("changes")["changes"] as Labelled[]).find((c) => c.id === id)!.label;
-  const passing = (id: string) => (store: LessonStore) =>
-    store.setChallenge(id, (c) => ({
-      ...c,
-      artifact: lesson.challenges.find((x) => x.id === id)!.reference,
-    }));
-
-  it("starts the failure experiment only once the learner's own query passes", () => {
-    const locked = show();
-    expect(locked.figure("changes").textContent).toContain(
-      format(V.locked, { title: rebuild.title }),
-    );
-    expect(within(locked.figure("changes")).queryAllByRole("radio")).toEqual([]);
-    locked.page.unmount();
-
-    const { figure } = show(passing("rebuild-daily-sales"));
-    expect(within(figure("changes")).getAllByRole("radio").length).toBeGreaterThan(1);
-  });
-
-  it("asks for a prediction before a change runs, then answers it from the lab", () => {
-    const { figure } = show(passing("rebuild-daily-sales"));
-    const f = within(figure("changes"));
-    fireEvent.click(f.getByLabelText(changeLabel("failed")));
-    const run = f.getByRole("button", { name: V.runWithChange });
-    expect(run).toHaveProperty("disabled", true);
-    expect(figure("changes").querySelector(".change-result")).toBeNull();
-    const options = (props("changes")["prediction"] as { options: Labelled[] }).options;
-    fireEvent.click(f.getByLabelText(options.find((o) => o.value === "one")!.label));
-    fireEvent.click(run);
-    expect(f.getByRole("status").textContent).toContain(V.match);
-    expect(figure("changes").querySelectorAll(".change-fits li")).toHaveLength(1);
-  });
-
-  it("marks a row only the learner's query gives as extra, not as a difference", () => {
-    const { figure } = show(passing("rebuild-daily-sales"));
-    const f = within(figure("changes"));
-    fireEvent.click(f.getByLabelText(changeLabel("failed")));
-    const options = (props("changes")["prediction"] as { options: Labelled[] }).options;
-    fireEvent.click(f.getByLabelText(options.find((o) => o.value === "one")!.label));
-    fireEvent.click(f.getByRole("button", { name: V.runWithChange }));
-    // Six days the same, and Sunday's row, which daily_sales lacks after the failed night: the
-    // query still rebuilds daily_sales, so Sunday is extra, not a difference.
-    const marks = [...figure("changes").querySelectorAll(".days-table tbody tr")].map(
-      (r) => r.lastElementChild,
-    );
-    expect(marks.map((m) => m?.textContent)).toEqual([...Array<string>(6).fill(V.yes), V.extraRow]);
-    expect(marks[6]?.className).toBe("is-extra");
-  });
-
-  it("shows the rows the rules keep only once the rules on screen are run", () => {
-    const run = runtimeStrings().challenge.run;
-    const section = (container: HTMLElement) =>
-      container.querySelector<HTMLElement>(
-        'section.challenge[data-challenge="clean-orders-rules"]',
-      )!;
-    const fresh = section(show().page.container);
-    expect(fresh.querySelector(".choice-rows")).toBeNull();
-    expect(fresh.textContent).toContain(V.keptAfterRun);
-    fireEvent.click(within(fresh).getByRole("button", { name: run }));
-    expect(fresh.querySelector(".choice-rows")).not.toBeNull();
-    expect(fresh.textContent).not.toContain(V.keptAfterRun);
-    // A change to a rule drops what the run showed until the tests run again.
-    const field = rules.fields[0]!;
-    const select = within(fresh).getByLabelText(field.label) as HTMLSelectElement;
-    const other = (field.options ?? []).find((o) => o.value !== select.value)!;
-    fireEvent.change(select, { target: { value: other.value } });
-    expect(fresh.querySelector(".choice-rows")).toBeNull();
-    expect(fresh.textContent).toContain(V.keptAfterRun);
-    // Saved rules are graded as the page loads, so what they keep shows at once.
-    const saved = section(show(passing("clean-orders-rules")).page.container);
-    const kept = week().tables.get("clean_orders")!.rows.length;
-    expect(saved.textContent).toContain(format(V.keptRows, { count: kept }));
-  });
 
   it("opens on the situation and the lab, then the map with its count, then the week", () => {
     const { page, figure } = show();

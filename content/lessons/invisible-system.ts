@@ -9,36 +9,10 @@
 // cards are the book's diagrams. Everything else is prose and a table, both computed by the lab
 // and pinned by the facts test.
 
-import { DAYS } from "@ms/lab";
 import type { LessonInput } from "@platform/lesson-schema";
 
 import { LABELS } from "./invisible-system.labels";
 import { PROSE } from "./invisible-system.prose";
-
-const options = (labels: Readonly<Record<string, string>>) =>
-  Object.entries(labels).map(([value, label]) => ({ value, label }));
-
-/** Options that stand for counts: each label with the counts it covers, inclusive. */
-const counted = (
-  labels: Readonly<Record<string, string>>,
-  ranges: Readonly<Record<string, readonly [number, number]>>,
-) =>
-  Object.entries(labels).map(([value, label]) => {
-    const range = ranges[value];
-    if (!range) throw new Error(`no range for the option ${value}`);
-    return { value, label, range: [range[0], range[1]] as [number, number] };
-  });
-
-/** The assets a query in the builder may read: every file or table except the one to rebuild. */
-const SOURCES = [
-  "customers.parquet",
-  "orders.parquet",
-  "products.parquet",
-  "clean_customers",
-  "clean_orders",
-];
-
-const HINTS = (h: readonly string[]) => h as unknown as [string, string, string, string, string];
 
 export const invisibleSystem: LessonInput = {
   id: "invisible-data-system",
@@ -131,46 +105,13 @@ export const invisibleSystem: LessonInput = {
       kind: "construction",
       title: LABELS.titles.construction,
       prose: PROSE.construction,
-      interactives: [
-        {
-          id: "build-daily-sales",
-          role: "experiment",
-          kind: "challenge",
-          timeModel: "lab",
-          caption: LABELS.captions.c1,
-          lead: PROSE.c1Lead,
-          props: { challengeId: "rebuild-daily-sales" },
-        },
-      ],
+      interactives: [],
     },
     {
       kind: "failureExperiment",
       title: LABELS.titles.failureExperiment,
-      prose: PROSE.changeLead,
-      interactives: [
-        {
-          id: "changes",
-          role: "experiment",
-          kind: "change-lab",
-          timeModel: "lab",
-          caption: LABELS.captions.change,
-          props: {
-            challengeId: "rebuild-daily-sales",
-            changes: [
-              { id: "failed", label: LABELS.changeLabels.failed, outcome: PROSE.outcomeFailed },
-            ],
-            afterAll: PROSE.afterAll,
-            prediction: {
-              question: PROSE.changeQuestion,
-              options: counted(LABELS.changeOptions, {
-                none: [0, 0],
-                one: [1, 1],
-                twoOrMore: [2, 1000],
-              }),
-            },
-          },
-        },
-      ],
+      prose: PROSE.failureExperiment,
+      interactives: [],
     },
     {
       kind: "explanation",
@@ -186,16 +127,7 @@ export const invisibleSystem: LessonInput = {
       kind: "challenge",
       title: LABELS.titles.challenge,
       prose: PROSE.c2Lead,
-      interactives: [
-        {
-          id: "build-rules",
-          role: "experiment",
-          kind: "challenge",
-          timeModel: "lab",
-          caption: LABELS.captions.c2,
-          props: { challengeId: "clean-orders-rules" },
-        },
-      ],
+      interactives: [],
     },
     {
       kind: "reflection",
@@ -203,99 +135,7 @@ export const invisibleSystem: LessonInput = {
       prose: PROSE.reflection,
     },
   ],
-  challenges: [
-    {
-      id: "rebuild-daily-sales",
-      title: LABELS.challengeTitles.c1,
-      task: PROSE.c1Task,
-      gradedDirection: "answer",
-      fields: [
-        {
-          id: "source",
-          label: LABELS.c1Fields.source,
-          kind: "choice",
-          options: SOURCES.map((s) => ({ value: s, label: s })),
-        },
-        {
-          id: "keep",
-          label: LABELS.c1Fields.keep,
-          kind: "choice",
-          options: options(LABELS.c1Options.keep),
-        },
-        {
-          id: "measure",
-          label: LABELS.c1Fields.measure,
-          kind: "choice",
-          options: options(LABELS.c1Options.measure),
-        },
-        {
-          id: "per",
-          label: LABELS.c1Fields.per,
-          kind: "choice",
-          options: options(LABELS.c1Options.per),
-        },
-      ],
-      initial: {
-        answers: { source: "orders.parquet", keep: "all", measure: "revenue", per: "day" },
-      },
-      tests: {
-        kind: "answers",
-        grader: "reproduces",
-        cases: DAYS.map((day, i) => ({
-          label: LABELS.caseLabels[i] ?? day,
-          given: { day, target: "daily_sales" },
-          expect: { row: "same" },
-        })),
-      },
-      hints: HINTS(PROSE.c1Hints),
-      reference: {
-        answers: { source: "clean_orders", keep: "completed", measure: "revenue", per: "day" },
-      },
-    },
-    {
-      id: "clean-orders-rules",
-      title: LABELS.challengeTitles.c2,
-      task: PROSE.c2Task,
-      gradedDirection: "answer",
-      fields: (["duplicates", "missingCustomer", "cancelled", "quantity"] as const).map((id) => ({
-        id,
-        label: LABELS.c2Fields[id],
-        kind: "choice" as const,
-        options: options(LABELS.c2Options[id]),
-      })),
-      initial: {
-        answers: {
-          duplicates: "keep",
-          missingCustomer: "keep",
-          cancelled: "keep",
-          quantity: "keep",
-        },
-      },
-      tests: {
-        kind: "answers",
-        grader: "same-rows",
-        cases: [
-          {
-            label: LABELS.caseLabels2[0],
-            given: { target: "clean_orders" },
-            expect: { missing: 0 },
-          },
-          { label: LABELS.caseLabels2[1], given: { target: "clean_orders" }, expect: { extra: 0 } },
-        ],
-      },
-      hints: HINTS(PROSE.c2Hints),
-      // The program the shop really runs: it drops orders with a quantity of 0 or less, a rule
-      // this week's data cannot show (docs/lab.md).
-      reference: {
-        answers: {
-          duplicates: "one",
-          missingCustomer: "drop",
-          cancelled: "keep",
-          quantity: "drop",
-        },
-      },
-    },
-  ],
+  challenges: [],
   modelVsReality: PROSE.modelVsReality,
   originalityNote: {
     textbookExample:

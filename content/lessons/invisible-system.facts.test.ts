@@ -160,12 +160,12 @@ describe("the facts Chapter 1 states", () => {
     );
     expect(PROSE.motivation).toContain("Who created this table, and for what purpose?");
   });
-  it("has one query that rebuilds daily_sales, the one the hints give", () => {
+  it("names the one query that rebuilds daily_sales, as the essay claims", () => {
     expect(sumReconstructions(week(), "daily_sales")).toEqual([
       { source: "clean_orders", keep: "completed", measure: "revenue", per: "day" },
     ]);
-    expect(PROSE.c1Hints[4]).toContain(
-      "`clean_orders`, keep completed orders only, add up price times quantity",
+    expect(PROSE.failureExperiment).toContain(
+      "A query over `clean_orders` - keeping completed orders, adding up price times quantity per day - reproduces `daily_sales` exactly",
     );
   });
 
@@ -180,12 +180,11 @@ describe("the facts Chapter 1 states", () => {
     expect(dash.rows).toBe(6);
     expect(dash.lastWritten.slice(0, 16)).toBe("2026-09-14T03:00");
     expect(sumReconstructions(w, "daily_sales", "covers")).toHaveLength(1);
-    expect(PROSE.outcomeFailed).toContain("6 rows, with no row for Sunday");
-    expect(PROSE.outcomeFailed).toContain("Sunday 13 September at 02:30");
-    expect(PROSE.outcomeFailed).toContain("`clean_orders` (Monday at 02:05)");
-    expect(PROSE.outcomeFailed).toContain("the dashboard (Monday at 03:00)");
-    expect(PROSE.outcomeFailed).toContain("shows 6 values");
-    expect(PROSE.outcomeFailed).toContain("6 rows");
+    expect(PROSE.failureExperiment).toContain("6 rows, with no row for Sunday");
+    expect(PROSE.failureExperiment).toContain("Sunday at 02:30");
+    expect(PROSE.failureExperiment).toContain("a day before `clean_orders` and the dashboard");
+    expect(PROSE.failureExperiment).toContain("shows 6 values");
+    expect(PROSE.failureExperiment).toContain("a day behind");
   });
 
   it("answers the experiment's prediction with the counts the outcomes state", () => {
@@ -241,6 +240,5 @@ describe("the facts Chapter 1 states", () => {
   it("states order 7015 as the order that appears twice", () => {
     const ids = columnValues(week().tables.get("orders.parquet")!, "order_id");
     expect(ids.filter((id) => id === 7015)).toHaveLength(2);
-    expect(PROSE.c2Hints[2]).toContain("order 7015 appears twice");
   });
 });
