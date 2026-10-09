@@ -145,15 +145,15 @@ describe("the figures on Chapter 1's page", () => {
   it("asks for a prediction before a change runs, then answers it from the lab", () => {
     const { figure } = show(passing("rebuild-daily-sales"));
     const f = within(figure("changes"));
-    fireEvent.click(f.getByLabelText(changeLabel("copy")));
+    fireEvent.click(f.getByLabelText(changeLabel("failed")));
     const run = f.getByRole("button", { name: V.runWithChange });
     expect(run).toHaveProperty("disabled", true);
     expect(figure("changes").querySelector(".change-result")).toBeNull();
     const options = (props("changes")["prediction"] as { options: Labelled[] }).options;
-    fireEvent.click(f.getByLabelText(options.find((o) => o.value === "twoOrMore")!.label));
+    fireEvent.click(f.getByLabelText(options.find((o) => o.value === "one")!.label));
     fireEvent.click(run);
     expect(f.getByRole("status").textContent).toContain(V.match);
-    expect(figure("changes").querySelectorAll(".change-fits li")).toHaveLength(2);
+    expect(figure("changes").querySelectorAll(".change-fits li")).toHaveLength(1);
   });
 
   it("marks a row only the learner's query gives as extra, not as a difference", () => {
@@ -195,28 +195,6 @@ describe("the figures on Chapter 1's page", () => {
     const saved = section(show(passing("clean-orders-rules")).page.container);
     const kept = week().tables.get("clean_orders")!.rows.length;
     expect(saved.textContent).toContain(format(V.keptRows, { count: kept }));
-  });
-
-  it('answers "I can\'t tell yet" with what the lab found, and marks it neither right nor wrong', () => {
-    const p = props("predict-days") as {
-      options: Labelled[];
-      undecided: Labelled & { line: string };
-    };
-    const { figure } = show((store) => store.setSlot("predict-days", { choice: "undecided" }));
-    const status = figure("predict-days").querySelector("[role=status]")!;
-    expect(status.textContent).toBe(
-      format(p.undecided.line, { answer: p.options.find((o) => o.value === "different")!.label }),
-    );
-    expect(status.textContent).not.toContain(V.match);
-    expect(status.textContent).not.toContain(V.noMatch);
-  });
-
-  it("treats a prediction saved against options the lesson no longer offers as not made", () => {
-    const { figure } = show((store) => store.setSlot("predict-days", { choice: "some" }));
-    expect(figure("predict-days").querySelector("[role=status]")).toBeNull();
-    expect(
-      within(figure("predict-days")).getByRole("button", { name: V.checkPrediction }),
-    ).toBeTruthy();
   });
 
   it("opens on the situation and the lab, then the map with its count, then the week", () => {

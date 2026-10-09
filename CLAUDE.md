@@ -14,7 +14,10 @@ Read as the learner meets it, the loop is a sequence of questions: here is a rea
 can I believe about it now; predict; act on the lab; what did I see; what did that prove; what can
 the data not tell me; what would a system have to record? Every chapter protects one principle
 above the rest: do not teach the learner what metadata systems contain; make them experience the
-information gap that makes such a system necessary.
+information gap that makes such a system necessary. The experience is a means, not the law:
+where prose names a mechanism more exactly than an interaction can, write the prose, and keep
+the interaction for what doing teaches better than reading (a failure seen, a limit felt). A
+chapter may state its conclusion and still offer the experiment that shows it.
 
 Beside metadata itself, the course teaches one habit the learner can take anywhere: when a
 requirement sounds obvious, ask what it actually means ("Question the requirement", below).
@@ -170,7 +173,9 @@ real behaviour.
 That is a rule for sentences, not for experiments. A chapter may ask a question and let the lab
 answer it: whether a query that rebuilds an asset shows how the asset was made is asked in Chapter
 1's construction and answered by its failure experiment. What a chapter must not do is answer its
-own question in prose before the learner has run the experiment that answers it.
+own question in prose before the learner has run the experiment that answers it, unless the
+prose is the better teacher: then say the thing, and let the experiment show it to those who
+run it.
 
 **Clear, natural technical English.** The prose sounds like a knowledgeable engineer
 explaining something accurately to another person, never like writing trying to sound insightful.

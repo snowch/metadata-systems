@@ -26,7 +26,6 @@ import {
   runProbe,
   storage,
   sumReconstructions,
-  sumSources,
   sumSql,
   week,
   weekTimeline,
@@ -71,7 +70,7 @@ describe("the facts Chapter 1 states", () => {
       sales_dashboard: 7,
     });
     // The book's investigation names the seven assets the reader can inspect.
-    expect(PROSE.investigation).toContain("Inspecting the seven assets");
+    expect(PROSE.investigation).toContain("Nothing in them says how it came to be");
     const bySystem = (system: string) => view.filter((r) => r.system === system).length;
     expect([bySystem("object-storage"), bySystem("warehouse"), bySystem("reporting")]).toEqual([
       3, 3, 1,
@@ -97,12 +96,12 @@ describe("the facts Chapter 1 states", () => {
     const m = platformMap(week());
     expect(m.systems.map((s) => s.system)).toEqual(["object-storage", "warehouse", "reporting"]);
     expect(m.systems.map((s) => s.assets.length)).toEqual([3, 3, 1]);
-    expect(PROSE.platformLead).toContain("the three systems");
-    expect(PROSE.platformLead).toContain("in the order data moves through them");
+    expect(PROSE.platformLead).toContain("three systems");
+    expect(PROSE.platformLead).toContain("data moves through them in this order");
   });
 
   it("gives the first and last days of the week and the learner's first morning", () => {
-    expect(PROSE.question).toContain("Monday 14 September 2026 at 09:00");
+    expect(PROSE.question).toContain("one Monday morning");
     expect(ARRIVAL).toBe("2026-09-14T09:00:00Z");
     expect(PROSE.weekLead).toContain("Monday 7 to Sunday 13 September");
     expect(Object.keys(revenue())).toEqual([...DAYS]);
@@ -128,7 +127,6 @@ describe("the facts Chapter 1 states", () => {
       PROSE.platformLead,
       PROSE.platformAfter,
       PROSE.weekLead,
-      PROSE.weekAfter,
     ].join("\n\n");
     expect(PROSE.labDetails).toContain("query engine");
     const opened = opening.indexOf("Monday 7 to Sunday 13 September");
@@ -141,124 +139,26 @@ describe("the facts Chapter 1 states", () => {
     expect(dates).toBeLessThan(night);
   });
 
-  it("says what you do with the lab before how it is built, and keeps how it is built behind a control", () => {
-    // The opening's own prose: what the figures are for and the chapter's premise, that the
-    // programs exist but cannot be seen, said in plain words (you work it out).
-    const own = PROSE.question.toLowerCase();
-    // "Query" is not among them: the parts of a query are something you choose, later on.
-    for (const word of ["sql", "engine", "memory", "page load", "code"])
-      expect(new RegExp(`\\b${word}\\b`).test(own), word).toBe(false);
-    expect(own).toContain("nothing of it is documented");
-    // It names the first three figures, the ones that introduce the shop.
-    const first = invisibleSystem.sections[0]!.interactives!.map((x) => [x.id, x.role]);
-    expect(first).toEqual([
-      ["platform", "reference"],
-      ["week", "reference"],
-      ["explore", "inspect"],
-      ["dashboard", "inspect"],
-    ]);
-    for (const named of ["pipeline", "week", "dashboard"])
-      expect([PROSE.platformLead, PROSE.weekLead, PROSE.dashboardAfter].join(" "), named).toContain(
-        named,
-      );
-    // The chapter's premise: the programs cannot be seen, only the data they write.
-    expect(PROSE.explanation).toContain("you cannot read them anywhere");
-    expect(PROSE.explanation).toContain("no system records them");
-    // How the lab is built: in the section's details, which the reader opens.
-    const built = PROSE.labDetails.toLowerCase();
-    for (const word of ["sql", "query engine", "memory", "page load"])
-      expect(built, word).toContain(word);
-    expect(invisibleSystem.sections[0]!.details).toEqual({
-      summary: LABELS.labDetails,
-      prose: PROSE.labDetails,
-    });
-  });
-
-  it("matches raw orders to daily_sales on three days of seven, the ones the prose names", () => {
-    const checks = rawChecks();
-    expect(checks.filter((c) => c.same).map((c) => c.key)).toEqual([
-      "2026-09-07",
-      "2026-09-11",
-      "2026-09-13",
-    ]);
-    expect(checks.filter((c) => !c.same).map((c) => c.key)).toEqual([
-      "2026-09-08",
-      "2026-09-09",
-      "2026-09-10",
-      "2026-09-12",
-    ]);
-    expect(PROSE.p2Explain).toContain("three days match (Monday, Friday, Sunday)");
-    expect(PROSE.p2Explain).toContain("four differ (Tuesday, Wednesday, Thursday, Saturday)");
-  });
-
-  it("asks about Thursday with the figures the dashboard and the raw orders give", () => {
-    const dash = recordOf(storage(), "sales_dashboard");
-    const thursday = dash.content.rows.find((r) => r[0] === "2026-09-10")!;
-    expect(formatValue(thursday[1] ?? null, dash.content.columns[1]!.type)).toBe("51.50");
-    expect(revenue()["2026-09-10"]).toBe("51.50");
-    expect(PROSE.p2Known).toContain("The dashboard shows 51.50 for Thursday");
-    expect(PROSE.p2Question).toContain("What total do you expect for Thursday\'s orders");
-    expect(LABELS.p2Options.same).toMatch(/^51\.50/);
-    const raw = Object.fromEntries(rawChecks().map((c) => [c.key, c.actual]));
-    expect([raw["2026-09-09"], raw["2026-09-10"], raw["2026-09-11"]]).toEqual([
-      "198.75",
-      "205.50",
-      "204.24",
-    ]);
-    expect(PROSE.p2Explain).toContain(
-      "The raw orders add up to 205.50, four times the reported total",
-    );
-    expect(PROSE.p2Explain).toContain("between Wednesday's 198.75 and Friday's 204.24");
-  });
-
-  it("says what each asset to look at first can show, from the asset's shape", () => {
-    const view = storage();
-    const names = (asset: Parameters<typeof recordOf>[1]) =>
-      recordOf(view, asset).columns.map((c) => c.name);
-    expect(names("orders.parquet")).toEqual(
-      expect.arrayContaining(["price", "quantity", "status"]),
-    );
-    expect(names("clean_orders")).toEqual(names("orders.parquet"));
-    expect(names("daily_sales")).toEqual(["day", "revenue"]);
-    const days = (asset: "daily_sales" | "sales_dashboard") =>
-      recordOf(view, asset).content.rows.map((r) => String(r[0]));
-    expect(new Set(days("daily_sales")).size).toBe(recordOf(view, "daily_sales").rows);
-    expect(new Set(days("sales_dashboard")).size).toBe(recordOf(view, "sales_dashboard").rows);
-    // An order appears twice in orders.parquet, so its line says each row is an order, not that
-    // an order has one row; the chapter's last challenge finds the repeat.
-    const ids = columnValues(week().tables.get("orders.parquet")!, "order_id");
-    expect(new Set(ids).size).toBeLessThan(ids.length);
-    // The investigation prose describes each asset's shape, as the where-first views did.
-    expect(PROSE.investigation).toContain("one row per order, with price, quantity and status");
-    expect(PROSE.investigation).toContain("built from the raw file by rules nobody wrote down");
-    expect(PROSE.investigation).toContain("one row per day: the day and its revenue");
-  });
-
   it("names etl_service as the owner of all three tables", () => {
     for (const t of ["clean_customers", "clean_orders", "daily_sales"] as const)
       expect(recordOf(storage(), t).ownerRole).toBe("etl_service");
     expect(PROGRAM_IDS).toHaveLength(4);
-    // The investigation states the account all four programs share, as the lab knows it.
-    expect(PROSE.investigation).toContain("all four of the shop's programs");
+    // The construction states the account all four programs share, as the lab knows it.
+    expect(PROSE.construction).toContain("the account its four programs log in as");
   });
   it("concludes only what the warehouse's record establishes about who to ask", () => {
     const found = runProbe({ kind: "owner-kind", asset: "daily_sales" }, week());
     // The record names an account: not a person, not a team, not nothing.
     expect(found).toMatchObject({ answer: "account", value: "etl_service" });
-    // The book states the finding, its evidence, and the question it does not answer.
-    expect(PROSE.investigation).toContain("holds the name `etl_service`");
-    expect(PROSE.investigation).toContain(
-      "an account, the one all four of the shop's programs log in as",
+    // The essay states the finding, its evidence, and the question it does not answer.
+    expect(PROSE.construction).toContain("records `etl_service` for all three of its tables");
+    expect(PROSE.construction).toContain("an account four programs share");
+    expect(PROSE.construction).toContain("a different question wearing the same word");
+    // The motivation's four questions are the essay's; the construction answers the owner one.
+    expect(PROSE.motivation).toContain(
+      "Why does this dashboard exist? Whose decision does it serve?",
     );
-    expect(PROSE.investigation).toContain(
-      "asks for a person or a team, and the record names neither",
-    );
-    // The questions it quotes from the start of the chapter are the motivation's own, word for
-    // word: the four list items there each open a list item in the reflection.
-    expect(PROSE.motivation).toContain("Who should I ask about `daily_sales`?");
-    const asked = PROSE.motivation.split("\n").filter((line) => line.startsWith("- "));
-    expect(asked).toHaveLength(4);
-    for (const q of asked) expect(PROSE.reflection, q).toContain(q);
+    expect(PROSE.motivation).toContain("Who created this table, and for what purpose?");
   });
   it("has one query that rebuilds daily_sales, the one the hints give", () => {
     expect(sumReconstructions(week(), "daily_sales")).toEqual([
@@ -267,40 +167,6 @@ describe("the facts Chapter 1 states", () => {
     expect(PROSE.c1Hints[4]).toContain(
       "`clean_orders`, keep completed orders only, add up price times quantity",
     );
-  });
-
-  it("states the analyst's copy as the lab makes it", () => {
-    const copy = recordOf(storage(week(["copy"])), "clean_orders_copy.parquet");
-    expect(copy.rows).toBe(44);
-    expect(copy.location).toBe("s3://shop-scratch/clean_orders_copy.parquet");
-    expect(time(copy.lastWritten)).toBe("02:15");
-    expect(sumReconstructions(week(["copy"]), "daily_sales", "covers")).toHaveLength(2);
-    // The lead says the builder's choices cover every asset in storage that week.
-    expect(sumSources(week(["copy"]), "daily_sales")).toContain("clean_orders_copy.parquet");
-    expect(PROSE.changeLead).toContain("which queries still reproduce the new `daily_sales`");
-    expect(PROSE.outcomeCopy).toContain("last modified at 02:15, with the same 44 rows");
-    expect(PROSE.outcomeCopy).toContain("Now 2 queries rebuild");
-    expect(PROSE.afterAll).toContain("The **copy** left two explanations fitting equally");
-  });
-
-  it("states the edit for refunds as the lab makes it", () => {
-    const before = revenue();
-    const after = revenue(["refunds"]);
-    // The label says the edit holds from Saturday's row on: no earlier row changes.
-    const changed = DAYS.filter((d) => before[d] !== after[d]);
-    expect(changed).toEqual(["2026-09-12"]);
-    expect(DAYS.indexOf("2026-09-12")).toBe(5);
-    expect(LABELS.changeLabels.refunds).toContain("from Saturday's row on");
-    expect([before["2026-09-12"], after["2026-09-12"]]).toEqual(["191.49", "215.49"]);
-    expect([before["2026-09-13"], after["2026-09-13"]]).toEqual(["97.75", "97.75"]);
-    const record = recordOf(storage(week(["refunds"])), "daily_sales");
-    expect(record.rows).toBe(7);
-    expect(record.lastWritten).toBe(recordOf(storage(), "daily_sales").lastWritten);
-    expect(sumReconstructions(week(["refunds"]), "daily_sales", "covers")).toEqual([]);
-    expect(PROSE.outcomeRefunds).toContain("Saturday's row now reads 215.49");
-    expect(PROSE.outcomeRefunds).toContain("it read 191.49");
-    expect(PROSE.outcomeRefunds).toContain("unchanged, 97.75");
-    expect(PROSE.outcomeRefunds).toContain("`daily_sales` still has 7 rows");
   });
 
   it("states the failed night as the lab makes it", () => {
@@ -319,7 +185,7 @@ describe("the facts Chapter 1 states", () => {
     expect(PROSE.outcomeFailed).toContain("`clean_orders` (Monday at 02:05)");
     expect(PROSE.outcomeFailed).toContain("the dashboard (Monday at 03:00)");
     expect(PROSE.outcomeFailed).toContain("shows 6 values");
-    expect(PROSE.outcomeFailed).toContain("the 6 rows");
+    expect(PROSE.outcomeFailed).toContain("6 rows");
   });
 
   it("answers the experiment's prediction with the counts the outcomes state", () => {
@@ -329,25 +195,14 @@ describe("the facts Chapter 1 states", () => {
     expect(counts).toEqual([2, 0, 1]);
   });
 
-  it("moves two questions about what made daily_sales after the edit, as the prose says", () => {
-    const place = (changes: Parameters<typeof week>[0]) =>
-      Object.fromEntries(questionMap(week(changes)).map((e) => [e.question, e.place]));
-    const before = place([]);
-    const after = place(["refunds"]);
-    const moved = QUESTION_IDS.filter((q) => before[q] !== after[q]);
-    expect(moved).toEqual(["made-from", "computed"]);
-    expect(PROSE.generalisation).toContain("a query rebuilds it");
-  });
-
   it("finds two settings of the cleaning rules that pass, differing only in the quantity rule", () => {
     const fits = cleanReconstructions(week());
     expect(fits).toHaveLength(2);
     expect(new Set(fits.map((c) => c.quantity))).toEqual(new Set(["keep", "drop"]));
     const raw = week().tables.get("orders.parquet")!;
     expect(columnValues(raw, "quantity").every((q) => Number(q) > 0)).toBe(true);
-    expect(PROSE.p3Explain).toContain("Two settings of the four rules pass");
-    expect(PROSE.p3Explain).toContain("quantity of 0 or less");
-    expect(PROSE.p3Explain).toContain("Two settings of the four rules pass the tests");
+    expect(PROSE.explanation).toContain("quantity of 0 or less");
+    expect(PROSE.explanation).toContain("a rule that never fires leaves no evidence it exists");
   });
 
   it("closes Thursday with the numbers the lab gives", () => {
@@ -375,10 +230,11 @@ describe("the facts Chapter 1 states", () => {
     );
     expect(gap).toMatchObject({ orders: 7, kept: 4, left: 3, lower: 0, moved: 0 });
     expect(gap.kind === "day-gap" && [gap.leftTotal, gap.difference]).toEqual(["154.00", "154.00"]);
-    expect(PROSE.cLab).toContain("{leftTotal}, the whole difference");
-    expect(PROSE.cExplain).toContain("none on another day");
+    expect(PROSE.failureExperiment).toContain(
+      "A query over `clean_orders` - keeping completed orders, adding up price times quantity per day - reproduces `daily_sales` exactly",
+    );
     // The reflection names them, after the rules challenge: both passing settings drop them.
-    expect(PROSE.cExplain).toContain("The rebuild keeps four of Thursday's seven orders");
+    expect(PROSE.explanation).toContain("Two settings of the recovered rules pass the check");
     expect(cleanReconstructions(week()).every((r) => r.missingCustomer === "drop")).toBe(true);
   });
 

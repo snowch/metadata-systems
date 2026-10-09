@@ -120,36 +120,7 @@ export const invisibleSystem: LessonInput = {
       kind: "prediction",
       title: LABELS.titles.prediction,
       prose: PROSE.prediction,
-      interactives: [
-        {
-          id: "predict-days",
-          role: "experiment",
-          kind: "lab-prediction",
-          timeModel: "lab",
-          caption: LABELS.captions.p2,
-          props: {
-            known: PROSE.p2Known,
-            question: PROSE.p2Question,
-            options: options(LABELS.p2Options).map((o) => ({
-              ...o,
-              means: o.value === "same" ? ["same"] : ["more", "less"],
-            })),
-            undecided: {
-              value: "undecided",
-              label: LABELS.p2Undecided,
-              line: PROSE.p2UndecidedLine,
-            },
-            probe: {
-              kind: "day-total",
-              source: "orders.parquet",
-              keep: "all",
-              target: "daily_sales",
-              day: "2026-09-10",
-            },
-            explain: PROSE.p2Explain,
-          },
-        },
-      ],
+      interactives: [],
     },
     {
       kind: "investigation",
@@ -186,8 +157,6 @@ export const invisibleSystem: LessonInput = {
           props: {
             challengeId: "rebuild-daily-sales",
             changes: [
-              { id: "copy", label: LABELS.changeLabels.copy, outcome: PROSE.outcomeCopy },
-              { id: "refunds", label: LABELS.changeLabels.refunds, outcome: PROSE.outcomeRefunds },
               { id: "failed", label: LABELS.changeLabels.failed, outcome: PROSE.outcomeFailed },
             ],
             afterAll: PROSE.afterAll,

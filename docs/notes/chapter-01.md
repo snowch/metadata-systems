@@ -84,36 +84,9 @@ without a role, without a block, or with a question unanswered.
 
 - **Role:** inspect
 - **Serves:** the discrepancy itself: Thursday at 51.50 against the days either side. Its own
-  last-refreshed record is on it, which the failed night later makes quietly important.
+  last-refreshed record is on it, which the failed night later makes important.
 - **Why now:** the head of the shop's one line points here; the learner needs to see what the
   shop's management sees each morning.
-
-### `predict-days`
-
-- **Role:** experiment
-- **Objective:** put a number on the learner's own model of the shop before the evidence arrives:
-  the raw total is not knowable from the page, but both defensible readings (it matches; it
-  differs) are real hypotheses, and "I can't tell yet" is an honest third.
-- **Known before:** the dashboard's 51.50 and the table's matching total; the pipeline, which
-  shows programs run between the file and the chart.
-- **Driving question:** what do Thursday's raw orders add up to?
-- **The action:** commit to one of the three, then let the lab add the rows up.
-- **Why the action:** the committed number is the learner's model made checkable; the lab's
-  205.50 then lands on a belief they own, not on a fact they were told.
-- **Evidence:** the lab's per-day comparison table, every day of the week, and the raw totals
-  beside the reported ones.
-- **Consequence:** the difference is real (205.50 vs 51.50), systematic (four days differ), and
-  enters between the file and the chart - and the raw total was never unusually low, so the
-  checkout is not the suspect.
-- **Predictable:** partially, from the pipeline's shape: a data engineer can defend either
-  reading, which is the point of asking.
-- **Gives nothing away:** no option names the lab's answer, and nothing above the commit does.
-- **Not knowing:** yes, and offered: "I can't tell yet", answered with what the lab found and
-  marked neither right nor wrong.
-- **Next question:** where between the file and the chart does the total change? The
-  investigation section takes it.
-- **An experiment:** yes: the learner commits, the lab shows, and the gap between the two is
-  the morning's first finding.
 
 ### `build-daily-sales`
 
