@@ -84,6 +84,12 @@ Chromium's phone emulation (390 by 844 pixels, touch); no real phone was measure
   from the menu shows in 3.8 to 5.2 s; no request goes to another site, and the page logs no error.
   marimo does not re-run the 29 markdown-only cells, whose saved output is their text: only the 25
   code cells run on load.
+- The published JupyterLite page, measured after the deploy of `5157bb6` from
+  `https://snowch.github.io/metadata-systems/jupyterlite/`, the same way: the 156 files a visit,
+  a save and a reload fetched transfer 12.7 MB, GitHub Pages compressing the WebAssembly and the
+  wheels as for marimo; the chapter's first text shows at 7.1 s; with Run All Cells pressed as the
+  page draws, every cell has run at 19.4 s (11.4 s after the press); memory peaks at 437 MB; all
+  480 requests go to snowch.github.io, and the page logs no error.
 - The whole site is 47.3 MB in 527 files (CI's log, the export of commit 3682a04); most of
   marimo's scripts load only when a feature that needs them is used.
 - Memory: the kernel's Python heap is 75 MB. Edit mode starts a second copy of Python to save the
