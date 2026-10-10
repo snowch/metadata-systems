@@ -664,7 +664,13 @@ to another person. Prefer concrete meaning over rhetorical effect, and reject, s
   for it;
 - overstatement: evidence that supports an explanation does not prove a cause;
 - repetition, atmospheric emphasis and formulaic closing slogans;
-- awkward or unnatural English: a grammatically valid sentence is not necessarily good prose.
+- awkward or unnatural English: a grammatically valid sentence is not necessarily good prose;
+- instructional scaffolding in the prose: headings that name the reader's activity ("What you
+  would write down") instead of the subject ("State and history");
+- curriculum narration and over-signposting: "This chapter works through five ideas", "Notice
+  what this table claims", "The fourth idea deserves its own moment";
+- redundant summary layers: "What this chapter established", "The one-sentence version",
+  "The general principle:", "The conclusion is structural, not incidental".
 
 `scripts/prose.mjs` (in `npm run check`, and alone as `npm run check:prose`) fails on confirmed
 regressions of these, one entry per phrase with the rule it breaks. When a review finds a new

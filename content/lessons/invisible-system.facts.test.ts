@@ -101,7 +101,7 @@ describe("the facts Chapter 1 states", () => {
   });
 
   it("gives the first and last days of the week and the learner's first morning", () => {
-    expect(PROSE.question).toContain("one Monday morning");
+    expect(PROSE.question).toContain("its first Monday");
     expect(ARRIVAL).toBe("2026-09-14T09:00:00Z");
     expect(PROSE.weekLead).toContain("Monday 7 to Sunday 13 September");
     expect(Object.keys(revenue())).toEqual([...DAYS]);
@@ -201,7 +201,7 @@ describe("the facts Chapter 1 states", () => {
     const raw = week().tables.get("orders.parquet")!;
     expect(columnValues(raw, "quantity").every((q) => Number(q) > 0)).toBe(true);
     expect(PROSE.explanation).toContain("quantity of 0 or less");
-    expect(PROSE.explanation).toContain("a rule that never fires leaves no evidence it exists");
+    expect(PROSE.explanation).toContain("A rule that never fires leaves no evidence it exists");
   });
 
   it("closes Thursday with the numbers the lab gives", () => {

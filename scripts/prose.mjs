@@ -46,6 +46,35 @@ const PROHIBITED = [
     phrase: "Nothing so far says",
     rule: "personification (rule 4): name what does not show it - the page, the metadata, the record",
   },
+  // Rule 12: curriculum narration and over-signposting. Found in the chapter review of Oct 2026.
+  {
+    phrase: "This chapter works through",
+    rule: "curriculum narration (rule 12): advance the argument, do not describe its order",
+  },
+  {
+    phrase: "The one-sentence version",
+    rule: "a redundant summary layer (rule 13): state the conclusion once, where it belongs",
+  },
+  {
+    phrase: "What this chapter established",
+    rule: "summary scaffolding (rule 13): repeats conclusions the reader has just met",
+  },
+  {
+    phrase: "Notice what this table",
+    rule: "reader direction (rule 12): make the point instead of directing attention to it",
+  },
+  {
+    phrase: "deserves its own moment",
+    rule: "narrating the structure (rule 12): teach the subject, not the lesson's shape",
+  },
+  {
+    phrase: "The general principle:",
+    rule: "a formulaic transition (rule 13): the explanation must do the work, not the label",
+  },
+  {
+    phrase: "The conclusion is structural, not incidental",
+    rule: "rhetorical emphasis (rule 13): authoritative-sounding framing that adds no information",
+  },
 ];
 
 /**

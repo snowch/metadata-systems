@@ -186,7 +186,7 @@ activity instead), artificially dramatic fragments ("one thing to take away"), f
 and wordplay, personification of systems or data ("nothing says who made it" - say what the
 metadata does not hold), vague references ("the rest", "what survives"), meta-commentary about
 what an exercise is doing, feedback that marks an answer wrong without explaining the correct
-conclusion, overstatement of what evidence shows, and closing slogans. `scripts/prose.mjs`
+conclusion, overstatement of what evidence shows, and closing slogans. Also reject instructional scaffolding in the prose: headings and sentences that name the reader's cognitive activity instead of the technical subject, curriculum narration and over-signposting ("this chapter works through", "notice what this table claims"), and redundant summary layers ("what this chapter established", "the one-sentence version"). AGENTS.md names these rules and where the checks live. `scripts/prose.mjs`
 (`npm run check:prose`, run by `npm run check`) fails on confirmed regressions of these; the
 editorial review pass in `docs/prompts/review-learner-facing-prose.md` catches the rest.
 `AGENTS.md` states the same rules for agents and where the checks live.

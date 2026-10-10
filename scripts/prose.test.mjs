@@ -81,6 +81,26 @@ test("the personifying nothing-says construction is rejected", () => {
   assert.match(out, /rule 4/);
 });
 
+test("curriculum narration and summary scaffolding are rejected", () => {
+  const { code, out } = runCheck({
+    "content/lessons/invisible-system.prose.ts":
+      'export const P = { a: "This chapter works through five ideas. The one-sentence version: state is not history." };\n',
+  });
+  assert.notEqual(code, 0);
+  assert.match(out, /This chapter works through/);
+  assert.match(out, /rule 12/);
+  assert.match(out, /The one-sentence version/);
+});
+
+test("technical prose that reads plainly does not fail", () => {
+  const { code } = runCheck({
+    "content/lessons/invisible-system.prose.ts":
+      'export const P = { a: "The design principle behind the schedule is recorded in the runbook." };\n',
+  });
+  // Only the exact scaffold phrases fail; ordinary prose passes.
+  assert.equal(code, 0);
+});
+
 test("the whole-file scan reports the file and enough context to find the line", () => {
   const { code, out } = runCheck({
     "apps/course/src/strings.ts":

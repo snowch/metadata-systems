@@ -58,6 +58,20 @@ Reject these failure modes:
    No atmospheric emphasis, formulaic closing slogans, or generic "takeaway" paragraphs.
 10. **Awkward or unnatural English.** A grammatically valid sentence is not necessarily good
     prose. Check idiom, referents, and whether a competent technical educator would say it.
+11. **Instructional scaffolding in the prose.** Headings and sentences that name the reader's
+    cognitive activity ("A number on your own model", "Reflection", "What you would write down")
+    instead of the technical subject. Name the subject ("State and history", "Why
+    reconstruction is unreliable"); an experienced engineer navigates by content, not by
+    pedagogy.
+12. **Curriculum narration and over-signposting.** Telling the reader how the chapter is
+    organised ("This chapter works through five ideas"), announcing an argument before making it
+    ("What follows is..."), narrating structure ("The fourth idea deserves its own moment"), or
+    directing the reader's attention ("Notice what this table claims"). Make the point instead.
+13. **Redundant summary layers.** "What this chapter established", "The one-sentence version",
+    "The key takeaway", "The general principle:", "The conclusion is structural, not
+    incidental". These restate a conclusion the reader has just met or frame it rhetorically.
+    One statement, in place, does the work. Also challenge absolutes that sound profound but
+    are imprecise: say exactly what is and is not established.
 
 When you change learner-facing text, read the complete changed passage in context, not just the
 changed line, and ask: is the meaning immediately clear; does every sentence carry a concrete,
