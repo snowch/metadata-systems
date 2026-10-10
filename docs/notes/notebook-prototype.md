@@ -159,12 +159,19 @@ reader used to the shop and its processes, the second to start on the issues. Bo
 versions are split. The course's essay page is not: the course numbers its chapters, so the same
 split there needs a decision (the last open question, below).
 
-- `chapter_01_part_1.py`, "Chapter 1, part 1: The shop and its platform": the situation, without
-  the head of the shop's message; the three systems, the seven assets and the week, as before; then
-  a section for each thing the shop keeps, each with a cell that reads it: `products.csv` and
-  `customers.jsonl` printed as they are stored, one day's orders from `orders.jsonl` (Monday, and
-  the reader can change the day), the warehouse's three tables, and the dashboard. It ends with the
-  message, "Thursday's revenue looks wrong", and a link to part 2. 12 code cells and 14 of prose.
+- `chapter_01_part_1.py`, "Chapter 1, part 1: The shop and its platform": the situation and the
+  head of the shop's message, "Thursday's revenue looks wrong", as the chapter has always opened,
+  and why the reader looks round first: to tell whether Thursday's figure is wrong, they need to know
+  what the platform holds and what happens on it each night. Then the three systems, the seven
+  assets and the week, as before, and a section for each thing the shop keeps, each with a cell that
+  reads it: `products.csv` and `customers.jsonl` printed as they are stored, one day's orders from
+  `orders.jsonl` (Monday, and the reader can change the day), the warehouse's three tables, and the
+  dashboard. It ends with a link to part 2, which starts on Thursday. 12 code cells and 14 of prose.
+- At first the message closed part 1, and part 1 was a tour with no question in front of it, which
+  `CLAUDE.md` warns against: data shown without a question to answer from it. The author agreed that
+  separating the shop from the issues is right and asked for the story to be introduced differently:
+  the message opens part 1 again, so the tour serves the question, and part 2 still holds the
+  investigation (brief AQ).
 - `chapter_01_part_2.py`, "Chapter 1, part 2: Thursday's revenue and what the platform cannot say":
   the essay from its questions to the handover. It opens with the message, the systems' figure and
   the dashboard; the paragraph on what JSON Lines and CSV record moved to part 1, where the reader

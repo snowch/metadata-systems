@@ -78,6 +78,16 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertEqual(shop.NIGHTS[-1], "2026-09-14")
         self.says("The last night ends early on Monday 14 September", 1)
 
+    def test_part_1_opens_with_the_message_and_part_2_starts_on_it(self):
+        # The story is introduced first, so the tour of the platform serves the question; part 2
+        # holds the investigation (brief AQ).
+        first = CELLS[1][1]
+        self.assertTrue(first.startswith("You start work on Monday 14 September 2026 at 09:00"))
+        self.assertIn("the head of the shop sends you one line: Thursday's revenue looks wrong.", first)
+        self.assertIn("you first need to know what the platform holds and what happens on it each night", first)
+        self.assertEqual(CELLS[1][-2], "[Part 2](part-2.html) goes back to the head of the shop's line and starts with Thursday's revenue.")
+        self.says("The head of the shop has sent you one line", 2)
+
     def test_the_three_systems(self):
         systems = figures.platform_assets(self.week)
         self.assertEqual([s for s, _ in systems], ["Object storage", "Warehouse", "Reporting tool"])

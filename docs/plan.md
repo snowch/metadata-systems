@@ -264,9 +264,11 @@ The author reviews the course at five checkpoints:
 Reading the notebooks, the author asked for the chapter in two parts: the first to get the reader
 used to the shop and its processes, the second to start on the issues. Both notebook versions are
 now two pages (`notebook/chapter_01_part_1.py` and `_part_2.py`, and two Jupyter notebooks). Part 1,
-"The shop and its platform", is the situation, the systems, the assets and the week, then a cell for
-each thing the shop keeps: its catalogue, its customers, a day's orders, the warehouse's tables and
-the dashboard; it ends with the head of the shop's message and a link to part 2. Part 2, "Thursday's
+"The shop and its platform", opens with the situation and the head of the shop's message, as the
+chapter always has, so the tour serves the question; then the systems, the assets and the week, and
+a cell for each thing the shop keeps: its catalogue, its customers, a day's orders, the warehouse's
+tables and the dashboard; it ends with a link to part 2. (The message closed part 1 at first; the
+author asked for the story to be introduced at the start.) Part 2, "Thursday's
 revenue and what the platform cannot say", is the essay from its questions to the handover. Part 1
 says what each asset holds and never which is made from which, reads the data but not what the
 systems record about it, and counts nothing that shows Thursday's gap, so part 2's investigation is
