@@ -2,10 +2,10 @@
 # Copyright © 2026 Christopher Snow
 
 # Builds Chapter 1 as a JupyterLite site, into the directory given, for comparison with the marimo
-# notebook: the same prose and the same `shop` package, as a Jupyter notebook in JupyterLite's
-# Notebook interface, with Pyodide and every package the page uses inside the site, so it fetches
-# nothing from a third party. Both workflows run this; it needs the packages in requirements.txt
-# and network access to PyPI and to Pyodide's CDN at build time.
+# notebooks: the same prose and the same `shop` package, as two Jupyter notebooks, one per part of
+# the chapter, in JupyterLite's Notebook interface, with Pyodide and every package the pages use
+# inside the site, so they fetch nothing from a third party. Both workflows run this; it needs the
+# packages in requirements.txt and network access to PyPI and to Pyodide's CDN at build time.
 #
 #   notebook/jupyterlite/build.sh OUT_DIR
 
@@ -25,8 +25,8 @@ python3 "$here/fetch_pyodide.py" "$here/static/pyodide"
 python3 "$here/make_wheel.py" "$work/wheels"
 python3 -m pip download --quiet --no-deps --dest "$work/wheels" "ipywidgets==8.1.9" "comm==0.2.3"
 
-# The notebook, from the marimo notebook; it runs once here, in CPython, as a check.
-python3 "$here/build_ipynb.py" "$work/content/chapter_01.ipynb" --check
+# The notebooks, from the marimo notebooks; each runs once here, in CPython, as a check.
+python3 "$here/build_ipynb.py" "$work/content" --check
 
 cd "$work"
 jupyter lite build --lite-dir "$here" --contents "$work/content" --output-dir "$out" \

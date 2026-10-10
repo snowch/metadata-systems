@@ -1,21 +1,24 @@
 # Copyright © 2026 Christopher Snow
 
-"""Builds Chapter 1 as a Jupyter notebook, for JupyterLite, from the marimo notebook.
+"""Builds Chapter 1 as Jupyter notebooks, for JupyterLite, from the marimo notebooks.
 
-The prose and the visible code are the marimo notebook's (`notebook/chapter_01.py`), cell by cell,
-so the two versions say the same thing. What differs is what the two tools do differently:
+The chapter is in two parts, one notebook each. The prose and the visible code are the marimo
+notebooks' (`notebook/chapter_01_part_1.py` and `_part_2.py`), cell by cell, so the two versions
+say the same thing. What differs is what the two tools do differently:
 
 - marimo runs cells in the order their names need, so its setup cells sit at its foot; Jupyter runs
   from the top, so they move there, with the install of the two packages the page bundles.
-- marimo's controls (the tabs, the menu of changes, the handover note) become ipywidgets; a figure
-  shown with `mo.Html` is IPython's `HTML`; a column of outputs is `display`; the callout is a
-  quoted paragraph.
-- the sentences about running cells say what Jupyter does (`words.py`).
+- marimo's controls (the menu of changes, the handover note) become ipywidgets; a figure shown with
+  `mo.Html` is IPython's `HTML`; a column of outputs is `display`; the callout is a quoted
+  paragraph.
+- the sentences about running cells say what Jupyter does (`words.py`), and a link from one part
+  to the other names the other notebook.
 
 Anything in the marimo notebook this does not know how to carry over stops the build.
 
-Usage: python3 build_ipynb.py OUT.ipynb [--check]
-  --check  runs the notebook here, in CPython, first, and stops if a cell raises.
+Usage: python3 build_ipynb.py OUT_DIR [--check]
+  writes OUT_DIR/chapter_01_part_1.ipynb and OUT_DIR/chapter_01_part_2.ipynb.
+  --check  runs each notebook here, in CPython, first, and stops if a cell raises.
 """
 
 import ast
@@ -26,11 +29,20 @@ from pathlib import Path
 import nbformat
 
 HERE = Path(__file__).resolve().parent
-MARIMO = HERE.parent / "chapter_01.py"
 sys.path.insert(0, str(HERE))
 import words  # noqa: E402
 
 HIDDEN = {"jupyter": {"source_hidden": True}}
+
+# The two parts: each marimo notebook, and the name of the Jupyter notebook built from it.
+PARTS = {
+    1: (HERE.parent / "chapter_01_part_1.py", "chapter_01_part_1.ipynb"),
+    2: (HERE.parent / "chapter_01_part_2.py", "chapter_01_part_2.ipynb"),
+}
+
+# The marimo pages link to each other by their place in the site (export.sh): part 1 is the site's
+# index, part 2 is part-2.html. In JupyterLite each links to the other notebook by its name.
+LINKS = {"](./)": f"]({PARTS[1][1]})", "](part-2.html)": f"]({PARTS[2][1]})"}
 
 # Jupyter runs from the top: these come first. In the browser the three packages the page bundles
 # are installed from the site itself, without the dependencies the kernel already has (IPython,
@@ -77,25 +89,6 @@ def code_font(text: str) -> str:
     return "".join(f"<code>{p}</code>" if i % 2 else p for i, p in enumerate(parts))
 
 
-def tabs(stmts: list[ast.stmt]) -> str:
-    cards = next(
-        ast.literal_eval(s.value) for s in stmts if isinstance(s, ast.Assign) and s.targets[0].id == "_cards"
-    )
-    return f"""_cards = {cards!r}
-_first = warehouse.sql("SELECT * FROM clean_orders LIMIT 7")
-_total = warehouse.sql("SELECT COUNT(*) AS n FROM clean_orders")[0]["n"]
-_pages = {{
-    "orders.jsonl": figures.raw_text(week, "s3://shop-raw/orders.jsonl", "The first {{shown}} of the file's {{total}} lines."),
-    "clean_orders": _first._repr_html_() + "<p>The first {{shown}} of the table's {{total}} rows.</p>".format(shown=len(_first), total=_total),
-    "daily_sales": warehouse.sql("SELECT * FROM daily_sales")._repr_html_(),
-    "sales_dashboard": figures.dashboard_chart(week),
-}}
-widgets.Tab(
-    children=[widgets.HTML(f"<p><em>{{_cards[name]}}</em></p>{{page}}") for name, page in _pages.items()],
-    titles=list(_pages),
-)"""
-
-
 def menu(stmts: list[ast.stmt], source: str) -> str:
     if words.MARIMO["CHANGES"] not in source:
         raise SystemExit("the marimo notebook's lead for the menu of changes has changed: update words.py")
@@ -119,9 +112,9 @@ def note(stmts: list[ast.stmt]) -> str:
 widgets.VBox([widgets.HTML({"<p>" + code_font(label) + "</p>"!r}), note])"""
 
 
-def build() -> nbformat.NotebookNode:
-    source = MARIMO.read_text(encoding="utf-8")
-    replaced = {key: 0 for key in ("HOW_TO", "THURSDAY_ROW")}
+def build(part: int, replaced: dict[str, int]) -> nbformat.NotebookNode:
+    """One part's Jupyter notebook; `replaced` counts where each slot of `words.py` went."""
+    source = PARTS[part][0].read_text(encoding="utf-8")
     out = []
     for node in ast.parse(source).body:
         if not isinstance(node, ast.FunctionDef):
@@ -132,10 +125,16 @@ def build() -> nbformat.NotebookNode:
         first = stmts[0]
         if len(stmts) == 1 and isinstance(first, ast.Expr) and is_call(first.value, "md") and isinstance(first.value.args[0], ast.Constant):
             text = textwrap.dedent(first.value.args[0].value).strip()
-            for key in replaced:
-                if words.MARIMO[key] in text:
-                    text = text.replace(words.MARIMO[key], getattr(words, key))
+            for key, marimo in words.MARIMO.items():
+                if marimo in text and key != "CHANGES":
+                    text = text.replace(marimo, getattr(words, key))
                     replaced[key] += 1
+            for key, marimo in words.AFTER.items():
+                if marimo in text:
+                    text = text.replace(marimo, marimo + "\n\n" + getattr(words, key))
+                    replaced[key] += 1
+            for marimo, jupyter in LINKS.items():
+                text = text.replace(marimo, jupyter)
             out.append(nbformat.v4.new_markdown_cell(text))
             continue
         code = lines_of(source, stmts)
@@ -143,14 +142,13 @@ def build() -> nbformat.NotebookNode:
             out.append(nbformat.v4.new_code_cell(code))
         elif "mo.callout(" in code:
             # The warning, then the setup, hidden, before the chapter's first section.
-            out.append(nbformat.v4.new_markdown_cell("> " + words.WARNING))
+            out.append(nbformat.v4.new_markdown_cell("> " + words.WARNING[part]))
             out.extend(nbformat.v4.new_code_cell(setup, metadata=HIDDEN) for setup in SETUP)
         elif "import marimo as mo" in code or "week = shop.run_week()" in code:
             continue  # the setup, which Jupyter runs first (SETUP)
-        elif "mo.ui.tabs(" in code:
-            out.append(nbformat.v4.new_code_cell(tabs(stmts), metadata=HIDDEN))
         elif "mo.ui.dropdown(" in code:
             out.append(nbformat.v4.new_code_cell(menu(stmts, source), metadata=HIDDEN))
+            replaced["CHANGES"] += 1
         elif "mo.ui.text_area(" in code:
             out.append(nbformat.v4.new_code_cell(note(stmts), metadata=HIDDEN))
         elif len(stmts) == 1 and isinstance(first, ast.Expr) and is_call(first.value, "Html"):
@@ -161,10 +159,7 @@ def build() -> nbformat.NotebookNode:
         else:
             raise SystemExit(f"no Jupyter form for this hidden cell of the marimo notebook:\n{code}")
     if not any("piplite" in "".join(c.source) for c in out):
-        raise SystemExit("the marimo notebook's warning has moved: the setup has nowhere to go")
-    for key, count in replaced.items():
-        if count != 1:
-            raise SystemExit(f"words.MARIMO[{key!r}] matched {count} cells, not 1: update words.py")
+        raise SystemExit(f"part {part}'s warning has moved: the setup has nowhere to go")
     for i, cell in enumerate(out):
         cell["id"] = f"cell-{i + 1:02d}"
     nb = nbformat.v4.new_notebook(cells=out)
@@ -173,6 +168,16 @@ def build() -> nbformat.NotebookNode:
         "language_info": {"name": "python"},
     }
     return nb
+
+
+def build_all() -> dict[str, nbformat.NotebookNode]:
+    """Both parts, by notebook name; each sentence `words.py` replaces is found exactly once."""
+    replaced = {key: 0 for key in [*words.MARIMO, *words.AFTER]}
+    notebooks = {name: build(part, replaced) for part, (_, name) in PARTS.items()}
+    for key, count in replaced.items():
+        if count != 1:
+            raise SystemExit(f"the sentences words.py places {key} by matched {count} cells, not 1: update words.py")
+    return notebooks
 
 
 def check(nb: nbformat.NotebookNode) -> None:
@@ -191,16 +196,16 @@ def check(nb: nbformat.NotebookNode) -> None:
         copy.deepcopy(nb),
         kernel_name="python3",
         timeout=300,
-        resources={"metadata": {"path": str(MARIMO.parent)}},
+        resources={"metadata": {"path": str(HERE.parent)}},
     ).execute()
 
 
 if __name__ == "__main__":
-    target = Path(sys.argv[1])
-    nb = build()
-    if "--check" in sys.argv:
-        check(nb)
-    nbformat.validate(nb)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    nbformat.write(nb, str(target))
-    print(f"{target}: {len(nb.cells)} cells")
+    out = Path(sys.argv[1])
+    out.mkdir(parents=True, exist_ok=True)
+    for name, nb in build_all().items():
+        if "--check" in sys.argv:
+            check(nb)
+        nbformat.validate(nb)
+        nbformat.write(nb, str(out / name))
+        print(f"{out / name}: {len(nb.cells)} cells")

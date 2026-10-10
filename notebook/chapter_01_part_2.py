@@ -5,7 +5,7 @@ import marimo
 __generated_with = "0.25.1"
 app = marimo.App(
     width="medium",
-    app_title="The invisible data system",
+    app_title="The invisible data system, part 2",
     css_file="notebook.css",
 )
 
@@ -13,7 +13,7 @@ app = marimo.App(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    # The invisible data system
+    # Chapter 1, part 2: Thursday's revenue and what the platform cannot say
 
     **Objectives**
 
@@ -27,20 +27,16 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.callout(mo.md("This page runs Python in your browser. The first time you open it, your browser downloads about 17 MB. On a computer, Python took 10 to 17 seconds to start, and the page used about 1 GB of memory. If your phone runs short of memory, the browser may reload the page, and a reload loses what you changed or wrote on the page."), kind="warn")
+    mo.callout(mo.md("This page runs Python in your browser. The first time you open it on its own, your browser downloads about 17 MB. Measured on a computer, the page downloaded less than 1 MB when opened from part 1's link, in a browser that had opened part 1. On a computer, Python took 8 to 17 seconds to start, and the page used about 1 GB of memory. If your phone runs short of memory, the browser may reload the page, and a reload loses what you changed or wrote on the page."), kind="warn")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## The shop and its platform
+    ## Monday morning
 
-    You start work on Monday 14 September 2026 at 09:00, as the data engineer of an online shop that sells bicycle parts. The shop opened its online store a week ago, on Monday 7 September. Nobody who built its data platform is there to ask, and nothing about it is written down. Before you have sat down, the head of the shop sends you one line: Thursday's revenue looks wrong.
-
-    The platform has three systems: object storage, which holds files; a warehouse, which holds tables; and a reporting tool, which holds a dashboard. Every night, programs read the files, write the tables and refresh the dashboard. You can read everything the three systems hold. You cannot see the programs, when they are due to run, or any note anybody kept.
-
-    The boxes of code with numbered lines are cells you can run. To run a cell, press its run button. The run button is a triangle at the top right of the cell. You can also press Ctrl+Enter (Cmd+Enter on a Mac) while you type in the cell. On a computer, the run button appears when the pointer is over the cell. On a phone, the run button is always there. When you run a cell, the cells that use its results run again. Nothing you change is saved. Reloading the page shows the chapter as it was published.
+    It is Monday 14 September 2026, your first morning as the shop's data engineer. You have looked round the shop's platform in [part 1](./). The head of the shop has sent you one line: "Thursday's revenue looks wrong."
     """)
     return
 
@@ -56,59 +52,6 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(figures, mo, week):
     mo.Html(figures.figure(figures.pipeline(week), "The shop's three systems and what each holds."))
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    An asset is one thing the platform holds: here, a file, a table or a dashboard.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    The shop's first week ran from Monday 7 to Sunday 13 September. Each night, in the early hours of the next day, the three files are written again, then programs write the tables and refresh the dashboard. The last night ends early on Monday 14 September, before you start work.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(figures, mo, week):
-    mo.Html(figures.figure(figures.week_strip(week), "The shop's first week: order days, a night's work after each, and the morning you start."))
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    These are the four assets this chapter uses, one per tab. Choose a tab to see what each one holds: for `orders.jsonl`, its first lines exactly as stored; for `clean_orders` and `daily_sales`, their rows; for `sales_dashboard`, its chart.
-
-    *Four of the platform's seven assets.*
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(figures, mo, warehouse, week):
-    _cards = {
-        "orders.jsonl": "The raw orders the shop took, written each night to a file",
-        "clean_orders": "Orders after the cleaning step, held in the warehouse",
-        "daily_sales": "One row per day: the totals the dashboard reports",
-        "sales_dashboard": "The reporting view built from the data"
-    }
-    _first = warehouse.sql("SELECT * FROM clean_orders LIMIT 7")
-    _total = warehouse.sql("SELECT COUNT(*) AS n FROM clean_orders")[0]["n"]
-    mo.ui.tabs(
-        {
-            "orders.jsonl": mo.vstack([mo.md(f"*{_cards['orders.jsonl']}*"), mo.Html(figures.raw_text(week, "s3://shop-raw/orders.jsonl", "The first {shown} of the file's {total} lines."))]),
-            "clean_orders": mo.vstack([mo.md(f"*{_cards['clean_orders']}*"), _first, mo.md("The first {shown} of the table's {total} rows.".format(shown=len(_first), total=_total))]),
-            "daily_sales": mo.vstack([mo.md(f"*{_cards['daily_sales']}*"), warehouse.sql("SELECT * FROM daily_sales")]),
-            "sales_dashboard": mo.vstack([mo.md(f"*{_cards['sales_dashboard']}*"), mo.Html(figures.dashboard_chart(week))]),
-        }
-    )
     return
 
 
@@ -233,7 +176,7 @@ def _(warehouse):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Object storage records as much about a file: its location, its size and when it was last modified. `orders.jsonl` and `customers.jsonl` are JSON Lines, with one record per line, and every record names its fields. A JSON value has one of a few types, such as a string, a number, true or false, or null, and a date or an amount is just a string or a number. `products.csv` names its columns once, in its first line, and has no types: every value is text. The reporting tool records the dashboard's title, who created it and when, when it last refreshed, and the values it shows.
+    Object storage records as much about a file: its location, its size and when it was last modified. The reporting tool records the dashboard's title, who created it and when, when it last refreshed, and the values it shows.
 
     The cell below lists the files in the bucket `shop-raw`. For each file, object storage records its key, its size in bytes and when it was last modified.
     """)

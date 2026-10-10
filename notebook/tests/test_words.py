@@ -1,9 +1,10 @@
 # Copyright © 2026 Christopher Snow
 
-"""Every sentence of the notebook that states a fact, pinned against the engine, and the prose rules.
+"""Every sentence of the notebooks that states a fact, pinned against the engine, and the prose rules.
 
-The notebook's words are its markdown cells and the labels in its code cells. A number in them is a
-number the engine produced; if the shop changes, this fails until the words change with it.
+Chapter 1 is two notebooks, one per part. Their words are their markdown cells and the labels in
+their code cells. A number in them is a number the engine produced; if the shop changes, this fails
+until the words change with it.
 """
 
 import ast
@@ -17,13 +18,17 @@ from shop import figures
 from shop.infer import KEEP
 
 ROOT = Path(__file__).resolve().parents[2]
-NOTEBOOK = ROOT / "notebook" / "chapter_01.py"
+PARTS = {
+    1: ROOT / "notebook" / "chapter_01_part_1.py",
+    2: ROOT / "notebook" / "chapter_01_part_2.py",
+}
+SOURCE = {part: path.read_text(encoding="utf-8") for part, path in PARTS.items()}
 
 
-def markdown_cells() -> list[str]:
-    """The text of every `mo.md(...)` cell, in the notebook's order."""
+def markdown_cells(part: int) -> list[str]:
+    """The text of every `mo.md(...)` cell of a part, in the notebook's order."""
     out = []
-    for node in ast.parse(NOTEBOOK.read_text(encoding="utf-8")).body:
+    for node in ast.parse(SOURCE[part]).body:
         if not isinstance(node, ast.FunctionDef):
             continue
         for stmt in node.body:
@@ -39,14 +44,14 @@ def markdown_cells() -> list[str]:
     return out
 
 
-def strings() -> list[str]:
-    """Every string constant in the notebook: its words, its labels, and its code's strings."""
-    tree = ast.parse(NOTEBOOK.read_text(encoding="utf-8"))
+def strings(part: int) -> list[str]:
+    """Every string constant in a part: its words, its labels, and its code's strings."""
+    tree = ast.parse(SOURCE[part])
     return [n.value for n in ast.walk(tree) if isinstance(n, ast.Constant) and isinstance(n.value, str)]
 
 
-CELLS = markdown_cells()
-TEXT = "\n\n".join(CELLS)
+CELLS = {part: markdown_cells(part) for part in PARTS}
+TEXT = {part: "\n\n".join(cells) for part, cells in CELLS.items()}
 
 
 def flat(s: str) -> str:
@@ -58,20 +63,20 @@ class TheWordsMatchTheEngine(unittest.TestCase):
     def setUpClass(cls):
         cls.week = shop.run_week()
         cls.w = cls.week.warehouse
-        cls.text = flat(TEXT)
+        cls.text = {part: flat(text) for part, text in TEXT.items()}
 
-    def says(self, phrase: str) -> None:
-        self.assertIn(flat(phrase), self.text)
+    def says(self, phrase: str, part: int = 2) -> None:
+        self.assertIn(flat(phrase), self.text[part])
 
     def test_the_situation_and_the_week(self):
         self.assertEqual(shop.ARRIVAL, "2026-09-14T09:00:00Z")
-        self.says("You start work on Monday 14 September 2026 at 09:00")
+        self.says("You start work on Monday 14 September 2026 at 09:00", 1)
         self.assertEqual(shop.DAYS[0], "2026-09-07")
-        self.says("a week ago, on Monday 7 September")
+        self.says("a week ago, on Monday 7 September", 1)
         self.assertEqual((shop.DAYS[0], shop.DAYS[-1]), ("2026-09-07", "2026-09-13"))
-        self.says("The shop's first week ran from Monday 7 to Sunday 13 September")
+        self.says("The shop's first week ran from Monday 7 to Sunday 13 September", 1)
         self.assertEqual(shop.NIGHTS[-1], "2026-09-14")
-        self.says("The last night ends early on Monday 14 September")
+        self.says("The last night ends early on Monday 14 September", 1)
 
     def test_the_three_systems(self):
         systems = figures.platform_assets(self.week)
@@ -79,8 +84,65 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertEqual([{k for _, k in a} for _, a in systems], [{"file"}, {"table"}, {"dashboard"}])
         self.says(
             "three systems: object storage, which holds files; a warehouse, which holds tables; "
-            "and a reporting tool, which holds a dashboard"
+            "and a reporting tool, which holds a dashboard",
+            1,
         )
+        self.says("In the cells, `storage`, `warehouse` and `reporting` name the shop's three systems", 1)
+
+    def test_the_shops_files(self):
+        products = self.week.storage.records(shop.FILES["products"])
+        self.assertEqual((len(products), len({p["category"] for p in products})), (8, 6))
+        self.says("holds the shop's catalogue: 8 products in 6 categories", 1)
+        self.assertEqual(list(products[0]), ["product_id", "name", "category", "list_price_pence", "updated_by"])
+        for name in ("`product_id`", "`list_price_pence`", "`updated_by`"):
+            self.says(name, 1)
+        customers = self.week.storage.records(shop.FILES["customers"])
+        self.assertEqual((len(customers), len({c["country"] for c in customers})), (10, 7))
+        self.says("holds the shop's 10 customers, in 7 countries", 1)
+        self.assertEqual(list(customers[0]), ["customer_id", "name", "email", "country", "signed_up"])
+        self.assertTrue(all(len(c) == 5 for c in customers))
+        self.says("A customer's record has five fields", 1)
+        self.assertTrue(all(len(c["country"]) == 2 for c in customers))
+        for name in ("`customer_id`", "`signed_up`"):
+            self.says(name, 1)
+        orders = self.week.storage.records(shop.FILES["orders"])
+        self.assertEqual(list(orders[0]), ["order_id", "customer_id", "product_id", "quantity", "price_pence", "status", "ordered_at"])
+        self.assertTrue(all(len(o) == 7 for o in orders))
+        self.says("An order's record has seven fields", 1)
+        for name in ("`order_id`", "`customer_id`", "`product_id`", "`quantity`", "`price_pence`", "`status`", "`ordered_at`"):
+            self.says(name, 1)
+        self.assertEqual({o["status"] for o in orders}, {"completed", "cancelled"})
+        self.says("In this week's file, `status` is `completed` or `cancelled`.", 1)
+        self.assertTrue(all(o["ordered_at"].endswith("Z") for o in orders))
+        self.assertTrue(all(o["price_pence"] == {p[0]: p[3] for p in shop.data.PRODUCTS}[o["product_id"]] for o in orders))
+        # The file on Monday holds every order of the week: each night's export writes them all again.
+        self.assertEqual({o["order_id"] for o in orders}, {row[0] for row in shop.data.ORDERS})
+        self.says("Each night, the file is written again, with every order taken since the online store opened.", 1)
+        self.assertEqual(sorted({o["ordered_at"][:10] for o in orders}), list(shop.DAYS))
+        self.assertIn('day = "2026-09-07"', SOURCE[1])
+        self.says("the day is set to Monday, `2026-09-07`", 1)
+        self.says("any day from `2026-09-07` to `2026-09-13`", 1)
+
+    def test_the_warehouse_and_the_dashboard(self):
+        tables = [r["table_name"] for r in self.w.sql("SELECT table_name FROM information_schema.tables ORDER BY rowid")]
+        self.assertEqual(tables, ["clean_customers", "clean_orders", "daily_sales"])
+        self.says("The warehouse holds three tables: `clean_customers`, `clean_orders` and `daily_sales`.", 1)
+        days = [r["day"] for r in self.w.sql("SELECT day FROM daily_sales ORDER BY day")]
+        self.assertEqual(days, list(shop.DAYS))
+        self.says("`daily_sales` has one row per day: the day and that day's revenue in pence (`revenue_pence`).", 1)
+        self.assertIn('warehouse.sql("SELECT * FROM clean_orders LIMIT 7")', SOURCE[1])
+        self.says("the first 7 rows of `clean_orders`", 1)
+        d = self.week.reporting.dashboard()
+        self.assertEqual((d["name"], d["title"], [v["day"] for v in d["values"]]), ("sales_dashboard", "Sales, last 7 days", list(shop.DAYS)))
+        self.says('one dashboard, `sales_dashboard`, titled "Sales, last 7 days"', 1)
+        self.says("each day's revenue in pounds for 7 to 13 September", 1)
+
+    def test_the_parts_link_to_each_other_where_the_export_puts_them(self):
+        export = (ROOT / "notebook" / "export.sh").read_text(encoding="utf-8")
+        self.assertIn('chapter_01_part_1.py -o "$out/index.html"', export)
+        self.assertIn('chapter_01_part_2.py -o "$out/part-2.html"', export)
+        self.assertIn("](part-2.html)", TEXT[1])
+        self.assertIn("](./)", TEXT[2])
 
     def test_thursday_against_the_days_either_side(self):
         shown = {v["day"]: v["revenue"] for v in self.week.reporting.dashboard()["values"]}
@@ -103,7 +165,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
             "On Monday, Friday and Sunday the raw orders add up to the day's row in `daily_sales`. "
             "On Tuesday, Wednesday, Thursday and Saturday they do not."
         )
-        self.assertIn('day = "2026-09-10"', NOTEBOOK.read_text(encoding="utf-8"))
+        self.assertIn('day = "2026-09-10"', SOURCE[2])
 
     def test_the_record_of_daily_sales(self):
         [t] = self.w.sql("SELECT * FROM information_schema.tables WHERE table_name = 'daily_sales'")
@@ -119,10 +181,10 @@ class TheWordsMatchTheEngine(unittest.TestCase):
 
     def test_the_file_formats(self):
         self.assertTrue(shop.FILES["orders"].endswith("orders.jsonl") and shop.FILES["customers"].endswith("customers.jsonl"))
-        self.says("`orders.jsonl` and `customers.jsonl` are JSON Lines")
+        self.says("`orders.jsonl` and `customers.jsonl` are JSON Lines", 1)
         first = self.week.storage.read_text(shop.FILES["products"]).splitlines()[0]
         self.assertEqual(first, "product_id,name,category,list_price_pence,updated_by")
-        self.says("`products.csv` names its columns once, in its first line")
+        self.says("`products.csv` names its columns once, in its first line", 1)
         self.says("its location, its size and when it was last modified")
         self.says("the dashboard's title, who created it and when, when it last refreshed, and the values it shows")
 
@@ -187,22 +249,39 @@ class TheWordsAboutThePage(unittest.TestCase):
     """
 
     def test_the_warning_states_the_measurements(self):
-        [warning] = [s for s in strings() if s.startswith("This page runs Python in your browser")]
         note = flat((ROOT / "docs" / "notes" / "notebook-prototype.md").read_text(encoding="utf-8"))
-        for said, measured in [
-            ("downloads about 17 MB", "transfers 17.1 MB"),
-            ("Python took 10 to 17 seconds to start", "| Python ready | 9.5 to 15 s |"),
-            ("Python took 10 to 17 seconds to start", "Python is ready after 15 to 16.5 s"),
-            ("used about 1 GB of memory", "| Peak memory of the page's renderer process | 0.97 to 1.16 GB |"),
-        ]:
-            self.assertIn(said, warning)
-            self.assertIn(measured, note)
-        self.assertIn("the browser may reload the page, and a reload loses what you changed", warning)
+        gzip = "| Size if the host compresses text and WebAssembly (gzip, level 6) | 17.0 MB | 17.0 MB | |"
+        ready = "| Python ready | 8.9 to 10.3 s | 8.9 to 9.3 s | 7.7 to 8.7 s |"
+        live = "Python is ready after 15 to 16.5 s"  # the published single notebook, the same runtime
+        memory = "| Peak memory of the page's renderer process | 0.79 to 0.82 GB | 1.01 to 1.09 GB |"
+        stored = "| Size, as stored | 31.8 MB | 31.9 MB | 0.15 MB |"
+        expected = {
+            1: [
+                ("downloads about 17 MB", gzip),
+                ("downloads about 17 MB", "transfers 17.1 MB"),
+                ("Python took 9 to 17 seconds to start", ready),
+                ("Python took 9 to 17 seconds to start", live),
+                ("the page used about 0.8 GB of memory", memory),
+            ],
+            2: [
+                ("downloads about 17 MB", gzip),
+                ("the page downloaded less than 1 MB when opened from part 1's link", stored),
+                ("Python took 8 to 17 seconds to start", ready),
+                ("Python took 8 to 17 seconds to start", live),
+                ("the page used about 1 GB of memory", memory),
+            ],
+        }
+        for part, pairs in expected.items():
+            [warning] = [s for s in strings(part) if s.startswith("This page runs Python in your browser")]
+            for said, measured in pairs:
+                self.assertIn(said, warning, part)
+                self.assertIn(flat(measured), note, part)
+            self.assertIn("the browser may reload the page, and a reload loses what you changed", warning)
 
     def test_the_menu_offers_the_engines_changes(self):
         [menu] = [
             n
-            for n in ast.walk(ast.parse(NOTEBOOK.read_text(encoding="utf-8")))
+            for n in ast.walk(ast.parse(SOURCE[2]))
             if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr == "dropdown"
         ]
         options = ast.literal_eval(next(k.value for k in menu.keywords if k.arg == "options"))
@@ -225,7 +304,12 @@ class TheWordsKeepTheRules(unittest.TestCase):
     def learner_text(self) -> list[str]:
         # The markdown, and every string with a space in it: labels, options, placeholders. Code
         # identifiers and SQL keywords are not prose, and SQL has no prohibited phrase.
-        return CELLS + [s for s in strings() if " " in s and not s.lstrip().upper().startswith(("SELECT", "\n"))]
+        return [
+            t
+            for part in PARTS
+            for t in CELLS[part]
+            + [s for s in strings(part) if " " in s and not s.lstrip().upper().startswith(("SELECT", "\n"))]
+        ]
 
     def test_no_prohibited_phrase(self):
         source = (ROOT / "scripts" / "prose.mjs").read_text(encoding="utf-8")
@@ -236,13 +320,37 @@ class TheWordsKeepTheRules(unittest.TestCase):
 
     def test_no_em_dash_and_no_placeholder(self):
         self.assertEqual([t[:60] for t in self.learner_text() if "—" in t], [])
-        self.assertNotIn("[[", NOTEBOOK.read_text(encoding="utf-8"))
+        for source in SOURCE.values():
+            self.assertNotIn("[[", source)
 
     def test_terms_arrive_where_the_chapter_introduces_them(self):
-        first = lambda word: next(i for i, c in enumerate(CELLS) if re.search(rf"\b{word}", c, re.I))
-        records = next(i for i, c in enumerate(CELLS) if c.startswith("## Records made at the time"))
+        # Part 1 introduces "asset", part 2 "metadata", at its "Records made at the time".
+        chapter = CELLS[1] + CELLS[2]
+        first = lambda word: next(i for i, c in enumerate(chapter) if re.search(rf"\b{word}", c, re.I))
+        records = next(i for i, c in enumerate(chapter) if c.startswith("## Records made at the time"))
+        self.assertGreaterEqual(records, len(CELLS[1]))
         self.assertEqual(first("metadata"), records)
-        self.assertTrue(CELLS[first("asset")].startswith("An asset is one thing the platform holds"))
+        self.assertTrue(chapter[first("asset")].startswith("An asset is one thing the platform holds"))
+        self.assertLess(first("asset"), len(CELLS[1]))
+
+    def test_no_term_of_a_later_chapter(self):
+        # The course's term gate (content/lessons/plan.ts), with the course's one exemption for
+        # Chapter 1: "run" as the verb (run a cell); the noun arrives in Chapter 6.
+        plan = (ROOT / "content" / "lessons" / "plan.ts").read_text(encoding="utf-8")
+        terms = {
+            term: int(number)
+            for number, introduces in re.findall(r'C\((\d+), \d+, "[^"]+"(?:, \[([^\]]*)\])?\)', plan)
+            for term in re.findall(r'"([^"]+)"', introduces or "")
+        }
+        self.assertGreater(len(terms), 40)
+        found = [
+            (term, t[:60])
+            for term, home in terms.items()
+            if home > 1 and term != "run"
+            for t in self.learner_text()
+            if re.search(rf"\b{re.escape(term)}", t, re.I)
+        ]
+        self.assertEqual(found, [])
 
 
 if __name__ == "__main__":

@@ -1,9 +1,10 @@
 # Copyright © 2026 Christopher Snow
 
-# Chapter 1 as a notebook: a prototype beside the course. On every branch it checks the engine's
-# facts and builds the WebAssembly export, with Python and every package bundled into the site
-# (`--offline`), and keeps the result as an artifact to read before anything is merged. On main,
-# deploy.yml builds the same export into the published site under /notebook/.
+# Chapter 1 as notebooks, one per part of the chapter: a prototype beside the course. On every
+# branch it checks the engine's facts and builds the WebAssembly export, with Python and every
+# package bundled into the site (`--offline`), and keeps the result as an artifact to read before
+# anything is merged. On main, deploy.yml builds the same export into the published site under
+# /notebook/.
 
 name: Notebook prototype
 
@@ -55,7 +56,7 @@ jobs:
           retention-days: 14
 
   # The same chapter as a JupyterLite site, built to compare with the marimo export: the same prose
-  # and `shop` package, as a Jupyter notebook, with Pyodide and every package inside the site.
+  # and `shop` package, as two Jupyter notebooks, with Pyodide and every package inside the site.
   jupyterlite:
     runs-on: ubuntu-latest
     steps:

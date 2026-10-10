@@ -7,10 +7,14 @@ The course itself is unchanged: the prototype is published beside it, under `/no
 
 ## What was built
 
-- `notebook/chapter_01.py`: Chapter 1 as a marimo notebook. The prose is the chapter's approved
-  essay; the four figures are drawn by the notebook's own Python; fifteen cells of code are
-  visible, and the reader can change and run every one. The words new to the notebook were drafted
-  by Haiku from briefs AK and AL (`docs/notes/chapter-01/briefs/round-15/`).
+- `notebook/chapter_01_part_1.py` and `chapter_01_part_2.py`: Chapter 1 as two marimo notebooks,
+  one per part (one notebook, `chapter_01.py`, until the split under "The chapter in two parts",
+  below). The
+  prose is the chapter's approved essay, with part 1's tour of the shop added; the figures are drawn
+  by the notebooks' own Python; the cells of code are visible, and the reader can change and run
+  every one. The words new to the notebook were drafted by Haiku from briefs AK and AL
+  (`docs/notes/chapter-01/briefs/round-15/`), and those of the two parts from AO and AP
+  (`round-16/`).
 - `notebook/shop/`: the shop's platform in Python, standard library only. Object storage holds
   real JSON Lines and CSV files in a temporary directory and records each file's key, size and
   last-modified time; the warehouse is SQLite, with a catalogue queryable as
@@ -23,8 +27,9 @@ The course itself is unchanged: the prototype is published beside it, under `/no
 - `notebook/export.sh`: the export, which both workflows run. `marimo export html-wasm --mode edit
   --offline --execute` writes a static site: Python (Pyodide), every package and the notebook's own
   `shop` package are bundled into it, so the page fetches nothing from another site; the outputs are
-  computed at export time and saved into the page. Then `run_on_load.py` makes the cells run when
-  the page loads, and `licences.py` checks the bundled packages' licences.
+  computed at export time and saved into the page. Both parts go into one site, part 1 as
+  `index.html` and part 2 as `part-2.html`. Then `run_on_load.py` makes the cells run when the
+  pages load, and `licences.py` checks the bundled packages' licences.
 - `notebook/notebook.css`: three rules for marimo's editor, which the export inlines. A cell whose
   code is hidden shows only its output, without the faded first line of code marimo puts above it;
   on a screen narrower than 640 px, marimo's floating controls (which sat over the prose) and its
@@ -56,9 +61,11 @@ The course itself is unchanged: the prototype is published beside it, under `/no
 
 ## Measurements
 
-All on 10 October 2026, in Playwright's Chromium 141.0.7390.37 (build 1194), headless, on this
-Linux container, from a local HTTP server: no network delay and no CPU throttling. "Phone" is
-Chromium's phone emulation (390 by 844 pixels, touch); no real phone was measured.
+These are the chapter's as one notebook, before it was split; "The chapter in two parts", below,
+has each part's. All on 10 October 2026, in Playwright's Chromium 141.0.7390.37 (build 1194),
+headless, on this Linux container, from a local HTTP server: no network delay and no CPU
+throttling. "Phone" is Chromium's phone emulation (390 by 844 pixels, touch); no real phone was
+measured.
 
 | | marimo, editable (`/notebook/`) | JupyterLite (`/jupyterlite/`) | marimo, read-only (not published) |
 | --- | --- | --- | --- |
@@ -116,7 +123,7 @@ the repository.
 Asked "why marimo, not JupyterLite?", the author asked for the same chapter in JupyterLite to compare.
 It is `notebook/jupyterlite/`, published at `/jupyterlite/` beside the marimo notebook.
 
-- `build_ipynb.py` builds the Jupyter notebook from `notebook/chapter_01.py`, cell by cell: the same
+- `build_ipynb.py` builds the Jupyter notebooks from the marimo notebooks, cell by cell: the same
   prose and the same visible code. What Jupyter does differently is all it changes. The setup
   cells move to the top, since Jupyter runs from the top. marimo's controls become ipywidgets (the
   tabs, the menu of changes, the handover note), `mo.Html` becomes IPython's `HTML`, and the callout
@@ -145,6 +152,85 @@ It is `notebook/jupyterlite/`, published at `/jupyterlite/` beside the marimo no
   documentation says, a reader's saved copy is shown instead of the published one even after the
   chapter is updated.
 
+## The chapter in two parts
+
+Having read the notebooks, the author asked for the chapter in two parts: the first to get the
+reader used to the shop and its processes, the second to start on the issues. Both notebook
+versions are split. The course's essay page is not: the course numbers its chapters, so the same
+split there needs a decision (the last open question, below).
+
+- `chapter_01_part_1.py`, "Chapter 1, part 1: The shop and its platform": the situation, without
+  the head of the shop's message; the three systems, the seven assets and the week, as before; then
+  a section for each thing the shop keeps, each with a cell that reads it: `products.csv` and
+  `customers.jsonl` printed as they are stored, one day's orders from `orders.jsonl` (Monday, and
+  the reader can change the day), the warehouse's three tables, and the dashboard. It ends with the
+  message, "Thursday's revenue looks wrong", and a link to part 2. 12 code cells and 14 of prose.
+- `chapter_01_part_2.py`, "Chapter 1, part 2: Thursday's revenue and what the platform cannot say":
+  the essay from its questions to the handover. It opens with the message, the systems' figure and
+  the dashboard; the paragraph on what JSON Lines and CSV record moved to part 1, where the reader
+  first opens the files; nothing else changed. 23 code cells and 26 of prose.
+- Part 1 is written so as not to answer part 2. It says what each file and table holds, never which
+  is made from which. It reads the files and tables, not what the systems record about them (sizes,
+  times, owners), which part 2's "What the platform holds" is about. It counts nothing that shows
+  Thursday's gap or the order the export writes twice. It describes the records by their fields,
+  since one customer has no email address and three of Thursday's orders have no customer.
+- "The shop's processes" are those the reader can see: orders as the checkout records them, with
+  their statuses; the catalogue; the customers; and the night's work as the week's figure shows it
+  (the files written again, then the tables, then the dashboard). The programs stay unseen, as the
+  chapter requires.
+- The new words are Haiku's drafts of briefs AO and AP (`docs/notes/chapter-01/briefs/round-16/`),
+  checked for facts only. AO's first draft copied two wrong facts from the brief itself (that every
+  customer has an email address, and every order a customer) and gave titles without each part's
+  subject; AP's first draft stated a measurement made on a computer as a rule for every browser.
+  Each went back with a note. Part 1's section heading "The shop and its platform" was cut, as a
+  repeat of its title.
+- The marimo export writes both pages into one site: part 1 is `index.html`, so `/notebook/` still
+  opens the chapter, and part 2 is `part-2.html`. marimo's offline bundle files each package under
+  its hash and names the lockfile after its contents, so the two pages share one copy of Python, of
+  every package and of `shop`'s wheel: the site is 47.4 MB in 528 files, one file more than before.
+- The JupyterLite site holds `chapter_01_part_1.ipynb` and `chapter_01_part_2.ipynb`, and its root's
+  file list shows both. Each part links to the other by the other's name. Jupyter Notebook opens a
+  link to a notebook in a new tab, so a reader who follows part 1's link has two tabs, each with its
+  own Python; part 2's warning says that part 1 stays open. Part 2 starts with the first two
+  sentences of part 1's text on running cells, since nothing on it shows until it runs.
+
+Measured on 10 October 2026 as above, but in a browser profile kept on disk, as a reader's browser
+has: Playwright's default profile keeps its cache in memory, did not keep Python's 9.6 MB
+WebAssembly file, and fetched it again for each of the page's two Pythons and again for part 2, 19.2
+MB a profile on disk serves from its cache. Each range is over runs at both widths.
+
+| | marimo, part 1 (`/notebook/`) | marimo, part 2 opened alone | marimo, part 2 from part 1's link |
+| --- | --- | --- | --- |
+| Files the visit downloads | 255 | 255 | 1, `part-2.html` |
+| Size, as stored | 31.8 MB | 31.9 MB | 0.15 MB |
+| Size if the host compresses text and WebAssembly (gzip, level 6) | 17.0 MB | 17.0 MB | |
+| First content drawn | 1.9 to 2.3 s | 2.3 to 2.5 s | 1.4 to 1.7 s |
+| Python ready | 8.9 to 10.3 s | 8.9 to 9.3 s | 7.7 to 8.7 s |
+| Every code cell run once, by itself | 12.2 to 13.7 s | 13.7 to 14.7 s | 12.5 to 14.8 s |
+| Peak memory of the page's renderer process | 0.79 to 0.82 GB | 1.01 to 1.09 GB | 1.03 to 1.05 GB, part 1 having run in the same process |
+| Requests to another site | none | none | none |
+| Console errors in the first 50 s | 53, all "Language server initialization failed", from 30 s on | 74, the same | |
+
+| | JupyterLite, part 1 | JupyterLite, part 2 opened alone | JupyterLite, part 2 from part 1's link (a new tab) |
+| --- | --- | --- | --- |
+| Files the visit downloads | 147 | 149 | 11 |
+| Size, as stored | 25.7 MB | 25.9 MB | 0.32 MB |
+| Size if the host compresses text and WebAssembly (gzip, level 6) | 12.45 MB | 12.49 MB | |
+| First content drawn | 2.6 to 2.9 s | 2.8 to 2.9 s | |
+| Run All Cells, from the press to the last output | 9.7 to 10.5 s | 10.1 to 11.1 s | |
+| Peak memory of the page's renderer process | 391 to 414 MB | 404 to 429 MB | |
+| Requests to another site | none | none | none |
+| Console errors in the first 50 s | none | none | |
+
+- Each page's warning (brief AP) states these: about 17 MB the first time; Python ready in 9 to 17 s
+  on part 1 and 8 to 17 s on part 2, where the top of each range is the published single notebook's
+  15 to 16.5 s, the same runtime and packages over the network; about 0.8 GB and about 1 GB; about
+  13 MB, the published single notebook's 12.7 MB; about 10 s and 10 to 11 s to run every cell; about
+  400 MB and about 420 MB; and for part 2, less than 1 MB from part 1's link. The published pages
+  are to be measured once deployed.
+- Part 1 needs less memory than the single notebook did (0.79 to 0.82 GB against 0.97 to 1.16 GB
+  in marimo, 391 to 414 MB against 0.42 to 0.45 GB in JupyterLite); part 2 about as much.
+
 ## Phones
 
 Nothing here measured a real phone, so the page says only what was measured and what one report
@@ -164,6 +250,10 @@ measured above. The warning at the top of the notebook says so (brief AL).
 - marimo's editor brings its own chrome: a status bar, a menu, a settings button, an assistant panel
   on a computer that would ask the reader to connect an AI provider, and a toolbar above every cell
   on a phone. The stylesheet hides only what covered the prose.
+- Whether the course's essay page should be split as the notebooks are. The course numbers its
+  chapters and the platform gives each its own page, so two pages would either renumber the plan
+  from Chapter 2 on (33 chapters, with the chapter numbers `CLAUDE.md` and the plan use), or need
+  the platform to let one chapter have two pages.
 - In a notebook the reader meets code. The visible cells use the shop's three systems (`storage`,
   `warehouse`, `reporting`) and three helpers of the chapter (`shop.run_week`,
   `shop.queries_that_rebuild`, `shop.cleaning_rules_that_fit`); the code that draws the figures

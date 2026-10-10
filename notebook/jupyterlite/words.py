@@ -2,20 +2,32 @@
 
 """The few sentences that differ in the JupyterLite version, because Jupyter runs cells differently.
 
-Everything else the reader sees comes from notebook/chapter_01.py. Each entry here replaces one
-paragraph there (`MARIMO` names what it replaces). Haiku drafted them from brief AN
-(docs/notes/chapter-01/briefs/round-15/), from facts checked on the built page.
+Everything else the reader sees comes from the marimo notebooks, notebook/chapter_01_part_1.py and
+_part_2.py. Each entry here replaces one paragraph there (`MARIMO` names what it replaces) or follows
+one (`AFTER`). Haiku drafted them from brief AN (docs/notes/chapter-01/briefs/round-15/), from facts
+checked on the built page, and the warnings from brief AP (round-16/); RUN_FIRST is the first two
+sentences of HOW_TO, for part 2.
 """
 
-# The warning at the top: what was measured for this version.
-WARNING = (
-    "The page runs Python in your browser. The first time you open it, your browser downloads about "
-    "13 MB. On a computer, running every cell took about 10 seconds, and the page used about 440 MB "
-    "of memory. If a phone runs short of memory, the browser may reload the page, and a reload loses "
-    "anything you have not saved."
-)
+# The warning at the top of each part: what was measured for this version.
+WARNING = {
+    1: (
+        "The page runs Python in your browser. The first time you open it, your browser downloads "
+        "about 13 MB. On a computer, running every cell took about 10 seconds, and the page used "
+        "about 400 MB of memory. If a phone runs short of memory, the browser may reload the page, "
+        "and a reload loses anything you have not saved."
+    ),
+    2: (
+        "The page runs Python in your browser, and the first time you open it on its own, your "
+        "browser downloads about 13 MB. Measured on a computer, the page downloaded less than 1 MB "
+        "when opened from part 1's link, in a browser that had opened part 1. Part 1's link opens "
+        "this page in a new tab, and part 1 stays open in its own tab. On a computer, running every "
+        "cell took 10 to 11 seconds, and the page used about 420 MB of memory. If a phone runs short "
+        "of memory, the browser may reload the page, and a reload loses anything you have not saved."
+    ),
+}
 
-# How to run a cell, in place of the marimo notebook's paragraph.
+# How to run a cell, in place of part 1's paragraph.
 HOW_TO = (
     "Nothing on the page runs until you run it. Run every cell first: choose Run, then Run All Cells, "
     "in the menu bar at the top. To run one cell, select it and press Shift+Enter, or press the run "
@@ -25,6 +37,12 @@ HOW_TO = (
     "File, then Save Notebook, or press Ctrl+S (Cmd+S on a Mac). After a reload, the page shows your "
     "saved copy. That copy stays in this browser and is shown instead of the chapter, even after the "
     "chapter is updated."
+)
+
+# Part 2's reader has read HOW_TO in part 1; nothing on part 2 shows until it runs.
+RUN_FIRST = (
+    "Nothing on the page runs until you run it. Run every cell first: choose Run, then Run All Cells, "
+    "in the menu bar at the top."
 )
 
 # Before the cell that reads the day's row, in place of the marimo notebook's lead.
@@ -42,7 +60,7 @@ CHANGES = (
     "showing the week as it ran."
 )
 
-#: The marimo notebook's sentences these replace, found by their exact text.
+#: The marimo notebooks' sentences these replace, found by their exact text.
 MARIMO = {
     "HOW_TO": (
         "The boxes of code with numbered lines are cells you can run. To run a cell, press its run "
@@ -60,4 +78,9 @@ MARIMO = {
         "The cells below show the platform on Monday morning, after the week ran with the option "
         "you choose. The cells above the menu keep showing the week as it ran."
     ),
+}
+
+#: The marimo notebooks' sentences these follow: RUN_FIRST ends part 2's opening paragraph.
+AFTER = {
+    "RUN_FIRST": "The head of the shop has sent you one line: \"Thursday's revenue looks wrong.\"",
 }

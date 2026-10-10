@@ -259,6 +259,23 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 10 October 2026: the notebook chapter in two parts
+
+Reading the notebooks, the author asked for the chapter in two parts: the first to get the reader
+used to the shop and its processes, the second to start on the issues. Both notebook versions are
+now two pages (`notebook/chapter_01_part_1.py` and `_part_2.py`, and two Jupyter notebooks). Part 1,
+"The shop and its platform", is the situation, the systems, the assets and the week, then a cell for
+each thing the shop keeps: its catalogue, its customers, a day's orders, the warehouse's tables and
+the dashboard; it ends with the head of the shop's message and a link to part 2. Part 2, "Thursday's
+revenue and what the platform cannot say", is the essay from its questions to the handover. Part 1
+says what each asset holds and never which is made from which, reads the data but not what the
+systems record about it, and counts nothing that shows Thursday's gap, so part 2's investigation is
+unchanged. The two marimo pages share one copy of Python in one site: part 2, opened from part 1's
+link, downloaded less than 1 MB, and part 1 needs about 0.8 GB of memory against the single
+notebook's 1 GB. The course's essay page is unchanged: the same split there needs either 33
+chapters, renumbered from Chapter 2 on, or a platform change that gives one chapter two pages, and
+that is the author's choice (`docs/notes/notebook-prototype.md`, "The chapter in two parts").
+
 ### 10 October 2026: Chapter 1 as a notebook, a prototype beside the course
 
 The author asked whether notebooks that run Python in the browser should deliver the course, for
