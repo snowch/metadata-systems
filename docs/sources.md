@@ -212,6 +212,33 @@ environment, so each is read from its source or its publisher's own copy:
   `prefer_related_applications` set to true, served over HTTPS; a service worker is not required.
   MDN documents browsers rather than defining them; Chrome's own page was not reachable.
 
+## The notebook prototype (Chapter 1 as a notebook)
+
+Read 10 October 2026, for `notebook/` and `docs/notes/notebook-prototype.md`.
+
+- **marimo 0.25.1, its own source** (the installed package; Apache-2.0). `marimo export html-wasm
+  --offline` resolves the notebook's packages by running Pyodide in a browser, then downloads
+  Pyodide's runtime files and every resolved wheel into the site, and points the page at them
+  (`_export/offline.py`); without `--offline` the page fetches Pyodide from cdn.jsdelivr.net and
+  marimo's lockfile from wasm.marimo.app. The page embeds marimo's default configuration, not the
+  project's, with autosave turned off (`_export/exporter.py`, `export_as_wasm`), and in that
+  default `runtime.auto_instantiate` is false (`_config/config.py`): this is why
+  `notebook/run_on_load.py` exists. An app's `css_file` is inlined into the exported page
+  (`_templates.py`). The editor's front end reads the notebook embedded in the page before one in
+  the address or in the browser's storage (`_static/assets/index-*.js`, its file stores), which is
+  why a reload shows the chapter as published. marimo pins Pyodide 314.0.0
+  (`_pyodide/pyodide_constraints.py`).
+- **Pyodide 314.0.0's lockfile** (cdn.jsdelivr.net/pyodide/v314.0.0/full/pyodide-lock.json):
+  Python 3.14.0, Emscripten 5.0.3. It has no separate `sqlite3` package, and the exported page's
+  `import sqlite3` works, so this version ships SQLite with its standard library.
+- **Apple Developer Forums, "Safari and WkWebView Memory Limit Causing App Interruptions"**
+  (developer.apple.com/forums/thread/766309). A developer, not Apple, reports in October 2024 that
+  Safari reloaded their page and showed "This webpage was reloaded because it was using significant
+  memory"; the thread has no reply from Apple. It is one report of what Safari does, not
+  documentation of a limit: no Apple page found states the memory a page may use. A WebKit bug
+  report with figures for one iPhone was found by search but could not be opened from this
+  environment, so nothing here relies on it.
+
 ## Still to be read
 
 Each chapter that relies on one of these reads it first and adds an entry above:
@@ -228,6 +255,14 @@ Each chapter that relies on one of these reads it first and adds an entry above:
   `snowch/learning-platform`.
 - Every npm dependency the built site includes: checked by `scripts/licences.mjs` against a list
   of open licences on every `npm run check`.
+- The notebook prototype's page: Pyodide (MPL-2.0), which includes CPython (the PSF licence);
+  marimo's front end and `marimo-base` (Apache-2.0); and every Python package the export bundles,
+  each checked by `notebook/licences.py` against a list of open licences on every export. The
+  export of 10 October 2026 bundled 18: `black`, `click`, `docutils`, `jedi`, `markdown`,
+  `marimo-base`, `micropip`, `msgspec`, `mypy-extensions`, `narwhals`, `packaging`, `parso`,
+  `pathspec`, `platformdirs`, `pygments`, `pymdown-extensions`, `pyodide-http` and `pyyaml`, under
+  MIT, BSD-2-Clause, BSD-3-Clause, Apache-2.0, MPL-2.0 (`micropip`, `pathspec`) and public domain
+  with BSD (`docutils`).
 - Typefaces: IBM Plex Sans, IBM Plex Sans Condensed and IBM Plex Mono, under the SIL Open Font
   License 1.1, through the `@fontsource` packages.
 - The course's icon: drawn for the course in `scripts/icons.mjs`, a label tag on the course's

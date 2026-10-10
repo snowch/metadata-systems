@@ -259,6 +259,22 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 10 October 2026: Chapter 1 as a notebook, a prototype beside the course
+
+The author asked whether notebooks that run Python in the browser should deliver the course, for
+readers who are data engineers, and for a prototype of Chapter 1 with a warning for phones. The
+prototype is `notebook/`: the chapter's essay as a marimo notebook, with the shop's platform in
+Python (SQLite for the warehouse, JSON Lines and CSV files, integer pence) and fifteen cells the
+reader can change and run. It is exported as a static site with Python and every package bundled,
+so the page fetches nothing from another site, and published beside the course under `/notebook/`;
+the course is unchanged. Measured in a desktop browser, the page downloads up to about 32 MB, has
+Python ready after 10 to 15 seconds and uses about 1 GB of memory; marimo's read-only export would
+use about 0.39 GB but shows no code. The warning at the top of the notebook says what was measured
+and that a phone short of memory may reload the page, which loses the reader's changes.
+`docs/notes/notebook-prototype.md` has the build, the measurements and the questions left for the
+author: whether notebooks replace the essay pages, edit mode or run mode, marimo's own chrome, and
+whether "no lab on the page" should hold for the code a notebook shows.
+
 ### 10 October 2026: no lab on the page
 
 The author asked for the lab concept to go entirely: the page uses diagrams and figures. The

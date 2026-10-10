@@ -1,0 +1,19 @@
+/* Copyright © 2026 Christopher Snow */
+
+/* The chapter's own rules for marimo's editor, which the export inlines into the page. The selectors
+   are marimo 0.25.1's; a new marimo version may need them checked. */
+
+/* A cell whose code is hidden shows only its output. marimo would show a faded first line of the
+   code above it, which on this page is a figure's or a paragraph's plumbing. */
+[data-testid="cell-editor"].opacity-20 {
+  display: none;
+}
+
+/* On a phone, marimo's floating controls sit over the prose, and its side rail takes a tenth of the
+   width for panels a reader of the chapter does not need there. */
+@media (max-width: 640px) {
+  [data-testid="chrome-controls-bottom-right"],
+  [data-testid="chrome-sidebar"] {
+    display: none;
+  }
+}

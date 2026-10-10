@@ -37,13 +37,7 @@ jobs:
           python -m playwright install --with-deps chromium
 
       - name: Export the chapter, its outputs embedded and its runtime bundled
-        working-directory: notebook
-        run: >-
-          marimo export html-wasm chapter_01.py -o ../notebook-site --mode edit
-          --offline --execute --no-sandbox -f
-
-      - name: Drop marimo's own notes for its contributors
-        run: rm -f notebook-site/CLAUDE.md
+        run: notebook/export.sh notebook-site
 
       - name: List what the page bundles
         # The packages the export resolved, and every file with its size, so the log records what

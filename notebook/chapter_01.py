@@ -3,7 +3,11 @@
 import marimo
 
 __generated_with = "0.25.1"
-app = marimo.App(width="medium", app_title="The invisible data system")
+app = marimo.App(
+    width="medium",
+    app_title="The invisible data system",
+    css_file="notebook.css",
+)
 
 
 @app.cell(hide_code=True)
@@ -23,7 +27,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.callout(mo.md("On a phone: this page runs Python in your browser, which takes longer to start there and uses the phone's memory. If the phone runs short of memory, the browser may reload the page."), kind="warn")
+    mo.callout(mo.md("This page runs Python in your browser. The first time you open it, your browser downloads up to about 32 MB. On a computer, Python took 10 to 15 seconds to start, and the page used about 1 GB of memory. If your phone runs short of memory, the browser may reload the page, and a reload loses what you changed or wrote on the page."), kind="warn")
     return
 
 
@@ -36,7 +40,7 @@ def _(mo):
 
     The platform has three systems: object storage, which holds files; a warehouse, which holds tables; and a reporting tool, which holds a dashboard. Every night, programs read the files, write the tables and refresh the dashboard. You can read everything the three systems hold. You cannot see the programs, when they are due to run, or any note anybody kept.
 
-    Each grey box of code is a cell you can run: press its run button, or Ctrl+Enter (Cmd+Enter on a Mac). Change a value, such as a day, and run it again.
+    The boxes of code with numbered lines are cells you can run. To run a cell, press its run button. The run button is a triangle at the top right of the cell. You can also press Ctrl+Enter (Cmd+Enter on a Mac) while you type in the cell. On a computer, the run button appears when the pointer is over the cell. On a phone, the run button is always there. When you run a cell, the cells that use its results run again. Nothing you change is saved. Reloading the page shows the chapter as it was published.
     """)
     return
 
@@ -331,7 +335,7 @@ def _(mo):
             "An analyst copies clean_orders every night": [
                 "copy"
             ],
-            "From Saturday, daily_sales program keeps every unrefunded order": [
+            "From Saturday, the daily_sales program keeps unrefunded orders": [
                 "refunds"
             ],
             "The daily_sales program fails on the last night": [

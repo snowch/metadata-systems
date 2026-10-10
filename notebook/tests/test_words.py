@@ -178,6 +178,46 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertEqual(len(shop.cleaning_rules_that_fit(self.week)), 2)
 
 
+class TheWordsAboutThePage(unittest.TestCase):
+    """The warning at the top states what was measured on the exported page, and the menu offers
+    the engine's changes.
+
+    The warning's numbers are measurements, not the engine's: docs/notes/notebook-prototype.md
+    records them, and this keeps the page and that record saying the same thing.
+    """
+
+    def test_the_warning_states_the_measurements(self):
+        [warning] = [s for s in strings() if s.startswith("This page runs Python in your browser")]
+        note = (ROOT / "docs" / "notes" / "notebook-prototype.md").read_text(encoding="utf-8")
+        for said, measured in [
+            ("downloads up to about 32 MB", "| Size, as stored | 31.9 MB |"),
+            ("Python took 10 to 15 seconds to start", "| Python ready | 9.5 to 15 s |"),
+            ("used about 1 GB of memory", "| Peak memory of the page's renderer process | 0.97 to 1.16 GB |"),
+        ]:
+            self.assertIn(said, warning)
+            self.assertIn(measured, note)
+        self.assertIn("the browser may reload the page, and a reload loses what you changed", warning)
+
+    def test_the_menu_offers_the_engines_changes(self):
+        [menu] = [
+            n
+            for n in ast.walk(ast.parse(NOTEBOOK.read_text(encoding="utf-8")))
+            if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr == "dropdown"
+        ]
+        options = ast.literal_eval(next(k.value for k in menu.keywords if k.arg == "options"))
+        self.assertEqual(list(options.values()), [[], ["copy"], ["refunds"], ["failed"]])
+        self.assertEqual([c for v in options.values() for c in v], list(shop.CHANGES))
+        self.assertEqual(
+            list(options),
+            [
+                "The shop stays as it is",
+                "An analyst copies clean_orders every night",
+                "From Saturday, the daily_sales program keeps unrefunded orders",
+                "The daily_sales program fails on the last night",
+            ],
+        )
+
+
 class TheWordsKeepTheRules(unittest.TestCase):
     """The writing standard's checkable parts (AGENTS.md, scripts/prose.mjs, CLAUDE.md)."""
 
