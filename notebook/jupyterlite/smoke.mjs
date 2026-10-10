@@ -1,10 +1,12 @@
 // Copyright © 2026 Christopher Snow
 
 // Opens the built JupyterLite site in Chromium as a phone, with touch, and presses the row of
-// buttons (notebook/buttons/) as the chapter's texts tell a reader to. For each part: the row shows
-// the labels buttons.json gives, each button at least 44 pixels tall; Run all runs every visible
-// code cell, with no error in any output, and leaves the notebook where it was scrolled. In part
-// 2, Run below from a selected cell does the same. The page logs no error. The notebook workflow
+// buttons (notebook/buttons/) as the chapter's texts tell a reader to. For each part: the menu bar
+// and the notebook's toolbar are hidden; the row shows the labels buttons.json gives, each button
+// at least 44 pixels tall; a press disables the row and marks the pressed button busy until the
+// run ends; Run all runs every visible code cell, with no error in any output, and leaves the
+// notebook where it was scrolled. In part 2, Run below from a selected cell does the same. The page
+// logs no error. The notebook workflow
 // runs it after the build, with Playwright from the course's dependencies.
 //
 //   node notebook/jupyterlite/smoke.mjs SITE_DIR
@@ -51,20 +53,31 @@ try {
   const button = (label) => page.locator(".ms-Buttons-button", { hasText: label });
   const scrolled = () =>
     page.evaluate(() => Math.round(document.querySelector(".jp-WindowedPanel-outer").scrollTop));
-  // Presses a button, waits for the kernel to finish, and checks the notebook did not move.
+  // Presses a button, checks the row shows the run under way, waits for it to end, and checks the
+  // notebook did not move.
   const run = async (label, what) => {
     const before = await scrolled();
     await button(label).tap();
-    await page.waitForTimeout(1000);
+    const busy = await page.evaluate((label) => {
+      const row = [...document.querySelectorAll(".ms-Buttons-button")];
+      const pressed = row.find((b) => b.textContent === label);
+      return row.every((b) => b.disabled) && pressed?.getAttribute("aria-busy") === "true";
+    }, label);
+    check(busy, `${what}: the row is disabled and the button busy while it runs`);
     await page.waitForFunction(
       () =>
-        document.querySelector(".jp-Notebook-ExecutionIndicator")?.dataset.status === "idle" &&
+        !document.querySelector(".ms-Buttons-button[aria-busy], .ms-Buttons-button:disabled") &&
         ![...document.querySelectorAll(".jp-InputPrompt")].some((p) => p.textContent.includes("*")),
       null,
       { timeout: 120_000, polling: 200 },
     );
     check((await scrolled()) === before, `${what}: the notebook stays where it was scrolled`);
   };
+  const shown = (selector) =>
+    page.evaluate((selector) => {
+      const e = document.querySelector(selector);
+      return !!e && e.getBoundingClientRect().height > 0;
+    }, selector);
 
   for (const part of [1, 2]) {
     await page.goto(
@@ -74,6 +87,10 @@ try {
       timeout: 120_000,
     });
     await page.waitForTimeout(1000);
+    check(
+      !(await shown("#menu-panel-wrapper")) && !(await shown(".jp-NotebookPanel-toolbar")),
+      `part ${part}: the menu bar and the toolbar are hidden`,
+    );
     const row = await page.evaluate(() =>
       [...document.querySelectorAll(".ms-Buttons-button")].map((b) => ({
         label: b.textContent,

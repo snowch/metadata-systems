@@ -266,7 +266,10 @@ all, Run below and Save, 44 pixels tall, above every notebook's cells, in place 
 labelled toolbar buttons. Its Run all and Run below keep the reader's place, where JupyterLab's
 scroll to the last cell. The texts name the row (brief AS), and a browser check presses it in the
 notebook workflow. The notebook still runs only when the reader runs it
-(`docs/notes/notebook-prototype.md`, "A row of large buttons").
+(`docs/notes/notebook-prototype.md`, "A row of large buttons"). After it was published, the author
+reported that the buttons did not seem to work and asked for the menu bar and the toolbar to be
+hidden: the extension now hides both, and the row shows a spinner while a run is under way, the
+only sign left that Python is busy (the same note, "The menu bar and the toolbar hidden").
 
 ### 10 October 2026: marimo ruled out; the notebook is JupyterLite's
 

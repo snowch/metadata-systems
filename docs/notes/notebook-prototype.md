@@ -340,6 +340,24 @@ The author did not choose to have the notebook run itself on opening, so it does
   it should, on a copy of the site without the extension; a cell that raises shows as the error
   output it counts.
 
+### The menu bar and the toolbar hidden
+
+After the row was published, the author reported that the buttons did not seem to work, and asked
+for the menu bar and the toolbar to be hidden. The failure did not reproduce in Chromium's phone
+emulation, where every press ran; no real phone was available to test. Two changes followed:
+
+- The extension hides the menu bar (`app.shell.menu`, as Jupyter Notebook's zen mode does) and the
+  notebook's toolbar, so the row is the only control at the top of the page; on a phone it is the
+  first thing on the page.
+- With the toolbar went the only sign that Python was busy, and the first press on a phone waits
+  for Python to start. While a press's work is under way, the row's buttons are disabled and the
+  pressed one shows a spinner after its label (still with reduced motion). A press by touch is now
+  left to the browser; only a mouse press keeps the focus in the notebook, as before.
+- Checked on the built site, by touch at 390 pixels and by mouse at 1280: the menu bar and the
+  toolbar are hidden; Run all showed its spinner for 7.3 to 8.3 s on part 1; every run of both
+  parts left the notebook where it was, with the results as before; Save kept an edit through a
+  reload; no page logged an error. `smoke.mjs` now checks the hidden bars and the busy row too.
+
 ## Open questions for the author
 
 - Whether the notebook should replace the essay pages, sit beside them, or be dropped.
