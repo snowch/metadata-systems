@@ -273,7 +273,12 @@ use about 0.39 GB but shows no code. The warning at the top of the notebook says
 and that a phone short of memory may reload the page, which loses the reader's changes.
 `docs/notes/notebook-prototype.md` has the build, the measurements and the questions left for the
 author: whether notebooks replace the essay pages, edit mode or run mode, marimo's own chrome, and
-whether "no lab on the page" should hold for the code a notebook shows.
+whether "no lab on the page" should hold for the code a notebook shows. At the author's request the
+same chapter is also built in JupyterLite (`notebook/jupyterlite/`, published at `/jupyterlite/`)
+to compare: built from the marimo notebook, so the prose is the same; about 0.44 GB of memory in a
+desktop browser against marimo's 1 GB; nothing runs until the reader runs it, and a cell does not
+run again when a cell it uses changes; saved edits survive a reload, and are shown in place of the
+chapter even after it is updated.
 
 ### 10 October 2026: no lab on the page
 

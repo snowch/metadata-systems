@@ -61,6 +61,12 @@ jobs:
           python -m playwright install --with-deps chromium
           notebook/export.sh apps/course/dist/notebook
 
+      # The same chapter in JupyterLite, at /jupyterlite/, to compare with the marimo notebook.
+      - name: Build the JupyterLite version beside it
+        run: |
+          pip install -r notebook/jupyterlite/requirements.txt
+          notebook/jupyterlite/build.sh apps/course/dist/jupyterlite
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: apps/course/dist

@@ -53,3 +53,31 @@ jobs:
           name: notebook-site
           path: notebook-site
           retention-days: 14
+
+  # The same chapter as a JupyterLite site, built to compare with the marimo export: the same prose
+  # and `shop` package, as a Jupyter notebook, with Pyodide and every package inside the site.
+  jupyterlite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install JupyterLite, its Pyodide kernel and the widgets
+        run: pip install -r notebook/jupyterlite/requirements.txt
+
+      - name: Build the chapter as a JupyterLite site
+        run: notebook/jupyterlite/build.sh jupyterlite-site
+
+      - name: List what the page bundles
+        run: |
+          find jupyterlite-site -type f -printf '%s %P\n' | sort -k2
+          du -sb jupyterlite-site
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jupyterlite-site
+          path: jupyterlite-site
+          retention-days: 14

@@ -231,6 +231,18 @@ Read 10 October 2026, for `notebook/` and `docs/notes/notebook-prototype.md`.
 - **Pyodide 314.0.0's lockfile** (cdn.jsdelivr.net/pyodide/v314.0.0/full/pyodide-lock.json):
   Python 3.14.0, Emscripten 5.0.3. It has no separate `sqlite3` package, and the exported page's
   `import sqlite3` works, so this version ships SQLite with its standard library.
+- **JupyterLite's documentation and its Pyodide kernel's source** (read 10 October 2026 from
+  `jupyterlite/jupyterlite` and `jupyterlite/pyodide-kernel` on GitHub, `main`, since the
+  documentation site is not reachable from this environment, and from the installed
+  `jupyterlite-core` 0.8.6 and `jupyterlite-pyodide-kernel` 0.8.6). JupyterLite runs Python kernels
+  in a Web Worker, Pyodide's among them, and supports ipywidgets (`README.md`). When a reader changes
+  a file the site serves, a copy is kept in the browser's storage, usually IndexedDB, and "A user's
+  locally-modified copy will take precedence over any server contents, even if the server contents
+  are newer" (`docs/howto/content/files.md`); the storage is persistent by default
+  (`docs/howto/configure/storage.md`). The kernel loads Pyodide from cdn.jsdelivr.net unless the
+  site has its own copy in `static/pyodide/` (`addons/pyodide.py`, `constants.py`), pins Pyodide
+  314.0.6, and lets a site turn off piplite's fall-back to PyPI (`disablePyPIFallback`, in its
+  settings schema); piplite's `install` takes `deps=False`.
 - **Apple Developer Forums, "Safari and WkWebView Memory Limit Causing App Interruptions"**
   (developer.apple.com/forums/thread/766309). A developer, not Apple, reports in October 2024 that
   Safari reloaded their page and showed "This webpage was reloaded because it was using significant
@@ -255,6 +267,10 @@ Each chapter that relies on one of these reads it first and adds an entry above:
   `snowch/learning-platform`.
 - Every npm dependency the built site includes: checked by `scripts/licences.mjs` against a list
   of open licences on every `npm run check`.
+- The JupyterLite version's page: JupyterLite, JupyterLab, Jupyter Notebook and the widgets' front
+  end (BSD-3-Clause), the Pyodide kernel (BSD-3-Clause) and Pyodide (as below); every wheel it
+  bundles is checked by `notebook/licences.py` on every build (22 on 10 October 2026, among them
+  IPython, traitlets, jedi, ipywidgets and comm, under BSD, MIT, Apache-2.0 and MPL-2.0).
 - The notebook prototype's page: Pyodide (MPL-2.0), which includes CPython (the PSF licence);
   marimo's front end and `marimo-base` (Apache-2.0); and every Python package the export bundles,
   each checked by `notebook/licences.py` against a list of open licences on every export. The

@@ -60,19 +60,21 @@ All on 10 October 2026, in Playwright's Chromium 141.0.7390.37 (build 1194), hea
 Linux container, from a local HTTP server: no network delay and no CPU throttling. "Phone" is
 Chromium's phone emulation (390 by 844 pixels, touch); no real phone was measured.
 
-| | Edit mode (the prototype) | Run mode (for comparison) |
-| --- | --- | --- |
-| Files one visit downloads | 255 | 232 |
-| Size, as stored | 31.9 MB | 27.3 MB |
-| Size if the host compresses text and WebAssembly (gzip, level 6) | 17.5 MB | 16.1 MB |
-| First cells drawn | 3.4 to 4.4 s | 2.0 s |
-| Python ready | 9.5 to 15 s | 8 to 9 s |
-| Every code cell run once | 12 to 17 s | about 10 s |
-| A change from the menu shown | 3.0 to 7.5 s | 2.2 s |
-| The edited day cell re-run | 0.3 to 0.5 s | (no code to edit) |
-| Peak memory of the page's renderer process | 0.97 to 1.16 GB | 0.39 GB |
-| Requests to another site | none | none |
-| Console errors | 8 to 12, all "Language server initialization failed" | none |
+| | marimo, editable (`/notebook/`) | JupyterLite (`/jupyterlite/`) | marimo, read-only (not published) |
+| --- | --- | --- | --- |
+| Files one visit downloads | 255 | 149 | 232 |
+| Size, as stored | 31.9 MB | 25.9 MB | 27.3 MB |
+| Size if the host compresses text and WebAssembly (gzip, level 6) | 17.5 MB | 12.5 MB | 16.1 MB |
+| First content drawn | 3.4 to 4.4 s | 2.5 to 2.7 s | 2.0 s |
+| Python ready | 9.5 to 15 s | (starts with the page; not timed) | 8 to 9 s |
+| Every code cell run once | 12 to 17 s, by itself | 12.9 to 13.2 s, when Run All Cells is pressed as the page draws | about 10 s, by itself |
+| Run All Cells, from the press to the last output | (cells run on load) | 9.4 to 9.9 s | (cells run on load) |
+| A change from the menu shown | 3.0 to 7.5 s | 0.1 s after Run Selected Cell and All Below; nothing before | 2.2 s |
+| The edited day cell re-run | 0.3 to 0.5 s, and the cell that reads that day's row with it | its own output only: the next cell keeps the old day until it is run | (no code to edit) |
+| Peak memory of the page's renderer process | 0.97 to 1.16 GB | 0.42 to 0.45 GB | 0.39 GB |
+| Requests to another site | none | none | none |
+| Console errors | 8 to 12, all "Language server initialization failed" | none | none |
+| What a reload keeps | nothing | what was saved (File, Save Notebook), with its outputs; the note box returns when its cell runs, empty | nothing |
 
 - The published page, measured after the deploy of `d3b11c6` from
   `https://snowch.github.io/metadata-systems/notebook/`, in the same Chromium, through this
@@ -103,6 +105,40 @@ each checked by sha256. The rebuilt site matched CI's file for file and byte for
 lockfile, which differs only in two default fields. The scripts are session scratch, not part of
 the repository.
 
+## The JupyterLite version
+
+Asked "why marimo, not JupyterLite?", the author asked for the same chapter in JupyterLite to compare.
+It is `notebook/jupyterlite/`, published at `/jupyterlite/` beside the marimo notebook.
+
+- `build_ipynb.py` builds the Jupyter notebook from `notebook/chapter_01.py`, cell by cell: the same
+  prose and the same visible code. What Jupyter does differently is all it changes. The setup
+  cells move to the top, since Jupyter runs from the top. marimo's controls become ipywidgets (the
+  tabs, the menu of changes, the handover note), `mo.Html` becomes IPython's `HTML`, and the callout
+  becomes a quoted paragraph. Four texts say what Jupyter does (`words.py`, Haiku's drafts of brief
+  AN). Anything in the marimo notebook it cannot carry over stops the build.
+- The first, hidden cell installs `shop`, ipywidgets and its `comm` from the site with piplite,
+  without dependencies: ipywidgets declares its front-end package, which the kernel does not need,
+  and the page turns off piplite's fall-back to PyPI.
+- `fetch_pyodide.py` puts Pyodide 314.0.6's runtime and the 15 packages the kernel loads when it
+  starts (micropip, IPython and jedi, with what they depend on) into the site, each wheel checked
+  against Pyodide's lockfile. The list was found by building against the CDN and watching what the
+  page fetched. The kernel then loads nothing from another site.
+- The page is JupyterLite's Notebook interface (Jupyter Notebook 7.6.3 on JupyterLab 4.6.4): a menu
+  bar, a toolbar, numbered cells; a hidden cell shows its first line and "•••". The site's root
+  opens the file list, which holds the chapter.
+- The page ships without saved outputs. JupyterLite opens a notebook as untrusted, and an untrusted
+  notebook's saved HTML is shown with its styles stripped and its widgets as text: every figure
+  read as a run of words until the notebook ran. Signing it with `jupyter trust` does not help,
+  since the signature is kept in the signing machine's database, not in the file. The build still
+  runs the notebook once in CPython, and stops if a cell raises.
+- Nothing runs until the reader runs it, and a cell does not run again when a cell it uses
+  changes: after editing the day, the next cell keeps showing the old day's row until it is run;
+  after choosing a change, the cells below show the old week until they are run. The page's texts
+  say so.
+- A saved notebook survives a reload, in the browser's storage, and, as JupyterLite's
+  documentation says, a reader's saved copy is shown instead of the published one even after the
+  chapter is updated.
+
 ## Phones
 
 Nothing here measured a real phone, so the page says only what was measured and what one report
@@ -113,6 +149,9 @@ measured above. The warning at the top of the notebook says so (brief AL).
 
 ## Open questions for the author
 
+- Which notebook, if either: marimo's (cells re-run by themselves, about 1 GB, edits lost on
+  reload) or JupyterLite's (familiar, about 0.44 GB, nothing runs until asked, saved edits kept
+  and shown in place of later updates).
 - Whether the notebook should replace the essay pages, sit beside them, or be dropped.
 - Edit mode or run mode: a notebook the reader edits, at about 1 GB in a desktop browser, or a
   page of outputs and controls at about 0.39 GB.
