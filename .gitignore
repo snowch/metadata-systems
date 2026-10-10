@@ -6,3 +6,7 @@ test-results/
 .vite/
 *.local
 .DS_Store
+# The notebook prototype: Python's caches, marimo's session caches, and the export.
+__pycache__/
+__marimo__/
+notebook-site/

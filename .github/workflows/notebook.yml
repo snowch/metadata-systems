@@ -1,0 +1,51 @@
+# Copyright © 2026 Christopher Snow
+
+# Chapter 1 as a notebook: a prototype beside the course. On every branch it checks the engine's
+# facts and builds the WebAssembly export, with Python and every package bundled into the site
+# (`--offline`), and keeps the result as an artifact to read before anything is merged. On main,
+# deploy.yml builds the same export into the published site under /notebook/.
+
+name: Notebook prototype
+
+on:
+  push:
+    branches-ignore: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: The engine's facts and the chapter's words
+        run: python -m unittest discover -s notebook/tests -t notebook -v
+
+      - name: Install marimo, and the browser its offline export drives
+        # The export runs Pyodide in Chromium to resolve the notebook's packages, then downloads
+        # them into the site, so the published page fetches nothing from a third party.
+        run: |
+          pip install "marimo==0.25.1" "playwright==1.56.0"
+          python -m playwright install --with-deps chromium
+
+      - name: Export the chapter, its outputs embedded and its runtime bundled
+        working-directory: notebook
+        run: >-
+          marimo export html-wasm chapter_01.py -o ../notebook-site --mode edit
+          --offline --execute --no-sandbox -f
+
+      - name: Drop marimo's own notes for its contributors
+        run: rm -f notebook-site/CLAUDE.md
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: notebook-site
+          path: notebook-site
+          retention-days: 14

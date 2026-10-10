@@ -25,6 +25,8 @@ const COMMENTS = {
   cjs: `// ${NOTICE}`,
   css: `/* ${NOTICE} */`,
   sh: `# ${NOTICE}`,
+  py: `# ${NOTICE}`,
+  toml: `# ${NOTICE}`,
   yml: `# ${NOTICE}`,
   yaml: `# ${NOTICE}`,
   html: `<!-- ${NOTICE} -->`,

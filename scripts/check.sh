@@ -35,6 +35,13 @@ echo "== unit and integration tests =="
 # pinned to the lab, and it renders whole.
 npx vitest run
 
+echo "== the notebook prototype's engine and words =="
+# Chapter 1 as a notebook (notebook/): the shop's platform in Python, and every number and
+# sentence the notebook states, pinned against it. Standard library only, so any Python 3.12 or
+# later runs it. The WebAssembly export itself needs marimo and a browser, and runs in its own
+# workflow (.github/workflows/notebook.yml) and in the deploy.
+python3 -m unittest discover -s notebook/tests -t notebook
+
 echo "== learner-facing prose =="
 # The known-bad phrases the writing standard (AGENTS.md) rejects: a narrow regression check for
 # confirmed wording, not a style judge. Its own tests run with it.

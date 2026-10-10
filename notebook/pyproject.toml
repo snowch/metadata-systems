@@ -1,0 +1,12 @@
+# Copyright © 2026 Christopher Snow
+
+[project]
+name = "metadata-systems-notebook"
+version = "0.0.0"
+description = "Chapter 1 of Metadata Systems as a notebook: the shop's platform in Python, and the chapter."
+requires-python = ">=3.12"
+
+# The notebook runs every cell when it opens, and again when a cell it uses changes.
+[tool.marimo.runtime]
+auto_instantiate = true
+on_cell_change = "autorun"

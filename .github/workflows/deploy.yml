@@ -45,6 +45,24 @@ jobs:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}/
         run: npm run build -w @ms/course
 
+      # Chapter 1 as a notebook, a prototype beside the course, at /notebook/: the WebAssembly
+      # export with Python and every package bundled into the site, so the page fetches nothing
+      # from a third party (.github/workflows/notebook.yml builds the same on every branch).
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Check the notebook's engine and words
+        run: python -m unittest discover -s notebook/tests -t notebook
+
+      - name: Export the notebook beside the course
+        working-directory: notebook
+        run: |
+          pip install "marimo==0.25.1" "playwright==1.56.0"
+          python -m playwright install --with-deps chromium
+          marimo export html-wasm chapter_01.py -o ../apps/course/dist/notebook --mode edit --offline --execute --no-sandbox -f
+          rm -f ../apps/course/dist/notebook/CLAUDE.md
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: apps/course/dist
