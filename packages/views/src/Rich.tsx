@@ -1,7 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 // A figure's own sentence with its names set as the chapter's prose sets them: a name between
-// backticks in a string is drawn in the monospace, as code, and a name the lab holds as an asset
+// backticks in a string is drawn in the monospace, as code, and a name the shop holds as an asset
 // carries its kind's mark before it (packages/views/src/Glyph.tsx), so a file, a table and a
 // dashboard are told apart at a glance wherever a sentence names one. The mark is decoration:
 // hidden from a screen reader, and never the only way the kind is told. Where only plain text

@@ -5,9 +5,11 @@
 // The prose carries the whole investigation: the shop's state, the questions it cannot answer,
 // Thursday's gap, the fields and what they are for, a reconstruction of `daily_sales` and the
 // three changes that break it, the rule the week never tests, and the records that would have
-// answered. The four figures are the essay's diagrams and its evidence: the pipeline, the week,
-// the asset cards and the dashboard, each a view of the lab. Every number in the prose is read
-// off the lab and pinned by invisible-system.facts.test.ts.
+// answered. The four figures are the essay's diagrams and figures: the pipeline and the week are
+// diagrams, the asset cards and the dashboard show the shop's data. Each is computed from the
+// shop's data by the engine (packages/lab), which the page never names: a figure carries no
+// badge, no mark and no note (timeModel "none", no role). Every number in the prose is read off
+// the engine and pinned by invisible-system.facts.test.ts.
 
 import type { LessonInput } from "@platform/lesson-schema";
 
@@ -33,13 +35,11 @@ export const invisibleSystem: LessonInput = {
       kind: "question",
       title: LABELS.titles.question,
       prose: PROSE.question,
-      details: { summary: LABELS.labDetails, prose: PROSE.labDetails },
       interactives: [
         {
           id: "platform",
-          role: "reference",
           kind: "platform-map",
-          timeModel: "lab",
+          timeModel: "none",
           caption: LABELS.captions.platform,
           lead: PROSE.platformLead,
           after: PROSE.platformAfter,
@@ -47,22 +47,21 @@ export const invisibleSystem: LessonInput = {
         },
         {
           id: "week",
-          role: "reference",
           kind: "week-timeline",
-          timeModel: "lab",
+          timeModel: "none",
           caption: LABELS.captions.week,
           lead: PROSE.weekLead,
         },
         {
           id: "explore",
-          role: "inspect",
           kind: "asset-cards",
-          timeModel: "lab",
+          timeModel: "none",
           caption: LABELS.captions.explore,
           lead: PROSE.exploreLead,
           props: {
-            // The four assets the essay works through, one card each. A card shows up to seven
-            // rows, so the two small tables appear whole; the large files show a head.
+            // The four assets the essay works through, one card each (a card's `role` is the
+            // line under its name). A card shows up to seven rows, so the two small tables appear
+            // whole; the large files show a head.
             head: 7,
             cards: [
               {
@@ -77,9 +76,8 @@ export const invisibleSystem: LessonInput = {
         },
         {
           id: "dashboard",
-          role: "inspect",
           kind: "dashboard",
-          timeModel: "lab",
+          timeModel: "none",
           caption: LABELS.captions.dashboard,
           after: PROSE.dashboardAfter,
         },
@@ -141,6 +139,6 @@ export const invisibleSystem: LessonInput = {
     textbookExample:
       "A tour of a data catalogue's screens over a ready-made sample project, such as dbt's jaffle shop, with its documentation and its dependency diagram already generated for the reader.",
     howThisDiffers:
-      "This chapter is a first morning told as an essay: the learner is handed an undocumented platform and one line from the head of the shop, and every conclusion is drawn from the shop's own data, which the lab computes and the figures show. The chapter's spine is the gap between a reconstruction that fits and the truth: the rebuild is evidence, and the copy, the edit and the failed night each break that evidence in a way the data alone cannot repair. The shop, a bicycle-parts retailer, its data, its Thursday incident and its programs in the course's own SQL are invented for the course.",
+      "This chapter is a first morning told as an essay: the learner is handed an undocumented platform and one line from the head of the shop, and every conclusion is drawn from the shop's own data, which the figures show. The chapter's spine is the gap between a reconstruction that fits and the truth: the rebuild is evidence, and the copy, the edit and the failed night each break that evidence in a way the data alone cannot repair. The shop, a bicycle-parts retailer, its data, its Thursday incident and its programs in the course's own SQL are invented for the course.",
   },
 };

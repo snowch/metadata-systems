@@ -1,9 +1,10 @@
-# The Metadata Lab
+# The engine
 
-The data platform every figure runs, and the metadata system the learner builds on top of it. A
-figure is a view of the lab: what it shows, the lab computed. This file is the lab's design; the
-code is `packages/lab`, and where the two differ, the code and its tests are right and this file
-is out of date.
+The shop's data platform, which computes every figure, and the metadata system the learner builds
+on top of it. What a figure shows, the engine computed. The page never names the engine: a figure
+is a diagram or a figure of the shop's data, with a caption (`CLAUDE.md`, "No lab on the page").
+This file is the engine's design; the code is `packages/lab`, which keeps its directory's name,
+and where the two differ, the code and its tests are right and this file is out of date.
 
 ## Two halves
 
@@ -27,11 +28,11 @@ customers and staff.
 | The warehouse, database `shop`, schema `analytics` | `clean_customers`, `clean_orders`, `daily_sales` | each table's columns and types, row count, last-altered time and the role that owns it |
 | The reporting tool | `sales_dashboard`, a chart of revenue per day | the dashboard's title, who created it, when it last refreshed and the values it shows |
 
-These records are the lab's choice of what a typical system of each kind keeps; the lab does not
+These records are the engine's choice of what a typical system of each kind keeps; the engine does not
 model why a system keeps a field. The reporting tool keeps no query: a program fills the
 dashboard, as programs fill the tables. A program that writes no rows still moves its table's
-last-written time, so in the lab only a failed write leaves the time stale. Real systems differ:
-some table formats keep history the lab's warehouse does not, such as Apache Iceberg's snapshots
+last-written time, so in the engine only a failed write leaves the time stale. Real systems differ:
+some table formats keep history the shop's warehouse does not, such as Apache Iceberg's snapshots
 and Delta Lake's record of each write (`docs/sources.md`). Each chapter's model-versus-reality
 note says which difference matters to it.
 
@@ -55,7 +56,7 @@ the rows written after the change.
 
 The course's week is Monday 7 to Sunday 13 September 2026. Each night the export writes the
 orders placed so far, then the four programs run. The learner arrives on Monday 14 September,
-after the last night's run, and finds the lab as that run left it.
+after the last night's run, and finds the shop as that run left it.
 
 The week's orders are hand-written in `packages/lab/src/shop/data.ts`, so each property below is
 deliberate:
@@ -69,7 +70,7 @@ deliberate:
 - no order has a quantity of 0 or less, so nothing in the week's data shows that clean orders
   has a rule for them.
 
-Every number a chapter states about the week is computed by the lab and pinned by that chapter's
+Every number a chapter states about the week is computed by the engine and pinned by that chapter's
 facts test; this file states none.
 
 ### Changes
@@ -88,7 +89,7 @@ deterministic as the plain one. Chapter 1 uses three:
 Later chapters add their own: a renamed column, a late file, a duplicated event, a second
 environment.
 
-## What a learner can ask of the lab
+## What a figure can ask of the engine
 
 `packages/lab` answers three kinds of question, and the figures show each answer with its
 evidence:
@@ -97,7 +98,7 @@ evidence:
   lists, as of Monday morning.
 - **What the data suggests.** Inference from contents alone: which queries over the other assets
   reproduce an asset's rows, which assets show the same numbers as another, what a last-written
-  time implies. The lab searches a fixed space of queries and reports every one that fits, so a
+  time implies. The engine searches a fixed space of queries and reports every one that fits, so a
   figure can show that two different sources fit equally well.
 - **What only a record answers.** The questions whose answers are in neither: who is responsible
   for an asset, what a number's unit is, what changed and why.
@@ -127,7 +128,7 @@ Three more things the figures ask of it:
 ## The course's SQL subset
 
 The programs, the queries a learner builds and, from Chapter 9, the queries the learner writes
-are all in one small SQL dialect, parsed and run by the lab (`packages/lab/src/sql`): `SELECT`
+are all in one small SQL dialect, parsed and run by the engine (`packages/lab/src/sql`): `SELECT`
 with expressions and aliases, `DISTINCT`, `FROM` one table or file, `WHERE`, `GROUP BY`, `ORDER
 BY`, `CAST`, `SUM`, `COUNT`, `MIN`, `MAX`, `LOWER`, `COALESCE`, three-valued logic with `NULL`, and
 named parameters such as `:day`. Money is held as whole pennies, so sums are exact. Joins arrive
@@ -136,7 +137,7 @@ not a parse error.
 
 ## The learner's state
 
-The lab a figure runs is a pure function of two things: the shop's definition, and the learner's
+What a figure shows is a pure function of two things: the shop's definition, and the learner's
 graded work from every earlier chapter.
 
 - Each chapter's work is stored by the platform's runtime, one key per chapter
@@ -145,17 +146,17 @@ graded work from every earlier chapter.
 - When a figure needs what the learner built earlier (their records in Chapter 3, their event
   design in Chapter 7), the book reads that chapter's stored work, grades it, and uses it only if
   it passes. Otherwise the figure uses the course's reference and says so on the page.
-- So there is no separate "lab state" to drift from the learner's work or to be edited into a
+- So there is no separate "engine state" to drift from the learner's work or to be edited into a
   pass, and resetting a chapter's work resets what later chapters see of it.
 
 ## Determinism
 
-The same code gives the same rows, times and identifiers on every machine. The lab has no wall
-clock (its clock is the week's), no `Math.random` (an identifier the lab needs, such as a run's
+The same code gives the same rows, times and identifiers on every machine. The engine has no wall
+clock (its clock is the week's), no `Math.random` (an identifier the engine needs, such as a run's
 UUID from Chapter 6, is derived from the run's job and time), and no formatting that depends on
 the browser's locale or time zone. Every time is UTC.
 
-## What the lab does not model
+## What the engine does not model
 
 - Real storage formats: a Parquet file's footer is modelled as the fields it records, not as
   bytes. Sizes are estimated from the rows.

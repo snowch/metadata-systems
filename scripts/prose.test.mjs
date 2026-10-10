@@ -111,3 +111,31 @@ test("the whole-file scan reports the file and enough context to find the line",
   assert.match(out, /One thing to take away/);
   assert.match(out, /rule 2/);
 });
+
+test("the page names no lab: 'the lab' and 'Metadata Lab' are rejected, 'the label' is not", () => {
+  const bad = runCheck({
+    "content/lessons/invisible-system.prose.ts":
+      'export const P = { a: "The figures on this page are computed by the Metadata Lab.", b: "Compare what the lab shows." };\n',
+  });
+  assert.notEqual(bad.code, 0);
+  assert.match(bad.out, /Metadata Lab/);
+  assert.match(bad.out, /the lab /);
+  assert.match(bad.out, /no lab on the page/);
+  const fine = runCheck({
+    "content/lessons/invisible-system.prose.ts":
+      'export const P = { a: "Read the label on the card, then the labour of the night\'s programs." };\n',
+  });
+  assert.equal(fine.code, 0, fine.out);
+});
+
+test("an apostrophe in a comment does not hide the strings after it", () => {
+  // The scanner once opened a string at a comment's apostrophe ("a platform's state") and read
+  // the real strings as its contents, so a prohibited phrase after such a comment passed.
+  const { code, out } = runCheck({
+    "content/lessons/invisible-system.prose.ts":
+      "// An essay on what a platform's state records.\n/* and what it can't say */\nexport const P = {\n  a: \"In the lab's platform, a system records what its own work needs.\",\n};\n",
+  });
+  assert.notEqual(code, 0, "the phrase after the comment must be found");
+  assert.match(out, /invisible-system\.prose\.ts:4/);
+  assert.match(out, /the lab's/);
+});

@@ -1,9 +1,10 @@
 # Chapter 1: The invisible data system
 
 A working note, kept as the chapter was built on 6 October 2026, revised on 7 October through
-the author's second to fifth rounds, and rewritten as an essay on 9 and 10 October: what was
-built, what was reused, what the prose process caught, and what would be changed. The chapter's
-fact sheet, briefs, drafts and review are in `docs/notes/chapter-01/`.
+the author's second to fifth rounds, rewritten as an essay on 9 and 10 October, and freed of the
+lab concept the same day: what was built, what was reused, what the prose process caught, and
+what would be changed. The chapter's fact sheet, briefs, drafts and review are in
+`docs/notes/chapter-01/`.
 
 ## What the chapter does
 
@@ -12,9 +13,8 @@ labs, which were getting in the way of the learning; on 10 October it was rewrit
 against the writing standard (`AGENTS.md`), keeping the author's structure. In the page's order:
 
 - the situation: the learner's first Monday as the shop's data engineer, the three systems and
-  what each holds, the head of the shop's one line; the lab named and, behind a control, how it
-  runs; then the map with its count, the week, the four asset cards and the dashboard, with
-  Thursday at 51.50 against the days either side;
+  what each holds, the head of the shop's one line; then the map with its count, the week, the
+  four asset cards and the dashboard, with Thursday at 51.50 against the days either side;
 - four questions anybody asks of a platform they did not build, each answered by something that
   happened or a decision somebody made, none by the rows a table holds;
 - Thursday's arithmetic: 205.50 of raw orders against 51.50 in `daily_sales`, three days that
@@ -40,14 +40,15 @@ against the writing standard (`AGENTS.md`), keeping the author's structure. In t
 ## Figures
 
 Chapter 1 is written as a book: the prose carries the investigation, and a figure appears only
-where the story needs the learner's own hands or eyes. Every figure on the page, in its order,
-with its role (`CLAUDE.md`, "Experiments, instruments and explanations"). An experiment answers
-twelve questions; an instrument or a reference answers two. The content tests fail a figure
-without a role, without a block, or with a question unanswered.
+where the story needs the learner's own eyes. Every figure on the page, in its order. Each is a
+diagram (the page drawing something) or a figure of the shop's data, with a caption and nothing
+else: no badge, no mark, no note, and no "lab" (`CLAUDE.md`, "No lab on the page"). A figure
+declares no role; a block answers two questions, what the figure serves and why it is there. The
+content tests fail a figure without a block or with a question unanswered.
 
 ### `platform`
 
-- **Role:** reference
+- **Kind:** a diagram
 - **Serves:** every question in the chapter that needs to know which systems hold which assets, in
   the order data moves through them. It draws no asset made from another: that is what the chapter
   shows the systems cannot tell. Under its systems it counts what it shows (3 files + 3 tables +
@@ -57,7 +58,7 @@ without a role, without a block, or with a question unanswered.
 
 ### `week`
 
-- **Role:** reference
+- **Kind:** a diagram
 - **Serves:** every question that needs to place a day or a time: which days the dashboard shows,
   when each night's work happened, and where the learner stands. It shows when the nights were,
   from the lab's own week, and nothing about what a night wrote.
@@ -66,7 +67,7 @@ without a role, without a block, or with a question unanswered.
 
 ### `explore`
 
-- **Role:** inspect
+- **Kind:** a figure of the shop's data
 - **Serves:** the learner's first meeting with the four assets the chapter works through: the raw
   file, the cleaned orders, the daily totals, the reporting view. Opening a card shows a small
   head of its rows - or, for the dashboard, the reporting view itself - with the asset's true row
@@ -76,7 +77,7 @@ without a role, without a block, or with a question unanswered.
 
 ### `dashboard`
 
-- **Role:** inspect
+- **Kind:** a figure of the shop's data
 - **Serves:** the discrepancy itself: Thursday at 51.50 against the days either side. Its own
   last-refreshed record is on it, which the failed night later makes important.
 - **Why now:** the head of the shop's one line points here; the learner needs to see what the
@@ -741,6 +742,30 @@ check passes again.
 | Draft | Wrong, sent back | Dropped, restored with the fewest words |
 | --- | --- | --- |
 | none: written directly, by the author's leave | | |
+
+## No lab on the page, 10 October 2026
+
+The author asked for the lab concept to go entirely: the page is to use diagrams and figures.
+What went: the sentence in the opening that named the Metadata Lab and said it runs in the
+browser; the control "How the lab is built" and its text; the lab's mark (the flask and the name)
+above every figure's caption; the role badges (REFERENCE, INSPECT) and the note the inspect badge
+opened, since every figure now declares no role and names no model (`timeModel: "none"`), so the
+platform draws no badge and no note; the word "lab" in every string a learner can read, on the
+page and in the figures the chapter no longer uses ("The lab found" is now "Found"; "the lab ran
+the whole week again" is "the whole week ran again"); and the front page's badge on its dashboard.
+The model-versus-reality note now opens with the one fact the control carried that a reader
+needs, that the shop, its people and its data are invented, and speaks of the shop's warehouse
+and systems, not the lab's. What stayed: the four figures, computed from the shop's data as
+before by the engine (`packages/lab`), which the page never names; the kind glyph before an
+asset's name, which tells a file, a table and a dashboard apart; and the course's icon. The rules
+changed with the page: `CLAUDE.md` now says no lab on the page, and that a figure may declare a
+role but this course's figures declare none; the content tests require a block per figure, not a
+role; the prose check fails "the lab" and "Metadata Lab" in anything a learner reads. The
+engineering documents call the engine the engine, and its directory keeps its name.
+
+| Draft | Wrong, sent back | Dropped, restored with the fewest words |
+| --- | --- | --- |
+| none: a sentence removed, and the note's subject changed from the lab to the shop | | |
 
 ## Known gaps
 

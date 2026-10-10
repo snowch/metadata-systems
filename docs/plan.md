@@ -1,6 +1,6 @@
 # The course plan
 
-What the course teaches, part by part and chapter by chapter, what the learner's lab holds after
+What the course teaches, part by part and chapter by chapter, what the learner's metadata system holds after
 each chapter, and what has been decided since the brief. It says what is planned, not what is
 built: the list of chapters on the site shows which chapters exist, worked out from the lessons
 themselves.
@@ -48,10 +48,12 @@ it and that run's time. The learner sees this by building it: the descriptive re
 gain jobs and runs in Part II, and the graph that answers "who owns this?" is the graph that
 answers "what does this depend on?".
 
-## The lab
+## The engine
 
-Every figure runs the Metadata Lab (`packages/lab`, described in `docs/lab.md`): a small online
-shop's data platform that really runs. Three raw files arrive each night (`customers.parquet`,
+Every figure is computed by the engine (`packages/lab`, described in `docs/lab.md`): a small
+online shop's data platform that really runs. The page never names it: a figure is a diagram or a
+figure of the shop's data, with a caption and no badge, mark or note (`CLAUDE.md`, "No lab on the
+page"). Three raw files arrive each night (`customers.parquet`,
 `orders.parquet`, `products.parquet`); programs written in the course's SQL subset clean them
 (`clean_customers`, `clean_orders`), add them up (`daily_sales`), and refresh a dashboard
 (`sales_dashboard`). The course's week is Monday 7 to Sunday 13 September 2026, and the learner
@@ -63,29 +65,30 @@ Chapter 1 it shows no link from one asset to another, because that is what the c
 storage cannot tell. As the learner builds records in later chapters, the map gains what those
 records hold, and a link appears on it only once something the learner built records it.
 
-The lab starts with deliberately too little information. Chapter 1 gives the learner storage and
-nothing else. Each later chapter adds one kind of record, built by the learner, and the lab keeps
-what they built: the lab a figure runs is the shop plus the learner's own graded work from every
-earlier chapter (`docs/lab.md`, "The learner's state").
+The shop's platform starts with deliberately too little information. Chapter 1 gives the learner
+storage and nothing else. Each later chapter adds one kind of record, built by the learner, and
+the engine keeps what they built: what a figure shows is the shop plus the learner's own graded
+work from every earlier chapter (`docs/lab.md`, "The learner's state").
 
 ## How a chapter runs
 
 Every chapter follows the loop **predict, build, run, inspect, explain, change, run again**, inside
 the platform's ten sections: question, motivation, prediction, investigation, construction,
 failure experiment, explanation, generalisation, challenge, reflection. Read as the learner meets
-it, the loop asks: a real question; what can I believe about it now; predict; act on the lab;
+it, the loop asks: a real question; what can I believe about it now; predict; act on the figure;
 observe; what did that prove; what can the data not tell me; what would a system have to record.
 A prediction is built around what the learner should learn, asks for a belief about a result the
 learner can observe, and never asks for a cause before its effect has been seen (`CLAUDE.md`).
-Every figure says whether it is an experiment, an instrument or a reference, experiments are
-preferred, and an instrument always has a question in front of it. A chapter is finished when
+Every figure's notes say whether it is a diagram, a figure of the shop's data or an experiment;
+an experiment is preferred where the learner must act, and a figure of the shop's data always has
+a question in front of it. A chapter is finished when
 the learner can do something they could not reliably do before, and every major idea in it has an
 explanation, a concrete example, an experiment, a prediction, an observable result, a reflection
 and an application.
 
 ## The parts
 
-Each table gives, per chapter: what the learner builds into the lab; the central experiment; what
+Each table gives, per chapter: what the learner builds; the central experiment; what
 the chapter deliberately breaks; and the terms it introduces, which no earlier chapter may use
 (the term gate). Terms in plain English (owner, file, table, program) are not rationed.
 
@@ -133,7 +136,7 @@ observed one, and designs the event a computation should emit before meeting Ope
 
 ### Part V: When the simple model breaks
 
-The learner runs the lab's events through a delivery path that loses, repeats, delays and
+The learner runs the shop's events through a delivery path that loses, repeats, delays and
 contradicts them, and makes their metadata system survive it.
 
 | Ch | Title | The learner builds | Central experiment | What breaks | Introduces |
@@ -141,13 +144,13 @@ contradicts them, and makes their metadata system survive it.
 | 17 | Missing events | a delivery path between producers and the collector, with loss | predict the graph when one COMPLETE never arrives | a run that is running for ever; a dependency nobody can prove | delivery, at least once |
 | 18 | Duplicate events | idempotent ingestion | replay an event: predict whether the lineage doubles | a retry whose event differs in time only | idempotent, deduplication |
 | 19 | Out-of-order events | event time against arrival time, and an ordering rule | deliver Tuesday's run after Wednesday's | last-writer-wins by arrival overwrites newer state | event time, arrival time |
-| 20 | Conflicting metadata | precedence rules that keep where each claim came from | two systems disagree about an owner and a schema: predict which the lab shows | "newest wins" chooses a stale claim | precedence |
+| 20 | Conflicting metadata | precedence rules that keep where each claim came from | two systems disagree about an owner and a schema: predict which the figure shows | "newest wins" chooses a stale claim | precedence |
 | 21 | Identity across systems | aliases and resolution rules across the warehouse, a file path, a transformation tool's model name and the dashboard's dataset | predict which references merge | over-merging two environments' tables of one name | alias, entity resolution |
 | 22 | Metadata at scale | a cost model from ten assets to ten million and billions of events: indexes, partitions, retention, compaction, ingestion rate, traversal depth | predict which query fails first as the platform grows | an unbounded traversal; retention that deletes the lineage of an asset still in use | index, partition, retention, compaction |
 
 ### Part VI: Building a metadata platform
 
-The learner implements the parts their lab has been using, against tests, in the order data flows
+The learner implements the parts the engine has been using, against tests, in the order data flows
 through them.
 
 | Ch | Title | The learner builds |
@@ -216,18 +219,18 @@ and its notes say which (`CLAUDE.md`, "Question the requirement").
 ## What the learner writes
 
 - **Choices in a figure** (Chapter 1 on): a query built from choices, a rule set, a change to
-  apply. The lab shows the SQL a choice means.
-- **Records** (Chapter 2 on): descriptive records in a small, line-based notation the lab parses
+  apply. The figure shows the SQL a choice means.
+- **Records** (Chapter 2 on): descriptive records in a small, line-based notation the engine parses
   and checks; JSON from Chapter 6.
 - **The course's SQL subset** (Chapter 9 on, read from Chapter 1): `SELECT` with expressions,
   `DISTINCT`, `WHERE`, `GROUP BY`, `ORDER BY`, `CAST`, a few functions, and named parameters. The
-  lab's programs are written in it, the lab runs it, and Chapter 9 derives column lineage from
+  shop's programs are written in it, the engine runs it, and Chapter 9 derives column lineage from
   its parse.
 - **Events** (Chapters 6 to 8): JSON, first in the learner's own design, then as OpenLineage run
   events.
 - **Code** (Part VI, and Chapter 32): Python, run in the browser by Pyodide, decided at
   checkpoint 1 because the learner reads and writes this code and Python is a data engineer's
-  language. The lab stays TypeScript; the learner's Python runs in a Web Worker against tests, and
+  language. The engine stays TypeScript; the learner's Python runs in a Web Worker against tests, and
   the two exchange JSON. Pyodide 0.28.3's core is about 5.3 MB to download, compressed, on the
   first visit, and cached after (measured from its CDN on 6 October 2026). The course will serve
   it from its own site, so that no figure fetches from a third party, and its licence, MPL-2.0,
@@ -248,13 +251,27 @@ page also disagree on whether an `OTHER` event may follow a terminal one, and th
 
 The author reviews the course at five checkpoints:
 
-1. After Chapter 1, the plan, the lab's design and the platform move (now).
+1. After Chapter 1, the plan, the engine's design and the platform move (now).
 2. After Chapter 8: the event model and OpenLineage are in place.
 3. After Chapter 16: metadata is operational.
 4. After Chapter 22: the failure chapters.
 5. Before Chapter 32.
 
 ## Decisions since the brief
+
+### 10 October 2026: no lab on the page
+
+The author asked for the lab concept to go entirely: the page uses diagrams and figures. The
+opening no longer names the Metadata Lab or explains how it runs; the control "How the lab is
+built" is gone; the lab's mark above every figure's caption is gone; the role badges and their
+notes are gone, since every figure declares no role and names no model (`timeModel: "none"`), so
+the platform draws nothing; and the word "lab" is out of every string a learner can read, on the
+page and in the figures later chapters may use. The model-versus-reality note opens by saying the
+shop, its people and its data are invented, and speaks of the shop's warehouse and systems. What
+computes a figure is the engine (`packages/lab`), an implementation detail the engineering
+documents name and the page never does. The experiment rubric stays for later chapters' figures,
+as a lens in the notes, never as labels on the page; the prose check fails "the lab" and
+"Metadata Lab" in anything a learner reads (`CLAUDE.md`, "No lab on the page").
 
 ### 10 October 2026: Chapter 1 as an essay
 

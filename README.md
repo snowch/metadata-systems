@@ -8,7 +8,7 @@ for each idea you predict, build, run, inspect, break and repair it.
 
 The course is published at <https://snowch.github.io/metadata-systems/>.
 
-**Status.** Chapter 1, *The invisible data system*, is built end to end, with its lab, figures,
+**Status.** Chapter 1, *The invisible data system*, is built end to end, with its engine, figures,
 prose and tests. The other 31 chapters are planned (`docs/plan.md`); the site's list of
 chapters says which exist, worked out from the chapters themselves. Every push to `main` deploys
 the site (`.github/workflows/deploy.yml`).
@@ -19,7 +19,7 @@ the site (`.github/workflows/deploy.yml`).
   build.
 - [`docs/plan.md`](docs/plan.md): the parts and chapters, what each builds and breaks, the terms
   each introduces, the checkpoints and the decisions taken since the brief.
-- [`docs/lab.md`](docs/lab.md): the Metadata Lab, the shop's data platform every figure runs.
+- [`docs/lab.md`](docs/lab.md): the engine, the shop's data platform that computes every figure.
 - [`docs/platform.md`](docs/platform.md): what the course takes from `snowch/learning-platform`
   and what is its own.
 - [`docs/authoring.md`](docs/authoring.md): how a chapter is made, its figures and their props,
@@ -41,7 +41,7 @@ npm run check     # exactly what CI runs: Prettier, the copyright line, the plat
 ```
 
 The repository is an npm workspace: `apps/course` (the shell), `content/lessons` (the chapters as
-data, and the plan as data), `packages/lab` (the Metadata Lab: the shop, its SQL subset, its
+data, and the plan as data), `packages/lab` (the engine: the shop, its SQL subset, its
 storage, and what can be inferred from it), `packages/views` (the figures, the challenge editor,
 the grader and the book), `platform/` (the learning platform's packages, copied from
 `snowch/learning-platform` at the commit `platform/SOURCE.json` records), and `tests/educational`

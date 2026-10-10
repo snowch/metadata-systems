@@ -1,6 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
-// Every number Chapter 1's words state, read off the lab. If the shop's data or programs change,
+// Every number Chapter 1's words state, read off the engine. If the shop's data or programs change,
 // this fails until the words change with them (docs/notes/chapter-01/facts.md is the brief the
 // words were drafted from). A number spelled as a word ("three days", "all seven rows") is pinned
 // like a number written in figures, and so is a sentence that states what a record holds.
@@ -140,12 +140,15 @@ describe("the facts Chapter 1 states", () => {
     expect(line.nights.map((n) => n.date)).toEqual([...NIGHTS]);
     expect(line.nights[line.nights.length - 1]!.finished < ARRIVAL).toBe(true);
     expect(PROSE.weekLead).toContain("The last night ends early on Monday 14 September");
-    // The opening, in the order the page gives it: the situation names the lab in its own prose;
-    // how the lab runs waits behind a control; the word "asset" arrives under the map, and not
-    // before; the week's dates come before any sentence speaks of its nights.
-    expect(PROSE.labDetails).toContain("query engine");
-    for (const before of [PROSE.question, PROSE.labDetails, PROSE.platformLead])
+    // The opening, in the order the page gives it: the word "asset" arrives under the map, and
+    // not before; the week's dates come before any sentence speaks of its nights; and nothing the
+    // learner reads names a lab or says what computes a figure.
+    for (const before of [PROSE.question, PROSE.platformLead])
       expect(before).not.toMatch(/\basset/i);
+    const sections = invisibleSystem.sections.map((x) => x.prose);
+    expect(sections.some((x) => x === undefined)).toBe(false);
+    for (const text of [...Object.values(PROSE), ...Object.values(LABELS.titles)])
+      expect(text).not.toMatch(/\blab\b|Metadata Lab/i);
     expect(PROSE.platformAfter.startsWith("An asset is")).toBe(true);
     const weekProse = PROSE.weekLead.toLowerCase();
     const dates = weekProse.indexOf("monday 7 to sunday 13 september");

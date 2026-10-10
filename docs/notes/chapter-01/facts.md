@@ -1,8 +1,8 @@
 # Chapter 1 fact sheet: The invisible data system
 
-Every brief for Chapter 1 attaches this sheet. Each fact was read off the lab (`packages/lab`) on
+Every brief for Chapter 1 attaches this sheet. Each fact was read off the engine (`packages/lab`) on
 6 October 2026, and read again for the revision after the review, by running it (two statements
-the first version carried were not the lab's, and are gone), and again on 7 October 2026 for the
+the first version carried were not the engine's, and are gone), and again on 7 October 2026 for the
 author's second round (the predictions, the map, the definitions), and again on 10 October 2026
 for the essay (the record of `daily_sales` in full, with its created time and its size); the
 chapter's facts test pins every number below. Do not add a number that is not here. Do not change a number.
@@ -14,67 +14,52 @@ chapter's facts test pins every number below. Do not add a number that is not he
   has just joined.
 - You can read everything in the shop's storage. You cannot see anything else yet: not the code,
   not when each program is due to run, not anybody's notes.
-- Every figure on the page runs the Metadata Lab: a small data platform, holding the shop, that
-  runs in your browser. The lab works out everything a figure shows; it is the one thing on the
-  page that knows the shop's insides (for example, that `etl_service` is the account the programs
-  log in as). Call it "the lab".
+- The page names no lab and no engine. A figure is a diagram (the pipeline, the week) or a figure
+  of the shop's data (the asset cards, the dashboard), with a caption; the prose never says what
+  computes it. Do not write "the lab", "the engine" or "Metadata Lab" in anything a learner reads.
+  (The engine, `packages/lab`, computes every figure and knows the shop's insides, for example
+  that `etl_service` is the account the programs log in as; the prose states such facts as the
+  shop's.)
 - All times are UTC. Write a time like this: Monday 14 September, 02:30.
 
 ## The opening, in the order the page gives it
 
 The opening section brings the learner to the first question with as little as possible to hold
-in mind: a short situation, the lab, the map, the week, then the dashboard's question (the
-author's agent guide on the opening's diagrams, 7 October 2026). The lab is explained once, here,
-where the chapter first names it; no figure's badge and no note at the foot repeats it. Read off
-the code (`packages/lab`, `packages/views`, the platform's `state.ts`) on 7 October 2026. In the
-order the page gives them, each thing named before a sentence uses it:
+in mind: a short situation, the map, the week, the four asset cards, then the dashboard's question
+(the author's agent guide on the opening's diagrams, 7 October 2026; the lab concept removed on
+10 October 2026). Nothing in it names a lab or says what computes a figure. Read off the code
+(`packages/lab`, `packages/views`) and the built page on 10 October 2026. In the order the page
+gives them, each thing named before a sentence uses it:
 
-1. **The situation.** You start work on Monday 14 September 2026 at 09:00 (the lab's `ARRIVAL`).
-   You are a data engineer at an online shop that sells bicycle parts. The shop opened its online
-   store on Monday 7 September.
-2. **What you do with the lab, before what it is made of** (the author's agent guide on the lab,
-   and the author's question on it, 7 October 2026). The figures on this page let you investigate
-   the shop. They use the Metadata Lab, a small data platform written for and built into this
-   course. It runs in your browser: there is nothing to install, open or sign in to (the
-   author's own words). The first three figures, the map, the shop's week and its dashboard, only
-   show you the shop: you read them, and they have no controls. In each of the others you ask the
-   lab something: you choose an answer, an asset or the parts of a query, and press a button. The
-   lab works out the result from the shop's data and shows it in the figure. Many of them ask you
-   to predict or choose before the lab answers. You cannot see the shop's programs, only what they
-   leave behind, so you work out what happened from what the figures show you. The words the page
-   uses for a figure you use, in every chapter: you ask, the lab checks, it shows you, you work
-   out what it means; a figure you only read shows you what the lab works out, and you work out
-   what it means. Read off the built page on 7 October 2026: as the page loads, the map, the week
-   and the dashboard have no control; the owner's figure has five answers and the button "Show
-   what this could mean"; the Thursday prediction three answers and "Check my prediction"; the
-   inspector a button per asset; the query builder four lists and "Run tests"; the sort a list per
-   question and "Check my sorting"; the rest wait for an answer or a passing query above them.
-3. **How the lab is built, behind a control the reader opens.** The lab holds the shop's first
-   week: real rows in its files, tables and dashboard, and its programs, written in SQL. The shop
-   is invented for the course. The lab runs the programs' SQL, and any query you build, with a
-   query engine of its own. Nothing about the shop is kept between page loads: each time the
-   page loads, the lab builds the shop's data and runs the shop's first week, night by night, in
-   memory. So the rows, results and times are the same for every reader on any day, and every
-   date and time a figure shows comes from that week, never from today's date or your computer's
-   clock. Your browser keeps your own work, chapter by chapter: your predictions, your choices
-   and your answers to challenges. Nothing you do leaves your browser: the page sends none of it
-   anywhere.
-4. **The map** (below, "The map of the platform"). The shop's data platform has three systems.
-   The map shows them in the order data moves through them each night, with what each holds,
-   and under them a count the lab computes: 3 files + 3 tables + 1 dashboard = 7 assets.
-   Programs move the data from one system to the next, as the map's own words say. Once you
-   scroll past the map, a button at the foot of the window opens it again.
-5. **What an asset is**, under the map. An asset is something in the platform that can be
-   stored, described, changed, related to other assets, or depended on. The files, tables and
-   dashboard on the map are the shop's seven assets. In this chapter, storage means all three
-   systems.
-6. **The week** (below, "The week, as the lab ran it"). The shop's first week ran from Monday 7
+1. **The situation.** You start work on Monday 14 September 2026 at 09:00 (the engine's `ARRIVAL`),
+   as the data engineer of an online shop that sells bicycle parts. The shop opened its online
+   store a week ago, on Monday 7 September. Nobody who built its data platform is there to ask,
+   and nothing about it is written down. The head of the shop sends one line: Thursday's revenue
+   looks wrong.
+2. **The three systems.** Object storage holds files; a warehouse holds tables; a reporting tool
+   holds a dashboard. Every night, programs read the files, write the tables and refresh the
+   dashboard. The learner can read everything the three systems hold, and cannot see the
+   programs, when they are due to run, or any note anybody kept.
+3. **The map** (below, "The map of the platform"). The three systems in the order data moves
+   through them each night, with what each holds, and under them a count the engine computes:
+   3 files + 3 tables + 1 dashboard = 7 assets. Programs move the data from one system to the
+   next, as the map's own words say. Once you scroll past the map, a button at the foot of the
+   window opens it again.
+4. **What an asset is**, under the map: one thing the platform holds; here, a file, a table or a
+   dashboard. The files, tables and dashboard on the map are the shop's seven assets.
+5. **The week** (below, "The week, as the engine ran it"). The shop's first week ran from Monday 7
    to Sunday 13 September 2026. Each night, in the early hours of the next day, the three files
    are written again, then the programs write the tables and refresh the dashboard. The last
    night ends early on Monday 14 September, before you start work.
+6. **The four asset cards**: `orders.parquet`, `clean_orders`, `daily_sales` and
+   `sales_dashboard`, each with one line on what it is; a card opens on the asset's rows (up to
+   seven), or on the dashboard itself.
+7. **The dashboard**, with Monday morning's seven values, and under it: Thursday shows 51.50,
+   against 153.75 on Wednesday and 204.24 on Friday.
 
 The opening does not say how many programs there are, which asset a program reads or writes, or
-what any program does: the chapter shows that storage cannot tell.
+what any program does: the chapter shows that storage cannot tell. No figure carries a badge, a
+mark or a note.
 
 ## The seven assets
 
@@ -107,13 +92,13 @@ The chapter shows a small map of the platform near its start, and keeps it to ha
   the window opens the same map over the page. The button goes when the map's place comes back
   into view.
 - The map shows the week as it first ran. It does not show the analyst's copy or any change.
-- Under its systems, the map counts what it shows, as the lab computes it: 3 files + 3 tables +
+- Under its systems, the map counts what it shows, as the engine computes it: 3 files + 3 tables +
   1 dashboard = 7 assets. The count is in the opening's map only; the map that opens over the
   page leaves it out.
 
-## The week, as the lab ran it
+## The week, as the engine ran it
 
-The chapter shows the shop's first week on one line, after the map, computed by the lab
+The chapter shows the shop's first week on one line, after the map, computed by the engine
 (`weekTimeline`).
 
 - The days the shop took orders: Monday 7 to Sunday 13 September 2026, seven days.
@@ -135,7 +120,7 @@ The chapter shows the shop's first week on one line, after the map, computed by 
 - The reporting tool: the dashboard's title ("Sales, last 7 days"), who created it (j.marsh) and
   when (2 September 2026), when it last refreshed, and the values it shows. It keeps no query: a
   program fills the dashboard each night, as programs fill the tables.
-- These are the lab's choice of what a system of each kind keeps. The lab does not model why a
+- These are the engine's choice of what a system of each kind keeps. The engine does not model why a
   system keeps a field. Do not say a system "must" or "needs to" keep anything.
 - What storage keeps (names, types, row counts, sizes, times, an owner's name, a creator) is
   itself a kind of record about the assets: each system keeps it for its own work.
@@ -150,7 +135,7 @@ The chapter shows the shop's first week on one line, after the map, computed by 
   daily_sales, and the dashboard last. The order fits programs that each read what an earlier one
   wrote. It does not prove that any one reads another: two writes can follow each other without
   either reading the other.
-- The warehouse records the name `etl_service` as the owner of all three tables. The lab knows,
+- The warehouse records the name `etl_service` as the owner of all three tables. The engine knows,
   and storage does not show, that `etl_service` is the account all four of the shop's programs
   log in as. Storage records no creator for a table.
 
@@ -191,7 +176,7 @@ lowest.
   customer id.
 - products.parquet has a column `updated_by`, holding staff names (k.adeyemi, r.novak, s.lund).
   It says who last edited each product's row. It is a fact about a product, not a record of who
-  is responsible for the file. No program in the lab reads products.parquet; storage cannot show
+  is responsible for the file. No program in the engine reads products.parquet; storage cannot show
   that.
 
 ## The two predictions before storage
@@ -214,9 +199,9 @@ and the words before them, nothing else.
      - an account: which account controls daily_sales in the warehouse?
    - The requirement does not say which question the owner must answer, so it does not say which
      to store. Somebody has to ask whoever set it what the owner is for.
-   - The lab then shows what the shop's warehouse holds: `etl_service` as the owner of
+   - The engine then shows what the shop's warehouse holds: `etl_service` as the owner of
      daily_sales, and an owner for 3 of its 3 tables, `etl_service` for each. `etl_service` is the
-     account all four of the shop's programs log in as; the lab knows this, storage does not show
+     account all four of the shop's programs log in as; the engine knows this, storage does not show
      it. The shop's tables have no person or team as owner.
    - So the warehouse meets the requirement as written: every table has an owner. The warehouse
      has its own meaning of owner: the account that controls the table. Of the four questions,
@@ -231,7 +216,7 @@ and the words before them, nothing else.
    - a different total: daily_sales is not simply the total of Thursday's orders;
    - I can't tell yet: nothing so far says what daily_sales measures.
    Nothing before the result says or hints whether the totals differ, or why they might.
-   The lab finds a different total: 205.50 against 51.50. Only now is there a difference to
+   The engine finds a different total: 205.50 against 51.50. Only now is there a difference to
    explain. Thursday's raw total is close to Wednesday's (198.75) and Friday's (204.24), so
    Thursday was not a slow day in orders.parquet. The totals are equal on three days (Monday,
    Friday and Sunday) and differ on four, Thursday among them. What explains the difference is
@@ -300,8 +285,8 @@ If you add up price times quantity over every row of orders.parquet, per day, an
 daily_sales: the totals are the same on 3 of the 7 days (Monday, Friday, Sunday) and different on
 4 (Tuesday 192.24, Wednesday 198.75, Thursday 205.50, Saturday 215.49). Each difference is one of
 the things above: the cancelled order, the order written twice, the orders with no customer id,
-the cancelled order. A learner who expects only Thursday to differ expects 6 equal days; the lab
-finds 3.
+the cancelled order. A learner who expects only Thursday to differ expects 6 equal days; the
+engine finds 3.
 
 ## Rebuilding daily_sales
 
@@ -319,17 +304,17 @@ experiment answers it. Do not answer it in the construction.
 ## Three changes to the shop (the failure experiment)
 
 The experiment re-runs the learner's own query, so it starts once their query passes. Each change
-gives a different week: the lab runs the whole week again from Monday with that change. The
+gives a different week: the engine runs the whole week again from Monday with that change. The
 builder's choices cover every asset in storage that week, so the analyst's copy is among them in
 the copy's week. Before each change runs, the learner predicts what the data will then say about
 where daily_sales comes from, as the number of queries in the builder's choices that rebuild it:
 none (the data no longer points to any query), one (it still points to one), or two or more (it
-fits more than one). The lab answers: 2 after the copy, 0 after the edit, 1 after the failed
+fits more than one). The engine answers: 2 after the copy, 0 after the edit, 1 after the failed
 night. The learner can reason to each before it runs: a copy has the same rows; the edit keeps
 cancelled orders from Saturday's row on but not before, and every builder choice keeps the same
 rows on every day; the failed night leaves a table with one row fewer, and "rebuild" asks only for
 the rows the asset has. Storage in a changed week holds only that week's values; any
-comparison with the week as it first ran is the lab's, because the lab ran both weeks.
+comparison with the week as it first ran is the engine's, because the engine ran both weeks.
 
 1. An analyst's copy. A script copies clean_orders every night to
    `clean_orders_copy.parquet`, in a second bucket, shop-scratch, last modified at 02:15, before
@@ -339,7 +324,7 @@ comparison with the week as it first ran is the lab's, because the lab ran both 
 2. A program edited for refunds. From Saturday's row on, the program that writes daily_sales
    keeps every order whose status is not "refunded", where it kept completed orders only. The
    change's label says what the edit does, so the learner can reason about it before it runs; it
-   must say "from Saturday's row on", not a day or time of the edit, which the lab does not
+   must say "from Saturday's row on", not a day or time of the edit, which the engine does not
    record. The shop
    has no refunds: every order is completed or cancelled. Saturday's row now reads 215.49 (it read
    191.49 in the week as it first ran), because Saturday's cancelled order now counts; the
@@ -355,7 +340,7 @@ comparison with the week as it first ran is the lab's, because the lab ran both 
    values; its own record says it is up to date. Storage shows that daily_sales is a day behind,
    but not that a write was due on Monday, or that one failed. The query still rebuilds
    daily_sales: it gives the 6 rows daily_sales has, and a seventh, for Sunday, that daily_sales
-   lacks. (Do not compare a failed night with a quiet one: the lab has no week without orders.)
+   lacks. (Do not compare a failed night with a quiet one: the engine has no week without orders.)
 
 After all three: the copy left a new file and the failed night a stale time, but none of the
 changes left a record of the change itself: what changed, who changed it, or why.
@@ -370,13 +355,13 @@ quantity of 0 or less. The shop's program drops such orders. No rebuilding from 
 can find that rule. (Do not state the passing settings in any text a learner reads before
 passing.) After a pass, the learner predicts whether their own setting is the only one that
 passes, or whether another setting can match every row too. The options must not name a rule, or
-say that a rule decides no row: that is the explanation the result gives. The lab answers more
+say that a rule decides no row: that is the explanation the result gives. The engine answers more
 than one: 2.
 
 ## The three groups of questions about daily_sales
 
 The inspector asks every asset the same eight questions. A figure places the eight questions about
-daily_sales in three groups, by what can answer them, and the lab works out each place. Do not
+daily_sales in three groups, by what can answer them, and the engine works out each place. Do not
 call this figure a map: "map" is the platform's map. Call it the figure, or speak of your sorting. Name a
 group by its heading, never by its position (on a phone they stack):
 
@@ -396,7 +381,7 @@ group by its heading, never by its position (on a phone they stack):
 | In what units are its numbers? | only a record kept at the time (revenue is a decimal; no currency) |
 | What changed in it this week? | only a record kept at the time (storage keeps only the current rows) |
 
-Before the lab places them, the learner places all eight and commits; the lab then shows its
+Before the engine places them, the learner places all eight and commits; the engine then shows its
 places and marks where the learner's differ. A week selector places them again on each change: with the
 copy, "What is it made from?" stays with the data, with two assets; with the edit, "What is it made
 from?" and "How are its numbers worked out?" leave the data's group for the record's; with the
@@ -473,22 +458,24 @@ Said once, at the start of the reflection, as a short summary:
   responsible, or what depends on an asset.
 - Those are things somebody has to record on purpose, when they happen.
 
-## How the lab differs from a real platform (the closing note)
+## How the shop's platform differs from a real one (the closing note)
 
-- Real systems keep different things. Some keep history that the lab's warehouse does not: an
+- The shop, its people and its data are invented for the course (the note's first sentence).
+- Real systems keep different things. Some keep history that the shop's warehouse does not: an
   Apache Iceberg table keeps snapshots, each the state of the table at some time (the Iceberg
   table specification); a Delta Lake table keeps, for each write, the operation, the user and the
-  time, for 30 days by default (Delta Lake's documentation of its history command). The lab's
-  storage keeps only the current rows.
-- The lab's sizes are estimates from the rows.
-- The lab works in UTC and has no time zones.
+  time, for 30 days by default (Delta Lake's documentation of its history command). The shop's
+  systems keep only the current rows.
+- The sizes shown are estimates from the rows.
+- All times are UTC; the engine has no time zones.
 - A real platform has hundreds or thousands of assets. Searching for queries that rebuild one
   would cost far more.
-- The lab's search covers only the query builder's choices. "None of the builder's choices
-  rebuilds it" means none of those choices; a query outside them might.
+- The engine's search covers a fixed space of queries: every row, completed orders or cancelled
+  orders of one asset, added up per day. "No simple query reproduces it" on the page means none of
+  those; a query with a condition on the date would.
 - In some real databases a table's owner is an account too. In PostgreSQL, for example, a new
   table's owner is normally the account that created it. At first only the owner (or a superuser)
   can do anything with the table; other accounts can use it once they are given the right to. The
   right to alter or drop the table comes with being its owner (PostgreSQL's documentation,
-  "Privileges"). Not every database gives a table an owner. The lab's warehouse records the owning
-  account and models no such rights.
+  "Privileges"). Not every database gives a table an owner. The shop's warehouse records the owning
+  account and no such rights.

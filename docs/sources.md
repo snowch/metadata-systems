@@ -134,7 +134,7 @@ fictional Jaffle Shop café"; the BigQuery quickstart's sample data is `jaffle_s
 staging, intermediate and marts models from raw customers, orders, items, products, stores and
 supplies.
 
-## Apache Parquet's file metadata (the lab's files; Chapter 1's definition of metadata)
+## Apache Parquet's file metadata (the shop's files; Chapter 1's definition of metadata)
 
 The Parquet format specification, `apache/parquet-format` at the tag
 `apache-parquet-format-2.12.0`, read 7 October 2026 from the repository (parquet.apache.org was not
@@ -147,7 +147,7 @@ reachable from the build environment):
   columns and their types), a required `num_rows`, the row groups, optional key/value metadata and
   an optional `created_by`, the application that wrote the file.
 
-They support the lab's choice (`docs/lab.md`) that a Parquet file carries its own column names,
+They support the engine's choice (`docs/lab.md`) that a Parquet file carries its own column names,
 types and row count, and Chapter 1's statements that a file holds them after its rows and that
 metadata can live inside the same file as the data.
 

@@ -1,9 +1,11 @@
 // Copyright © 2026 Christopher Snow
 
 // The metadata course as a book the platform's runtime can render: its lessons, the figures they
-// name, the challenge editor, the grader, the one model its figures run, the lab, and a note for
-// each role a figure can have. The runtime's own words are kept, except where this
-// course names its model, its roles and its tests differently.
+// name, the challenge editor, the grader, and a note for each role a figure can declare. The
+// figures name no model: every one is computed from the shop's data by the engine
+// (packages/lab), which the page never names, so no badge, mark or note says how a figure runs.
+// The runtime's own words are kept, except where this course names its roles and its tests
+// differently.
 
 import type { ComponentType } from "react";
 
@@ -47,8 +49,8 @@ export const INTERACTIVES: Readonly<Record<string, ComponentType<InteractiveProp
 };
 
 /**
- * The figures that take the learner's commitment before the lab answers: a prediction, a change
- * run after a prediction, and a sort. Each must ask for a belief the learner can already hold, and
+ * The figures that take the learner's commitment before the figure answers: a prediction, a
+ * change run after a prediction, and a sort. Each must ask for a belief the learner can already hold, and
  * the chapter's notes say why it does (CLAUDE.md, "Interaction is the explanation").
  */
 export const PREDICTION_KINDS: readonly string[] = [
@@ -59,8 +61,11 @@ export const PREDICTION_KINDS: readonly string[] = [
   "question-map",
 ];
 
-/** The models this course's figures run, by the name a lesson gives. */
-export const MODELS = ["lab"] as const;
+/**
+ * The models this course's figures name: none. A figure's `timeModel` is `none`, the platform's
+ * reserved name for a figure that states no model, so the runtime draws no badge and no note.
+ */
+export const MODELS = [] as const;
 
 /**
  * What a figure asks of the learner, which its badge names (CLAUDE.md, "Experiments, instruments
@@ -76,12 +81,12 @@ export function runtimeStrings(v: ViewStrings = DEFAULT_VIEW_STRINGS): Strings {
       modelNote: v.modelNote,
       modelVsReality: v.modelVsReality,
       modelVsRealityNoSimulator: v.modelVsRealityNone,
-      timeModel: { lab: v.badge },
+      timeModel: {},
       badgeLabel: v.badgeLabel,
       role: v.roles,
       roleBadgeLabel: v.roleBadgeLabel,
     },
-    // A name the lab holds as an asset carries its kind's mark before it in prose, as Rich draws
+    // A name the shop holds as an asset carries its kind's mark before it in prose, as Rich draws
     // it in the figures' own sentences. The mark is decoration; the words are the same.
     code: ({ children }) => {
       const name = typeof children === "string" ? children : String(children ?? "");
@@ -117,8 +122,7 @@ export function createBook(
     interactives,
     ChallengeEditor: ChoiceEditor,
     grade: (challenge, artifact) => grade(challenge, artifact),
-    // No note on the lab: Chapter 1 explains it in its own prose, where it first names it, so no
-    // badge and no foot of a page says it again.
+    // No model, so no note: the page never says what computes a figure.
     timeModelNotes: {},
     roleNotes: DEFAULT_VIEW_STRINGS.roleNotes,
   };

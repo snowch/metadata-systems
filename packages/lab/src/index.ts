@@ -1,6 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
-// The Metadata Lab: the shop's data platform, its storage, its SQL, and what can and cannot be
+// The engine: the shop's data platform, its storage, its SQL, and what can and cannot be
 // learnt from it. Nothing here touches a browser; the figures in @ms/views draw what it computes.
 
 export * from "./values";

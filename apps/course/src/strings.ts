@@ -13,7 +13,7 @@ export const STRINGS = {
     assumes:
       "The course assumes you can read a short SQL query (a SELECT with a WHERE and a GROUP BY) and that you have used files, database tables and a dashboard. It assumes nothing about metadata or lineage.",
     figureCaption:
-      "Monday morning's dashboard: revenue per day, 7 to 13 September. Thursday is far lower than the rest. The head of the shop asks why. Chapter 1 starts from that question.",
+      "Monday morning's dashboard: revenue per day, 7 to 13 September. Thursday is far lower than the other days. The head of the shop asks why. Chapter 1 starts from that question.",
     partCount: {
       some: "{written} of the part's {total} chapters are written and can be read",
       none: "none of the part's {total} chapters is written yet",

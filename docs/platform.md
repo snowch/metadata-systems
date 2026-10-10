@@ -48,26 +48,27 @@ changed (its full unit suite passes on the moved packages; `snowch/learning-plat
 - **An artifact that is text or data.** A written or drawn challenge may be graded case by case
   when its reference is `text` or `data`, with no circuit rules. Chapters 2 (records), 6 and 7
   (events) and 9 (SQL) need it.
-- **A model the book names.** A figure's model is a name the book chooses, here `lab`; `none` stays
-  reserved for a figure that runs nothing, and `modelProblems` holds the lessons to the models the
-  book declares. A book may give no note for a model: this course gives none, because Chapter 1
-  explains the lab in its own prose, where it first names it, and the runtime then states no note
-  at the foot of a page.
+- **A model the book names.** A figure's model is a name the book chooses; `none` stays reserved
+  for a figure that states no model, and `modelProblems` holds the lessons to the models the book
+  declares. This course names no model: every figure is `none`, so the runtime draws no badge and
+  states no note at the foot of a page, and the page never says what computes a figure
+  (`CLAUDE.md`, "No lab on the page").
 - **A figure's role.** A figure may say what it asks of the reader (`role`, a name the book
   chooses); the runtime's badge then names the role instead of the model, and the note it opens
   is the book's note for the role (`roleNotes`) alone; a role with no note, here `reference`, has
   a badge that opens nothing. Every figure in this course
   has one: an experiment, an instrument to inspect with, or a reference (`CLAUDE.md`,
   "Experiments, instruments and explanations"). A figure without a role keeps the model's badge,
-  as the digital-design course's do.
+  as the digital-design course's do, and a figure with no role and no model (`none`) has none at
+  all, as this course's do.
 - **A section's details.** A section may carry `details`: the words of a control and the Markdown
   it opens, shown closed after the section's prose and before its figures (the platform, at
-  8c2f186). Chapter 1 keeps how the lab runs there, where it first names the lab, so the learner
-  reaches the first question sooner; the course styles it as it styles every disclosure.
+  8c2f186). Chapter 1 kept how its figures were computed there until the lab concept went; the
+  course styles it as it styles every disclosure, for a chapter that needs one.
 
 ## What is this course's own
 
-- The lab, its SQL subset, its storage model and its inference searches (`packages/lab`).
+- The engine, its SQL subset, its storage model and its inference searches (`packages/lab`).
 - The figures, the choice editor and the grader (`packages/views`).
 - The shell, its look and its words (`apps/course`): the platform shares an interaction
   vocabulary and a lesson format with the author's other courses, not a look.
@@ -77,8 +78,8 @@ changed (its full unit suite passes on the moved packages; `snowch/learning-plat
 
 ## Shared primitives in use
 
-`PredictionChallenge` (every commitment before the lab answers: the predictions, the requirement,
-the decisions and the change lab's prediction), `FaultInjector` (the change lab's changes and the
+`PredictionChallenge` (every commitment before the figure answers: the predictions, the requirement,
+the decisions and the change figure's prediction), `FaultInjector` (the change figure's changes and the
 question map's weeks) and `StateInspector` (the record, column and day tables). `Stepper`, `Timeline` and `DrillDown` wait for the chapters
 that need them: runs over time (Chapter 6), event delivery (Part V) and drilling from an asset to
 its columns (Chapter 9).

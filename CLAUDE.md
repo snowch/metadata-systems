@@ -11,7 +11,7 @@ small one inside a small data platform, break it, and repair it.
 
 Every chapter follows one loop: **predict, build, run, inspect, explain, change, run again.**
 Read as the learner meets it, the loop is a sequence of questions: here is a real question; what
-can I believe about it now; predict; act on the lab; what did I see; what did that prove; what can
+can I believe about it now; predict; act on the figure; what did I see; what did that prove; what can
 the data not tell me; what would a system have to record? Every chapter protects one principle
 above the rest: do not teach the learner what metadata systems contain; make them experience the
 information gap that makes such a system necessary. The experience is a means, not the law:
@@ -26,11 +26,11 @@ Every figure uses one vocabulary, shared with the author's other courses: inspec
 experiment, break, explain, drill down, replay.
 
 Read `docs/plan.md` for the parts and chapters, what each builds and in what order, and the
-decisions taken since the brief; `docs/lab.md` for the Metadata Lab, the data platform every
-figure runs; `docs/platform.md` for what this course takes from the learning platform and what is
-its own; `docs/sources.md` for the specifications every technical claim is checked against; and
-`docs/authoring.md` for how a chapter is made. Edit every learner-facing string against
-`docs/style.md`.
+decisions taken since the brief; `docs/lab.md` for the engine (`packages/lab`), the shop's data
+platform that computes every figure; `docs/platform.md` for what this course takes from the
+learning platform and what is its own; `docs/sources.md` for the specifications every technical
+claim is checked against; and `docs/authoring.md` for how a chapter is made. Edit every
+learner-facing string against `docs/style.md`.
 
 ## The thesis every chapter serves
 
@@ -65,16 +65,24 @@ already understand. The course is not an OpenLineage tutorial and not a catalogu
 products; a product appears where it illuminates an idea, and its architecture is compared, never
 its marketing.
 
-## Every figure is a view of the lab
+## Every figure is computed from the shop
 
-`packages/lab` is a small data platform that really runs: files and tables with real rows,
-programs that really transform them, a clock, a scheduler, and the learner's own metadata system
-on top. A figure shows what the lab computes. It is never a scripted animation and never a
-hand-drawn diagram of something the lab could compute. If a chapter needs a figure that shows
-something the lab does not compute, the lab is where the work goes first.
+`packages/lab` is the engine: a small data platform that really runs, with files and tables with
+real rows, programs that really transform them, a clock, a scheduler, and the learner's own
+metadata system on top. A figure shows what the engine computes. It is never a scripted animation
+and never a hand-drawn diagram of something the engine could compute. If a chapter needs a figure
+that shows something the engine does not compute, the engine is where the work goes first.
 
-A number in a learner-facing string is a number the lab produced, and a facts test pins it. A
-prediction's answer comes from running the lab, never from the lesson's data.
+A number in a learner-facing string is a number the engine produced, and a facts test pins it. A
+prediction's answer comes from running the engine, never from the lesson's data.
+
+**No lab on the page.** The learner never meets the engine, and nothing they read names a lab, an
+engine or a simulator. A figure is a diagram (the page drawing something: the pipeline, the week)
+or a figure of the shop's data (the asset cards, the dashboard), with a caption and nothing else:
+no badge, no mark, no note on how it runs, and no control that explains it. Its `timeModel` is
+`none`, the platform's name for a figure that states no model, and it declares no role, so the
+runtime draws no badge; the facts it shows are stated as the shop's. The prose check fails "the
+lab" and "Metadata Lab" in anything a learner reads.
 
 **A figure shows only what the learner has been told or has built.** It never draws a relation the
 chapter asks the learner to find, and no caption, label or text gives away a challenge's or a
@@ -87,13 +95,13 @@ The map gains a relation only once something the learner built records it.
 learner to keep a date, a set of systems, a count, a sequence of nights or their own place in an
 investigation in working memory, a figure carries it, and the prose says only what the next
 question needs. Each such figure has one job, named in its notes: the platform's architecture,
-its assets, time, a flow, or where the learner stands. It is a reference, still a view of the lab,
-and still shows only what the learner has been told or has built; it is never decoration. Detail
-the learner's next step does not need, such as how the lab itself runs, goes in a section's
-`details`, a control the reader opens, where it first matters, and nowhere else. A chapter's
-opening sets up the smallest model its first question needs, and adds structure when the
-investigation makes it relevant. Chapter 1's opening is the standing example: a short situation,
-the lab, the map with its count, the shop's week, then the question.
+its assets, time, a flow, or where the learner stands. It is a reference, still computed from the
+shop's data, and still shows only what the learner has been told or has built; it is never
+decoration. Detail the learner's next step does not need goes in a section's `details`, a control
+the reader opens, where it first matters, and nowhere else. A chapter's opening sets up the
+smallest model its first question needs, and adds structure when the investigation makes it
+relevant. Chapter 1's opening is the standing example: a short situation, the map with its count,
+the shop's week, the assets, the dashboard, then the question.
 
 ## Accuracy
 
@@ -103,15 +111,15 @@ the lab, the map with its count, the shop's week, then the question.
 - **Distinguish a specification from an implementation.** "The OpenLineage specification
   requires" and "Marquez does" are different claims, checked against different sources.
 - **Distinguish facts, design choices and hypotheses**, on the page and in the documents. The
-  lab's own choices are labelled as the lab's; the model-versus-reality note of every chapter says
-  where the lab differs from a real platform.
+  shop's own choices are labelled as the shop's; the model-versus-reality note of every chapter
+  says where the shop's platform differs from a real one.
 - **A definition is a technical claim**, and must hold for every case the course will meet, not
   only for the chapter's example. "Metadata is information kept apart from the data" failed this:
   a Parquet file carries its own column names and types, and a warehouse keeps its tables' types
   inside itself. Check a definition against the sources as you would any other claim.
 - **Never invent behaviour for an open standard.** Where a specification is silent (OpenLineage
   says nothing on what a consumer does with a duplicate event), say that it is silent and show
-  what the lab does and why.
+  what the shop's platform does and why.
 
 ## Originality and copyright
 
@@ -128,7 +136,7 @@ original work.
   attributed to its source in the text and in `docs/sources.md`. Field names, event type names
   and other interface names are used as names; their documentation's prose is not copied.
 - Do not copy a schema, a code sample or a figure from any project into this repository. Where
-  the course must show a standard's real format, the lab produces it, and a test checks it against
+  the course must show a standard's real format, the engine produces it, and a test checks it against
   the standard's published rules.
 - The shop, its people, its data and every scenario are invented for the course. Names of real
   companies, people or products do not appear as part of the scenario.
@@ -145,7 +153,7 @@ Haiku writes shorter, plainer sentences than a model with the whole repository i
 also drops facts and gets them wrong. So the work splits four ways:
 
 1. **You write the brief as a list of facts**, not as prose: what the text must say, each point
-   checked against the lab, the lesson data or the code *before* the brief goes out. Haiku copies
+   checked against the engine, the lesson data or the code *before* the brief goes out. Haiku copies
    a wrong fact faithfully. Attach `docs/style.md`. A prose brief gets its wording copied.
 2. **Haiku writes the sentences, a section at a time.**
 3. **You check the facts, and nothing else.** Where a fact is missing, add the fewest words that
@@ -170,7 +178,7 @@ revealing, no roundabout purpose. Prefer: here is the problem; here is the small
 solves it; here is where that model fails; here is what we must add; now the model explains this
 real behaviour.
 
-That is a rule for sentences, not for experiments. A chapter may ask a question and let the lab
+That is a rule for sentences, not for experiments. A chapter may ask a question and let a figure
 answer it: whether a query that rebuilds an asset shows how the asset was made is asked in Chapter
 1's construction and answered by its failure experiment. What a chapter must not do is answer its
 own question in prose before the learner has run the experiment that answers it, unless the
@@ -202,7 +210,7 @@ need"), no motivation ("this is where things get interesting"), no platform desc
 "has been told" or "already knows" unless that fact is the point. `docs/style.md` has the rule
 and its standing example.
 
-**Terms are rationed per chapter.** A term arrives because the lab in front of the learner has
+**Terms are rationed per chapter.** A term arrives because the figure in front of the learner has
 just raised the question that needs it, never as a definition up front: plain English first, the
 term second. `docs/plan.md` lists the terms each chapter introduces; the term gate
 (`termProblems`) fails a chapter that uses a term before the chapter that introduces it, unless
@@ -220,8 +228,8 @@ sharpen what its interactions ask before adding material.
 
 Every interactive has a reason to exist. Not "click here to see a graph": "predict which assets
 this change affects", then let the learner act. No chapter is a sequence of quizzes; a prediction
-commits the learner to an expectation about the lab that the lab then answers. Every chapter
-deliberately produces at least one surprising result: a dependency the lab cannot prove, a graph
+commits the learner to an expectation about the shop that the figure then answers. Every chapter
+deliberately produces at least one surprising result: a dependency the data cannot prove, a graph
 that did not join, an event that changed nothing, a duplicate that was or was not harmless. The
 learner learns what metadata systems cannot do, not only what they can.
 
@@ -229,13 +237,13 @@ learner learns what metadata systems cannot do, not only what they can.
 interactive is built, it says what the learner does with it and what happens when they do: first
 "What do I do, and what happens when I do it?", only then "How does the technology behind it
 work?". The plain model, in the words every chapter uses: in a figure the learner uses, you ask,
-the lab checks, it shows you, you work out what it means; a figure they only read shows what the
-lab works out. The page says which figures are which, and says how the learner asks in the actions
+it checks, it shows you, you work out what it means; a figure they only read shows what has been
+worked out. The page says which figures are which, and says how the learner asks in the actions
 on the page (choose an answer, an asset or the parts of a query, and press a button), never only
-that they ask: "You ask the lab a question by using a figure" was false of Chapter 1's first
-figure, which asks nothing, and silent on how. Where the learner needs "you ask it something and
-it shows you what it finds", a sentence such as "the lab queries the underlying data model" does
-not belong. How a mechanism is built comes after, and where the learner's next step does not need
+that they ask: "You ask a question by using a figure" was false of Chapter 1's first figure,
+which asks nothing, and silent on how. Where the learner needs "you ask it something and it shows
+you what it finds", a sentence such as "the page queries the underlying data model" does not
+belong. How a mechanism is built comes after, and where the learner's next step does not need
 it, in a section's `details`.
 
 **A prediction is built around what the learner should learn.** Before one is written, its author
@@ -264,7 +272,7 @@ explains; they never guess an explanation the page then reveals.
   exact figure to hit.
 - **Where nothing the learner has seen can tell the options apart**, as with how this shop happened
   to set up its warehouse, do not ask them to guess: ask what they would do in the shop's place,
-  and let the lab show what the shop does beside their choice, called neither right nor wrong (the
+  and let the figure show what the shop does beside their choice, called neither right nor wrong (the
   prediction figure's `choose` mode); where the question is what a requirement means, question the
   requirement (below).
 
@@ -278,7 +286,8 @@ metadata is for before they have needed it.
 
 ## Experiments, instruments and explanations
 
-A figure is one of three things, and its badge says which (its `role`):
+A figure is one of three things, and its notes say which (its `role`, which the platform can
+show as a badge; this course's figures declare none, so the page shows no badge):
 
 - **An explanation** (`reference`): the page telling the learner something, in a figure because a
   figure tells it better. The map is one. It asks nothing.
@@ -289,12 +298,13 @@ A figure is one of three things, and its badge says which (its `role`):
 - **An experiment** (`experiment`): the learner has a question, a hypothesis or a decision, and
   uses the system to answer it. Prefer it.
 
-What the author's guide calls a lab, the page calls an experiment: on the page, "the lab" is the
-Metadata Lab, which every figure runs, and one word must not mean two things. "Figure" is the
-page's word for one interactive box, and nothing else: a number is a total, a value or a count.
+What the author's guide calls a lab, the page calls an experiment: the page never says "lab" ("No
+lab on the page", above). "Figure" is the page's word for one interactive box, and nothing else: a
+number is a total, a value or a count.
 
-The three roles are the only labels the learner sees. When a figure is designed or reviewed, a
-finer list of what a figure can do is the lens, and it stays in the notes: show (a system, a
+The three roles are a lens for designing and reviewing a figure, in the notes, never labels on
+the page. When a figure is designed or reviewed, a finer list of what a figure can do is part of
+that lens, and it stays in the notes: show (a system, a
 relation, a stretch of time), inspect (examine data or what storage records), predict (commit
 before the evidence), test (a hypothesis or an expectation), investigate (evidence that lets the
 learner work out what happened), experiment (change something and observe the consequence). A
@@ -355,8 +365,8 @@ apart:
 5. whether that record meets the requirement, as written and as meant.
 
 The learner commits first, as they would at work, where a familiar word invites a quick answer.
-The exercise then shows the other reasonable readings, each beside what it needs, before the lab
-shows what the platform records; last, it shows which readings that record satisfies. No
+The exercise then shows the other reasonable readings, each beside what it needs, before the
+figure shows what the platform records; last, it shows which readings that record satisfies. No
 reasonable reading is marked wrong because the platform chose another, and "there is not enough
 information to choose yet" is an option the learner can take. The lesson is never "this field
 means X". It is that the platform has its own meaning, the requirement did not say which meaning
@@ -364,7 +374,7 @@ it wanted, and a field's name does not say which question the field answers.
 
 Chapter 1's owner is the standing example. "Every table must have an owner" could ask who is
 responsible for a table, which team is, which program writes it, or which account controls it in
-the warehouse, and each needs something different stored. The lab's warehouse records an account:
+the warehouse, and each needs something different stored. The shop's warehouse records an account:
 that meets the requirement as written, and answers only the last question, while "Who should I
 ask about `daily_sales`?" needed one of the first two. The figure is `requirement`.
 
@@ -372,7 +382,7 @@ Every chapter looks for its own chance to do this, wherever its material raises 
 sounds obvious; `docs/plan.md` lists a candidate for each. A chapter's notes say, under
 "Requirements", which requirement the chapter questions and with which figure, or why none fits,
 and the content tests fail notes that say neither. A requirement exercise is not a prediction
-with a hidden answer: the prediction rule above holds for its choice, and the lab answers only
+with a hidden answer: the prediction rule above holds for its choice, and the figure answers only
 what the platform does.
 
 ## Reviewing a chapter
@@ -407,12 +417,12 @@ Read for these before calling a chapter finished:
   what happens when they do, or said of every figure when it holds for some;
 - a word that means two things on one page: *table* (the warehouse's and the page's), *record*,
   *event*, *run* (the noun and the verb), *version*, *source*, *owner*, *schema* (a structure and
-  a database's namespace), *model* (the lab, a data model, an ML model), *map* (the platform map;
+  a database's namespace), *model* (a data model, an ML model, the platform's time model), *map*
+  (the platform map;
   no other figure is called one), *figure* (an interactive box; a number is a total);
 - a definite article in front of a noun the chapter has not introduced;
 - a thing named before the page explains it, or explained again wherever it appears: explain it
-  once, where the reader first meets it (the lab is explained where Chapter 1 first names it, and
-  behind no badge);
+  once, where the reader first meets it;
 - a term doing work before it is defined;
 - a table nobody chose for this chapter, rendered because the component had it;
 - a prediction its notes justify but its page does not: read the page above it as the learner, and
@@ -425,7 +435,7 @@ Read for these before calling a chapter finished:
 - a field's name taken for its meaning: a page that says what a field holds without saying which
   question it answers;
 - the same argument made twice, far apart;
-- a number spelled as a word that the lab did not produce;
+- a number spelled as a word that the engine did not produce;
 - a claim about a standard or a product that `docs/sources.md` does not support.
 
 ## Things that will break the build
@@ -446,9 +456,10 @@ reason it exists.
   (`docs/style.md`): a backstop for the rule, which only reading enforces.
 - **The term gate** across chapters, and **the model gate**: a figure may name only a model the
   book declares (`modelProblems`).
-- **Every figure declares its role** (an experiment, an instrument to inspect with, or a reference),
-  which its badge shows, **and has its block in the chapter's notes** under "Figures": twelve
-  answers for an experiment, two for an instrument or a reference.
+- **Every figure has its block in the chapter's notes** under "Figures": twelve answers for an
+  experiment (a figure that takes a commitment), two for a diagram or a figure of the shop's data.
+  A figure may declare a role, which the platform badges; this course's figures declare none, and
+  every figure's `timeModel` is `none`, so the page shows no badge and no model note.
 - **A figure below a prediction states what the prediction found only if it waits for the
   learner's answer** (`waits`), directly or through another figure that does, and no caption,
   lead, after-text, task or section prose below it states it: the next figure down is in view
@@ -458,8 +469,8 @@ reason it exists.
   and not all, and no text the learner reads before its second press names that record.
 - **Every challenge's reference passes its own tests, and its starting point does not.**
 - **The whole chapter renders in jsdom with no figure problem.**
-- **The chapter's stated numbers are pinned** by its facts test against the lab.
-- **The lab is deterministic.** The same code gives the same rows, times and identifiers on every
+- **The chapter's stated numbers are pinned** by its facts test against the engine.
+- **The engine is deterministic.** The same code gives the same rows, times and identifiers on every
   machine: no clock, no `Math.random`, no locale-dependent formatting.
 - **The icon and the manifest keep to the course** (`node scripts/icons.mjs` draws the icon and
   writes every file). Every icon `index.html` or the manifest names is there at the size it claims,

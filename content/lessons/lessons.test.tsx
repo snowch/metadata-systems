@@ -126,9 +126,12 @@ describe("the course's chapters", () => {
         for (const x of s.interactives)
           if (x.kind !== "challenge") expect(Object.keys(INTERACTIVES)).toContain(x.kind);
     expect(modelProblems(LESSONS, [...MODELS])).toEqual([]);
-    // The lab is explained once, where Chapter 1 first names it: no model note repeats it behind
-    // every badge or at the foot of every page.
+    // The page never says what computes a figure: no model is named, so no note opens behind a
+    // badge or at the foot of a page, and no figure declares a model.
     expect(book.timeModelNotes).toEqual({});
+    for (const l of LESSONS)
+      for (const s of l.sections)
+        for (const x of s.interactives) expect(x.timeModel, `${l.id}: ${x.id}`).toBe("none");
   });
 
   type Option = { value: string; label: string; range?: [number, number]; means?: string[] };
@@ -335,7 +338,7 @@ describe("the course's chapters", () => {
     expect(text.filter((s) => number.test(s)).map((s) => s.slice(0, 80))).toEqual([]);
   });
 
-  it("gives every figure a role, and its block in the chapter's notes, in the page's order", () => {
+  it("gives every figure its block in the chapter's notes, in the page's order", () => {
     // CLAUDE.md, "Experiments, instruments and explanations": a figure says what it asks of the
     // learner, and the notes' "Figures" section says why it is on the page. An experiment answers
     // twelve questions, or names the experiment it completes; an instrument or a reference answers
@@ -375,16 +378,20 @@ describe("the course's chapters", () => {
         figures.map((x) => x.id),
       );
       for (const x of figures) {
-        const role = x.role;
-        if (role === undefined || !(ROLES as readonly string[]).includes(role)) {
-          missing.push(`${l.id}: ${x.id} has no role`);
+        // A figure may declare a role, which the platform badges; this course's figures declare
+        // none (CLAUDE.md, "No lab on the page"). Without one, a figure that takes a commitment
+        // is an experiment, and any other is a diagram or a figure of the shop's data.
+        const declared = x.role;
+        if (declared !== undefined && !(ROLES as readonly string[]).includes(declared)) {
+          missing.push(`${l.id}: ${x.id} has a role the book lacks, ${declared}`);
           continue;
         }
+        const role = declared ?? (PREDICTION_KINDS.includes(x.kind) ? "experiment" : "figure");
         if (PREDICTION_KINDS.includes(x.kind) && role !== "experiment")
           missing.push(`${l.id}: ${x.id} takes a commitment, so it is an experiment`);
         const block = blocks.get(x.id) ?? "";
-        if (!block.includes(`\n- **Role:** ${role}\n`))
-          missing.push(`${l.id}: ${x.id}'s notes do not give its role, ${role}`);
+        if (declared !== undefined && !block.includes(`\n- **Role:** ${declared}\n`))
+          missing.push(`${l.id}: ${x.id}'s notes do not give its role, ${declared}`);
         const part = /\*\*Part of:\*\* `([^`]+)`/.exec(block)?.[1];
         if (part !== undefined) {
           const whole = figures.find((f) => f.id === part);

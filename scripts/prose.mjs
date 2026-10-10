@@ -75,6 +75,22 @@ const PROHIBITED = [
     phrase: "The conclusion is structural, not incidental",
     rule: "rhetorical emphasis (rule 13): authoritative-sounding framing that adds no information",
   },
+  // No lab on the page (CLAUDE.md): a figure is a diagram or a figure of the shop's data, and
+  // nothing a learner reads names a lab or says what computes a figure. The trailing space and
+  // punctuation keep "the label" and "the labour" clear of the check.
+  ...["the lab ", "the lab's", "the lab.", "the lab,", "the lab;", "the lab:", "the lab)"].flatMap(
+    (phrase) => [
+      { phrase, rule: "no lab on the page: the page never names what computes a figure" },
+      {
+        phrase: phrase[0].toUpperCase() + phrase.slice(1),
+        rule: "no lab on the page: the page never names what computes a figure",
+      },
+    ],
+  ),
+  {
+    phrase: "Metadata Lab",
+    rule: "no lab on the page: the page never names what computes a figure",
+  },
 ];
 
 /**
@@ -114,6 +130,15 @@ function* stringsOf(source) {
         inString = false;
         current = "";
       } else current += c;
+    } else if (c === "/" && source[i + 1] === "/") {
+      // A line comment: an apostrophe in one ("a platform's state") is not a string's start.
+      while (i < source.length && source[i] !== "\n") i++;
+      line++;
+    } else if (c === "/" && source[i + 1] === "*") {
+      const end = source.indexOf("*/", i + 2);
+      const stop = end === -1 ? source.length : end + 2;
+      for (; i < stop; i++) if (source[i] === "\n") line++;
+      i--;
     } else if (c === '"' || c === "'") {
       inString = true;
       quote = c;

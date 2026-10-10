@@ -83,7 +83,8 @@ meaning, invent evidence, or cut useful teaching content for brevity.
 ## The automated prose check
 
 `node scripts/prose.mjs` (also `npm run check:prose`) fails on known-bad phrases — confirmed
-regressions, each added when found. It is a narrow backstop for wording the standard rejects, not
+regressions, each added when found — and on "the lab" and "Metadata Lab": the page names no lab,
+and never says what computes a figure (`CLAUDE.md`, "No lab on the page"). It is a narrow backstop for wording the standard rejects, not
 a general style judge: short sentences, passive constructions, "nothing" and metaphor are fine in
 themselves. When a review finds a new failure mode, add its phrase to the list in
 `scripts/prose.mjs` with a comment naming the rule. The list of files it scans covers every

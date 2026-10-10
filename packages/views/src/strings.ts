@@ -4,17 +4,16 @@
 // as code where the figure draws the sentence itself (`Rich`), and dropped where only plain text
 // will do (`plain`). Drafted by the course's prose
 // process (CLAUDE.md) from the briefs in docs/notes/chapter-01/briefs (F, then the revision's I,
-// J, K and L after the review) and checked against the lab. Slots in braces are filled by
-// `format`.
+// J, K and L after the review) and checked against the engine (packages/lab), which the page
+// never names. Slots in braces are filled by `format`.
 
 import { createContext, useContext } from "react";
 
 export const DEFAULT_VIEW_STRINGS = {
-  badge: "Lab",
   badgeLabel: "How this figure works: {model}",
-  // What each figure asks of the learner, on its badge, and the note the badge opens, above the
-  // lab's (briefs Z and AC; CLAUDE.md, "Experiments, instruments and explanations"). A reference asks
-  // nothing to be done, so its badge opens the lab's note alone (silence is preferable to filler).
+  // What a figure that declares a role asks of the learner, on its badge, and the note the badge
+  // opens (CLAUDE.md, "Experiments, instruments and explanations"). A reference asks nothing to be
+  // done, so it has no note. Chapter 1's figures declare no role, so they carry no badge.
   roles: {
     experiment: "Experiment",
     inspect: "Inspect",
@@ -23,26 +22,26 @@ export const DEFAULT_VIEW_STRINGS = {
   roleBadgeLabel: "What this figure asks of you is {role}",
   roleNotes: {
     experiment:
-      "Commit first: predict, choose, or build your query, then compare what the lab shows with what you expected.",
+      "Commit first: predict, choose, or build your query, then compare what the figure shows with what you expected.",
     inspect:
       "Use this to answer the question just above. Look for the evidence the question needs.",
   } as Record<string, string>,
   modelNote: "How the figures run",
-  modelVsReality: "How this lab differs from a real platform",
-  modelVsRealityNone: "How the course's model differs from a real platform",
+  modelVsReality: "How this differs from a real platform",
+  modelVsRealityNone: "How this differs from a real platform",
   inputs: "For",
   actual: "Your result",
   expected: "Expected",
   checkPrediction: "Check my prediction",
   yourPrediction: "Prediction",
-  /** The two labels that separate a lab's facts from its question. */
+  /** The two labels that separate a figure's facts from its question. */
   known: "What you know",
   prediction: "Your prediction",
   yourChoice: "Your choice",
   // Set small above a requirement's own words (brief V).
   requirement: "Requirement",
   youSaid: "You predicted: {choice}.",
-  labFound: "The lab found: {answer}.",
+  labFound: "Found: {answer}.",
   match: "The prediction was correct.",
   noMatch: "The prediction was not correct.",
   daysCaption: "orders.parquet by day compared with daily_sales",
@@ -128,13 +127,13 @@ export const DEFAULT_VIEW_STRINGS = {
   firstWeek: "the week as it first ran",
   firstWeekStatus: "This is the week as it first ran, the one you have been reading.",
   runWithChange: "Run with this change",
-  ranWith: "The lab ran the whole week again with this change: {change}.",
+  ranWith: "The whole week ran again with this change: {change}.",
   locked: "Pass the challenge “{title}” first.",
   // In place of a figure that waits for an answer above it (brief Z3).
   waits: "Answer “{caption}”, above, first.",
   storageNowHeading: "What the systems hold on Monday morning",
   compareNote:
-    "The systems hold only this week's values. Each comparison with the week as it first ran is the lab's, because it ran both weeks.",
+    "The systems hold only this week's values. The comparison with the week as it first ran comes from running both weeks.",
   newAsset: "A new file, `{asset}`, at `{location}`, last modified at {time}.",
   changedTime: "`{asset}` was last written at {after}; in the week as it first ran, at {before}.",
   changedRows: "`{asset}` has {after} rows; in the week as it first ran, {before}.",
@@ -153,7 +152,7 @@ export const DEFAULT_VIEW_STRINGS = {
   sortLegend: "Where each question about `{asset}` is answered",
   sortPick: "Choose a group",
   checkSort: "Check my sorting",
-  sortScore: "{matching} of {total} questions are where the lab places them.",
+  sortScore: "{matching} of {total} questions are placed where the evidence puts them.",
   youPlaced: "You placed it under “{place}”.",
   weekLegend: "Week",
   movedFrom: "In the week as it first ran, it was under “{place}”.",

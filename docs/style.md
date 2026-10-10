@@ -9,8 +9,8 @@ show what each rule produces.
 
 Two phrases need translating for a course on metadata systems. A number that a rule says must never
 be typed into prose is, here, a row count, a revenue figure, a time, a count of matching days or
-anything else the lab did not produce; every such number comes from the lab and a facts test pins
-it. The stamped result becomes the lab's computed answer. The vocabulary ration is the per-chapter
+anything else the engine did not produce; every such number comes from the engine and a facts test pins
+it. The stamped result becomes the figure's computed answer. The vocabulary ration is the per-chapter
 term gate that `docs/plan.md` lists and `CLAUDE.md` describes.
 
 One rule is this course's own, for the labels of a prediction's options. Each option names a
@@ -20,7 +20,7 @@ of Thursday's orders"), not a bare number, and never the explanation the result 
 question, one option says so ("I can't tell yet: nothing so far says what `daily_sales`
 measures"). The options of one prediction share a form and run to about the same length, so that
 no option looks right because of its wording, and nothing above the options hints at the one the
-lab will support (`CLAUDE.md`, "Interaction is the explanation").
+evidence will support (`CLAUDE.md`, "Interaction is the explanation").
 
 A second rule is this course's own, from the author: **silence is preferable to filler.** Write for
 the learner's next action, not for narrative flow. Every sentence earns its place by telling the
@@ -49,14 +49,14 @@ A third rule is the author's too: **explain a mechanism from the learner's side 
 page says how anything interactive is built, it says what the learner does with it and what
 happens when they do. First answer "What do I do, and what happens when I do it?"; only then "How
 does the technology behind it work?". The plain model, in the words every chapter uses: in a
-figure the learner uses, you ask, the lab checks, it shows you, you work out what it means; a
-figure they only read shows what the lab works out. Say which figures are which, and how the
-learner asks, in the actions on the page (choose an answer and press a button), never only that
-they ask. Where the learner needs "you ask it something and it shows you what it finds", a
-sentence such as "the lab queries the underlying data model" is the wrong one. The standing example is Chapter 1's
-opening, which named the lab as "a small data platform written for this course" and listed its
-SQL before it said what the learner does with it; it now says what the figures are for and what
-happens when you use one, and keeps how the lab is built in the section's details.
+figure the learner uses, you ask, it checks, it shows you, you work out what it means; a figure
+they only read shows what has been worked out. Say which figures are which, and how the learner
+asks, in the actions on the page (choose an answer and press a button), never only that they ask.
+Where the learner needs "you ask it something and it shows you what it finds", a sentence such as
+"the page queries the underlying data model" is the wrong one. The page never names what computes
+a figure (`CLAUDE.md`, "No lab on the page"): the standing example was Chapter 1's opening, which
+once named a lab and listed its SQL before it said what the learner does with a figure, and now
+names neither.
 
 The checklist applies to every string a learner reads: chapter prose, hints, the feedback after a
 failed test, model-versus-reality notes and labels inside the figures. Both closing passes run over

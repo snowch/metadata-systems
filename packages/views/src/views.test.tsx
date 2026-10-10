@@ -5,7 +5,7 @@
 // how a list of names is written, and the figures that wait for a pass, take a prediction before
 // they answer, or hide a challenge's answer until it is solved, driven through Chapter 1's page.
 
-import { fireEvent, render, within } from "@testing-library/react";
+import { render, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { mapTally, platformMap, sumReconstructions, week, weekTimeline } from "@ms/lab";
@@ -85,25 +85,18 @@ describe("the figures on Chapter 1's page", () => {
     return { page, figure };
   };
 
-  it("opens on the situation and the lab, then the map with its count, then the week", () => {
+  it("opens on the situation, then the map with its count, then the week", () => {
     const { page, figure } = show();
     const opening = page.container.querySelector<HTMLElement>('section[data-kind="question"]')!;
-    // How the lab runs waits behind a control, closed, between the lab's paragraph and the map.
-    const details = opening.querySelector<HTMLDetailsElement>("details.lesson-details")!;
-    expect(details.open).toBe(false);
-    expect(details.querySelector("summary")?.textContent).toBe(
-      lesson.sections[0]!.details?.summary,
-    );
-    const after = (a: Node, b: Node) =>
-      Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
-    expect(after(details, figure("platform"))).toBe(true);
+    // Nothing waits behind a control: the page has no lab to explain.
+    expect(opening.querySelector("details.lesson-details")).toBeNull();
     expect([...opening.querySelectorAll("figure.interactive")].map((f) => f.id)).toEqual([
       "ix-platform",
       "ix-week",
       "ix-explore",
       "ix-dashboard",
     ]);
-    // The map counts what it shows, kind by kind and in all, as the lab counts it.
+    // The map counts what it shows, kind by kind and in all, as the engine counts it.
     const tally = mapTally(platformMap(week()));
     const counted = figure("platform").querySelector(".map-tally")?.textContent ?? "";
     for (const k of tally.kinds) {
@@ -140,31 +133,19 @@ describe("the figures on Chapter 1's page", () => {
       expect(w.textContent).not.toContain(id);
   });
 
-  it("badges every figure by what it asks of the learner, and opens that role's line alone", () => {
-    const { figure } = show();
+  it("shows no badge, no mark and no note on any figure, and names no lab", () => {
+    const { page, figure } = show();
     for (const x of lesson.sections.flatMap((s) => s.interactives)) {
-      const role = x.role ?? "";
-      expect(figure(x.id).dataset["role"], x.id).toBe(role);
-      expect(figure(x.id).querySelector("figcaption .badge")?.textContent, x.id).toBe(
-        V.roles[role],
-      );
-      // A role with a line opens it; a reference has none, and its badge opens nothing.
-      const toggle = within(figure(x.id)).queryByRole("button", {
-        name: format(V.roleBadgeLabel, { role: V.roles[role] ?? "" }),
-      });
-      expect(toggle !== null, x.id).toBe(Boolean(V.roleNotes[role]));
+      const f = figure(x.id);
+      expect(f.dataset["timeModel"], x.id).toBe("none");
+      expect(f.dataset["role"], x.id).toBeUndefined();
+      expect(f.querySelector("figcaption .badge"), x.id).toBeNull();
+      expect(f.querySelector(".time-model-note"), x.id).toBeNull();
+      expect(within(f).queryAllByRole("button", { name: /this figure/ }), x.id).toEqual([]);
     }
-    const explore = figure("explore");
-    fireEvent.click(
-      within(explore).getByRole("button", {
-        name: format(V.roleBadgeLabel, { role: V.roles["inspect"] ?? "" }),
-      }),
-    );
-    const note = explore.querySelector(".time-model-note")!;
-    expect(note.hasAttribute("hidden")).toBe(false);
-    expect(note.textContent?.trim()).toBe(V.roleNotes["inspect"]);
-    // The lab is explained once, where the chapter first names it, and behind no badge.
-    expect(note.textContent).not.toContain("Metadata Lab");
+    // The foot states no model note, and the page never names a lab.
+    expect(page.container.querySelector(".lesson-model-note")).toBeNull();
+    expect(page.container.textContent).not.toMatch(/\blab\b|Metadata Lab/i);
   });
 });
 

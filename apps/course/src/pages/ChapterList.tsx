@@ -11,7 +11,7 @@
 import { useMemo } from "react";
 
 import { PARTS, PLAN, chapterOf } from "@ms/content";
-import { DEFAULT_VIEW_STRINGS, Dashboard } from "@ms/views";
+import { Dashboard } from "@ms/views";
 import {
   LessonStore,
   verifyCompletion,
@@ -26,19 +26,18 @@ import { STRINGS } from "../strings";
 
 type Lesson = Book["lessons"][number];
 
-/** The dashboard as Chapter 1 shows it: a reference, on the week as it first ran. */
+/** The dashboard as Chapter 1 shows it, on the week as it first ran. */
 const COVER_FIGURE: InteractiveProps["interactive"] = {
   id: "cover-dashboard",
   kind: "dashboard",
-  timeModel: "lab",
-  role: "reference",
+  timeModel: "none",
   caption: STRINGS.cover.figureCaption,
   props: {},
 };
 
 /**
  * The band at the top: the title, what you do, the way in, what the course assumes, and the
- * dashboard live from the lab, with the lab's mark and a plain badge, as a chapter shows it.
+ * dashboard computed from the shop's data, with its caption and no badge, as a chapter shows it.
  */
 function Cover({
   book,
@@ -79,12 +78,8 @@ function Cover({
         id={`ix-${COVER_FIGURE.id}`}
         data-kind={COVER_FIGURE.kind}
         data-time-model={COVER_FIGURE.timeModel}
-        data-role={COVER_FIGURE.role}
       >
-        <figcaption>
-          <span className="badge time-model">{DEFAULT_VIEW_STRINGS.roles["reference"]}</span>{" "}
-          {COVER_FIGURE.caption}
-        </figcaption>
+        <figcaption>{COVER_FIGURE.caption}</figcaption>
         <Dashboard lesson={first} interactive={COVER_FIGURE} store={store} />
       </figure>
     </section>

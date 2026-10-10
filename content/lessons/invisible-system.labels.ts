@@ -28,6 +28,4 @@ export const LABELS = {
     explore: "Four of the platform's seven assets.",
     dashboard: "Monday morning's dashboard: revenue per day, 7 to 13 September.",
   },
-  /** The control that opens how the lab is built. */
-  labDetails: "How the lab is built",
 } as const;
