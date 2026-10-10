@@ -27,7 +27,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.callout(mo.md("This page runs Python in your browser. The first time you open it, your browser downloads up to about 32 MB. On a computer, Python took 10 to 15 seconds to start, and the page used about 1 GB of memory. If your phone runs short of memory, the browser may reload the page, and a reload loses what you changed or wrote on the page."), kind="warn")
+    mo.callout(mo.md("This page runs Python in your browser. The first time you open it, your browser downloads about 17 MB. On a computer, Python took 10 to 17 seconds to start, and the page used about 1 GB of memory. If your phone runs short of memory, the browser may reload the page, and a reload loses what you changed or wrote on the page."), kind="warn")
     return
 
 

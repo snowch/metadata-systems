@@ -267,8 +267,8 @@ prototype is `notebook/`: the chapter's essay as a marimo notebook, with the sho
 Python (SQLite for the warehouse, JSON Lines and CSV files, integer pence) and fifteen cells the
 reader can change and run. It is exported as a static site with Python and every package bundled,
 so the page fetches nothing from another site, and published beside the course under `/notebook/`;
-the course is unchanged. Measured in a desktop browser, the page downloads up to about 32 MB, has
-Python ready after 10 to 15 seconds and uses about 1 GB of memory; marimo's read-only export would
+the course is unchanged. Measured in a desktop browser, one visit transfers about 17 MB from GitHub
+Pages, Python is ready after 10 to 17 seconds and the page uses about 1 GB of memory; marimo's read-only export would
 use about 0.39 GB but shows no code. The warning at the top of the notebook says what was measured
 and that a phone short of memory may reload the page, which loses the reader's changes.
 `docs/notes/notebook-prototype.md` has the build, the measurements and the questions left for the

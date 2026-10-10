@@ -67,13 +67,21 @@ Chromium's phone emulation (390 by 844 pixels, touch); no real phone was measure
 | Size if the host compresses text and WebAssembly (gzip, level 6) | 17.5 MB | 16.1 MB |
 | First cells drawn | 3.4 to 4.4 s | 2.0 s |
 | Python ready | 9.5 to 15 s | 8 to 9 s |
-| Every cell run once | 12 to 17 s | about 10 s |
+| Every code cell run once | 12 to 17 s | about 10 s |
 | A change from the menu shown | 3.0 to 7.5 s | 2.2 s |
 | The edited day cell re-run | 0.3 to 0.5 s | (no code to edit) |
 | Peak memory of the page's renderer process | 0.97 to 1.16 GB | 0.39 GB |
 | Requests to another site | none | none |
 | Console errors | 8 to 12, all "Language server initialization failed" | none |
 
+- The published page, measured after the deploy of `d3b11c6` from
+  `https://snowch.github.io/metadata-systems/notebook/`, in the same Chromium, through this
+  environment's network, at both widths: one visit makes 267 requests and transfers 17.1 MB, since
+  GitHub Pages compresses what it sends, the WebAssembly and the wheels included (gzip); Python is
+  ready after 15 to 16.5 s, the download included; every code cell has run by 19 to 20 s; a change
+  from the menu shows in 3.8 to 5.2 s; no request goes to another site, and the page logs no error.
+  marimo does not re-run the 29 markdown-only cells, whose saved output is their text: only the 25
+  code cells run on load.
 - The whole site is 47.3 MB in 527 files (CI's log, the export of commit 3682a04); most of
   marimo's scripts load only when a feature that needs them is used.
 - Memory: the kernel's Python heap is 75 MB. Edit mode starts a second copy of Python to save the

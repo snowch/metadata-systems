@@ -188,10 +188,11 @@ class TheWordsAboutThePage(unittest.TestCase):
 
     def test_the_warning_states_the_measurements(self):
         [warning] = [s for s in strings() if s.startswith("This page runs Python in your browser")]
-        note = (ROOT / "docs" / "notes" / "notebook-prototype.md").read_text(encoding="utf-8")
+        note = flat((ROOT / "docs" / "notes" / "notebook-prototype.md").read_text(encoding="utf-8"))
         for said, measured in [
-            ("downloads up to about 32 MB", "| Size, as stored | 31.9 MB |"),
-            ("Python took 10 to 15 seconds to start", "| Python ready | 9.5 to 15 s |"),
+            ("downloads about 17 MB", "transfers 17.1 MB"),
+            ("Python took 10 to 17 seconds to start", "| Python ready | 9.5 to 15 s |"),
+            ("Python took 10 to 17 seconds to start", "Python is ready after 15 to 16.5 s"),
             ("used about 1 GB of memory", "| Peak memory of the page's renderer process | 0.97 to 1.16 GB |"),
         ]:
             self.assertIn(said, warning)
