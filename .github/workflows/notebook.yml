@@ -45,6 +45,15 @@ jobs:
       - name: Drop marimo's own notes for its contributors
         run: rm -f notebook-site/CLAUDE.md
 
+      - name: List what the page bundles
+        # The packages the export resolved, and every file with its size, so the log records what
+        # a reader's browser downloads.
+        run: |
+          cat notebook-site/lockfile/*.json
+          echo
+          find notebook-site -type f -printf '%s %P\n' | sort -k2
+          du -sb notebook-site
+
       - uses: actions/upload-artifact@v4
         with:
           name: notebook-site
