@@ -44,22 +44,25 @@ class TheJupyterLiteWords(unittest.TestCase):
     def test_the_warning_states_the_measurements(self):
         note = flat((ROOT / "docs" / "notes" / "notebook-prototype.md").read_text(encoding="utf-8"))
         gzip = "| Size if the host compresses text and WebAssembly (gzip, level 6) | 12.45 MB | 12.49 MB | |"
-        live = "transfer 12.7 MB"  # the published single notebook, the same runtime
+        live = "part 1's 147 files arrive as 12.56 MB and part 2's 149 as 12.60 MB"
         run = "| Run All Cells, from the press to the last output | 9.7 to 10.5 s | 10.1 to 11.1 s | |"
+        live_run = "Run All Cells took 11.9 to 12.1 s from the press to the last output"
         memory = "| Peak memory of the page's renderer process | 391 to 414 MB | 404 to 429 MB | |"
         stored = "| Size, as stored | 25.7 MB | 25.9 MB | 0.32 MB |"
         expected = {
             1: [
                 ("downloads about 13 MB", gzip),
                 ("downloads about 13 MB", live),
-                ("running every cell took about 10 seconds", run),
+                ("running every cell took 10 to 12 seconds", run),
+                ("running every cell took 10 to 12 seconds", live_run),
                 ("the page used about 400 MB of memory", memory),
             ],
             2: [
                 ("downloads about 13 MB", gzip),
                 ("the page downloaded less than 1 MB when opened from part 1's link", stored),
                 ("Part 1's link opens this page in a new tab", "part 2 from part 1's link (a new tab)"),
-                ("running every cell took 10 to 11 seconds", run),
+                ("running every cell took 10 to 12 seconds", run),
+                ("running every cell took 10 to 12 seconds", live_run),
                 ("the page used about 420 MB of memory", memory),
             ],
         }

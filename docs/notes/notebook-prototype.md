@@ -222,12 +222,23 @@ MB a profile on disk serves from its cache. Each range is over runs at both widt
 | Requests to another site | none | none | none |
 | Console errors in the first 50 s | none | none | |
 
+- The published pages, measured after the deploy of `0e2cef9` from `snowch.github.io`, the same
+  way, through this environment's network. marimo: part 1 sends 17.04 MB in 267 requests, as
+  Playwright counts what each response sent; Python is ready at 14.0 to 15.0 s and every code cell
+  has run at 18.2 to 19.4 s; memory peaks at 0.80 GB. Part 2 from part 1's link sends 0.03 MB, is
+  ready at 7.9 to 10.1 s and has run every cell at 13.0 to 13.8 s; opened alone it sends 17.0 MB,
+  is ready at 14.9 s and peaks at 0.93 GB. JupyterLite: Playwright cannot see the size of what the
+  page's service worker fetches, so each file a visit requested was fetched again as a browser asks
+  for it, compressed: part 1's 147 files arrive as 12.56 MB and part 2's 149 as 12.60 MB. The first
+  text shows at 5.9 to 7.2 s, Run All Cells took 11.9 to 12.1 s from the press to the last output,
+  memory peaks at 396 to 438 MB, and part 1's link opens part 2 in a new tab. No page requested
+  anything from another site or logged an error while measured.
 - Each page's warning (brief AP) states these: about 17 MB the first time; Python ready in 9 to 17 s
   on part 1 and 8 to 17 s on part 2, where the top of each range is the published single notebook's
-  15 to 16.5 s, the same runtime and packages over the network; about 0.8 GB and about 1 GB; about
-  13 MB, the published single notebook's 12.7 MB; about 10 s and 10 to 11 s to run every cell; about
-  400 MB and about 420 MB; and for part 2, less than 1 MB from part 1's link. The published pages
-  are to be measured once deployed.
+  15 to 16.5 s; about 0.8 GB and about 1 GB; about 13 MB; 10 to 12 s to run every cell, the local
+  and the published pages' range (the drafts said "about 10" and "10 to 11" seconds, measured
+  locally, and the numbers were corrected once the published pages took 12 s); about 400 MB and
+  about 420 MB; and for part 2, less than 1 MB from part 1's link.
 - Part 1 needs less memory than the single notebook did (0.79 to 0.82 GB against 0.97 to 1.16 GB
   in marimo, 391 to 414 MB against 0.42 to 0.45 GB in JupyterLite); part 2 about as much.
 

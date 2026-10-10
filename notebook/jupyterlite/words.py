@@ -13,7 +13,7 @@ sentences of HOW_TO, for part 2.
 WARNING = {
     1: (
         "The page runs Python in your browser. The first time you open it, your browser downloads "
-        "about 13 MB. On a computer, running every cell took about 10 seconds, and the page used "
+        "about 13 MB. On a computer, running every cell took 10 to 12 seconds, and the page used "
         "about 400 MB of memory. If a phone runs short of memory, the browser may reload the page, "
         "and a reload loses anything you have not saved."
     ),
@@ -22,7 +22,7 @@ WARNING = {
         "browser downloads about 13 MB. Measured on a computer, the page downloaded less than 1 MB "
         "when opened from part 1's link, in a browser that had opened part 1. Part 1's link opens "
         "this page in a new tab, and part 1 stays open in its own tab. On a computer, running every "
-        "cell took 10 to 11 seconds, and the page used about 420 MB of memory. If a phone runs short "
+        "cell took 10 to 12 seconds, and the page used about 420 MB of memory. If a phone runs short "
         "of memory, the browser may reload the page, and a reload loses anything you have not saved."
     ),
 }
