@@ -1,20 +1,20 @@
 # Copyright © 2026 Christopher Snow
 
-"""Builds Chapter 1 as Jupyter notebooks, for JupyterLite, from the marimo notebooks.
+"""Builds Chapter 1 as Jupyter notebooks, for JupyterLite, from the chapter's two source files.
 
-The chapter is in two parts, one notebook each. The prose and the visible code are the marimo
-notebooks' (`notebook/chapter_01_part_1.py` and `_part_2.py`), cell by cell, so the two versions
-say the same thing. What differs is what the two tools do differently:
+The chapter is in two parts, one notebook each. Each part is written as a Python file of cells
+(`notebook/chapter_01_part_1.py` and `_part_2.py`), in marimo's file format, which keeps the chapter
+diffable and lets the tests read every sentence; marimo itself no longer reaches a reader (the
+author ruled it out as too big for a phone). This turns each file into a Jupyter notebook, cell by
+cell, with the same prose and the same visible code:
 
-- marimo runs cells in the order their names need, so its setup cells sit at its foot; Jupyter runs
-  from the top, so they move there, with the install of the two packages the page bundles.
-- marimo's controls (the menu of changes, the handover note) become ipywidgets; a figure shown with
-  `mo.Html` is IPython's `HTML`; a column of outputs is `display`; the callout is a quoted
+- the setup cells, at the foot of a source file, move to the top, since Jupyter runs from the top,
+  with the install of the packages the page bundles;
+- the controls (the menu of changes, the handover note) become ipywidgets; a figure shown with
+  `mo.Html` is IPython's `HTML`; a column of outputs is `display`; the warning is a quoted
   paragraph.
-- the sentences about running cells say what Jupyter does (`words.py`), and a link from one part
-  to the other names the other notebook.
 
-Anything in the marimo notebook this does not know how to carry over stops the build.
+Anything in a source file this does not know how to carry over stops the build.
 
 Usage: python3 build_ipynb.py OUT_DIR [--check]
   writes OUT_DIR/chapter_01_part_1.ipynb and OUT_DIR/chapter_01_part_2.ipynb.
@@ -29,20 +29,15 @@ from pathlib import Path
 import nbformat
 
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE))
-import words  # noqa: E402
 
 HIDDEN = {"jupyter": {"source_hidden": True}}
 
-# The two parts: each marimo notebook, and the name of the Jupyter notebook built from it.
+# The two parts: each source file, and the name of the Jupyter notebook built from it. The parts link
+# to each other by these names.
 PARTS = {
     1: (HERE.parent / "chapter_01_part_1.py", "chapter_01_part_1.ipynb"),
     2: (HERE.parent / "chapter_01_part_2.py", "chapter_01_part_2.ipynb"),
 }
-
-# The marimo pages link to each other by their place in the site (export.sh): part 1 is the site's
-# index, part 2 is part-2.html. In JupyterLite each links to the other notebook by its name.
-LINKS = {"](./)": f"]({PARTS[1][1]})", "](part-2.html)": f"]({PARTS[2][1]})"}
 
 # Jupyter runs from the top: these come first. In the browser the three packages the page bundles
 # are installed from the site itself, without the dependencies the kernel already has (IPython,
@@ -66,7 +61,7 @@ storage, warehouse, reporting = week.storage, week.warehouse, week.reporting""",
 
 
 def lines_of(source: str, stmts: list[ast.stmt]) -> str:
-    """The statements' source, dedented, as they stand in the marimo notebook."""
+    """The statements' source, dedented, as they stand in the source file."""
     lines = source.splitlines()
     return textwrap.dedent("\n".join(lines[stmts[0].lineno - 1 : stmts[-1].end_lineno]))
 
@@ -84,24 +79,30 @@ def find(stmts: list[ast.stmt], attr: str) -> ast.Call:
 
 
 def code_font(text: str) -> str:
-    """A label's `names` in the code font, as marimo draws them, in HTML."""
+    """A label's `names` in the code font, as Markdown would set them, in HTML."""
     parts = text.split("`")
     return "".join(f"<code>{p}</code>" if i % 2 else p for i, p in enumerate(parts))
 
 
-def menu(stmts: list[ast.stmt], source: str) -> str:
-    if words.MARIMO["CHANGES"] not in source:
-        raise SystemExit("the marimo notebook's lead for the menu of changes has changed: update words.py")
+def inline(text: str) -> str:
+    """A sentence's Markdown `names` and **button labels** as HTML, for a lead a widget shows."""
+    parts = code_font(text).split("**")
+    return "".join(f"<strong>{p}</strong>" if i % 2 else p for i, p in enumerate(parts))
+
+
+def menu(stmts: list[ast.stmt]) -> str:
+    """The menu of changes: its lead, its label, and a dropdown of the same options."""
     call = find(stmts, "dropdown")
     options = ast.literal_eval(keyword(call, "options"))
     label = ast.literal_eval(keyword(call, "label"))
     default = ast.literal_eval(keyword(call, "value"))
+    lead = ast.literal_eval(find(stmts, "md").args[0])
     return f"""change = widgets.Dropdown(
     options={list(options.items())!r},
     value={options[default]!r},
     layout=widgets.Layout(width="100%"),
 )
-display(HTML({"<p>" + words.CHANGES + "</p><p>" + label + "</p>"!r}), change)"""
+display(HTML({"<p>" + inline(lead) + "</p><p>" + inline(label) + "</p>"!r}), change)"""
 
 
 def note(stmts: list[ast.stmt]) -> str:
@@ -112,8 +113,8 @@ def note(stmts: list[ast.stmt]) -> str:
 widgets.VBox([widgets.HTML({"<p>" + code_font(label) + "</p>"!r}), note])"""
 
 
-def build(part: int, replaced: dict[str, int]) -> nbformat.NotebookNode:
-    """One part's Jupyter notebook; `replaced` counts where each slot of `words.py` went."""
+def build(part: int) -> nbformat.NotebookNode:
+    """One part's Jupyter notebook."""
     source = PARTS[part][0].read_text(encoding="utf-8")
     out = []
     for node in ast.parse(source).body:
@@ -124,31 +125,20 @@ def build(part: int, replaced: dict[str, int]) -> nbformat.NotebookNode:
         stmts = [s for s in node.body if not isinstance(s, ast.Return)]
         first = stmts[0]
         if len(stmts) == 1 and isinstance(first, ast.Expr) and is_call(first.value, "md") and isinstance(first.value.args[0], ast.Constant):
-            text = textwrap.dedent(first.value.args[0].value).strip()
-            for key, marimo in words.MARIMO.items():
-                if marimo in text and key != "CHANGES":
-                    text = text.replace(marimo, getattr(words, key))
-                    replaced[key] += 1
-            for key, marimo in words.AFTER.items():
-                if marimo in text:
-                    text = text.replace(marimo, marimo + "\n\n" + getattr(words, key))
-                    replaced[key] += 1
-            for marimo, jupyter in LINKS.items():
-                text = text.replace(marimo, jupyter)
-            out.append(nbformat.v4.new_markdown_cell(text))
+            out.append(nbformat.v4.new_markdown_cell(textwrap.dedent(first.value.args[0].value).strip()))
             continue
         code = lines_of(source, stmts)
         if not hidden:
             out.append(nbformat.v4.new_code_cell(code))
         elif "mo.callout(" in code:
             # The warning, then the setup, hidden, before the chapter's first section.
-            out.append(nbformat.v4.new_markdown_cell("> " + words.WARNING[part]))
+            warning = ast.literal_eval(find(stmts, "md").args[0])
+            out.append(nbformat.v4.new_markdown_cell("> " + warning))
             out.extend(nbformat.v4.new_code_cell(setup, metadata=HIDDEN) for setup in SETUP)
         elif "import marimo as mo" in code or "week = shop.run_week()" in code:
             continue  # the setup, which Jupyter runs first (SETUP)
         elif "mo.ui.dropdown(" in code:
-            out.append(nbformat.v4.new_code_cell(menu(stmts, source), metadata=HIDDEN))
-            replaced["CHANGES"] += 1
+            out.append(nbformat.v4.new_code_cell(menu(stmts), metadata=HIDDEN))
         elif "mo.ui.text_area(" in code:
             out.append(nbformat.v4.new_code_cell(note(stmts), metadata=HIDDEN))
         elif len(stmts) == 1 and isinstance(first, ast.Expr) and is_call(first.value, "Html"):
@@ -157,9 +147,9 @@ def build(part: int, replaced: dict[str, int]) -> nbformat.NotebookNode:
             parts = ",\n    ".join(ast.unparse(e) for e in first.value.args[0].elts)
             out.append(nbformat.v4.new_code_cell(f"display(\n    {parts},\n)", metadata=HIDDEN))
         else:
-            raise SystemExit(f"no Jupyter form for this hidden cell of the marimo notebook:\n{code}")
+            raise SystemExit(f"no Jupyter form for this hidden cell of the source file:\n{code}")
     if not any("piplite" in "".join(c.source) for c in out):
-        raise SystemExit(f"part {part}'s warning has moved: the setup has nowhere to go")
+        raise SystemExit(f"part {part} has no warning: the setup has nowhere to go")
     for i, cell in enumerate(out):
         cell["id"] = f"cell-{i + 1:02d}"
     nb = nbformat.v4.new_notebook(cells=out)
@@ -171,13 +161,8 @@ def build(part: int, replaced: dict[str, int]) -> nbformat.NotebookNode:
 
 
 def build_all() -> dict[str, nbformat.NotebookNode]:
-    """Both parts, by notebook name; each sentence `words.py` replaces is found exactly once."""
-    replaced = {key: 0 for key in [*words.MARIMO, *words.AFTER]}
-    notebooks = {name: build(part, replaced) for part, (_, name) in PARTS.items()}
-    for key, count in replaced.items():
-        if count != 1:
-            raise SystemExit(f"the sentences words.py places {key} by matched {count} cells, not 1: update words.py")
-    return notebooks
+    """Both parts, by notebook name."""
+    return {name: build(part) for part, (_, name) in PARTS.items()}
 
 
 def check(nb: nbformat.NotebookNode) -> None:

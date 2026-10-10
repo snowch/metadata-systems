@@ -259,6 +259,18 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 10 October 2026: marimo ruled out; the notebook is JupyterLite's
+
+The author ruled marimo out as too big for a phone: its pages peaked at 0.79 to 1.09 GB of memory on
+a computer, against JupyterLite's 391 to 429 MB for the same two parts. The marimo export, its
+workflow job and its deploy step are gone; its two addresses send a browser to the same parts in
+JupyterLite. The author also found menus that do not run on a phone: in Chromium's phone emulation,
+JupyterLite's menus open when tapped but their items do nothing, while the toolbar's buttons
+respond. The notebook's toolbar gains "Run all" and "Run below", set in JupyterLite's settings
+overrides, and the texts that said how to run a cell use the toolbar instead of the menus (brief
+AR). The chapter's two source files keep marimo's file format, as the notation the build turns into
+Jupyter notebooks (`docs/notes/notebook-prototype.md`, "marimo ruled out").
+
 ### 10 October 2026: the notebook chapter in two parts
 
 Reading the notebooks, the author asked for the chapter in two parts: the first to get the reader

@@ -6,7 +6,6 @@ __generated_with = "0.25.1"
 app = marimo.App(
     width="medium",
     app_title="The invisible data system, part 2",
-    css_file="notebook.css",
 )
 
 
@@ -27,7 +26,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.callout(mo.md("This page runs Python in your browser. The first time you open it on its own, your browser downloads about 17 MB. Measured on a computer, the page downloaded less than 1 MB when opened from part 1's link, in a browser that had opened part 1. On a computer, Python took 8 to 17 seconds to start, and the page used about 1 GB of memory. If your phone runs short of memory, the browser may reload the page, and a reload loses what you changed or wrote on the page."), kind="warn")
+    mo.callout(mo.md("The page runs Python in your browser, and the first time you open it on its own, your browser downloads about 13 MB. Measured on a computer, the page downloaded less than 1 MB when opened from part 1's link, in a browser that had opened part 1. Part 1's link opens this page in a new tab, and part 1 stays open in its own tab. On a computer, running every cell took 10 to 12 seconds, and the page used about 420 MB of memory. If a phone runs short of memory, the browser may reload the page, and a reload loses anything you have not saved."), kind="warn")
     return
 
 
@@ -36,7 +35,9 @@ def _(mo):
     mo.md(r"""
     ## Monday morning
 
-    It is Monday 14 September 2026, your first morning as the shop's data engineer. You have looked round the shop's platform in [part 1](./). The head of the shop has sent you one line: "Thursday's revenue looks wrong."
+    It is Monday 14 September 2026, your first morning as the shop's data engineer. You have looked round the shop's platform in [part 1](chapter_01_part_1.ipynb). The head of the shop has sent you one line: "Thursday's revenue looks wrong."
+
+    Nothing on the page runs until you run it. Run every cell first: press **Run all**, in the toolbar at the top of the page.
     """)
     return
 
@@ -109,7 +110,7 @@ def _(storage):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The cell below reads the row for the same day from `daily_sales`. That is the day set in the cell above, which you may have changed.
+    The code cell below reads the row from `daily_sales` for the day that the code cell above sets. If you change the day in the code cell above, run the code cell below too. It does not run again by itself. Select the code cell above and press **Run below**, which runs that cell and every cell below it.
     """)
     return
 
@@ -289,7 +290,7 @@ def _(mo):
         label="Choose a change to the shop",
         full_width=True,
     )
-    mo.vstack([mo.md("The cells below show the platform on Monday morning, after the week ran with the option you choose. The cells above the menu keep showing the week as it ran."), change])
+    mo.vstack([mo.md("Choose a change to the shop from the menu below. Then select the first cell below the menu and press **Run below**. The cells below show the platform on Monday morning, after the week ran with the change you chose. The cells above the menu keep showing the week as it ran."), change])
     return (change,)
 
 

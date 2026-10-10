@@ -6,7 +6,6 @@ __generated_with = "0.25.1"
 app = marimo.App(
     width="medium",
     app_title="The invisible data system, part 1",
-    css_file="notebook.css",
 )
 
 
@@ -27,7 +26,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.callout(mo.md("This page runs Python in your browser. The first time you open it, your browser downloads about 17 MB. On a computer, Python took 9 to 17 seconds to start, and the page used about 0.8 GB of memory. If your phone runs short of memory, the browser may reload the page, and a reload loses what you changed or wrote on the page."), kind="warn")
+    mo.callout(mo.md("The page runs Python in your browser. The first time you open it, your browser downloads about 13 MB. On a computer, running every cell took 10 to 12 seconds, and the page used about 400 MB of memory. If a phone runs short of memory, the browser may reload the page, and a reload loses anything you have not saved."), kind="warn")
     return
 
 
@@ -38,7 +37,7 @@ def _(mo):
 
     The platform has three systems: object storage, which holds files; a warehouse, which holds tables; and a reporting tool, which holds a dashboard. Every night, programs read the files, write the tables and refresh the dashboard. You can read everything the three systems hold. You cannot see the programs, when they are due to run, or any note anybody kept.
 
-    The boxes of code with numbered lines are cells you can run. To run a cell, press its run button. The run button is a triangle at the top right of the cell. You can also press Ctrl+Enter (Cmd+Enter on a Mac) while you type in the cell. On a computer, the run button appears when the pointer is over the cell. On a phone, the run button is always there. When you run a cell, the cells that use its results run again. Nothing you change is saved. Reloading the page shows the chapter as it was published.
+    Nothing on the page runs until you run it. Run every cell first: press **Run all**, in the toolbar at the top of the page. To run a cell, select it and press the run button, a triangle, in the toolbar (or press Shift+Enter on a keyboard). A cell does not run again when a cell it uses changes. After you change a cell, select it and press **Run below**, which runs it and every cell below it. To keep your changes, press the save button, a disk, in the toolbar (or press Ctrl+S, or Cmd+S on a Mac). After a reload, the page shows your saved copy. That copy stays in this browser. The page shows it instead of the chapter, even after the chapter is updated.
 
     In the cells, `storage`, `warehouse` and `reporting` name the shop's three systems: object storage, the warehouse and the reporting tool.
     """)
@@ -201,7 +200,7 @@ def _(figures, mo, week):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    [Part 2](part-2.html) goes back to the head of the shop's line and starts with Thursday's revenue.
+    [Part 2](chapter_01_part_2.ipynb) goes back to the head of the shop's line and starts with Thursday's revenue.
     """)
     return
 

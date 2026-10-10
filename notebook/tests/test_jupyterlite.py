@@ -1,47 +1,62 @@
 # Copyright © 2026 Christopher Snow
 
-"""The JupyterLite version's own words: each replaces or follows a paragraph the marimo notebooks
-still have, states what was measured on the JupyterLite pages, and keeps the writing standard's
-rules.
+"""The Jupyter pages' controls and warnings: the toolbar buttons the texts tell the reader to press
+exist on the page, and each part's warning states what was measured on the pages.
 
-notebook/jupyterlite/build_ipynb.py builds the Jupyter notebooks from the marimo notebooks and needs
-nbformat; this checks, with the standard library only, what would make that build stop or a page
-say something untrue.
+notebook/jupyterlite/overrides.json adds two labelled buttons to the notebook's toolbar, because on
+a phone the menus at the top of the page open when tapped but their items do nothing, while the
+toolbar's buttons respond (docs/notes/notebook-prototype.md). This checks, with the standard library
+only, that the texts and the buttons agree.
 """
 
+import json
 import re
-import sys
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-PARTS = {
+SOURCE = {
     part: (ROOT / "notebook" / f"chapter_01_part_{part}.py").read_text(encoding="utf-8") for part in (1, 2)
 }
-sys.path.insert(0, str(ROOT / "notebook" / "jupyterlite"))
-import words  # noqa: E402
-
-SLOTS = {
-    "WARNING 1": words.WARNING[1],
-    "WARNING 2": words.WARNING[2],
-    **{name: getattr(words, name) for name in ("HOW_TO", "RUN_FIRST", "THURSDAY_ROW", "CHANGES")},
-}
+OVERRIDES = json.loads((ROOT / "notebook" / "jupyterlite" / "overrides.json").read_text(encoding="utf-8"))
 
 
 def flat(s: str) -> str:
     return re.sub(r"\s+", " ", s)
 
 
-class TheJupyterLiteWords(unittest.TestCase):
-    def test_each_goes_where_the_marimo_notebooks_have_its_paragraph_once(self):
-        where = {"HOW_TO": 1, "RUN_FIRST": 2, "THURSDAY_ROW": 2, "CHANGES": 2}
-        for key, text in [*words.MARIMO.items(), *words.AFTER.items()]:
-            self.assertEqual([PARTS[part].count(text) for part in (1, 2)], [int(where[key] == 1), int(where[key] == 2)], key)
+def toolbar() -> dict[str, str]:
+    """The labelled buttons the page adds to the notebook's toolbar, by label: their commands."""
+    items = OVERRIDES["@jupyterlab/notebook-extension:panel"]["toolbar"]
+    return {item["label"]: item["command"] for item in items if "label" in item}
 
-    def test_part_2_repeats_how_to_run_every_cell(self):
-        self.assertTrue(words.HOW_TO.startswith(words.RUN_FIRST))
 
-    def test_the_warning_states_the_measurements(self):
+class TheToolbar(unittest.TestCase):
+    def test_the_two_buttons_run_every_cell_and_the_cells_below(self):
+        self.assertEqual(
+            toolbar(),
+            {"Run all": "notebook:run-all-cells", "Run below": "notebook:run-all-below"},
+        )
+
+    def test_the_texts_press_only_buttons_the_page_has(self):
+        named = {label for source in SOURCE.values() for label in re.findall(r"press \*\*([^*]+)\*\*", source)}
+        self.assertEqual(named, set(toolbar()))
+
+    def test_the_texts_send_nobody_to_the_menus_at_the_top(self):
+        # On a phone those menus' items do nothing; the texts use the toolbar instead.
+        for part, source in SOURCE.items():
+            for words in ("menu bar", "Run All Cells", "Save Notebook", "Run Selected Cell"):
+                self.assertNotIn(words, source, part)
+        self.assertIn("in the toolbar at the top of the page", SOURCE[1])
+        self.assertIn("in the toolbar at the top of the page", SOURCE[2])
+
+    def test_the_menu_of_changes_is_the_only_menu_the_texts_name(self):
+        self.assertIn("Choose a change to the shop from the menu below.", SOURCE[2])
+        self.assertNotIn("menu", SOURCE[1].replace("dropdown", ""))
+
+
+class TheWarnings(unittest.TestCase):
+    def test_each_warning_states_the_measurements(self):
         note = flat((ROOT / "docs" / "notes" / "notebook-prototype.md").read_text(encoding="utf-8"))
         gzip = "| Size if the host compresses text and WebAssembly (gzip, level 6) | 12.45 MB | 12.49 MB | |"
         live = "part 1's 147 files arrive as 12.56 MB and part 2's 149 as 12.60 MB"
@@ -67,27 +82,11 @@ class TheJupyterLiteWords(unittest.TestCase):
             ],
         }
         for part, pairs in expected.items():
+            [warning] = re.findall(r'mo\.callout\(mo\.md\("([^"]+)"\)', SOURCE[part])
             for said, measured in pairs:
-                self.assertIn(said, words.WARNING[part], part)
+                self.assertIn(said, warning, part)
                 self.assertIn(flat(measured), note, part)
-            self.assertIn("a reload loses anything you have not saved", words.WARNING[part])
-
-    def test_the_menu_names_stay_apart(self):
-        # "menu bar" is the page's menus; "menu" alone is the list of changes.
-        self.assertIn("in the menu bar at the top", words.HOW_TO)
-        self.assertIn("In the menu bar at the top, choose Run", words.CHANGES)
-        self.assertIn("Choose a change from the menu below", words.CHANGES)
-
-    def test_the_writing_rules(self):
-        source = (ROOT / "scripts" / "prose.mjs").read_text(encoding="utf-8")
-        phrases = re.findall(r'phrase: "([^"]+)"', source) + ["the lab ", "the lab's", "Metadata Lab"]
-        self.assertGreater(len(phrases), 10)
-        for name, text in SLOTS.items():
-            self.assertNotIn("[[", text, name)
-            self.assertNotIn("—", text, name)
-            self.assertEqual([p for p in phrases if p.lower() in text.lower()], [], name)
-            for word in ("JupyterLite", "marimo", "Pyodide", "WebAssembly"):
-                self.assertNotIn(word, text, name)
+            self.assertIn("a reload loses anything you have not saved", warning)
 
 
 if __name__ == "__main__":

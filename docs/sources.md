@@ -242,7 +242,13 @@ Read 10 October 2026, for `notebook/` and `docs/notes/notebook-prototype.md`.
   (`docs/howto/configure/storage.md`). The kernel loads Pyodide from cdn.jsdelivr.net unless the
   site has its own copy in `static/pyodide/` (`addons/pyodide.py`, `constants.py`), pins Pyodide
   314.0.6, and lets a site turn off piplite's fall-back to PyPI (`disablePyPIFallback`, in its
-  settings schema); piplite's `install` takes `deps=False`.
+  settings schema); piplite's `install` takes `deps=False`. A site sets other plugins' settings in an
+  `overrides.json` file in its lite folder (`docs/howto/content/files.md`, "Showing Hidden Files");
+  the built site carries them as `settingsOverrides` in `jupyter-lite.json` (the installed
+  `jupyterlite.schema.v0.json`). The notebook toolbar's setting
+  (`@jupyterlab/notebook-extension:panel`, `toolbar`, in the built site's
+  `build/schemas/@jupyterlab/notebook-extension/panel.json`) takes, per button, a name, a command,
+  its arguments, a label, an icon, a caption, a rank, a type and whether it is disabled.
 - **Apple Developer Forums, "Safari and WkWebView Memory Limit Causing App Interruptions"**
   (developer.apple.com/forums/thread/766309). A developer, not Apple, reports in October 2024 that
   Safari reloaded their page and showed "This webpage was reloaded because it was using significant

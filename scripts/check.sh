@@ -36,10 +36,10 @@ echo "== unit and integration tests =="
 npx vitest run
 
 echo "== the notebook prototype's engine and words =="
-# Chapter 1 as a notebook (notebook/): the shop's platform in Python, and every number and
-# sentence the notebook states, pinned against it. Standard library only, so any Python 3.12 or
-# later runs it. The WebAssembly export itself needs marimo and a browser, and runs in its own
-# workflow (.github/workflows/notebook.yml) and in the deploy.
+# Chapter 1 as notebooks (notebook/): the shop's platform in Python, and every number and
+# sentence the notebooks state, pinned against it. Standard library only, so any Python 3.12 or
+# later runs it. The JupyterLite site itself needs JupyterLite's packages and the network, and is
+# built in its own workflow (.github/workflows/notebook.yml) and in the deploy.
 python3 -m unittest discover -s notebook/tests -t notebook
 
 echo "== learner-facing prose =="

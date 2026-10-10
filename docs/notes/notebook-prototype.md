@@ -3,7 +3,12 @@
 The author asked whether the course could be delivered as notebooks that run in the browser, for
 readers who are data engineers and think in notebooks, and then for a prototype of Chapter 1. This
 note records what was built, why each choice was made, what was measured, and what is still open.
-The course itself is unchanged: the prototype is published beside it, under `/notebook/`.
+The course itself is unchanged: the prototype is published beside it, under `/jupyterlite/`.
+
+The notebook was first built in marimo, then in JupyterLite to compare, and the author ruled marimo
+out as too big for a phone ("marimo ruled out", at the end). The sections before that one record
+the comparison as it was made; the two source files keep marimo's file format, and nothing of
+marimo reaches a reader.
 
 ## What was built
 
@@ -257,21 +262,59 @@ message "This webpage was reloaded because it was using significant memory" (a d
 on Apple's developer forums, `docs/sources.md`). A reload loses what the reader changed, as
 measured above. The warning at the top of the notebook says so (brief AL).
 
+## marimo ruled out
+
+On 10 October 2026 the author ruled marimo out: it is too big for a phone. Measured on a computer,
+marimo's pages peaked at 0.79 to 1.09 GB of memory and JupyterLite's at 391 to 429 MB, for the same
+two parts ("The chapter in two parts").
+
+- Removed: the marimo export (`export.sh`, `run_on_load.py`, `notebook.css`, and `pyproject.toml`,
+  which held only marimo's settings), its job in `notebook.yml` and its step in `deploy.yml`. marimo
+  is no longer installed or run anywhere; the tests run in `notebook.yml`'s JupyterLite job.
+- `/notebook/` and `/notebook/part-2.html`, the marimo pages' addresses, are now two small pages
+  (`notebook/redirect/`) that send a browser to the same parts in JupyterLite, so earlier links
+  still arrive.
+- The chapter's two source files stay as they are: Python files of cells in marimo's file format,
+  which `build_ipynb.py` turns into the Jupyter notebooks and the tests read sentence by sentence.
+  marimo's controls in them (`mo.ui.dropdown`, `mo.ui.text_area`, `mo.callout`) are only the
+  notation the build converts. The Jupyter versions of the sentences that said how to run a cell,
+  which `words.py` used to put in place of marimo's, are now in the source files themselves, and
+  `words.py` is gone. A link from one part to the other names the other notebook.
+
+### The menus on a phone
+
+Asked about menus that do not work on a phone, the menus were tapped in Chromium's phone emulation,
+with touch events, at 390 by 844 pixels, on the published JupyterLite page. Every menu at the top of
+the page opens when tapped, but tapping an item does nothing: Run, then Run All Cells, ran no cell
+in 15 s. A mouse click on the same item works. The Run menu is also wider than the screen (429
+pixels on a 390-pixel screen). The toolbar's buttons respond to a tap: "Restart the kernel and run
+all cells" asked to restart, and on Restart ran every cell. No real phone was tested.
+
+- `notebook/jupyterlite/overrides.json`, which the build reads from the lite folder (JupyterLite's
+  documentation, `docs/sources.md`), adds two labelled buttons to the notebook's toolbar: "Run all"
+  (`notebook:run-all-cells`) and "Run below" (`notebook:run-all-below`). JupyterLab's toolbar
+  settings take a button's command, label, icon, caption and rank, not its size.
+- The texts that told the reader to use the menus now use the toolbar: Run all, the run button (a
+  triangle), Run below and the save button (a disk), with the keyboard's Shift+Enter and Ctrl+S
+  beside them (Haiku's drafts of brief AR; the Thursday row's lead went back once, because "this
+  cell" pointed at the paragraph instead of the cell below it).
+- Checked on the built site, by touch at 390 pixels and by mouse at 1280: Run all ran part 1 in 7.6
+  s and part 2 in 7.8 to 8.0 s; part 1's link opened part 2 in a new tab; after the day was changed
+  to Friday and Run below pressed with that cell selected, the next cell showed Friday's row; after
+  a change was chosen and Run below pressed on the first cell under the menu, the cells below showed
+  the failed night; the save button kept an edit through a reload; no page logged an error.
+- The two buttons are 45 by 21 and 68 by 21 pixels, and the toolbar's own 21 by 21: smaller than
+  the 40 pixels the course asks of a control on a phone.
+
 ## Open questions for the author
 
-- Which notebook, if either: marimo's (cells re-run by themselves, about 1 GB, edits lost on
-  reload) or JupyterLite's (familiar, about 0.44 GB, nothing runs until asked, saved edits kept
-  and shown in place of later updates).
 - Whether the notebook should replace the essay pages, sit beside them, or be dropped.
-- Edit mode or run mode: a notebook the reader edits, at about 1 GB in a desktop browser, or a
-  page of outputs and controls at about 0.39 GB.
-- marimo's editor brings its own chrome: a status bar, a menu, a settings button, an assistant panel
-  on a computer that would ask the reader to connect an AI provider, and a toolbar above every cell
-  on a phone. The stylesheet hides only what covered the prose.
 - Whether the course's essay page should be split as the notebooks are. The course numbers its
   chapters and the platform gives each its own page, so two pages would either renumber the plan
   from Chapter 2 on (33 chapters, with the chapter numbers `CLAUDE.md` and the plan use), or need
   the platform to let one chapter have two pages.
+- The toolbar's buttons are 21 pixels tall on a phone. Larger buttons would need a JupyterLab
+  extension, built for the site, since the settings do not size them.
 - In a notebook the reader meets code. The visible cells use the shop's three systems (`storage`,
   `warehouse`, `reporting`) and three helpers of the chapter (`shop.run_week`,
   `shop.queries_that_rebuild`, `shop.cleaning_rules_that_fit`); the code that draws the figures

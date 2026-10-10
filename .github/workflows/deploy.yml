@@ -45,9 +45,9 @@ jobs:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}/
         run: npm run build -w @ms/course
 
-      # Chapter 1 as a notebook, a prototype beside the course, at /notebook/: the WebAssembly
-      # export with Python and every package bundled into the site, so the page fetches nothing
-      # from a third party (.github/workflows/notebook.yml builds the same on every branch).
+      # Chapter 1 as Jupyter notebooks, a prototype beside the course, at /jupyterlite/: Pyodide and
+      # every package inside the site, so a page fetches nothing from a third party
+      # (.github/workflows/notebook.yml builds the same on every branch).
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
@@ -55,17 +55,17 @@ jobs:
       - name: Check the notebook's engine and words
         run: python -m unittest discover -s notebook/tests -t notebook
 
-      - name: Export the notebook beside the course
-        run: |
-          pip install "marimo==0.25.1" "playwright==1.56.0" "uv==0.11.32"
-          python -m playwright install --with-deps chromium
-          notebook/export.sh apps/course/dist/notebook
-
-      # The same chapter in JupyterLite, at /jupyterlite/, to compare with the marimo notebook.
-      - name: Build the JupyterLite version beside it
+      - name: Build the notebooks beside the course
         run: |
           pip install -r notebook/jupyterlite/requirements.txt
           notebook/jupyterlite/build.sh apps/course/dist/jupyterlite
+
+      # The notebook's first version, in marimo, was published at /notebook/ until the author ruled
+      # it out as too big for a phone; its two addresses now lead to the same parts in JupyterLite.
+      - name: Point the earlier notebook addresses at JupyterLite
+        run: |
+          mkdir -p apps/course/dist/notebook
+          cp notebook/redirect/index.html notebook/redirect/part-2.html apps/course/dist/notebook/
 
       - uses: actions/upload-pages-artifact@v3
         with:

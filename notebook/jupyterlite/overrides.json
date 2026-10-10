@@ -1,0 +1,18 @@
+{
+  "@jupyterlab/notebook-extension:panel": {
+    "toolbar": [
+      {
+        "name": "run-all-cells",
+        "command": "notebook:run-all-cells",
+        "label": "Run all",
+        "rank": 28
+      },
+      {
+        "name": "run-all-below",
+        "command": "notebook:run-all-below",
+        "label": "Run below",
+        "rank": 29
+      }
+    ]
+  }
+}

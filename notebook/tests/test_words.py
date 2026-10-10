@@ -85,7 +85,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertTrue(first.startswith("You start work on Monday 14 September 2026 at 09:00"))
         self.assertIn("the head of the shop sends you one line: Thursday's revenue looks wrong.", first)
         self.assertIn("you first need to know what the platform holds and what happens on it each night", first)
-        self.assertEqual(CELLS[1][-2], "[Part 2](part-2.html) goes back to the head of the shop's line and starts with Thursday's revenue.")
+        self.assertEqual(CELLS[1][-2], "[Part 2](chapter_01_part_2.ipynb) goes back to the head of the shop's line and starts with Thursday's revenue.")
         self.says("The head of the shop has sent you one line", 2)
 
     def test_the_three_systems(self):
@@ -147,12 +147,12 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says('one dashboard, `sales_dashboard`, titled "Sales, last 7 days"', 1)
         self.says("each day's revenue in pounds for 7 to 13 September", 1)
 
-    def test_the_parts_link_to_each_other_where_the_export_puts_them(self):
-        export = (ROOT / "notebook" / "export.sh").read_text(encoding="utf-8")
-        self.assertIn('chapter_01_part_1.py -o "$out/index.html"', export)
-        self.assertIn('chapter_01_part_2.py -o "$out/part-2.html"', export)
-        self.assertIn("](part-2.html)", TEXT[1])
-        self.assertIn("](./)", TEXT[2])
+    def test_the_parts_link_to_each_other_by_their_notebooks_names(self):
+        build = (ROOT / "notebook" / "jupyterlite" / "build_ipynb.py").read_text(encoding="utf-8")
+        names = re.findall(r'"(chapter_01_part_\d\.ipynb)"', build)
+        self.assertEqual(names, ["chapter_01_part_1.ipynb", "chapter_01_part_2.ipynb"])
+        self.assertIn("](chapter_01_part_2.ipynb)", TEXT[1])
+        self.assertIn("](chapter_01_part_1.ipynb)", TEXT[2])
 
     def test_thursday_against_the_days_either_side(self):
         shown = {v["day"]: v["revenue"] for v in self.week.reporting.dashboard()["values"]}
@@ -251,42 +251,8 @@ class TheWordsMatchTheEngine(unittest.TestCase):
 
 
 class TheWordsAboutThePage(unittest.TestCase):
-    """The warning at the top states what was measured on the exported page, and the menu offers
-    the engine's changes.
-
-    The warning's numbers are measurements, not the engine's: docs/notes/notebook-prototype.md
-    records them, and this keeps the page and that record saying the same thing.
-    """
-
-    def test_the_warning_states_the_measurements(self):
-        note = flat((ROOT / "docs" / "notes" / "notebook-prototype.md").read_text(encoding="utf-8"))
-        gzip = "| Size if the host compresses text and WebAssembly (gzip, level 6) | 17.0 MB | 17.0 MB | |"
-        ready = "| Python ready | 8.9 to 10.3 s | 8.9 to 9.3 s | 7.7 to 8.7 s |"
-        live = "Python is ready after 15 to 16.5 s"  # the published single notebook, the same runtime
-        memory = "| Peak memory of the page's renderer process | 0.79 to 0.82 GB | 1.01 to 1.09 GB |"
-        stored = "| Size, as stored | 31.8 MB | 31.9 MB | 0.15 MB |"
-        expected = {
-            1: [
-                ("downloads about 17 MB", gzip),
-                ("downloads about 17 MB", "transfers 17.1 MB"),
-                ("Python took 9 to 17 seconds to start", ready),
-                ("Python took 9 to 17 seconds to start", live),
-                ("the page used about 0.8 GB of memory", memory),
-            ],
-            2: [
-                ("downloads about 17 MB", gzip),
-                ("the page downloaded less than 1 MB when opened from part 1's link", stored),
-                ("Python took 8 to 17 seconds to start", ready),
-                ("Python took 8 to 17 seconds to start", live),
-                ("the page used about 1 GB of memory", memory),
-            ],
-        }
-        for part, pairs in expected.items():
-            [warning] = [s for s in strings(part) if s.startswith("This page runs Python in your browser")]
-            for said, measured in pairs:
-                self.assertIn(said, warning, part)
-                self.assertIn(flat(measured), note, part)
-            self.assertIn("the browser may reload the page, and a reload loses what you changed", warning)
+    """The menu of changes offers the engine's changes. Each page's warning states what was measured
+    on the pages; test_jupyterlite.py checks it against docs/notes/notebook-prototype.md."""
 
     def test_the_menu_offers_the_engines_changes(self):
         [menu] = [
