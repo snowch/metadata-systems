@@ -58,7 +58,7 @@ jobs:
       - name: Export the notebook beside the course
         working-directory: notebook
         run: |
-          pip install "marimo==0.25.1" "playwright==1.56.0"
+          pip install "marimo==0.25.1" "playwright==1.56.0" "uv==0.11.32"
           python -m playwright install --with-deps chromium
           marimo export html-wasm chapter_01.py -o ../apps/course/dist/notebook --mode edit --offline --execute --no-sandbox -f
           rm -f ../apps/course/dist/notebook/CLAUDE.md

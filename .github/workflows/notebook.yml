@@ -30,9 +30,10 @@ jobs:
 
       - name: Install marimo, and the browser its offline export drives
         # The export runs Pyodide in Chromium to resolve the notebook's packages, then downloads
-        # them into the site, so the published page fetches nothing from a third party.
+        # them into the site, so the published page fetches nothing from a third party. marimo
+        # builds the notebook's own package, notebook/shop, into a wheel with uv.
         run: |
-          pip install "marimo==0.25.1" "playwright==1.56.0"
+          pip install "marimo==0.25.1" "playwright==1.56.0" "uv==0.11.32"
           python -m playwright install --with-deps chromium
 
       - name: Export the chapter, its outputs embedded and its runtime bundled
