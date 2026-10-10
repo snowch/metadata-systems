@@ -96,7 +96,7 @@ records about it.
 
 | Ch | Title | The learner builds | Central experiment | What breaks | Introduces |
 | --- | --- | --- | --- | --- | --- |
-| 1 | The invisible data system | nothing yet: storage is all there is | reproduce `daily_sales` from the other assets with a query, and recover the rules that make `clean_orders` from `orders` | an analyst's copy makes two sources fit; a changed program makes some days stop matching with no trace; a failed night leaves the dashboard looking up to date over a table a day behind | asset, metadata |
+| 1 | The invisible data system | nothing yet: storage is all there is | an essay, read with four figures: a query over `clean_orders` reproduces `daily_sales` and explains Thursday, and three changes show what that does and does not establish | an analyst's copy makes two sources fit; an edited program leaves nothing that fits and no trace; a failed night leaves the dashboard looking up to date over a table a day behind | asset, metadata |
 | 2 | What is metadata? | descriptive records for the shop's assets: meaning, owner, columns with their meaning and unit | ask Chapter 1's questions again of storage plus the records, and see which become answerable | a column in `products` that names a person is data about the business, not a record about the file; a record nobody updates goes stale while storage moves on | descriptive, operational, schema |
 | 3 | Metadata as a model | entity types, attributes, identifiers and relationship types; the records checked against them | merge two records that spell the same owner differently | a reference to an entity that does not exist; a fact the model has no type for | entity, attribute, identifier, dataset |
 | 4 | Metadata as a graph | the model as nodes and edges; traversals | predict what a traversal returns, then run it | a traversal that follows the wrong kind of edge and returns half the shop | graph, node, edge, traversal |
@@ -184,7 +184,7 @@ and its notes say which (`CLAUDE.md`, "Question the requirement").
 
 | Ch | A requirement that sounds settled | What it could be asking |
 | --- | --- | --- |
-| 1 | "Every table must have an owner." (built) | who is responsible for it; which team is; which program writes it; which account controls it in the warehouse |
+| 1 | "Every table must have an owner." (questioned in the prose) | who is responsible for it; which team is; which program writes it; which account controls it in the warehouse |
 | 2 | "Every column must have a description." | what the column means; its unit; where its values come from; whether it may be empty. A description that repeats the column's name meets it as written |
 | 3 | "Each asset has one owner." | one person, one team, or one identifier for an owner two records spell differently |
 | 4 | "Show everything related to `daily_sales`." | what it is made from; what reads it; who is responsible for it; where it is kept. Each is a different kind of edge |
@@ -255,6 +255,20 @@ The author reviews the course at five checkpoints:
 5. Before Chapter 32.
 
 ## Decisions since the brief
+
+### 10 October 2026: Chapter 1 as an essay
+
+The author restarted Chapter 1 without labs: the figures were getting in the way of the learning.
+The chapter is now an essay with four reference and inspect figures (the pipeline, the week, the
+asset cards, the dashboard) and no experiment, prediction or challenge: the Thursday prediction,
+the rebuild, the change lab, the sort and the rules challenge are gone from the page, and their
+figures stay in `packages/views` for later chapters. The author's own essay read as AI-written
+and long, so it was rewritten from scratch against the writing standard (`AGENTS.md`): the same
+structure, about half the length, every number pinned (`docs/notes/chapter-01.md`, "The chapter
+rewritten as an essay"). The chapter's rules in `CLAUDE.md` still hold for the course; where the
+essay states a conclusion the lab could have shown, the author's addition to "What this is"
+allows it: the experience is a means, not the law. The owner requirement is questioned in the
+prose, which states what the field holds and which question that answers.
 
 ### 8 October 2026: the front page shows the course's question
 

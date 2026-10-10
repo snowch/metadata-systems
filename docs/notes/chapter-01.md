@@ -1,47 +1,41 @@
 # Chapter 1: The invisible data system
 
-A working note, kept as the chapter was built on 6 October 2026 and revised on 7 October through
-the author's second to fifth rounds: what was built, what was reused, what the prose process
-caught, and what would be changed. The chapter's fact sheet, briefs, drafts
-and review are in `docs/notes/chapter-01/`.
+A working note, kept as the chapter was built on 6 October 2026, revised on 7 October through
+the author's second to fifth rounds, and rewritten as an essay on 9 and 10 October: what was
+built, what was reused, what the prose process caught, and what would be changed. The chapter's
+fact sheet, briefs, drafts and review are in `docs/notes/chapter-01/`.
 
 ## What the chapter does
 
-The learner gets the shop's storage and nothing else, and tries to answer what anybody asks of a
-platform they did not build. As it stands after the author's fifth round, in the page's order:
+The chapter is an essay with four figures. The author restarted it on 9 October 2026 without the
+labs, which were getting in the way of the learning; on 10 October it was rewritten from scratch
+against the writing standard (`AGENTS.md`), keeping the author's structure. In the page's order:
 
-- a map of the platform, near the start and to hand all through the chapter: the three systems in
-  the order data moves through them, the assets each holds, and between them programs the
-  learner cannot see; never a link from one asset to another;
-- the dashboard, with Thursday far below the other days, and the head of the shop asking why;
-- a requirement questioned, "Every table must have an owner.": the learner chooses what to store,
-  sees the four questions the requirement could be asking, then the warehouse's account,
-  `etl_service`, which answers only one of them;
-- a prediction of what Thursday's raw orders add up to, with "I can't tell yet" offered: 205.50,
-  against 51.50 in `daily_sales`, so there is a difference to explain;
-- an investigation in the order the author's fifth round gives: where to look first, a decision
-  whose choice opens the inspector; the inspector over the seven assets, exactly what their
-  systems record and what storage says about the same eight questions for every asset; then an
-  explanation of Thursday to test;
-- a construction that rebuilds `daily_sales` from another asset with a query, "rebuild" defined
-  once (every row the asset has, with the same values), which ends by asking whether rebuilding it
-  shows how it was made; once the rebuild passes, a check reads Thursday's orders against the
-  rows it keeps, beside the explanation the learner chose;
-- a failure experiment that answers that question: it opens once the learner's own query passes,
-  and runs the week again with each of three changes after a committed prediction of what the
-  data will then say about where `daily_sales` comes from (more than one query, none, one);
-- a sort: the learner places the eight questions about `daily_sales` in three groups, then the lab
-  places them, tags each question only a record answers with the kind of record that would, and
-  moves them as the learner switches between the changed weeks;
-- the three kinds of record derived from that sort, and *metadata* introduced by them, as
-  information about an asset or the platform that can live inside a system, inside a file, or in a
-  system of its own;
-- a challenge that recovers the cleaning rules of `clean_orders`, then, once the rules pass, a
-  prediction of whether the learner's setting is the only one that passes (it is not: this week's
-  data cannot show the quantity rule);
-- a reflection that opens with what storage and the data could and could not tell, returns to
-  Thursday, names what the left-out orders have in common and leaves open whether anybody meant
-  it, and places the four questions of Section 2.
+- the situation: the learner's first Monday as the shop's data engineer, the three systems and
+  what each holds, the head of the shop's one line; the lab named and, behind a control, how it
+  runs; then the map with its count, the week, the four asset cards and the dashboard, with
+  Thursday at 51.50 against the days either side;
+- four questions anybody asks of a platform they did not build, each answered by something that
+  happened or a decision somebody made, none by the rows a table holds;
+- Thursday's arithmetic: 205.50 of raw orders against 51.50 in `daily_sales`, three days that
+  match and four that do not, and no record connecting the two sets of numbers;
+- what the warehouse, object storage and the reporting tool record about an asset, read for
+  `daily_sales` in full: a complete picture of the state and no account of its history;
+- why those fields exist (a system records what its own work needs) and the owner field as the
+  standing example: `etl_service`, an account, answers which account controls the table, not who
+  to ask;
+- a reconstruction of `daily_sales` (completed orders in `clean_orders`, price times quantity per
+  day), which also explains Thursday, and the three changes that show it is evidence and not a
+  record: the analyst's copy (two sources fit), the edited program (nothing fits, and the record
+  looks unchanged), the failed night (a normal-looking morning with one row fewer);
+- the rule the week never tests: the quantity rule removes no row, so the data cannot say whether
+  it exists;
+- the three kinds of record the questions need, *metadata* introduced by them, and why the second
+  and third must be made when the thing happens;
+- the handover: what the learner would write down for `daily_sales`, against what the warehouse
+  records;
+- the close: state answers what exists; the records had to be made at the time; Chapter 2 starts
+  making them.
 
 ## Figures
 
@@ -91,15 +85,15 @@ without a role, without a block, or with a question unanswered.
 
 ## Requirements
 
-None, by design. Chapter 1's owner figure began as a requirement, "Every table must have an
-owner.", shown to the learner; the redesign removed it. The requirement told the learner that
-ownership was recorded before they had looked, and asked them to guess what the shop happened to
-store, which no evidence on the page could support. The figure is now an evidence-driven
-prediction (kind `lab-prediction`) placed directly after the storage inspector: the learner
-reads the warehouse's record for `daily_sales` first, then commits to a conclusion that record
-could support, and the lab says which it does. The requirement survives here, in the authoring
-notes, as the implementation constraint it always was: the lab's warehouse records an owner for
-every table, so the record exists to be found.
+The chapter questions "Every table must have an owner." in prose, not in a figure. The
+construction states what the field holds (`etl_service`, the account all four programs log in
+as), the question that record answers (which account controls the table) and the question it
+does not (who to ask about `daily_sales`), so the requirement is met as written and not as meant.
+The requirement figure (`requirement`) the chapter carried until 9 October 2026 asked the learner
+to choose what to store first; the essay states the finding instead, and the figure stays in
+`packages/views` for a later chapter. The lab's warehouse still records an owner for every table,
+so the record exists to be read.
+
 ## What was built for it
 
 - **The lab** (`packages/lab`): typed values with money as whole pennies; the course's SQL subset
@@ -713,6 +707,40 @@ objective written as what the figure shows, and "figure" used for a number, as b
 | Draft | Wrong, sent back | Dropped, restored with the fewest words |
 | --- | --- | --- |
 | AI (five sentences, "total") | none | none |
+
+## The chapter rewritten as an essay, 10 October 2026
+
+The author restarted Chapter 1 as an essay without labs (their commits of 9 October), read the
+result as "very AI and still long winded", and asked for a review and then a rewrite from
+scratch. The review found: references to labs the page no longer had ("as one of the three
+changes below can", "the builder's choices"); a definition of metadata as "the discipline of
+recording that history", which `CLAUDE.md` rules out (metadata describes what exists; lineage is
+its time-and-process dimension); and the habits `AGENTS.md` names, counted on the page: forced
+contrasts ("evidence, never proof"), aphorisms ("Evidence that fits many stories proves none of
+them"), a simile ("like expecting a shop's inventory count to explain last year's business
+strategy"), summary layers ("Put the four gaps together") and bold slogans. The rewrite keeps the
+author's structure (the essay, the four figures, the sections' subjects as their titles) at about
+half the length, states each fact once where it is first needed, and pins every number. Section
+by section: the situation in three paragraphs; four questions, with "Who should I ask about
+`daily_sales`?" among them so that the owner finding answers one of them; Thursday as arithmetic,
+with the three-and-four pattern; the record of `daily_sales` in full, with its created time and
+its size, which the earlier text left out; the fields' purpose and the owner finding; the
+reconstruction and its three changes, each in one paragraph with its numbers; the untested rule;
+the three records and *metadata*; the handover as the written exercise; the close, leading to
+Chapter 2's descriptive records. The prose was written directly, not through Haiku briefs: the
+brief-and-check process had produced the prose the author disliked, and the author accepted the
+rewrite as delivered. The facts test pins the new sentences; the dead strings of the removed
+figures (option labels, field names, captions) are gone from the labels file.
+
+Also in this round: the five edits the author made directly in `platform/` (a prediction's options
+stay live after a commitment, with the commit re-armed by a new choice; `renderLabel`; the
+runtime's `code` string; `Storage.keys` and `resetBook`) moved to `snowch/learning-platform`,
+with a test for `resetBook` and the contract's note, and the copy was synced, so the platform
+check passes again.
+
+| Draft | Wrong, sent back | Dropped, restored with the fewest words |
+| --- | --- | --- |
+| none: written directly, by the author's leave | | |
 
 ## Known gaps
 

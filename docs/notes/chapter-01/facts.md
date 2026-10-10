@@ -3,8 +3,9 @@
 Every brief for Chapter 1 attaches this sheet. Each fact was read off the lab (`packages/lab`) on
 6 October 2026, and read again for the revision after the review, by running it (two statements
 the first version carried were not the lab's, and are gone), and again on 7 October 2026 for the
-author's second round (the predictions, the map, the definitions); the chapter's facts test pins
-every number below. Do not add a number that is not here. Do not change a number.
+author's second round (the predictions, the map, the definitions), and again on 10 October 2026
+for the essay (the record of `daily_sales` in full, with its created time and its size); the
+chapter's facts test pins every number below. Do not add a number that is not here. Do not change a number.
 
 ## The situation
 

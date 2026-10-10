@@ -3,7 +3,14 @@
 import { describe, expect, it } from "vitest";
 
 import { fixtureBook, fixtureLesson } from "./fixtures";
-import { LessonStore, artifactFor, memoryStorage, storageKey, verifyCompletion } from "./state";
+import {
+  LessonStore,
+  artifactFor,
+  memoryStorage,
+  resetBook,
+  storageKey,
+  verifyCompletion,
+} from "./state";
 
 describe("the lesson store", () => {
   it("keeps a lesson's work under one namespaced key and reads it back", () => {
@@ -45,6 +52,22 @@ describe("the lesson store", () => {
     off();
     store.setSlot("a", 2);
     expect(calls).toBe(3);
+  });
+
+  it("forgets every lesson of one book on resetBook, and no other book's", () => {
+    const storage = memoryStorage();
+    new LessonStore(storage, "dd", "remember").setSlot("a", 1);
+    new LessonStore(storage, "dd", "count").setSlot("b", 2);
+    new LessonStore(storage, "ms", "invisible-system").setSlot("c", 3);
+    expect([...storage.keys()].sort()).toEqual([
+      "dd:v1:count",
+      "dd:v1:remember",
+      "ms:v1:invisible-system",
+    ]);
+    resetBook(storage, "dd");
+    expect(storage.keys()).toEqual(["ms:v1:invisible-system"]);
+    expect(new LessonStore(storage, "dd", "remember").get().slots).toEqual({});
+    expect(new LessonStore(storage, "ms", "invisible-system").slot("c")).toBe(3);
   });
 });
 

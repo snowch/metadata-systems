@@ -9,9 +9,9 @@ for each idea you predict, build, run, inspect, break and repair it.
 The course is published at <https://snowch.github.io/metadata-systems/>.
 
 **Status.** Chapter 1, *The invisible data system*, is built end to end, with its lab, figures,
-challenges, prose and tests. The other 31 chapters are planned (`docs/plan.md`); the site's list
-of chapters says which exist, worked out from the chapters themselves. Every push to `main`
-deploys the site (`.github/workflows/deploy.yml`).
+prose and tests. The other 31 chapters are planned (`docs/plan.md`); the site's list of
+chapters says which exist, worked out from the chapters themselves. Every push to `main` deploys
+the site (`.github/workflows/deploy.yml`).
 
 ## Read first
 
