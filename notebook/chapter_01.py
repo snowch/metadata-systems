@@ -344,6 +344,7 @@ def _(mo):
         },
         value="The shop stays as it is",
         label="Choose a change to the shop",
+        full_width=True,
     )
     mo.vstack([mo.md("The cells below show the platform on Monday morning, after the week ran with the option you choose. The cells above the menu keep showing the week as it ran."), change])
     return (change,)
