@@ -248,7 +248,22 @@ Read 10 October 2026, for `notebook/` and `docs/notes/notebook-prototype.md`.
   `jupyterlite.schema.v0.json`). The notebook toolbar's setting
   (`@jupyterlab/notebook-extension:panel`, `toolbar`, in the built site's
   `build/schemas/@jupyterlab/notebook-extension/panel.json`) takes, per button, a name, a command,
-  its arguments, a label, an icon, a caption, a rank, a type and whether it is disabled.
+  its arguments, a label, an icon, a caption, a rank, a type and whether it is disabled. A build
+  copies a built JupyterLab extension from a local folder named in `federated_extensions` (the
+  installed `addons/federated_extensions.py`, `resolve_one_extension`), and lists it in the
+  built site's `jupyter-lite.json`.
+- **JupyterLab's source** (read 10 October 2026 from the npm packages `@jupyterlab/notebook` 4.6.4,
+  `@jupyterlab/ui-components` 4.6.4 and `@jupyter/builder` 1.2.3, and the `jupyterlab` 4.6.4
+  wheel). JupyterLab 4.6 builds an extension with `@jupyter/builder` (`staging/package.json`'s
+  development dependencies), whose `build-labextension` takes the core package file that
+  `@jupyterlab/core-meta` ships, and shares JupyterLab's own modules with the page rather than
+  bundling them (`lib/extensionConfig.js`). In `@jupyterlab/notebook`'s `src/actions.tsx`,
+  `runAll` and `runAllBelow` run their cells, then select the last cell and scroll to it;
+  `runCells` runs the cells it is given and keeps the selection; both then scroll to the selected
+  cell in the "smart" way, which `@jupyterlab/ui-components`'s `src/components/windowedlist.ts`
+  (`getOffsetForIndexAndAlignment`) defines: no scroll when the cell is in view, or when at least
+  the scroll-down threshold of it shows below the view's top, which a notebook sets to half a cell
+  margin and one line, 11 + 17 = 28 pixels (`src/windowing.ts`).
 - **Apple Developer Forums, "Safari and WkWebView Memory Limit Causing App Interruptions"**
   (developer.apple.com/forums/thread/766309). A developer, not Apple, reports in October 2024 that
   Safari reloaded their page and showed "This webpage was reloaded because it was using significant
@@ -277,8 +292,12 @@ Each chapter that relies on one of these reads it first and adds an entry above:
   end (BSD-3-Clause), the Pyodide kernel (BSD-3-Clause) and Pyodide (as below); every wheel it
   bundles is checked by `notebook/licences.py` on every build (22 on 10 October 2026, among them
   IPython, traitlets, jedi, ipywidgets and comm, under BSD, MIT, Apache-2.0 and MPL-2.0).
-- The notebook prototype's page: Pyodide (MPL-2.0), which includes CPython (the PSF licence);
-  marimo's front end and `marimo-base` (Apache-2.0); and every Python package the export bundles,
+- The JupyterLite page's row of buttons (`notebook/buttons/`): the course's own code, built with
+  `@jupyter/builder` (BSD-3-Clause); what the build adds to the site bundles the runtimes of
+  `css-loader` and `style-loader` (MIT), listed in the built extension's
+  `third-party-licenses.json`.
+- The marimo version of the notebook, published until 10 October 2026: Pyodide (MPL-2.0), which
+  includes CPython (the PSF licence); marimo's front end and `marimo-base` (Apache-2.0); and every Python package the export bundles,
   each checked by `notebook/licences.py` against a list of open licences on every export. The
   export of 10 October 2026 bundled 18: `black`, `click`, `docutils`, `jedi`, `markdown`,
   `marimo-base`, `micropip`, `msgspec`, `mypy-extensions`, `narwhals`, `packaging`, `parso`,

@@ -37,7 +37,7 @@ def _(mo):
 
     The platform has three systems: object storage, which holds files; a warehouse, which holds tables; and a reporting tool, which holds a dashboard. Every night, programs read the files, write the tables and refresh the dashboard. You can read everything the three systems hold. You cannot see the programs, when they are due to run, or any note anybody kept.
 
-    Nothing on the page runs until you run it. Run every cell first: press **Run all**, in the toolbar at the top of the page. To run a cell, select it and press the run button, a triangle, in the toolbar (or press Shift+Enter on a keyboard). A cell does not run again when a cell it uses changes. After you change a cell, select it and press **Run below**, which runs it and every cell below it. To keep your changes, press the save button, a disk, in the toolbar (or press Ctrl+S, or Cmd+S on a Mac). After a reload, the page shows your saved copy. That copy stays in this browser. The page shows it instead of the chapter, even after the chapter is updated.
+    Nothing on the page runs until you run it. Run every cell first: press **Run all**, at the top of the page. A cell does not run again when a cell it uses changes. After you change a cell, select it and press **Run below**, which runs it and every cell below it. To keep your changes, press **Save**, or press Ctrl+S (Cmd+S on a Mac). After a reload, the page shows your saved copy. Your saved copy stays in this browser and is shown instead of the chapter, even after the chapter is updated.
 
     In the cells, `storage`, `warehouse` and `reporting` name the shop's three systems: object storage, the warehouse and the reporting tool.
     """)

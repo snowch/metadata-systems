@@ -1,0 +1,44 @@
+/* Copyright © 2026 Christopher Snow */
+
+/* The row of buttons above a notebook's cells (index.js). Each button is 44 pixels tall, a size a
+   finger can press, which the toolbar's 21-pixel buttons are not. The row's height is fixed
+   because JupyterLab lays the panel out from the row's minimum height, not from its contents; the
+   colours are JupyterLab's own, so the row follows its light and dark themes. */
+
+.ms-Buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 57px;
+  max-height: 57px;
+  padding: 6px 8px;
+  overflow-x: auto;
+  background: var(--jp-toolbar-background);
+  border-bottom: var(--jp-border-width) solid var(--jp-toolbar-border-color);
+}
+
+.ms-Buttons-button {
+  flex: none;
+  height: 44px;
+  padding: 0 16px;
+  font-family: var(--jp-ui-font-family);
+  font-size: var(--jp-content-font-size1);
+  color: var(--jp-ui-font-color1);
+  background: var(--jp-layout-color1);
+  border: var(--jp-border-width) solid var(--jp-border-color1);
+  border-radius: var(--jp-border-radius);
+  cursor: pointer;
+}
+
+.ms-Buttons-button:hover {
+  background: var(--jp-layout-color2);
+}
+
+.ms-Buttons-button:active {
+  background: var(--jp-layout-color3);
+}
+
+.ms-Buttons-button:focus-visible {
+  outline: 2px solid var(--jp-brand-color1);
+  outline-offset: 1px;
+}

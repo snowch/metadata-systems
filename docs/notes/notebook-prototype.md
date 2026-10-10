@@ -304,7 +304,41 @@ all cells" asked to restart, and on Restart ran every cell. No real phone was te
   a change was chosen and Run below pressed on the first cell under the menu, the cells below showed
   the failed night; the save button kept an edit through a reload; no page logged an error.
 - The two buttons are 45 by 21 and 68 by 21 pixels, and the toolbar's own 21 by 21: smaller than
-  the 40 pixels the course asks of a control on a phone.
+  the 40 pixels the course asks of a control on a phone. Published on 10 October 2026 (414a013),
+  and checked live by touch and by mouse the same way; the next change replaced the two buttons.
+
+### A row of large buttons
+
+Asked whether the page could have custom buttons, the site gained a JupyterLab extension of its own,
+`notebook/buttons/`: a row of three buttons above every notebook's cells, Run all, Run below and
+Save, each 44 pixels tall, in JupyterLab's colours, so the row follows its light and dark themes.
+The two labelled toolbar buttons and `overrides.json` are gone, and the texts name the row (Haiku's
+draft of brief AS; the brief left out the run button, a triangle, since Run below does what the
+texts need).
+The author did not choose to have the notebook run itself on opening, so it does not.
+
+- JupyterLab 4.6 builds extensions with `@jupyter/builder`, not the older `@jupyterlab/builder`
+  (the `jupyterlab` 4.6.4 package's `staging/package.json`). `build.sh` installs it from
+  `notebook/buttons/package-lock.json` and builds the extension into `notebook/buttons/labextension/`,
+  which the JupyterLite build copies into the site (`LiteBuildConfig.federated_extensions`). The
+  extension takes JupyterLab's own modules from the page; what it adds to the site is 18 KB.
+- JupyterLab's Run All and Run All Below select the last cell and scroll to it: after Run all at
+  the top of part 1, by touch at 390 pixels, the notebook stood at 5,807 of its 6,685 pixels. The
+  row's buttons run the same cells with JupyterLab's `NotebookActions.runCells`, which keeps the
+  selected cell, and Run all first selects a cell that starts in view, since JupyterLab scrolls to
+  the selected cell after a run only when less than 28 pixels of it shows (`docs/sources.md`).
+- Checked on the built site, by touch at 390 pixels and by mouse at 1280, both parts as the texts
+  say: Run all from 600 pixels down left the notebook at 600, and ran part 1 in 8.5 to 8.8 s and
+  part 2 in 9.3 to 9.4 s; after the day was changed to Friday and Run below pressed with that cell
+  selected, the notebook did not move and the next cell, in view, showed Friday's row; after a
+  change was chosen and Run below pressed on the first cell under the menu, the notebook did not
+  move and the cells below showed the failed night; Save kept an edit through a reload; no page
+  logged an error. The row was also screenshot in the dark theme, at both widths.
+- `notebook/jupyterlite/smoke.mjs` does the same by touch in the notebook workflow, on every
+  branch: the row's labels and heights, Run all in both parts with every visible code cell run and
+  no error output, Run below in part 2, and the notebook left where it was scrolled. It failed, as
+  it should, on a copy of the site without the extension; a cell that raises shows as the error
+  output it counts.
 
 ## Open questions for the author
 
@@ -313,8 +347,9 @@ all cells" asked to restart, and on Restart ran every cell. No real phone was te
   chapters and the platform gives each its own page, so two pages would either renumber the plan
   from Chapter 2 on (33 chapters, with the chapter numbers `CLAUDE.md` and the plan use), or need
   the platform to let one chapter have two pages.
-- The toolbar's buttons are 21 pixels tall on a phone. Larger buttons would need a JupyterLab
-  extension, built for the site, since the settings do not size them.
+- Whether the notebook should run every cell as soon as it opens, as the marimo version did. The
+  row's extension could do it; the page would then do the 10 to 12 seconds of work on opening, and
+  the texts would change.
 - In a notebook the reader meets code. The visible cells use the shop's three systems (`storage`,
   `warehouse`, `reporting`) and three helpers of the chapter (`shop.run_week`,
   `shop.queries_that_rebuild`, `shop.cleaning_rules_that_fit`); the code that draws the figures

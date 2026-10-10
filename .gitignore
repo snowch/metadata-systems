@@ -14,3 +14,5 @@ notebook-site/
 notebook/jupyterlite/static/
 notebook/jupyterlite/.cache/
 jupyterlite-site/
+# The row of buttons, as its build writes it for the JupyterLite build to copy.
+notebook/buttons/labextension/

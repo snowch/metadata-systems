@@ -37,7 +37,7 @@ def _(mo):
 
     It is Monday 14 September 2026, your first morning as the shop's data engineer. You have looked round the shop's platform in [part 1](chapter_01_part_1.ipynb). The head of the shop has sent you one line: "Thursday's revenue looks wrong."
 
-    Nothing on the page runs until you run it. Run every cell first: press **Run all**, in the toolbar at the top of the page.
+    Nothing on the page runs until you run it. Run every cell first: press **Run all**, at the top of the page.
     """)
     return
 

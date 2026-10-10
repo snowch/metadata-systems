@@ -259,6 +259,15 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 10 October 2026: a row of large buttons above the notebook
+
+Asked for custom buttons, the site gains its own JupyterLab extension (`notebook/buttons/`): Run
+all, Run below and Save, 44 pixels tall, above every notebook's cells, in place of the two small
+labelled toolbar buttons. Its Run all and Run below keep the reader's place, where JupyterLab's
+scroll to the last cell. The texts name the row (brief AS), and a browser check presses it in the
+notebook workflow. The notebook still runs only when the reader runs it
+(`docs/notes/notebook-prototype.md`, "A row of large buttons").
+
 ### 10 October 2026: marimo ruled out; the notebook is JupyterLite's
 
 The author ruled marimo out as too big for a phone: its pages peaked at 0.79 to 1.09 GB of memory on
@@ -267,8 +276,8 @@ workflow job and its deploy step are gone; its two addresses send a browser to t
 JupyterLite. The author also found menus that do not run on a phone: in Chromium's phone emulation,
 JupyterLite's menus open when tapped but their items do nothing, while the toolbar's buttons
 respond. The notebook's toolbar gains "Run all" and "Run below", set in JupyterLite's settings
-overrides, and the texts that said how to run a cell use the toolbar instead of the menus (brief
-AR). The chapter's two source files keep marimo's file format, as the notation the build turns into
+overrides (replaced the same day by a row of large buttons, above), and the texts that said how
+to run a cell use the toolbar instead of the menus (brief AR). The chapter's two source files keep marimo's file format, as the notation the build turns into
 Jupyter notebooks (`docs/notes/notebook-prototype.md`, "marimo ruled out").
 
 ### 10 October 2026: the notebook chapter in two parts

@@ -1,12 +1,13 @@
 # Copyright © 2026 Christopher Snow
 
-"""The Jupyter pages' controls and warnings: the toolbar buttons the texts tell the reader to press
-exist on the page, and each part's warning states what was measured on the pages.
+"""The Jupyter pages' controls and warnings: the buttons the texts tell the reader to press exist on
+the page, and each part's warning states what was measured on the pages.
 
-notebook/jupyterlite/overrides.json adds two labelled buttons to the notebook's toolbar, because on
-a phone the menus at the top of the page open when tapped but their items do nothing, while the
-toolbar's buttons respond (docs/notes/notebook-prototype.md). This checks, with the standard library
-only, that the texts and the buttons agree.
+notebook/buttons/ is a JupyterLab extension that adds a row of large buttons above every notebook's
+cells, because on a phone the menus at the top of the page open when tapped but their items do
+nothing, and the toolbar's buttons are 21 pixels tall (docs/notes/notebook-prototype.md). This
+checks, with the standard library only, that the texts and the buttons agree, and that the build
+adds the row to the site; notebook/jupyterlite/smoke.mjs presses the buttons in a browser.
 """
 
 import json
@@ -18,41 +19,44 @@ ROOT = Path(__file__).resolve().parents[2]
 SOURCE = {
     part: (ROOT / "notebook" / f"chapter_01_part_{part}.py").read_text(encoding="utf-8") for part in (1, 2)
 }
-OVERRIDES = json.loads((ROOT / "notebook" / "jupyterlite" / "overrides.json").read_text(encoding="utf-8"))
+BUTTONS = ROOT / "notebook" / "buttons"
+LABELS = json.loads((BUTTONS / "buttons.json").read_text(encoding="utf-8"))
 
 
 def flat(s: str) -> str:
     return re.sub(r"\s+", " ", s)
 
 
-def toolbar() -> dict[str, str]:
-    """The labelled buttons the page adds to the notebook's toolbar, by label: their commands."""
-    items = OVERRIDES["@jupyterlab/notebook-extension:panel"]["toolbar"]
-    return {item["label"]: item["command"] for item in items if "label" in item}
+class TheButtons(unittest.TestCase):
+    def test_the_row_runs_every_cell_runs_from_the_selected_cell_and_saves(self):
+        self.assertEqual(LABELS, {"runAll": "Run all", "runBelow": "Run below", "save": "Save"})
 
+    def test_every_button_has_an_action(self):
+        index = (BUTTONS / "index.js").read_text(encoding="utf-8")
+        [actions] = re.findall(r"^const actions = \{\n(.*?)^\};", index, re.M | re.S)
+        self.assertEqual(set(re.findall(r"^  (\w+)\(", actions, re.M)), set(LABELS))
 
-class TheToolbar(unittest.TestCase):
-    def test_the_two_buttons_run_every_cell_and_the_cells_below(self):
-        self.assertEqual(
-            toolbar(),
-            {"Run all": "notebook:run-all-cells", "Run below": "notebook:run-all-below"},
-        )
-
-    def test_the_texts_press_only_buttons_the_page_has(self):
+    def test_the_texts_press_every_button_and_only_those(self):
         named = {label for source in SOURCE.values() for label in re.findall(r"press \*\*([^*]+)\*\*", source)}
-        self.assertEqual(named, set(toolbar()))
+        self.assertEqual(named, set(LABELS.values()))
 
-    def test_the_texts_send_nobody_to_the_menus_at_the_top(self):
-        # On a phone those menus' items do nothing; the texts use the toolbar instead.
+    def test_the_texts_send_nobody_to_the_menus_or_the_toolbar(self):
+        # On a phone the menus' items do nothing and the toolbar's buttons are small; the texts use
+        # the row.
         for part, source in SOURCE.items():
-            for words in ("menu bar", "Run All Cells", "Save Notebook", "Run Selected Cell"):
+            for words in ("menu bar", "toolbar", "triangle", "Run All Cells", "Save Notebook"):
                 self.assertNotIn(words, source, part)
-        self.assertIn("in the toolbar at the top of the page", SOURCE[1])
-        self.assertIn("in the toolbar at the top of the page", SOURCE[2])
+            self.assertIn("press **Run all**, at the top of the page", source, part)
 
     def test_the_menu_of_changes_is_the_only_menu_the_texts_name(self):
         self.assertIn("Choose a change to the shop from the menu below.", SOURCE[2])
         self.assertNotIn("menu", SOURCE[1].replace("dropdown", ""))
+
+    def test_the_build_adds_the_row_to_the_site(self):
+        build = (ROOT / "notebook" / "jupyterlite" / "build.sh").read_text(encoding="utf-8")
+        package = json.loads((BUTTONS / "package.json").read_text(encoding="utf-8"))
+        self.assertEqual(package["jupyterlab"]["outputDir"], "labextension")
+        self.assertIn('--LiteBuildConfig.federated_extensions="$buttons/labextension"', build)
 
 
 class TheWarnings(unittest.TestCase):
