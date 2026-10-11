@@ -114,9 +114,9 @@ describe("the facts Chapter 2 states", () => {
     const m = platformMap(week());
     expect(m.systems.map((s) => s.system)).toEqual(["object-storage", "warehouse", "reporting"]);
     expect(m.systems.map((s) => s.assets.length)).toEqual([3, 3, 1]);
-    expect(PROSE.question).toContain(
-      "three systems: object storage, which holds files; a warehouse, which holds tables; and a reporting tool, which holds a dashboard",
-    );
+    // Chapter 1 names the systems and gives the word "asset"; this chapter opens on its morning.
+    expect(PROSE.question).toContain("[Chapter 1](#/chapter/shop-and-platform)");
+    expect(PROSE.question).toContain("It is Monday 14 September 2026, your first morning");
     expect(PROSE.platformLead).toContain(
       "The three systems, in the order data moves through them each night",
     );
@@ -124,9 +124,7 @@ describe("the facts Chapter 2 states", () => {
 
   it("gives the first and last days of the week and the learner's first morning", () => {
     expect(ARRIVAL).toBe("2026-09-14T09:00:00Z");
-    expect(PROSE.question).toContain("Monday 14 September 2026 at 09:00");
     expect(DAYS[0]).toBe("2026-09-07");
-    expect(PROSE.question).toContain("a week ago, on Monday 7 September");
     expect(Object.keys(revenue())).toEqual([...DAYS]);
     expect(DAYS[DAYS.length - 1]).toBe("2026-09-13");
     expect(PROSE.weekLead).toContain("Monday 7 to Sunday 13 September");
@@ -140,8 +138,8 @@ describe("the facts Chapter 2 states", () => {
     expect(line.nights.map((n) => n.date)).toEqual([...NIGHTS]);
     expect(line.nights[line.nights.length - 1]!.finished < ARRIVAL).toBe(true);
     expect(PROSE.weekLead).toContain("The last night ends early on Monday 14 September");
-    // The opening, in the order the page gives it: the word "asset" arrives under the map, and
-    // not before; the week's dates come before any sentence speaks of its nights; and nothing the
+    // The opening, in the order the page gives it: the word "asset" is Chapter 1's and does not
+    // arrive again before the map; the week's dates come before any sentence speaks of its nights; and nothing the
     // learner reads names a lab or says what computes a figure.
     for (const before of [PROSE.question, PROSE.platformLead])
       expect(before).not.toMatch(/\basset/i);
@@ -149,7 +147,6 @@ describe("the facts Chapter 2 states", () => {
     expect(sections.some((x) => x === undefined)).toBe(false);
     for (const text of [...Object.values(PROSE), ...Object.values(LABELS.titles)])
       expect(text).not.toMatch(/\blab\b|Metadata Lab/i);
-    expect(PROSE.platformAfter.startsWith("An asset is")).toBe(true);
     const weekProse = PROSE.weekLead.toLowerCase();
     const dates = weekProse.indexOf("monday 7 to sunday 13 september");
     const night = weekProse.indexOf("night");

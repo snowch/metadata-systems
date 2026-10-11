@@ -6,9 +6,9 @@
 
 import { expect, test } from "@playwright/test";
 
-import { CHAPTER, openChapter } from "./helpers";
+import { LESSONS, openChapter } from "./helpers";
 
-for (const where of ["#/", `#/chapter/${CHAPTER.id}`]) {
+for (const where of ["#/", ...LESSONS.map((l) => `#/chapter/${l.id}`)]) {
   test(`no visible text under 11 pixels on ${where}`, async ({ page }) => {
     await page.goto(where);
     await page.evaluate(async () => {
@@ -40,14 +40,14 @@ for (const where of ["#/", `#/chapter/${CHAPTER.id}`]) {
   });
 }
 
-for (const where of ["#/", `#/chapter/${CHAPTER.id}`]) {
+for (const where of ["#/", ...LESSONS.map((l) => `#/chapter/${l.id}`)]) {
   test(`every control is at least 40 pixels tall on a phone, on ${where}`, async ({
     page,
     isMobile,
   }) => {
     test.skip(!isMobile, "the rule is for touch");
     if (where === "#/") await page.goto(where);
-    else await openChapter(page);
+    else await openChapter(page, where.replace("#/chapter/", ""));
     const short = await page.evaluate(() => {
       const out: string[] = [];
       const controls = document.querySelectorAll(
@@ -67,25 +67,29 @@ for (const where of ["#/", `#/chapter/${CHAPTER.id}`]) {
   });
 }
 
-test("no line of prose is much over 85 characters", async ({ page, isMobile }) => {
-  test.skip(isMobile, "a phone's lines are shorter");
-  await openChapter(page);
-  const long = await page.evaluate(() => {
-    const out: string[] = [];
-    for (const p of document.querySelectorAll(".prose p, .prose li")) {
-      const style = getComputedStyle(p);
-      const lineHeight = parseFloat(style.lineHeight);
-      const lines = Math.round(p.getBoundingClientRect().height / lineHeight);
-      const text = (p.textContent ?? "").trim();
-      if (lines < 3) continue;
-      // The text's length over its full lines: the last line is on average half full.
-      const perLine = text.length / (lines - 0.5);
-      if (perLine > 88) out.push(`${Math.round(perLine)}: ${text.slice(0, 40)}`);
-    }
-    return out;
+for (const lesson of LESSONS)
+  test(`no line of prose is much over 85 characters, in ${lesson.id}`, async ({
+    page,
+    isMobile,
+  }) => {
+    test.skip(isMobile, "a phone's lines are shorter");
+    await openChapter(page, lesson.id);
+    const long = await page.evaluate(() => {
+      const out: string[] = [];
+      for (const p of document.querySelectorAll(".prose p, .prose li")) {
+        const style = getComputedStyle(p);
+        const lineHeight = parseFloat(style.lineHeight);
+        const lines = Math.round(p.getBoundingClientRect().height / lineHeight);
+        const text = (p.textContent ?? "").trim();
+        if (lines < 3) continue;
+        // The text's length over its full lines: the last line is on average half full.
+        const perLine = text.length / (lines - 0.5);
+        if (perLine > 88) out.push(`${Math.round(perLine)}: ${text.slice(0, 40)}`);
+      }
+      return out;
+    });
+    expect(long).toEqual([]);
   });
-  expect(long).toEqual([]);
-});
 
 test("the map keeps every name whole at every width, and its systems even", async ({
   page,

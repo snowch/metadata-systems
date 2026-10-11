@@ -6,7 +6,7 @@
 import { useMemo, useState } from "react";
 
 import { LESSONS } from "@ms/content";
-import { createBook, runtimeStrings } from "@ms/views";
+import { PREDICTION_KINDS, createBook, runtimeStrings } from "@ms/views";
 import { browserStorage, LessonView } from "@platform/lesson-runtime";
 
 import { fill } from "./fill";
@@ -41,20 +41,28 @@ export function App() {
     );
   else if (route.kind === "chapter") {
     const lesson = book.lessons.find((l) => l.id === route.id);
+    // A chapter keeps the learner's work only if it asks for any: a challenge, or a figure that
+    // takes a commitment. Only such a chapter offers to start again.
+    const keeps =
+      lesson !== undefined &&
+      (lesson.challenges.length > 0 ||
+        lesson.sections.some((s) => s.interactives.some((x) => PREDICTION_KINDS.includes(x.kind))));
     page = lesson ? (
       <>
-        <p className="chapter-start-again">
-          <a
-            href="#start-again"
-            onClick={(e) => {
-              e.preventDefault();
-              document.getElementById("start-again")?.scrollIntoView({ behavior: "smooth" });
-              document.getElementById("start-again")?.querySelector("button")?.focus();
-            }}
-          >
-            {STRINGS.startAgainTop}
-          </a>
-        </p>
+        {keeps && (
+          <p className="chapter-start-again">
+            <a
+              href="#start-again"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById("start-again")?.scrollIntoView({ behavior: "smooth" });
+                document.getElementById("start-again")?.querySelector("button")?.focus();
+              }}
+            >
+              {STRINGS.startAgainTop}
+            </a>
+          </p>
+        )}
         <LessonView
           key={`${lesson.id}:${fresh}`}
           book={book}
@@ -63,12 +71,14 @@ export function App() {
           lessonHref={chapterHref}
           strings={strings}
         />
-        <StartAgain
-          storage={storage}
-          bookId={book.id}
-          lessonId={lesson.id}
-          onCleared={() => setFresh((n) => n + 1)}
-        />
+        {keeps && (
+          <StartAgain
+            storage={storage}
+            bookId={book.id}
+            lessonId={lesson.id}
+            onCleared={() => setFresh((n) => n + 1)}
+          />
+        )}
         <Pager book={book} lessonId={lesson.id} />
       </>
     ) : (

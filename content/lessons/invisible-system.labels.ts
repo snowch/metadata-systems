@@ -11,7 +11,7 @@ export const LABELS = {
     "Name the records that would have answered the questions the platform could not.",
   ],
   titles: {
-    question: "The shop and its platform",
+    question: "Monday morning",
     motivation: "Questions the platform cannot answer",
     prediction: "Thursday",
     investigation: "What the platform holds",

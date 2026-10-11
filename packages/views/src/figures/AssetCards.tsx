@@ -27,7 +27,7 @@ const Props = z.object({
         role: z.string().min(1),
       }),
     )
-    .min(2),
+    .min(1),
   /** How many rows a data-bearing card's head shows. */
   head: z.number().int().min(1).max(8).default(3),
 });

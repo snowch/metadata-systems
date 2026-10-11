@@ -99,7 +99,7 @@ records about it.
 
 | Ch | Title | The learner builds | Central experiment | What breaks | Introduces |
 | --- | --- | --- | --- | --- | --- |
-| 1 | The shop and its platform | nothing yet: storage is all there is | a notebook, read and run: the shop's files and the warehouse's tables, read with the platform's own SQL, then the dashboard, with the head of the shop's one line in front of the tour | nothing: the chapter shows what the platform holds, and what it does not show: the programs, when they are due to run, and any notes | asset |
+| 1 | The shop and its platform | nothing yet: storage is all there is | a tour, on a page and in a notebook: the shop's files, the warehouse's tables, the dashboard and the nights, with the head of the shop's one line in front of it, and a guess, written down, at which asset each table is made from | nothing: the chapter shows what the platform holds, and what it does not show: the programs, when they are due to run, and any notes | asset |
 | 2 | The invisible data system | nothing yet: storage is all there is | an essay, read with four figures: a query over `clean_orders` reproduces `daily_sales` and explains Thursday, and three changes show what that does and does not establish | an analyst's copy makes two sources fit; an edited program leaves nothing that fits and no trace; a failed night leaves the dashboard looking up to date over a table a day behind | metadata |
 | 3 | What is metadata? | descriptive records for the shop's assets: meaning, owner, columns with their meaning and unit | ask Chapter 2's questions again of storage plus the records, and see which become answerable | a column in `products` that names a person is data about the business, not a record about the file; a record nobody updates goes stale while storage moves on | descriptive, operational, schema |
 | 4 | Metadata as a model | entity types, attributes, identifiers and relationship types; the records checked against them | merge two records that spell the same owner differently | a reference to an entity that does not exist; a fact the model has no type for | entity, attribute, identifier, dataset |
@@ -260,6 +260,17 @@ The author reviews the course at five checkpoints:
 5. Before Chapter 33.
 
 ## Decisions since the brief
+
+### 11 October 2026: Chapter 1's page
+
+Chapter 1 was a notebook only, and the author asked for the right thing, not the easiest. It now
+has a page (`content/lessons/shop-and-platform.ts`), built like Chapter 2's: an essay with figures
+the engine computes (the map, a card for each file, the tables' cards, the dashboard, the week),
+no prediction or challenge to grade, and a written guess at which asset each table is made from,
+which Chapter 2 takes up. Chapter 2's opening, the map's lead about its button, the sentence that
+gives the word "asset" and the week's sentence about the nights moved to it, so each is said once;
+Chapter 2 opens with its notebook's recap. The front page lists both pages, each with its notebook
+under it, and starts at Chapter 1's page; the notebooks' old addresses lead to their chapters.
 
 ### 11 October 2026: two chapters where there was one
 

@@ -42,7 +42,6 @@ export const invisibleSystem: LessonInput = {
           timeModel: "none",
           caption: LABELS.captions.platform,
           lead: PROSE.platformLead,
-          after: PROSE.platformAfter,
           props: { tally: true },
         },
         {

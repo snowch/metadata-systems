@@ -497,6 +497,9 @@ details.part .chapter-list {
   padding-top: var(--space-5);
   border-top: 1px solid var(--border);
 }
+.section-kind:empty {
+  display: none;
+}
 .section-kind {
   font-family: var(--font-mono);
   font-size: var(--text-xs);

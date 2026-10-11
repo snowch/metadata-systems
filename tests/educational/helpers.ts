@@ -11,7 +11,8 @@ import { DEFAULT_VIEW_STRINGS as V, format, runtimeStrings } from "@ms/views";
 export const S = runtimeStrings();
 export { V, format, LESSONS };
 
-export const CHAPTER = LESSONS[0]!;
+/** The investigation's page, Chapter 2: the chapter the tests of a figure's behaviour drive. */
+export const CHAPTER = LESSONS.find((l) => l.id === "invisible-data-system")!;
 
 export function challengeData(id: string, lesson = CHAPTER) {
   const c = lesson.challenges.find((x) => x.id === id);

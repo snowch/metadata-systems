@@ -26,7 +26,7 @@ import {
 } from "./index";
 import { listOf } from "./figures/QuestionMap";
 
-const lesson = parseLesson(LESSONS[0]!);
+const lesson = parseLesson(LESSONS.find((l) => l.id === "invisible-data-system")!);
 const rebuild = lesson.challenges.find((c) => c.id === "rebuild-daily-sales") as Challenge;
 
 describe("what storage shows differently", () => {

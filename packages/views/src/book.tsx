@@ -9,7 +9,7 @@
 
 import type { ComponentType } from "react";
 
-import type { Lesson } from "@platform/lesson-schema";
+import { SECTION_KINDS, type Lesson } from "@platform/lesson-schema";
 import {
   DEFAULT_STRINGS,
   type Book,
@@ -76,6 +76,10 @@ export const ROLES = ["experiment", "inspect", "reference"] as const;
 export function runtimeStrings(v: ViewStrings = DEFAULT_VIEW_STRINGS): Strings {
   return {
     ...DEFAULT_STRINGS,
+    // A section's heading names its subject, and the course's chapters are essays (docs/plan.md,
+    // "Chapter 1 as an essay"): a kind such as "Prediction" over a section with no prediction
+    // would mislead, so no section shows its kind.
+    section: Object.fromEntries(SECTION_KINDS.map((k) => [k, ""])),
     lesson: {
       ...DEFAULT_STRINGS.lesson,
       modelNote: v.modelNote,

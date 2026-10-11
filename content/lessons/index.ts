@@ -7,8 +7,9 @@
 import { parseLesson, type Lesson, type LessonInput } from "@platform/lesson-schema";
 
 import { invisibleSystem } from "./invisible-system";
+import { shopAndPlatform } from "./shop-and-platform";
 
-const INPUTS: readonly LessonInput[] = [invisibleSystem];
+const INPUTS: readonly LessonInput[] = [shopAndPlatform, invisibleSystem];
 
 export const LESSONS: readonly Lesson[] = INPUTS.map(parseLesson).sort(
   (a, b) => a.module - b.module || a.order - b.order,

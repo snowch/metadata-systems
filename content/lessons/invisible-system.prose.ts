@@ -6,12 +6,10 @@
 
 export const PROSE = {
   question:
-    "You start work on Monday 14 September 2026 at 09:00, as the data engineer of an online shop that sells bicycle parts. The shop opened its online store a week ago, on Monday 7 September. Nobody who built its data platform is there to ask, and nothing about it is written down. Before you have sat down, the head of the shop sends you one line: Thursday's revenue looks wrong.\n\nThe platform has three systems: object storage, which holds files; a warehouse, which holds tables; and a reporting tool, which holds a dashboard. Every night, programs read the files, write the tables and refresh the dashboard. You can read everything the three systems hold. You cannot see the programs, when they are due to run, or any note anybody kept.",
-  platformLead:
-    "The three systems, in the order data moves through them each night. The button at the foot of the window reopens this figure once you have scrolled past it.",
-  platformAfter: "An asset is one thing the platform holds: here, a file, a table or a dashboard.",
+    "It is Monday 14 September 2026, your first morning as the shop's data engineer. You have looked round the shop's platform in [Chapter 1](#/chapter/shop-and-platform). The head of the shop has sent you one line: \"Thursday's revenue looks wrong.\"",
+  platformLead: "The three systems, in the order data moves through them each night.",
   weekLead:
-    "The shop's first week ran from Monday 7 to Sunday 13 September. Each night, in the early hours of the next day, the three files are written again, then programs write the tables and refresh the dashboard. The last night ends early on Monday 14 September, before you start work.",
+    "The shop's first week ran from Monday 7 to Sunday 13 September. The last night ends early on Monday 14 September, before you start work.",
   exploreLead: "The four assets this chapter uses: open a card to see what the asset holds.",
   dashboardAfter: "Thursday shows 51.50, against 153.75 on Wednesday and 204.24 on Friday.",
   motivation:

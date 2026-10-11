@@ -393,7 +393,6 @@ notebooks were parts, and their names in this note are the names they had then.
 ## Open questions for the author
 
 - Whether the notebook should replace the essay pages, sit beside them, or be dropped.
-- Whether Chapter 1 should also have a page on the course, as Chapter 2 does.
 - Whether the notebook should run every cell as soon as it opens, as the marimo version did. The
   row's extension could do it; the page would then do the 10 to 12 seconds of work on opening, and
   the texts would change.

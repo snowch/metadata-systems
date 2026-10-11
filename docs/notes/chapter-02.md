@@ -1,7 +1,12 @@
 # Chapter 2: The invisible data system
 
 This chapter was Chapter 1 until 11 October 2026, when the tour of the shop became a chapter of its
-own (`docs/notes/chapter-01.md`); the sections below keep the numbers they were written with.
+own (`docs/notes/chapter-01.md`); the sections below keep the numbers they were written with. On
+the same day the chapter's opening (the first morning and the three systems), its map's lead about
+the button, the sentence that gives the word "asset" and the week's sentence about the nights
+moved to Chapter 1's page, word for word, and the chapter now opens with the recap its notebook
+already had: "It is Monday 14 September 2026, your first morning as the shop's data engineer. You
+have looked round the shop's platform in Chapter 1. ..." Its first section is "Monday morning".
 
 A working note, kept as the chapter was built on 6 October 2026, revised on 7 October through
 the author's second to fifth rounds, rewritten as an essay on 9 and 10 October, and freed of the
@@ -55,7 +60,8 @@ content tests fail a figure without a block or with a question unanswered.
 - **Serves:** every question in the chapter that needs to know which systems hold which assets, in
   the order data moves through them. It draws no asset made from another: that is what the chapter
   shows the systems cannot tell. Under its systems it counts what it shows (3 files + 3 tables +
-  1 dashboard = 7 assets), and the sentence under it gives the word "asset".
+  1 dashboard = 7 assets). Since 11 October 2026 the word "asset" is Chapter 1's, and its
+  sentence moved there with the opening this figure had.
 - **Why now:** the story's first morning needs the ground under it before the head of the shop's
   line arrives.
 

@@ -1,9 +1,9 @@
 // Copyright © 2026 Christopher Snow
 
-// The chapters that are notebooks: Chapter 1, a notebook only, and Chapter 2, also a page. Each
-// is built from notebook/chapter_0N.py into the site under jupyterlite/
-// (notebook/jupyterlite/build.sh). The front page links each from its chapter's line; the content
-// tests check each notebook's heading against the plan's title.
+// The chapters that are also notebooks: Chapters 1 and 2. Each is built from
+// notebook/chapter_0N.py into the site under jupyterlite/ (notebook/jupyterlite/build.sh). The
+// front page links each under its chapter's line, or from the line of a chapter with no page; the
+// content tests check each notebook's heading against the plan's title.
 
 /** A chapter's notebook: its file in the JupyterLite site's contents, by chapter number. */
 export const NOTEBOOKS: ReadonlyMap<number, string> = new Map([

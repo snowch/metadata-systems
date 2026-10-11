@@ -118,22 +118,21 @@ test.describe("the chapter pages", () => {
         ? `0 of ${CHAPTER.challenges.length} challenges complete`
         : STRINGS.noChallenges,
     );
-    // Every chapter with neither a page nor a notebook; Chapter 1 has only its notebook.
-    await expect(page.locator(".chapter-to-write")).toHaveCount(PLAN.length - LESSONS.length - 1);
-    // Chapter 1 is a notebook, linked from its line; Chapter 2's page links its notebook too.
-    const first = page.locator(".chapter-list > li").first().locator("a.chapter-link");
-    await expect(first).toHaveAttribute(
+    await expect(page.locator(".chapter-to-write")).toHaveCount(PLAN.length - LESSONS.length);
+    // Each written chapter is also a notebook, linked under its line; the band starts Chapter 1.
+    const notebooks = page.locator("a.chapter-notebook");
+    await expect(notebooks).toHaveCount(2);
+    await expect(notebooks.nth(0)).toHaveAttribute(
       "href",
       "/metadata-systems/jupyterlite/notebooks/index.html?path=chapter_01.ipynb",
     );
-    await expect(first.locator(".meta")).toHaveText(STRINGS.notebookNote);
-    await expect(page.locator("a.chapter-notebook")).toHaveAttribute(
+    await expect(notebooks.nth(1)).toHaveAttribute(
       "href",
       "/metadata-systems/jupyterlite/notebooks/index.html?path=chapter_02.ipynb",
     );
     await expect(page.locator(".hero-start")).toHaveAttribute(
       "href",
-      "/metadata-systems/jupyterlite/notebooks/index.html?path=chapter_01.ipynb",
+      "#/chapter/shop-and-platform",
     );
     // The band shows the question the course starts from: Chapter 1's dashboard, computed from
     // the shop's data, with no badge and no control; then the contents by part, the part of the
