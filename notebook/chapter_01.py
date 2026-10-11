@@ -34,12 +34,22 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
+    mo.callout(mo.md(r"""
+    **Running and saving the page**
+
+    1. Nothing on the page runs until you run it. Run every cell first: press **Run all**, at the top of the page.
+    2. A cell does not run again when a cell it uses changes. After you change a cell, select it and press **Run below**: it runs that cell and every cell below it.
+    3. To keep your changes, press **Save**, or press Ctrl+S (Cmd+S on a Mac). After a reload, the page shows your saved copy, which stays in this browser and is shown instead of the chapter, even after the chapter is updated.
+    """), kind="info")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
     mo.md(r"""
     You start work on Monday 14 September 2026 at 09:00, as the data engineer of an online shop that sells bicycle parts. The shop opened its online store a week ago, on Monday 7 September. Nobody who built its data platform is there to ask, and nothing about it is written down. Before you have sat down, the head of the shop sends you one line: Thursday's revenue looks wrong. You cannot yet tell whether it is wrong; to find out, you first need to know what the platform holds and what happens on it each night.
 
     The platform has three systems: object storage, which holds files; a warehouse, which holds tables; and a reporting tool, which holds a dashboard. Every night, programs read the files, write the tables and refresh the dashboard. You can read everything the three systems hold. You cannot see the programs, when they are due to run, or any note anybody kept.
-
-    Nothing on the page runs until you run it. Run every cell first: press **Run all**, at the top of the page. A cell does not run again when a cell it uses changes. After you change a cell, select it and press **Run below**, which runs it and every cell below it. To keep your changes, press **Save**, or press Ctrl+S (Cmd+S on a Mac). After a reload, the page shows your saved copy. Your saved copy stays in this browser and is shown instead of the chapter, even after the chapter is updated.
 
     In the cells, `storage`, `warehouse` and `reporting` name the shop's three systems: object storage, the warehouse and the reporting tool.
     """)

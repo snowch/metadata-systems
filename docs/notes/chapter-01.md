@@ -101,3 +101,17 @@ dbt's jaffle shop, browsed through its generated documentation. Here the learner
 undocumented platform of an invented bicycle-parts shop, with one line from its head in front of
 the tour, and reads the shop's own files and tables with code they run; the shop, its data and its
 programs are invented for the course.
+
+## Boxes for the page, and printed lines kept whole, 11 October 2026
+
+The author asked whether boxes should break up the text, and whether printed output should wrap.
+The paragraph on running and saving the page left the opening story for a box of its own under
+the warning, as three steps: Haiku's draft of brief AZ (`docs/notes/chapter-01/briefs/`), which
+carried all seven facts and the wording the tests hold, and needed no correction. Chapter 2's
+one line on Run all moved, unchanged, into the same kind of box. The warning is a box too, in the
+warning's colour; the hidden setup cells follow both boxes. What a cell prints now keeps its own
+lines: JupyterLab wrapped `customers.jsonl` inside words and dates (`"countr` / `y"`, `"2` /
+`026-05-19"`), so the file no longer showed one record per line. A long line now scrolls inside its
+box, with a shadow at the edge it continues past. The smoke test checks both boxes and that the
+printed file draws ten lines for its ten records, with the page never scrolling sideways.
+

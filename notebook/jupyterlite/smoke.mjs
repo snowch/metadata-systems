@@ -5,7 +5,9 @@
 // and the notebook's toolbar are hidden; the row shows the labels buttons.json gives, each button
 // at least 44 pixels tall; a press disables the row and marks the pressed button busy until the
 // run ends; Run all runs every visible code cell, with no error in any output, and leaves the
-// notebook where it was scrolled. In Chapter 2, Run below from a selected cell does the same. The page
+// notebook where it was scrolled; the warning and the steps for running the page are boxes; in
+// Chapter 1 a printed file keeps one record per line, scrolling inside its box, and the page never
+// scrolls sideways. In Chapter 2, Run below from a selected cell does the same. The page
 // logs no error, and the notebooks' earlier names lead to their chapters. The notebook workflow
 // runs it after the build, with Playwright from the course's dependencies.
 //
@@ -122,6 +124,49 @@ try {
       )
       .count();
     check(failed === 0, `Chapter ${chapter}: no output is an error`);
+    // The warning and the steps are boxes, drawn by the course's stylesheet.
+    const boxes = await page.evaluate(() =>
+      [...document.querySelectorAll(".jp-RenderedMarkdown .ms-box")].map((b) => ({
+        name: b.className,
+        tinted: getComputedStyle(b).backgroundColor !== "rgba(0, 0, 0, 0)",
+      })),
+    );
+    check(
+      boxes.length === 2 && boxes.every((b) => b.tinted),
+      `Chapter ${chapter}: the warning and the steps are boxes (${boxes.map((b) => b.name).join("; ")})`,
+    );
+    if (chapter === 1) {
+      // A printed file keeps one record per line: the line scrolls inside its box, and the page
+      // does not scroll sideways.
+      const printed = page
+        .locator(".jp-CodeCell")
+        .filter({ has: page.locator(".jp-InputArea", { hasText: "customers.jsonl" }) })
+        .first();
+      await printed.scrollIntoViewIfNeeded();
+      const lines = await printed.evaluate((cell) => {
+        const pre = cell.querySelector('[data-mime-type="application/vnd.jupyter.stdout"] pre');
+        if (!pre) return null;
+        // The lines as drawn: the distinct tops of the text's line boxes.
+        const range = document.createRange();
+        range.selectNodeContents(pre);
+        const tops = new Set(
+          [...range.getClientRects()].filter((r) => r.width > 0).map((r) => Math.round(r.top)),
+        );
+        return {
+          records: pre.textContent.trim().split("\n").length,
+          shown: tops.size,
+          scrolls: pre.scrollWidth > pre.clientWidth,
+        };
+      });
+      check(
+        lines !== null && lines.records === lines.shown && lines.scrolls,
+        `Chapter 1: a printed file keeps one record per line, scrolling inside its box (${JSON.stringify(lines)})`,
+      );
+      const sideways = await page.evaluate(
+        () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      );
+      check(!sideways, "Chapter 1: the page does not scroll sideways");
+    }
     if (chapter === 2) {
       const day = page.locator(".jp-CodeCell", { hasText: 'day = "2026-09-10"' }).first();
       await day.scrollIntoViewIfNeeded();

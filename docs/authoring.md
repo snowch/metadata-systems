@@ -31,7 +31,10 @@ chapter is added to `CHAPTERS` in `build_ipynb.py`, in `notebook/tests/test_word
 - The first cell links back to the contents (the absolute address of the front page: a relative
   link in JupyterLite opens a file of the site) and on to the next chapter by its notebook's
   name, then gives the heading `# Chapter N: {title}`, the plan's title, and the objectives.
-- The second is the warning about the download and the memory a phone has.
+- Then two boxes (`mo.callout`, which the build turns into a box the course's stylesheet in
+  `notebook/buttons/style/` draws): the warning about the download and the memory a phone has
+  (`kind="warn"`), then the steps for running and saving the page (`kind="info"`). Nothing else
+  in a chapter is a box: the story is broken up by its figures, headings and cells.
 - Every section is a `## ` heading that names its subject, never the reader's activity.
 - The last section closes with what the chapter's experiments showed and could not show, then
   reflective questions, and names the next chapter; the last cell repeats the links.

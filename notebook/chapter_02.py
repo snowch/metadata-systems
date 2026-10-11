@@ -34,12 +34,18 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
+    mo.callout(mo.md(r"""
+    Nothing on the page runs until you run it. Run every cell first: press **Run all**, at the top of the page.
+    """), kind="info")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
     mo.md(r"""
     ## Monday morning
 
     It is Monday 14 September 2026, your first morning as the shop's data engineer. You have looked round the shop's platform in [Chapter 1](chapter_01.ipynb). The head of the shop has sent you one line: "Thursday's revenue looks wrong."
-
-    Nothing on the page runs until you run it. Run every cell first: press **Run all**, at the top of the page.
     """)
     return
 

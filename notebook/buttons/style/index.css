@@ -74,3 +74,55 @@
     border-right-color: var(--jp-brand-color1);
   }
 }
+
+/* The chapters' boxes (notebook/jupyterlite/build_ipynb.py writes them as a div in a Markdown
+   cell): the warning about the download and the memory a phone has, and the steps for running and
+   saving the page. Each keeps the page's own text colour and tints its background with a theme
+   colour, so it reads in the light and the dark theme alike. */
+
+.jp-RenderedMarkdown .ms-box {
+  margin: 0 0 var(--jp-content-heading-margin-bottom, 1em);
+  padding: 10px 14px;
+  border-left: 4px solid var(--ms-box-colour);
+  border-radius: var(--jp-border-radius);
+  background: color-mix(in srgb, var(--ms-box-colour) 12%, transparent);
+}
+
+.jp-RenderedMarkdown .ms-box > :first-child {
+  margin-top: 0;
+}
+
+.jp-RenderedMarkdown .ms-box > :last-child {
+  margin-bottom: 0;
+}
+
+.jp-RenderedMarkdown .ms-box-warning {
+  --ms-box-colour: var(--jp-warn-color1);
+}
+
+.jp-RenderedMarkdown .ms-box-steps {
+  --ms-box-colour: var(--jp-brand-color1);
+}
+
+/* What a cell prints keeps its own lines: a JSON Lines file shows one record per line, as it is
+   stored, and a long line scrolls sideways inside its box, never the page. JupyterLab wraps such
+   text anywhere, even inside a word or a date. A shadow at an edge shows that the line goes on
+   past it; it goes once the reader scrolls to that end (the backgrounds that scroll with the text
+   cover it). */
+
+.jp-OutputArea-output[data-mime-type="application/vnd.jupyter.stdout"] pre {
+  white-space: pre;
+  word-break: normal;
+  word-wrap: normal;
+  overflow-wrap: normal;
+  --ms-edge: color-mix(in srgb, var(--jp-ui-font-color1) 30%, transparent);
+  background:
+    linear-gradient(to right, var(--jp-layout-color0) 40%, transparent) left / 32px 100% no-repeat
+      local,
+    linear-gradient(to left, var(--jp-layout-color0) 40%, transparent) right / 32px 100% no-repeat
+      local,
+    radial-gradient(farthest-side at 0 50%, var(--ms-edge), transparent) left / 12px 100% no-repeat
+      scroll,
+    radial-gradient(farthest-side at 100% 50%, var(--ms-edge), transparent) right / 12px 100%
+      no-repeat scroll;
+}

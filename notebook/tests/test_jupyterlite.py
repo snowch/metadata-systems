@@ -93,5 +93,31 @@ class TheWarnings(unittest.TestCase):
             self.assertIn("a reload loses anything you have not saved", warning)
 
 
+
+class TheBoxes(unittest.TestCase):
+    """The warning and the steps for running the page are boxes, set apart from the chapter's text."""
+
+    def test_every_kind_of_box_the_build_writes_has_a_style(self):
+        build = (ROOT / "notebook" / "jupyterlite" / "build_ipynb.py").read_text(encoding="utf-8")
+        css = (BUTTONS / "style" / "index.css").read_text(encoding="utf-8")
+        [boxes] = re.findall(r"^BOXES = (\{.*\})$", build, re.M)
+        for name in ("ms-box", *eval(boxes).values()):
+            self.assertIn(f".jp-RenderedMarkdown .{name} {{", css)
+
+    def test_each_chapter_opens_with_a_warning_and_the_steps(self):
+        for chapter, source in SOURCE.items():
+            self.assertEqual(re.findall(r'\bkind="(\w+)"\)', source), ["warn", "info"], chapter)
+            [steps] = re.findall(r'mo\.callout\(mo\.md\(r"""(.*?)"""\), kind="info"\)', source, re.S)
+            self.assertIn("press **Run all**, at the top of the page", steps, chapter)
+
+    def test_chapter_1s_steps_name_every_button(self):
+        [steps] = re.findall(r'mo\.callout\(mo\.md\(r"""(.*?)"""\), kind="info"\)', SOURCE[1], re.S)
+        self.assertEqual(set(re.findall(r"press \*\*([^*]+)\*\*", steps)), set(LABELS.values()))
+
+    def test_printed_text_keeps_its_lines(self):
+        css = (BUTTONS / "style" / "index.css").read_text(encoding="utf-8")
+        rule = css.split('.jp-OutputArea-output[data-mime-type="application/vnd.jupyter.stdout"] pre {')[1]
+        self.assertIn("white-space: pre;", rule.split("}")[0])
+
 if __name__ == "__main__":
     unittest.main()

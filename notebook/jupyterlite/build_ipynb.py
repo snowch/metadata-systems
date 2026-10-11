@@ -11,8 +11,8 @@ cell, with the same prose and the same visible code:
 - the setup cells, at the foot of a source file, move to the top, since Jupyter runs from the top,
   with the install of the packages the page bundles;
 - the controls (the menu of changes, the handover note) become ipywidgets; a figure shown with
-  `mo.Html` is IPython's `HTML`; a column of outputs is `display`; the warning is a quoted
-  paragraph.
+  `mo.Html` is IPython's `HTML`; a column of outputs is `display`; a callout (the warning, and
+  the steps for running and saving the page) is a box, a div the course's stylesheet draws.
 
 Anything in a source file this does not know how to carry over stops the build.
 
@@ -78,6 +78,16 @@ def find(stmts: list[ast.stmt], attr: str) -> ast.Call:
     return next(n for s in stmts for n in ast.walk(s) if is_call(n, attr))
 
 
+# A callout's kind, and the class the course's stylesheet (notebook/buttons/style/index.css) gives
+# its box. A kind not listed here stops the build.
+BOXES = {"warn": "ms-box-warning", "info": "ms-box-steps"}
+
+
+def box(name: str, text: str) -> str:
+    """A box in a Markdown cell: a div the stylesheet draws, with Markdown inside it."""
+    return f'<div class="ms-box {name}">\n\n{text}\n\n</div>'
+
+
 def code_font(text: str) -> str:
     """A label's `names` in the code font, as Markdown would set them, in HTML."""
     parts = text.split("`")
@@ -117,6 +127,7 @@ def build(chapter: int) -> nbformat.NotebookNode:
     """One chapter's Jupyter notebook."""
     source = CHAPTERS[chapter][0].read_text(encoding="utf-8")
     out = []
+    setup_at = None  # where the setup goes: after the boxes the chapter opens with
     for node in ast.parse(source).body:
         if not isinstance(node, ast.FunctionDef):
             continue
@@ -131,10 +142,13 @@ def build(chapter: int) -> nbformat.NotebookNode:
         if not hidden:
             out.append(nbformat.v4.new_code_cell(code))
         elif "mo.callout(" in code:
-            # The warning, then the setup, hidden, before the chapter's first section.
-            warning = ast.literal_eval(find(stmts, "md").args[0])
-            out.append(nbformat.v4.new_markdown_cell("> " + warning))
-            out.extend(nbformat.v4.new_code_cell(setup, metadata=HIDDEN) for setup in SETUP)
+            # A box: the warning, or the steps for running and saving the page. The setup, hidden,
+            # follows the warning and any box straight after it, so the boxes stay together.
+            kind = keyword(find(stmts, "callout"), "kind").value
+            text = textwrap.dedent(ast.literal_eval(find(stmts, "md").args[0])).strip()
+            out.append(nbformat.v4.new_markdown_cell(box(BOXES[kind], text)))
+            if kind == "warn" or setup_at == len(out) - 1:
+                setup_at = len(out)
         elif "import marimo as mo" in code or "week = shop.run_week()" in code:
             continue  # the setup, which Jupyter runs first (SETUP)
         elif "mo.ui.dropdown(" in code:
@@ -148,8 +162,9 @@ def build(chapter: int) -> nbformat.NotebookNode:
             out.append(nbformat.v4.new_code_cell(f"display(\n    {parts},\n)", metadata=HIDDEN))
         else:
             raise SystemExit(f"no Jupyter form for this hidden cell of the source file:\n{code}")
-    if not any("piplite" in "".join(c.source) for c in out):
+    if setup_at is None:
         raise SystemExit(f"chapter {chapter} has no warning: the setup has nowhere to go")
+    out[setup_at:setup_at] = [nbformat.v4.new_code_cell(setup, metadata=HIDDEN) for setup in SETUP]
     for i, cell in enumerate(out):
         cell["id"] = f"cell-{i + 1:02d}"
     nb = nbformat.v4.new_notebook(cells=out)
