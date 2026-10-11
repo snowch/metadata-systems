@@ -358,6 +358,25 @@ emulation, where every press ran; no real phone was available to test. Two chang
   parts left the notebook where it was, with the results as before; Save kept an edit through a
   reload; no page logged an error. `smoke.mjs` now checks the hidden bars and the busy row too.
 
+### Links between the course and the notebooks
+
+Asked what the course's navigation should be, the author agreed to make the front page the hub.
+Under Chapter 1's line, the front page lists the two notebooks by title (not as "part 1" and "part
+2": on that page "Part" names the course's eight parts), after a lead that says they are the same
+chapter with code you run, and the first download (brief AT; `content/lessons/notebooks.ts`). Each
+notebook opens and ends with "Back to contents · Part 1 · Part 2", the current part unlinked.
+
+- A relative link in a notebook opens as a file of the JupyterLite site (`../../index.html` became
+  `files/index.html`, and `/index.html` the file browser), so the link back to the course is its
+  whole address, https://snowch.github.io/metadata-systems/, and opens in a new tab, as the
+  links between the parts do. A build served anywhere else still links to the published course.
+- Checked: on the built course, at 390 and 1280 pixels, the two links lead to the notebooks under
+  the base path and are 44 to 54 pixels tall, with no sideways scroll; in the built notebooks, by
+  touch at 390 pixels, "Back to contents" opened the course, and both parts ran as before. The
+  course's Playwright suite checks the links, and a content test each title against its
+  notebook's heading.
+- The front page's start button still opens the chapter's page, which keeps the whole chapter.
+
 ## Open questions for the author
 
 - Whether the notebook should replace the essay pages, sit beside them, or be dropped.

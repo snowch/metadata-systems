@@ -259,6 +259,13 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 11 October 2026: the front page links the notebooks
+
+The front page is the hub: under Chapter 1's line it links the two notebooks by title, and each
+notebook opens and ends with a line back to the contents and to the other part (brief AT). Whether
+the notebooks replace the chapter's page stays open (`docs/notes/notebook-prototype.md`, "Links
+between the course and the notebooks").
+
 ### 10 October 2026: a row of large buttons above the notebook
 
 Asked for custom buttons, the site gains its own JupyterLab extension (`notebook/buttons/`): Run

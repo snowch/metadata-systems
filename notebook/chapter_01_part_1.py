@@ -12,6 +12,8 @@ app = marimo.App(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    [Back to contents](https://snowch.github.io/metadata-systems/) · Part 1 · [Part 2](chapter_01_part_2.ipynb)
+
     # Chapter 1, part 1: The shop and its platform
 
     **Objectives**
@@ -211,6 +213,8 @@ def _(mo):
     ### How this differs from a real platform
 
     The shop, its people and its data are invented for the course. All times are UTC.
+
+    [Back to contents](https://snowch.github.io/metadata-systems/) · Part 1 · [Part 2](chapter_01_part_2.ipynb)
 
     ---
 

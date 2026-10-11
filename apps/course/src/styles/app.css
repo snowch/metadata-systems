@@ -432,6 +432,26 @@ details.part .chapter-list {
   color: var(--accent);
   font-weight: 600;
 }
+/* A chapter's notebooks, under its line: the lead, then one link per notebook. */
+.chapter-notebooks {
+  padding: 0 0 var(--space-3);
+}
+.chapter-notebooks p {
+  margin: 0 0 var(--space-1);
+}
+.chapter-notebooks ol {
+  margin: 0;
+  padding-left: var(--space-5);
+}
+.chapter-notebooks li {
+  border-top: none;
+}
+.chapter-notebooks a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control);
+  color: var(--accent);
+}
 .chapter-to-write .chapter-title {
   color: var(--fg-muted);
 }

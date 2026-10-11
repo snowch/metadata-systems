@@ -154,6 +154,16 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertIn("](chapter_01_part_2.ipynb)", TEXT[1])
         self.assertIn("](chapter_01_part_1.ipynb)", TEXT[2])
 
+    def test_each_part_opens_and_ends_with_the_way_back_to_the_course(self):
+        # Relative links in a notebook open as files of the site, so the course's address is whole.
+        nav = {
+            1: "[Back to contents](https://snowch.github.io/metadata-systems/) · Part 1 · [Part 2](chapter_01_part_2.ipynb)",
+            2: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Part 1](chapter_01_part_1.ipynb) · Part 2",
+        }
+        for part, line in nav.items():
+            self.assertTrue(CELLS[part][0].startswith(line + "\n"), part)
+            self.assertEqual(SOURCE[part].count(line), 2, part)
+
     def test_thursday_against_the_days_either_side(self):
         shown = {v["day"]: v["revenue"] for v in self.week.reporting.dashboard()["values"]}
         self.assertEqual((shown["2026-09-09"], shown["2026-09-10"], shown["2026-09-11"]), ("£153.75", "£51.50", "£204.24"))
@@ -301,7 +311,8 @@ class TheWordsKeepTheRules(unittest.TestCase):
 
     def test_terms_arrive_where_the_chapter_introduces_them(self):
         # Part 1 introduces "asset", part 2 "metadata", at its "Records made at the time".
-        chapter = CELLS[1] + CELLS[2]
+        # A link's address is not read: the course's address has "metadata" in it.
+        chapter = [re.sub(r"\]\([^)]*\)", "]", c) for c in CELLS[1] + CELLS[2]]
         first = lambda word: next(i for i, c in enumerate(chapter) if re.search(rf"\b{word}", c, re.I))
         records = next(i for i, c in enumerate(chapter) if c.startswith("## Records made at the time"))
         self.assertGreaterEqual(records, len(CELLS[1]))

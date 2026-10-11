@@ -36,6 +36,9 @@ export const STRINGS = {
   toWrite: "Still to be written",
   progress: "{passed} of {total} challenges complete",
   noChallenges: "No challenges",
+  // Under a chapter's line, its notebooks (brief AT).
+  notebooksLead:
+    "The same chapter is also available as two notebooks, where you run its Python code in your browser; the first time, the browser downloads about 13 MB.",
   previous: "Previous",
   next: "Next",
   pagerLabel: "Previous and next chapter",

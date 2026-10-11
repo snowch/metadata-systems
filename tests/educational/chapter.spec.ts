@@ -9,7 +9,7 @@
 
 import { expect, test, type Page } from "@playwright/test";
 
-import { PARTS, PLAN } from "@ms/content";
+import { NOTEBOOKS, PARTS, PLAN } from "@ms/content";
 
 import { STRINGS } from "../../apps/course/src/strings";
 
@@ -109,7 +109,7 @@ test.describe("the chapter pages", () => {
     page,
   }) => {
     await page.goto("#/");
-    await expect(page.locator(".chapter-list li")).toHaveCount(PLAN.length);
+    await expect(page.locator(".chapter-list > li")).toHaveCount(PLAN.length);
     const link = page.locator(".chapter-list a.chapter-link", { hasText: CHAPTER.title });
     await expect(link).toBeVisible();
     // A chapter with challenges shows its progress; one without says so.
@@ -119,6 +119,13 @@ test.describe("the chapter pages", () => {
         : STRINGS.noChallenges,
     );
     await expect(page.locator(".chapter-to-write")).toHaveCount(PLAN.length - LESSONS.length);
+    // Chapter 1 is also two notebooks, linked under its line.
+    const notebooks = page.locator(".chapter-notebooks a");
+    await expect(notebooks).toHaveText([...(NOTEBOOKS.get(1) ?? []).map((n) => n.title)]);
+    await expect(notebooks.first()).toHaveAttribute(
+      "href",
+      "/metadata-systems/jupyterlite/notebooks/index.html?path=chapter_01_part_1.ipynb",
+    );
     // The band shows the question the course starts from: Chapter 1's dashboard, computed from
     // the shop's data, with no badge and no control; then the contents by part, the part of the
     // chapter the button names open and the rest closed.

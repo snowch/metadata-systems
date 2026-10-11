@@ -12,6 +12,8 @@ app = marimo.App(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Part 1](chapter_01_part_1.ipynb) · Part 2
+
     # Chapter 1, part 2: Thursday's revenue and what the platform cannot say
 
     **Objectives**
@@ -464,6 +466,8 @@ def _(mo):
     In some real databases, a table's owner is an account too. In PostgreSQL, for example, a new table's owner is normally the account that created it. At first, only the owner (or a superuser) can do anything with the table; other accounts can use it once they are given the right to. The right to alter or drop the table comes with being its owner. The shop's warehouse records the owning account and no such rights.
 
     A file's size is its real size in bytes. A table's size is an estimate from its rows. All times are UTC. A real platform has hundreds or thousands of assets; searching for queries that rebuild one would cost far more. "No simple query reproduces it" means none that keeps every row, completed orders or cancelled orders of one asset; a query with a condition on the date would.
+
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Part 1](chapter_01_part_1.ipynb) · Part 2
 
     ---
 

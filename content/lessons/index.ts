@@ -19,3 +19,4 @@ export function lessonById(id: string): Lesson | undefined {
 }
 
 export { PARTS, PLAN, TERMS, chapterOf, type PlannedChapter } from "./plan";
+export { NOTEBOOKS, notebookHref, type ChapterNotebook } from "./notebooks";

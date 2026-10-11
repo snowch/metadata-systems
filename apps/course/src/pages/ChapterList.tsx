@@ -6,11 +6,12 @@
 // from; then the eight parts in reading order, one line each; then every chapter the plan has, by
 // part, each part one line until it is pressed, the part of the chapter the button names already
 // open (the author, 8 October 2026: the page was a title, a paragraph and thirty-one lines of
-// "still to be written").
+// "still to be written"). A chapter that is also a set of notebooks lists them under its line
+// (content/lessons/notebooks.ts).
 
 import { useMemo } from "react";
 
-import { PARTS, PLAN, chapterOf } from "@ms/content";
+import { NOTEBOOKS, PARTS, PLAN, chapterOf, notebookHref } from "@ms/content";
 import { Dashboard } from "@ms/views";
 import {
   LessonStore,
@@ -145,6 +146,7 @@ export function ChapterList({ book, storage }: { book: Book; storage: Storage })
                     </li>
                   );
                 const done = completion.get(lesson.id);
+                const notebooks = NOTEBOOKS.get(c.number);
                 return (
                   <li key={c.number}>
                     <a className="chapter-link" href={chapterHref(lesson.id)}>
@@ -155,6 +157,18 @@ export function ChapterList({ book, storage }: { book: Book; storage: Storage })
                           : STRINGS.noChallenges}
                       </span>
                     </a>
+                    {notebooks && (
+                      <div className="chapter-notebooks">
+                        <p className="meta">{STRINGS.notebooksLead}</p>
+                        <ol>
+                          {notebooks.map((n) => (
+                            <li key={n.file}>
+                              <a href={notebookHref(import.meta.env.BASE_URL, n)}>{n.title}</a>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
                   </li>
                 );
               })}
