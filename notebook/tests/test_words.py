@@ -97,7 +97,13 @@ class TheWordsMatchTheEngine(unittest.TestCase):
             "and a reporting tool, which holds a dashboard",
             1,
         )
-        self.says("In the cells, `storage`, `warehouse` and `reporting` name the shop's three systems", 1)
+        self.says(
+            "three Python variables stand for the shop's three systems: `storage` is object storage, "
+            "`warehouse` is the warehouse, and `reporting` is the reporting tool",
+            1,
+        )
+        # And the setup makes them so.
+        self.assertIn("storage, warehouse, reporting = week.storage, week.warehouse, week.reporting", SOURCE[1])
 
     def test_the_shops_files(self):
         products = self.week.storage.records(shop.FILES["products"])

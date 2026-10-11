@@ -51,7 +51,7 @@ def _(mo):
 
     The platform has three systems: object storage, which holds files; a warehouse, which holds tables; and a reporting tool, which holds a dashboard. Every night, jobs read the files, write the tables and refresh the dashboard. You can read everything the three systems hold. You cannot see the jobs, when they are due to run, or any note anybody kept.
 
-    In the cells, `storage`, `warehouse` and `reporting` name the shop's three systems: object storage, the warehouse and the reporting tool.
+    In the code cells, three Python variables stand for the shop's three systems: `storage` is object storage, `warehouse` is the warehouse, and `reporting` is the reporting tool.
     """)
     return
 
