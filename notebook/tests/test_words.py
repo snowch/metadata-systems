@@ -154,6 +154,11 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertIn("](chapter_02.ipynb)", TEXT[1])
         self.assertIn("](chapter_01.ipynb)", TEXT[2])
 
+    def test_the_closing_names_the_next_chapter(self):
+        # Chapter 2 ends by naming the chapter after it, which the plan numbers 3.
+        self.says("## Before Chapter 3", 2)
+        self.says("Chapter 3 starts making them", 2)
+
     def test_each_chapter_opens_and_ends_with_the_way_back_to_the_course(self):
         # Relative links in a notebook open as files of the site, so the course's address is whole.
         nav = {

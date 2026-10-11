@@ -6,7 +6,7 @@
 // at least 44 pixels tall; a press disables the row and marks the pressed button busy until the
 // run ends; Run all runs every visible code cell, with no error in any output, and leaves the
 // notebook where it was scrolled. In Chapter 2, Run below from a selected cell does the same. The page
-// logs no error. The notebook workflow
+// logs no error, and the notebooks' earlier names lead to their chapters. The notebook workflow
 // runs it after the build, with Playwright from the course's dependencies.
 //
 //   node notebook/jupyterlite/smoke.mjs SITE_DIR
@@ -130,6 +130,14 @@ try {
     }
   }
   check(errors.length === 0, `the page logs no error${errors.length ? `: ${errors[0]}` : ""}`);
+  // The notebooks' earlier names lead to their chapters. Each is looked up first, which can log
+  // that the file is missing, so this comes after the check for errors.
+  await page.goto(`http://127.0.0.1:${port}/notebooks/index.html?path=chapter_01_part_2.ipynb`);
+  await page.waitForURL(/path=chapter_02\.ipynb/, { timeout: 60_000 }).catch(() => {});
+  check(
+    page.url().endsWith("path=chapter_02.ipynb"),
+    "an earlier notebook name leads to its chapter",
+  );
 } finally {
   await browser.close();
   server.kill();

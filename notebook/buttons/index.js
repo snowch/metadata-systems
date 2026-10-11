@@ -88,13 +88,33 @@ function row(app, panel) {
   return widget;
 }
 
+// The notebooks' names until 11 October 2026, when the two parts of Chapter 1 became Chapters 1 and
+// 2, and the names they have now.
+const MOVED = {
+  "chapter_01_part_1.ipynb": "chapter_01.ipynb",
+  "chapter_01_part_2.ipynb": "chapter_02.ipynb",
+};
+
+/** Sends a page opened at an earlier name to the chapter's name, unless the reader saved a copy
+    under the earlier name: JupyterLite keeps that copy in the browser, and it opens as before. */
+function followMove(app) {
+  const params = new URLSearchParams(window.location.search);
+  const moved = MOVED[params.get("path")];
+  if (!moved) return;
+  app.serviceManager.contents.get(params.get("path"), { content: false }).catch(() => {
+    params.set("path", moved);
+    window.location.replace(`${window.location.pathname}?${params}`);
+  });
+}
+
 export default {
   id: "ms-notebook-buttons:row",
   description:
-    "Adds a row of large Run all, Run below and Save buttons above every notebook's cells, and hides the menu bar and the notebook's toolbar.",
+    "Adds a row of large Run all, Run below and Save buttons above every notebook's cells, hides the menu bar and the notebook's toolbar, and sends the notebooks' earlier names to their chapters.",
   autoStart: true,
   requires: [INotebookTracker],
   activate(app, tracker) {
+    followMove(app);
     const add = (panel) => {
       panel.toolbar.setHidden(true);
       panel.contentHeader.addWidget(row(app, panel));

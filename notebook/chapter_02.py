@@ -445,11 +445,11 @@ def _(mo, warehouse):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## Before Chapter 2
+    ## Before Chapter 3
 
     The platform's state answers what exists. It does not answer what happened or why. Inferring the history from the data gave an explanation that fitted, and three ordinary changes made it ambiguous, made it wrong, or left a failed night looking like a normal one. The records that would have answered had to be made when the work was done.
 
-    Chapter 2 starts making them: a description of each asset, kept beside the data, with what the asset means and who is responsible for it. It then asks the four questions at the start again, to see which of them that record answers.
+    Chapter 3 starts making them: a description of each asset, kept beside the data, with what the asset means and who is responsible for it. It then asks the four questions at the start again, to see which of them that record answers.
     """)
     return
 

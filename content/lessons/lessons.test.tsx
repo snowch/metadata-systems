@@ -41,6 +41,19 @@ describe("the course's chapters", () => {
     }
   });
 
+  it("names, in a chapter's closing, the chapter after it", () => {
+    // A chapter's last section is headed "Before Chapter N" and its words name Chapter N, the next.
+    for (const l of LESSONS) {
+      const last = l.sections[l.sections.length - 1];
+      const next = chapterOf(l) + 1;
+      const named = [...`${last?.title} ${last?.prose}`.matchAll(/Chapter (\d+)/g)].map((m) =>
+        Number(m[1]),
+      );
+      expect(named.length, l.id).toBeGreaterThan(0);
+      expect(new Set(named), l.id).toEqual(new Set([next]));
+    }
+  });
+
   it("places each chapter where the plan does, introducing the plan's terms", () => {
     for (const l of LESSONS) {
       const planned = PLAN.find((c) => c.number === chapterOf(l));
