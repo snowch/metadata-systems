@@ -34,7 +34,8 @@ in pence, and `notebook/tests/` pins them.
 Every figure of the chapter, in its order. Each is a diagram or a figure of the shop's data, with a
 caption and nothing else (`CLAUDE.md`, "No lab on the page"); none takes a commitment. The blocks
 were written for the page's figures. In the notebook, `platform`, `week` and `dashboard` are drawn
-in a cell's output (`notebook/shop/figures.py`); `products`, `customers`, `orders` and `tables` are
+when the site is built, into Markdown cells (`notebook/shop/figures.py`), and show before anything
+runs; `products`, `customers`, `orders` and `tables` are
 cells whose code the learner can read and run, and which print the files' first lines and the
 tables' rows: the same questions, served by output the learner produces.
 

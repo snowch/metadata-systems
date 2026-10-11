@@ -126,3 +126,129 @@
     radial-gradient(farthest-side at 100% 50%, var(--ms-edge), transparent) right / 12px 100%
       no-repeat scroll;
 }
+
+/* The chapters' figures (notebook/shop/figures.py), which the build writes into Markdown cells. A
+   Markdown cell drops a figure's own <style>, so the figures are drawn here, in the theme's
+   colours: lines and fills are mixes of the text colour, so they read in the light and the dark
+   theme alike. The platform's three systems sit side by side on a wide screen and stack into one
+   column on a phone. */
+
+.jp-RenderedMarkdown .ms-figure {
+  max-width: 46rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.jp-RenderedMarkdown .ms-figure figcaption {
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--jp-content-font-color2);
+}
+
+.jp-RenderedMarkdown .ms-fig {
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.jp-RenderedMarkdown .ms-systems {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.jp-RenderedMarkdown .ms-system {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--jp-content-font-color1) 30%, transparent);
+  border-radius: 8px;
+}
+
+.jp-RenderedMarkdown .ms-system h4 {
+  margin: 0 0 0.4rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--jp-content-font-color2);
+}
+
+.jp-RenderedMarkdown .ms-system ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.jp-RenderedMarkdown .ms-system li {
+  margin: 0.15rem 0;
+}
+
+.jp-RenderedMarkdown .ms-kind {
+  margin-left: 0.35rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--jp-content-font-color2);
+}
+
+.jp-RenderedMarkdown .ms-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 7.5rem;
+  font-size: 0.75rem;
+  text-align: center;
+  color: var(--jp-content-font-color2);
+}
+
+.jp-RenderedMarkdown .ms-tally {
+  margin-top: 0.6rem;
+}
+
+@media (max-width: 640px) {
+  .jp-RenderedMarkdown .ms-systems {
+    grid-template-columns: 1fr;
+  }
+
+  .jp-RenderedMarkdown .ms-flow {
+    max-width: none;
+  }
+
+  .jp-RenderedMarkdown .ms-flow::before {
+    content: "\2193\00a0";
+  }
+
+  .jp-RenderedMarkdown .ms-flow .ms-right {
+    display: none;
+  }
+}
+
+.jp-RenderedMarkdown .ms-bars {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.25rem 0.6rem;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.jp-RenderedMarkdown .ms-bar {
+  height: 0.9rem;
+  border-radius: 3px;
+  background: color-mix(in srgb, #2a9d8f 75%, transparent);
+}
+
+.jp-RenderedMarkdown .ms-mono {
+  font-family: var(--jp-code-font-family);
+  font-size: 0.88em;
+}
+
+.jp-RenderedMarkdown .ms-muted {
+  font-size: 0.85rem;
+  color: var(--jp-content-font-color2);
+}
+
+/* The week, an SVG image drawn 340 units wide: it fills a phone's column and grows to 560 pixels
+   on a wider screen, so its words are never smaller than on a phone. */
+.jp-RenderedMarkdown img.ms-svg {
+  display: block;
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+}

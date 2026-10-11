@@ -1,47 +1,31 @@
 # Copyright © 2026 Christopher Snow
 
-"""The chapter's figures, drawn as HTML and SVG from the engine's data.
+"""The chapters' figures, drawn from the engine's data when the site is built.
+
+The build writes each figure into a notebook's Markdown cell, so a reader sees it before running
+anything. A Markdown cell keeps HTML's boxes and lists and drops `<style>` and inline `<svg>`, so:
+
+- the platform and the dashboard are HTML with class names only: the course's stylesheet
+  (notebook/buttons/style/index.css) draws them in the theme's own colours, and on a phone the
+  platform's systems stack into one column;
+- the week is an SVG image, base64 in a data URI, drawn at a phone's width so its words stay
+  readable there, with its own colours for the light and the dark theme (an image cannot take the
+  page's), and one sentence saying the same as its alternative text.
 
 Each figure shows only what the learner has been told: the pipeline names the systems and the
 assets each holds, and never draws an asset made from another, because which asset is made from
-which is what Chapter 2 shows the platform cannot tell. Colours follow the page's theme: text and
-lines use the current colour, and fills are translucent mixes of it.
+which is what Chapter 2 shows the platform cannot tell.
 """
 
 from __future__ import annotations
 
+import base64
 from datetime import datetime, timezone
 from html import escape
 
 from .data import ARRIVAL, DAYS
 from .week import Week, timeline
 
-_STYLE = """
-<style>
-.ms-fig { font-size: 0.95rem; line-height: 1.4; }
-.ms-fig code, .ms-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.88em; }
-.ms-systems { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 0.5rem; align-items: stretch; }
-.ms-system { border: 1px solid color-mix(in srgb, currentColor 30%, transparent); border-radius: 8px; padding: 0.6rem 0.75rem; }
-.ms-system h4 { margin: 0 0 0.4rem; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.75; }
-.ms-system ul { list-style: none; margin: 0; padding: 0; }
-.ms-system li { margin: 0.15rem 0; }
-.ms-kind { font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; margin-left: 0.35rem; }
-.ms-flow { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 0.75rem; opacity: 0.7; max-width: 7.5rem; }
-.ms-tally { margin-top: 0.6rem; opacity: 0.85; }
-@media (max-width: 640px) {
-  .ms-systems { grid-template-columns: 1fr; }
-  .ms-flow { max-width: none; }
-  .ms-flow::before { content: "\\2193\\00a0"; }
-  .ms-flow .ms-right { display: none; }
-}
-.ms-bars { display: grid; grid-template-columns: auto 1fr auto; gap: 0.25rem 0.6rem; align-items: center; }
-.ms-bar { height: 0.9rem; border-radius: 3px; background: color-mix(in srgb, #2a9d8f 75%, transparent); }
-.ms-muted { opacity: 0.7; font-size: 0.85rem; }
-.ms-figure { margin: 0.5rem 0 1rem; }
-.ms-figure figcaption { font-size: 0.85rem; opacity: 0.75; margin-bottom: 0.4rem; }
-.ms-raw { max-height: 16rem; overflow: auto; padding: 0.5rem 0.6rem; border-radius: 6px; background: color-mix(in srgb, currentColor 6%, transparent); white-space: pre; }
-</style>
-"""
 
 _KIND_LABEL = {"file": "file", "table": "table", "dashboard": "dashboard"}
 
@@ -88,7 +72,20 @@ def pipeline(week: Week, flow_label: str = "unseen jobs move data each night") -
         cells.append(f'<div class="ms-system"><h4>{escape(name)}</h4><ul>{items}</ul></div>')
         if i < len(systems) - 1:
             cells.append(f'<div class="ms-flow">{escape(flow_label)}<span class="ms-right">&nbsp;&rarr;</span></div>')
-    return f'{_STYLE}<div class="ms-fig"><div class="ms-systems">{"".join(cells)}</div><div class="ms-tally">{escape(tally(systems))}</div></div>'
+    return f'<div class="ms-fig"><div class="ms-systems">{"".join(cells)}</div><div class="ms-tally">{escape(tally(systems))}</div></div>'
+
+
+# The week's image: drawn 340 units wide with 14-unit text. A 360-pixel phone gives a notebook's
+# Markdown about 295 pixels, where the text shows at about 12 pixels; the stylesheet lets the image
+# grow to 560 pixels on a wider screen. Each day's label takes two lines, so eight fit side by side.
+_WEEK_WIDTH = 340
+_WEEK_TEXT = 14
+_WEEK_STYLE = (
+    f"text{{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:{_WEEK_TEXT}px;fill:#1f2328}}"
+    ".grid{fill:none;stroke:#1f2328;stroke-opacity:.3}.band{fill:#1f2328;fill-opacity:.12}"
+    ".night{fill:#2a9d8f}.start{stroke:#e76f51;stroke-width:2.5}.start-key{fill:#e76f51}"
+    "@media (prefers-color-scheme:dark){text{fill:#e6e6e6}.grid{stroke:#e6e6e6}.band{fill:#e6e6e6;fill-opacity:.16}}"
+)
 
 
 def week_strip(
@@ -98,7 +95,7 @@ def week_strip(
 ) -> str:
     """The shop's first week on one line: the order days, each night's work, and the morning you start."""
     days = list(DAYS) + ["2026-09-14"]
-    width, left, top, row = 800, 10, 22, 26
+    width, left, top, row = _WEEK_WIDTH, 4, 42, 26
     col = (width - 2 * left) / len(days)
     hour = col / 24
 
@@ -110,32 +107,35 @@ def week_strip(
     parts = []
     for i, d in enumerate(days):
         cx = left + i * col
-        parts.append(f'<rect x="{cx:.1f}" y="{top}" width="{col:.1f}" height="{row}" fill="none" stroke="currentColor" stroke-opacity="0.25"/>')
-        parts.append(f'<text x="{cx + col / 2:.1f}" y="{top - 7}" text-anchor="middle" font-size="12" fill="currentColor">{_day_label(d)}</text>')
-    band_w = col * len(DAYS)
-    parts.append(f'<rect x="{left}" y="{top + 4}" width="{band_w:.1f}" height="{row - 8}" fill="currentColor" fill-opacity="0.12"/>')
+        parts.append(f'<rect class="grid" x="{cx:.1f}" y="{top}" width="{col:.1f}" height="{row}"/>')
+        weekday, date = _day_label(d).split(" ")
+        parts.append(f'<text x="{cx + col / 2:.1f}" y="{top - 24}" text-anchor="middle">{weekday}</text>')
+        parts.append(f'<text x="{cx + col / 2:.1f}" y="{top - 7}" text-anchor="middle">{date}</text>')
+    parts.append(f'<rect class="band" x="{left}" y="{top + 4}" width="{col * len(DAYS):.1f}" height="{row - 8}"/>')
     for n in timeline(week):
         x0, x1 = x(n["started"]), x(n["finished"])
-        parts.append(f'<rect x="{x0:.1f}" y="{top + 2}" width="{max(x1 - x0, 3):.1f}" height="{row - 4}" fill="#2a9d8f"/>')
+        parts.append(f'<rect class="night" x="{x0:.1f}" y="{top + 2}" width="{max(x1 - x0, 3):.1f}" height="{row - 4}"/>')
     ax = x(ARRIVAL)
-    parts.append(f'<line x1="{ax:.1f}" x2="{ax:.1f}" y1="{top - 2}" y2="{top + row + 6}" stroke="#e76f51" stroke-width="2.5"/>')
-    parts.append(f'<text x="{min(ax + 4, width - 4):.1f}" y="{top + row + 18}" text-anchor="end" font-size="12" fill="currentColor">{escape(start_label)}</text>')
-    legend_y = top + row + 40
-    legend = [("currentColor", 0.12, keys[0]), ("#2a9d8f", 1, keys[1]), ("#e76f51", 1, keys[2])]
-    lx = left
-    for colour, opacity, label in legend:
-        parts.append(f'<rect x="{lx}" y="{legend_y - 10}" width="14" height="10" fill="{colour}" fill-opacity="{opacity}"/>')
-        parts.append(f'<text x="{lx + 20}" y="{legend_y}" font-size="12" fill="currentColor">{escape(label)}</text>')
-        lx += 30 + 7.2 * len(label)
+    parts.append(f'<line class="start" x1="{ax:.1f}" x2="{ax:.1f}" y1="{top - 2}" y2="{top + row + 6}"/>')
+    parts.append(f'<text x="{width - left}" y="{top + row + 22}" text-anchor="end">{escape(start_label)}</text>')
+    # The key, one line each, under the strip.
+    legend = [("band", keys[0]), ("night", keys[1]), ("start-key", keys[2])]
+    y = top + row + 48
+    for cls, label in legend:
+        parts.append(f'<rect class="{cls}" x="{left}" y="{y - 10}" width="14" height="10"/>')
+        parts.append(f'<text x="{left + 22}" y="{y}">{escape(label)}</text>')
+        y += 20
+    height = y - 6
     heard = (
         f"The shop's first week: the shop took orders from {_day_label(DAYS[0])} to {_day_label(DAYS[-1])} September; "
         f"each night's work ran in the early hours of the next day; you start work at 09:00 on Mon 14."
     )
     svg = (
-        f'<svg viewBox="0 0 {width} {legend_y + 8}" width="100%" role="img" aria-label="{escape(heard)}" '
-        f'style="max-width:{width}px; height:auto; display:block">{"".join(parts)}</svg>'
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" width="{width}" height="{height}">'
+        f"<style>{_WEEK_STYLE}</style>{''.join(parts)}</svg>"
     )
-    return f'{_STYLE}<div class="ms-fig">{svg}</div>'
+    data = base64.b64encode(svg.encode("utf-8")).decode("ascii")
+    return f'<img class="ms-svg" alt="{escape(heard)}" src="data:image/svg+xml;base64,{data}">'
 
 
 def dashboard_chart(week: Week) -> str:
@@ -150,21 +150,12 @@ def dashboard_chart(week: Week) -> str:
         for v, p in zip(values, pence)
     )
     return (
-        f'{_STYLE}<div class="ms-fig"><strong>{escape(d["title"])}</strong>'
+        f'<div class="ms-fig"><strong>{escape(d["title"])}</strong>'
         f'<div class="ms-muted">Last refreshed {escape(show_time(d["last_refreshed"]))}.</div>'
-        f'<div class="ms-bars" style="margin-top:0.5rem">{rows}</div></div>'
+        f'<div class="ms-bars">{rows}</div></div>'
     )
-
-
-def raw_text(week: Week, uri: str, caption: str = "The first {shown} of {total} lines.", lines: int = 7) -> str:
-    """The first lines of a file, exactly as stored."""
-    text = week.storage.read_text(uri).splitlines()
-    shown = "\n".join(text[:lines])
-    more = len(text) - lines
-    note = f'<div class="ms-muted">{escape(caption.format(shown=lines, total=len(text)))}</div>' if more > 0 else ""
-    return f'{_STYLE}<div class="ms-fig"><div class="ms-raw ms-mono">{escape(shown)}</div>{note}</div>'
 
 
 def figure(body: str, caption: str) -> str:
     """A figure with its caption above it, as the chapter captions its figures."""
-    return f'{_STYLE}<figure class="ms-figure"><figcaption>{escape(caption)}</figcaption>{body}</figure>'
+    return f'<figure class="ms-figure"><figcaption>{escape(caption)}</figcaption>{body}</figure>'

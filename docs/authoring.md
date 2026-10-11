@@ -23,7 +23,8 @@ A chapter is `notebook/chapter_NN.py`, a Python file of cells in marimo's file f
 the chapter diffable and lets the tests read every sentence. `notebook/jupyterlite/build_ipynb.py`
 turns it into `chapter_NN.ipynb`, cell by cell, and stops on anything it does not know how to
 carry over: a markdown cell (`mo.md`) is a markdown cell; a figure (`mo.Html`, from
-`notebook/shop/figures.py`) is an SVG in a cell's output; a control (`mo.ui.dropdown`,
+`notebook/shop/figures.py`) is drawn by the build from the shop's week into a Markdown cell, so it
+shows before anything runs; a control (`mo.ui.dropdown`,
 `mo.ui.text_area`) is an ipywidget; the setup cells at the foot of the file move to the top. A new
 chapter is added to `CHAPTERS` in `build_ipynb.py`, in `notebook/tests/test_words.py`, and to
 `NOTEBOOKS` in `content/plan/notebooks.ts`, which the front page reads.
@@ -43,6 +44,21 @@ chapter is added to `CHAPTERS` in `build_ipynb.py`, in `notebook/tests/test_word
 
 The chapter's notes, `docs/notes/chapter-NN.md`, are written in the same commit, with a section
 "Figures", a section "Requirements" and a section "Originality" (below).
+
+## How a figure is drawn
+
+A figure the reader does not change is drawn when the site is built, into a Markdown cell, so it
+shows before Python has loaded. A Markdown cell drops `<style>` and inline `<svg>`, so:
+
+- a figure of names and values (the platform, the dashboard) is HTML with class names only, styled
+  by `notebook/buttons/style/index.css` in the theme's colours, and laid out to restack on a phone;
+- a drawing (the week) is an SVG image in a base64 data URI, drawn at a phone's width with text
+  that shows at 11 pixels or more in a 360-pixel phone's column, with its own colours for the light
+  and dark themes (an image cannot take the page's) and its one-sentence description as `alt`.
+
+A figure that changes with what the reader does stays a code cell, and its output follows the same
+rules. The smoke test checks that each chapter's figures show before anything runs, and the size
+of the week's words at 360 pixels.
 
 ## A diagram carries what prose would make the learner hold
 
@@ -76,7 +92,7 @@ page asks for an expectation first.
   nothing.
 
 These are a lens for the notes, never labels on the page. On the page, "figure" names a drawing
-in a cell's output and nothing else: a number is a total, a value or a count.
+(a diagram or a figure of the shop's data) and nothing else: a number is a total, a value or a count.
 
 A figure's block in the chapter's notes, under "Figures", in the page's order: a heading with its
 name, its role, and for an experiment twelve answers, each under its own label.

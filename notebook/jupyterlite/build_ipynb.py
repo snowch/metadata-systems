@@ -11,7 +11,8 @@ cell, with the same prose and the same visible code:
 - the setup cells, at the foot of a source file, move to the top, since Jupyter runs from the top,
   with the install of the packages the page bundles;
 - the controls (the menu of changes, the handover note) become ipywidgets; a figure shown with
-  `mo.Html` is IPython's `HTML`; a column of outputs is `display`; a callout (the warning, and
+  `mo.Html` is drawn here, from the shop's week, into a Markdown cell (notebook/shop/figures.py);
+  a column of outputs is `display`; a callout (the warning, and
   the steps for running and saving the page) is a box, a div the course's stylesheet draws.
 
 Anything in a source file this does not know how to carry over stops the build.
@@ -29,6 +30,13 @@ from pathlib import Path
 import nbformat
 
 HERE = Path(__file__).resolve().parent
+
+# The shop's week, which the build draws each figure from (notebook/shop/figures.py).
+sys.path.insert(0, str(HERE.parent))
+import shop  # noqa: E402
+from shop import figures  # noqa: E402
+
+WEEK = shop.run_week()
 
 HIDDEN = {"jupyter": {"source_hidden": True}}
 
@@ -53,8 +61,7 @@ if sys.platform == "emscripten":
     """import ipywidgets as widgets
 from IPython.display import HTML, display
 
-import shop
-from shop import figures""",
+import shop""",
     """week = shop.run_week()
 storage, warehouse, reporting = week.storage, week.warehouse, week.reporting""",
 ]
@@ -156,7 +163,10 @@ def build(chapter: int) -> nbformat.NotebookNode:
         elif "mo.ui.text_area(" in code:
             out.append(nbformat.v4.new_code_cell(note(stmts), metadata=HIDDEN))
         elif len(stmts) == 1 and isinstance(first, ast.Expr) and is_call(first.value, "Html"):
-            out.append(nbformat.v4.new_code_cell("HTML(" + ast.unparse(first.value.args[0]) + ")", metadata=HIDDEN))
+            # A figure: drawn here from the shop's week and written into a Markdown cell, so it
+            # shows before anything runs.
+            drawn = eval(compile(ast.Expression(first.value.args[0]), "figure", "eval"), {"figures": figures, "week": WEEK})
+            out.append(nbformat.v4.new_markdown_cell(drawn))
         elif len(stmts) == 1 and isinstance(first, ast.Expr) and is_call(first.value, "vstack"):
             parts = ",\n    ".join(ast.unparse(e) for e in first.value.args[0].elts)
             out.append(nbformat.v4.new_code_cell(f"display(\n    {parts},\n)", metadata=HIDDEN))

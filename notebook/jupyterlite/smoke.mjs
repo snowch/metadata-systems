@@ -106,6 +106,54 @@ try {
       row.every((b) => b.height >= 44),
       `Chapter ${chapter}: every button is at least 44 pixels tall`,
     );
+    // The figures are in Markdown cells, drawn when the site was built: they show before anything
+    // runs, with no code cell for any of them, and the week's words are readable on a phone.
+    const figures = await page.evaluate(async () => {
+      const outer = document.querySelector(".jp-WindowedPanel-outer");
+      const found = new Map();
+      for (let y = 0; y <= outer.scrollHeight; y += 400) {
+        outer.scrollTop = y;
+        await new Promise((r) => setTimeout(r, 60));
+        for (const f of document.querySelectorAll(".jp-RenderedMarkdown figure.ms-figure")) {
+          const caption = f.querySelector("figcaption").textContent;
+          const img = f.querySelector("img.ms-svg");
+          found.set(caption, {
+            shown: f.getBoundingClientRect().height > 40,
+            image: img ? img.complete && img.naturalWidth > 0 : null,
+            width: img ? img.getBoundingClientRect().width : null,
+          });
+        }
+      }
+      outer.scrollTop = 0;
+      const stubs = [...document.querySelectorAll(".jp-CodeCell")].filter((c) =>
+        c.textContent.includes("figures."),
+      ).length;
+      return { figures: [...found.values()], stubs };
+    });
+    check(
+      figures.figures.length === (chapter === 1 ? 3 : 2) &&
+        figures.figures.every((f) => f.shown && f.image !== false) &&
+        figures.stubs === 0,
+      `Chapter ${chapter}: its ${figures.figures.length} figures show before anything runs, with no code cell`,
+    );
+    if (chapter === 1) {
+      // On a phone 360 pixels wide, the narrowest common width, the week's 14-unit text in its
+      // 340-unit drawing must show at 11 pixels or more.
+      await page.setViewportSize({ width: 360, height: 800 });
+      await page.waitForTimeout(300);
+      const width = await page.evaluate(() => {
+        const img = document.querySelector("img.ms-svg");
+        img.scrollIntoView();
+        return img.getBoundingClientRect().width;
+      });
+      const size = (14 * width) / 340;
+      check(
+        size >= 11,
+        `Chapter 1: at 360 pixels wide the week's words show at ${size.toFixed(1)} pixels`,
+      );
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.waitForTimeout(300);
+    }
     await page.evaluate(() => {
       document.querySelector(".jp-WindowedPanel-outer").scrollTop = 300;
     });

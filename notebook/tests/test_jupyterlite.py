@@ -125,5 +125,45 @@ class TheTheme(unittest.TestCase):
         overrides = json.loads((ROOT / "notebook" / "jupyterlite" / "overrides.json").read_text(encoding="utf-8"))
         self.assertIs(overrides["@jupyterlab/apputils-extension:themes"]["adaptive-theme"], True)
 
+
+class TheFigures(unittest.TestCase):
+    """The figures go into Markdown cells, which drop <style> and inline <svg>."""
+
+    @classmethod
+    def setUpClass(cls):
+        import base64
+        import sys
+
+        sys.path.insert(0, str(ROOT / "notebook"))
+        import shop
+        from shop import figures
+
+        cls.week = shop.run_week()
+        cls.figures = figures
+        cls.decode = staticmethod(lambda b64: base64.b64decode(b64).decode("utf-8"))
+
+    def test_the_html_figures_carry_no_style_and_no_svg(self):
+        for drawn in (self.figures.pipeline(self.week), self.figures.dashboard_chart(self.week)):
+            html = self.figures.figure(drawn, "a caption")
+            self.assertNotIn("<style", html)
+            self.assertNotIn("<svg", html)
+
+    def test_the_week_is_an_svg_image_with_its_own_dark_colours_and_a_description(self):
+        img = self.figures.week_strip(self.week)
+        [alt, b64] = re.findall(r'^<img class="ms-svg" alt="([^"]+)" src="data:image/svg\+xml;base64,([^"]+)">$', img)[0]
+        svg = self.decode(b64)
+        self.assertIn("prefers-color-scheme:dark", svg)
+        self.assertNotIn("currentColor", svg)
+        self.assertIn("you start work at 09:00 on Mon 14", alt)
+        # 14-unit text in a 340-unit drawing: at least 11 pixels in a column 268 pixels wide.
+        self.assertIn('viewBox="0 0 340 ', svg)
+        self.assertIn("font-size:14px", svg)
+
+    def test_every_figure_the_chapters_show_is_drawn_into_markdown(self):
+        build = (ROOT / "notebook" / "jupyterlite" / "build_ipynb.py").read_text(encoding="utf-8")
+        self.assertIn("nbformat.v4.new_markdown_cell(drawn)", build)
+        for source in SOURCE.values():
+            self.assertNotIn("figures.raw_text", source)
+
 if __name__ == "__main__":
     unittest.main()

@@ -258,6 +258,18 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 11 October 2026: figures drawn into the page, not by code cells
+
+Each figure was a hidden code cell, so it showed only after Run all, behind a stub such as
+`HTML(figures.figure(…)) •••`. The author asked why the figures were not embedded instead. The
+build now draws them from the shop's week into Markdown cells, so they show before Python loads,
+and they are still computed by the engine, never drawn by hand. Tested on the built site, a
+Markdown cell drops inline `<svg>` and `<style>`, keeps an SVG image in a base64 data URI, and
+showed a cell attachment as a broken image. So the platform and the dashboard are HTML styled by
+the course's stylesheet, which restacks on a phone, and the week is an SVG image, redrawn at a
+phone's width with each day's label on two lines, with its own light and dark colours: its words
+show at about 12 pixels on a 360-pixel phone, where the old drawing's were under 5.
+
 ### 11 October 2026: the notebooks follow the reader's light or dark setting
 
 The notebooks were always in JupyterLab's light theme, and with the menus hidden a reader had no

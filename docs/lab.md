@@ -112,8 +112,8 @@ evidence:
 - **What only a record answers.** The questions whose answers are in neither: who is responsible
   for an asset, what a number's unit is, what changed and why.
 
-Two more things the notebooks draw from it (`notebook/shop/figures.py`), as SVG in a cell's
-output:
+Two more things the notebooks draw from it (`notebook/shop/figures.py`), when the site is built,
+into Markdown cells (`docs/authoring.md`, "How a figure is drawn"):
 
 - **The platform** (`pipeline`): the three systems in the order data moves through them, the
   assets each holds, and one label for the flow between them. It draws no arrow from one asset to
