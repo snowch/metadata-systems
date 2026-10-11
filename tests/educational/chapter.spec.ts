@@ -112,14 +112,16 @@ test.describe("the chapter pages", () => {
     await expect(page.locator(".chapter-list > li")).toHaveCount(PLAN.length);
     const link = page.locator(".chapter-list a.chapter-link", { hasText: CHAPTER.title });
     await expect(link).toBeVisible();
-    // A chapter with challenges shows its progress; one without says so.
-    await expect(link.locator(".meta")).toHaveText(
-      CHAPTER.challenges.length > 0
-        ? `0 of ${CHAPTER.challenges.length} challenges complete`
-        : STRINGS.noChallenges,
-    );
+    // A chapter with challenges shows its progress; one without shows none.
+    if (CHAPTER.challenges.length > 0)
+      await expect(link.locator(".meta")).toHaveText(
+        `0 of ${CHAPTER.challenges.length} challenges complete`,
+      );
+    else await expect(link.locator(".meta")).toHaveCount(0);
+    await expect(page.locator(".contents-note")).toHaveText(STRINGS.notebooksNote);
     await expect(page.locator(".chapter-to-write")).toHaveCount(PLAN.length - LESSONS.length);
-    // Each written chapter is also a notebook, linked under its line; the band starts Chapter 1.
+    // Each written chapter is also a notebook, linked at the right of its line; the band starts
+    // Chapter 1.
     const notebooks = page.locator("a.chapter-notebook");
     await expect(notebooks).toHaveCount(2);
     await expect(notebooks.nth(0)).toHaveAttribute(

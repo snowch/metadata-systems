@@ -7,7 +7,8 @@
 // part, each part one line until it is pressed, the part of the chapter the button names already
 // open (the author, 8 October 2026: the page was a title, a paragraph and thirty-one lines of
 // "still to be written"). A chapter that is a notebook links it: from its line when the chapter has
-// no page, under its line when it has one (content/lessons/notebooks.ts).
+// no page, at the right of its line when it has one, with one sentence under "Contents" saying what
+// a notebook is (content/lessons/notebooks.ts).
 
 import { useMemo } from "react";
 
@@ -140,6 +141,7 @@ export function ChapterList({ book, storage }: { book: Book; storage: Storage })
         />
       )}
       <h2 className="contents-heading">{STRINGS.contents}</h2>
+      {NOTEBOOKS.size > 0 && <p className="contents-note">{STRINGS.notebooksNote}</p>}
       {PARTS.map((title, i) => {
         const chapters = chaptersOf(i + 1);
         const count = chapters.filter((c) => written.has(c.number)).length;
@@ -177,19 +179,21 @@ export function ChapterList({ book, storage }: { book: Book; storage: Storage })
                     </li>
                   );
                 const done = completion.get(lesson.id);
+                // The title opens the page; a chapter that is also a notebook links it at the right
+                // of its line. Progress shows only where a chapter has challenges to count.
                 return (
-                  <li key={c.number}>
+                  <li key={c.number} className="chapter-row">
                     <a className="chapter-link" href={chapterHref(lesson.id)}>
                       <span className="chapter-title">{label}</span>
-                      <span className="meta">
-                        {done && done.total > 0
-                          ? fill(STRINGS.progress, { passed: done.passed, total: done.total })
-                          : STRINGS.noChallenges}
-                      </span>
+                      {done && done.total > 0 && (
+                        <span className="meta">
+                          {fill(STRINGS.progress, { passed: done.passed, total: done.total })}
+                        </span>
+                      )}
                     </a>
                     {file && (
                       <a className="chapter-notebook" href={notebook(file)}>
-                        {STRINGS.notebookAlso}
+                        {STRINGS.notebookLink}
                       </a>
                     )}
                   </li>

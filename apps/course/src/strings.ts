@@ -35,13 +35,13 @@ export const STRINGS = {
   chapter: "{number}. {title}",
   toWrite: "Still to be written",
   progress: "{passed} of {total} challenges complete",
-  noChallenges: "No challenges",
-  // A chapter that is a notebook (brief AU): the note under its line when it has no page, and the
-  // link under its line when it has one.
+  // A chapter that is a notebook: the note under its line when it has no page (brief AU); the link
+  // at the right of its line when it has one, and the sentence under "Contents" (brief AX).
   notebookNote:
     "A notebook: you run its Python in your browser, and the first open downloads about 13 MB.",
-  notebookAlso:
-    "This chapter as a notebook: run its Python in your browser. About 13 MB first time.",
+  notebookLink: "Open notebook",
+  notebooksNote:
+    'A chapter with an "Open notebook" link can also be opened as a notebook, where you run its Python code in your browser; the first time, the browser downloads about 13 MB.',
   previous: "Previous",
   next: "Next",
   pagerLabel: "Previous and next chapter",

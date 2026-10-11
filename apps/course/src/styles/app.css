@@ -432,13 +432,28 @@ details.part .chapter-list {
   color: var(--accent);
   font-weight: 600;
 }
-/* A chapter's notebook, under the line of a chapter that also has a page. */
+/* A chapter with a page and a notebook: the title, which opens the page, then the notebook's link
+   at the right of the line. */
+.chapter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--space-4);
+}
+.chapter-row .chapter-link {
+  flex: 1 1 auto;
+}
 .chapter-notebook {
   display: inline-flex;
   align-items: center;
   min-height: var(--control);
-  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
   color: var(--accent);
+}
+.contents-note {
+  max-width: var(--measure);
+  font-size: var(--text-sm);
+  color: var(--fg-muted);
 }
 .chapter-to-write .chapter-title {
   color: var(--fg-muted);
