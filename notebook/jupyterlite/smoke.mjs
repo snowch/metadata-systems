@@ -236,6 +236,28 @@ try {
       );
       check(!sideways, "Chapter 1: the page does not scroll sideways");
     }
+    // After a run, with every output and control drawn, the page still fits a phone 360 pixels
+    // wide: nothing in the notebook, a collapsed cell's first line included, scrolls it sideways.
+    await page.setViewportSize({ width: 360, height: 800 });
+    const sideways = await page.evaluate(async () => {
+      const outer = document.querySelector(".jp-WindowedPanel-outer");
+      const before = outer.scrollTop;
+      let wide = false;
+      for (let y = 0; y <= outer.scrollHeight; y += 400) {
+        outer.scrollTop = y;
+        await new Promise((r) => setTimeout(r, 60));
+        wide ||= document.documentElement.scrollWidth > document.documentElement.clientWidth;
+        wide ||= outer.scrollWidth > outer.clientWidth;
+      }
+      outer.scrollTop = before;
+      return wide;
+    });
+    check(
+      !sideways,
+      `Chapter ${chapter}: after Run all, at 360 pixels wide, the page does not scroll sideways`,
+    );
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.waitForTimeout(300);
     if (chapter === 2) {
       const day = page.locator(".jp-CodeCell", { hasText: 'day = "2026-09-10"' }).first();
       await day.scrollIntoViewIfNeeded();

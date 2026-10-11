@@ -262,3 +262,16 @@
   white-space: nowrap;
   overflow-wrap: normal;
 }
+
+/* A collapsed code cell shows its first line. JupyterLab keeps that line on one row and lets its
+   box grow to the line's length, so a long first line (the note's placeholder in Chapter 2) made
+   the page wider than a phone. The box may now shrink, and the line ends in an ellipsis. */
+.jp-Placeholder-contentContainer,
+.jp-Placeholder-content {
+  min-width: 0;
+}
+
+.jp-PlaceholderText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
