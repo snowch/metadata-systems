@@ -1,6 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
-// The questions Chapter 1 asks of the shop, and what can answer each.
+// The questions Chapter 2 asks of the shop, and what can answer each.
 //
 // For one asset, a question is answered by what storage records, suggested by the data, or
 // answered only by a record somebody kept at the time. The lab works out which by running the

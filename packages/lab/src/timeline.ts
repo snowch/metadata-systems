@@ -3,7 +3,7 @@
 // The shop's first week as a newcomer is shown it on Monday morning: the days the shop took
 // orders, the night of work after each, and the morning the learner starts. It says when each
 // night's work began and ended, and nothing about what a night wrote, which writer ran when, or
-// which asset is made from which: Chapter 1 shows that storage cannot tell the last, so the week
+// which asset is made from which: Chapter 2 shows that storage cannot tell the last, so the week
 // must not tell it either.
 
 import { ARRIVAL, DAYS } from "./shop/data";

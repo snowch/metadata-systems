@@ -43,10 +43,10 @@ changed (its full unit suite passes on the moved packages; `snowch/learning-plat
 `docs/adoption.md`):
 
 - **A challenge built from choices.** An answer field may be a `choice` among options, and the
-  schema holds the reference to one of them. Both of Chapter 1's challenges are built from
+  schema holds the reference to one of them. Both of Chapter 2's challenges are built from
   choices, graded case by case by the book.
 - **An artifact that is text or data.** A written or drawn challenge may be graded case by case
-  when its reference is `text` or `data`, with no circuit rules. Chapters 2 (records), 6 and 7
+  when its reference is `text` or `data`, with no circuit rules. Chapters 3 (records), 6 and 7
   (events) and 9 (SQL) need it.
 - **A model the book names.** A figure's model is a name the book chooses; `none` stays reserved
   for a figure that states no model, and `modelProblems` holds the lessons to the models the book
@@ -63,7 +63,7 @@ changed (its full unit suite passes on the moved packages; `snowch/learning-plat
   all, as this course's do.
 - **A section's details.** A section may carry `details`: the words of a control and the Markdown
   it opens, shown closed after the section's prose and before its figures (the platform, at
-  8c2f186). Chapter 1 kept how its figures were computed there until the lab concept went; the
+  8c2f186). Chapter 2 kept how its figures were computed there until the lab concept went; the
   course styles it as it styles every disclosure, for a chapter that needs one.
 
 ## What is this course's own
@@ -81,5 +81,5 @@ changed (its full unit suite passes on the moved packages; `snowch/learning-plat
 `PredictionChallenge` (every commitment before the figure answers: the predictions, the requirement,
 the decisions and the change figure's prediction), `FaultInjector` (the change figure's changes and the
 question map's weeks) and `StateInspector` (the record, column and day tables). `Stepper`, `Timeline` and `DrillDown` wait for the chapters
-that need them: runs over time (Chapter 6), event delivery (Part V) and drilling from an asset to
-its columns (Chapter 9).
+that need them: runs over time (Chapter 7), event delivery (Part V) and drilling from an asset to
+its columns (Chapter 10).

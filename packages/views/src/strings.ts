@@ -3,7 +3,7 @@
 // Every word the figures put in front of a learner, in one place. A name between backticks is set
 // as code where the figure draws the sentence itself (`Rich`), and dropped where only plain text
 // will do (`plain`). Drafted by the course's prose
-// process (CLAUDE.md) from the briefs in docs/notes/chapter-01/briefs (F, then the revision's I,
+// process (CLAUDE.md) from the briefs in docs/notes/chapter-02/briefs (F, then the revision's I,
 // J, K and L after the review) and checked against the engine (packages/lab), which the page
 // never names. Slots in braces are filled by `format`.
 
@@ -13,7 +13,7 @@ export const DEFAULT_VIEW_STRINGS = {
   badgeLabel: "How this figure works: {model}",
   // What a figure that declares a role asks of the learner, on its badge, and the note the badge
   // opens (CLAUDE.md, "Experiments, instruments and explanations"). A reference asks nothing to be
-  // done, so it has no note. Chapter 1's figures declare no role, so they carry no badge.
+  // done, so it has no note. Chapter 2's figures declare no role, so they carry no badge.
   roles: {
     experiment: "Experiment",
     inspect: "Inspect",

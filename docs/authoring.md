@@ -1,6 +1,6 @@
 # Writing a chapter
 
-How a chapter is made, from the engine to the review. Chapter 1, `content/lessons/invisible-system.ts`,
+How a chapter is made, from the engine to the review. Chapter 2, `content/lessons/invisible-system.ts`,
 is the worked example; copy its shape.
 
 ## The engine first
@@ -22,7 +22,7 @@ the title and the introduced terms to the plan as well.
 - `objectives`: what the learner can do afterwards, each starting with a verb.
 - `introduces`: the terms the plan gives the chapter; the term gate fails any earlier chapter that
   uses one, including chapters not yet written. `termExemptions` lists a word used in another
-  sense, with the reason (Chapter 1 uses "run" as a verb; the noun is Chapter 6's).
+  sense, with the reason (Chapter 2 uses "run" as a verb; the noun is Chapter 7's).
 - `sections`: exactly ten, in the platform's order. A figure (`interactives`) has an `id`, a
   `kind` from the book's registry, a `timeModel` (`none`: the page states no model, so the
   platform draws no badge and no note), a plain-text `caption`, Markdown `lead` and `after`, and
@@ -106,7 +106,7 @@ and the page never says what computes a figure.
   decision, a change run after a prediction, a sort) is one, and so is a challenge. Prefer it.
 - `inspect`: an instrument the learner examines for evidence, such as the inspector or the
   dashboard. Never present it as the activity: put a question in front of it and say what to look
-  for. Chapter 1's inspector follows a decision about where to look first (`where-first`) and
+  for. Chapter 2's inspector follows a decision about where to look first (`where-first`) and
   opens on the asset chosen there (`from`).
 - `reference`: what the learner has been told, kept to hand, such as the platform map. It asks
   nothing.
@@ -154,7 +154,7 @@ block missing, out of the page's order or not repeating the figure's role, and a
 The front page (`apps/course/src/pages/ChapterList.tsx`) is the course's own, like the rest of
 the shell. It holds a band with the course's title, one bold line on what the learner does, the
 lead, the way in (the first chapter, or the first one not finished once a challenge has passed),
-and what the course assumes of the learner; beside them, Chapter 1's dashboard as the chapter
+and what the course assumes of the learner; beside them, Chapter 2's dashboard as the chapter
 shows it, mounted from the book's own figure with its caption and no badge. The rule for that
 figure is the chapters' rule: computed from the shop's data, never decoration, showing nothing a chapter
 asks the learner to find. Under the band, the eight parts of `PLAN` in reading order, one line
@@ -179,7 +179,7 @@ A prediction is an experiment, built around what the learner should learn (`CLAU
   are an investigation, not a reveal: the learner decides where to look first (a `decision` whose
   choice opens the inspector), chooses an explanation to test (another `decision`), tests it with
   the figures that follow, and the rows are read against their choice only after their own work
-  passes (`hypothesis-check`). Chapter 1's Thursday is the example. Each decision waits for the
+  passes (`hypothesis-check`). Chapter 2's Thursday is the example. Each decision waits for the
   answer before it (`waits`): the first states the difference the prediction found, and the
   figure just below a prediction is in view while the learner is still choosing.
 - **Prefer independent evidence**: a total the learner could add up, rows they could read, not
@@ -191,7 +191,7 @@ A prediction is an experiment, built around what the learner should learn (`CLAU
 - **Where the page gives no grounds, ask a choice.** If nothing above the figure lets a learner
   tell the options apart (how this shop happened to set up its warehouse), ask what they would do
   in the shop's place, with `mode: "choose"`: the figure shows what the shop does beside their
-  choice, and neither is called right. Chapter 1's owner question began as one; when the question
+  choice, and neither is called right. Chapter 2's owner question began as one; when the question
   is what a requirement means, the requirement figure ("Requirements", below) asks it better.
 - **The figure answers.** A naming probe's answer is a word the option lists under `means`; a
   counting probe's is a count inside the option's `range`. The lesson never stores the answer.

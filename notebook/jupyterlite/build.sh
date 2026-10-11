@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Copyright © 2026 Christopher Snow
 
-# Builds Chapter 1 as a JupyterLite site, into the directory given: two Jupyter notebooks, one per
-# part of the chapter, made from the two source files in notebook/, with the `shop` package, in
+# Builds Chapters 1 and 2 as a JupyterLite site, into the directory given: a Jupyter notebook per
+# chapter, made from the two source files in notebook/, with the `shop` package, in
 # JupyterLite's Notebook interface, with Pyodide and every package the pages use inside the site,
 # so they fetch nothing from a third party. Both workflows run this; it needs the packages in
 # requirements.txt, Node and npm, and network access to PyPI, to npm and to Pyodide's CDN at build

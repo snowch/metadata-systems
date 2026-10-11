@@ -1,7 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 // The course's visual vocabulary: one small mark per kind of thing, always beside its name, so a
-// mark never carries meaning alone. Chapter 1 needs three: a file, a table and a dashboard. Later
+// mark never carries meaning alone. Chapter 2 needs three: a file, a table and a dashboard. Later
 // chapters add a job, a run, an event, a column, an observation, an owner and a version, each
 // drawn once here. The marks are Google's Material Symbols (Apache 2.0): "description" for a
 // file, "table" for a table, "dashboard" for a dashboard, redrawn as paths so the page loads no

@@ -10,7 +10,7 @@
 - The reporting tool holds a dashboard and records its title, who created it and when, when it
   last refreshed, and the values it shows.
 
-Nothing here records which program wrote an asset, what it read, or why: that is what Chapter 1
+Nothing here records which program wrote an asset, what it read, or why: that is what Chapter 2
 shows a platform's state cannot tell.
 """
 

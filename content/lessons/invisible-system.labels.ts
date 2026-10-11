@@ -1,6 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
-// Titles, objectives and captions of Chapter 1. Titles name the section's subject; a caption says
+// Titles, objectives and captions of Chapter 2. Titles name the section's subject; a caption says
 // what a figure shows. All plain text: no Markdown.
 
 export const LABELS = {
@@ -20,7 +20,7 @@ export const LABELS = {
     explanation: "A rule the week never tests",
     generalisation: "Records made at the time",
     challenge: "The handover",
-    reflection: "Before Chapter 2",
+    reflection: "Before Chapter 3",
   },
   captions: {
     platform: "The shop's three systems and what each holds.",

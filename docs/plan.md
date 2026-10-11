@@ -61,11 +61,11 @@ arrives on Monday 14 September. On Thursday something went wrong, and the dashbo
 
 A small map of the platform stays to hand through a chapter: the systems in the order data moves
 through them, the assets each holds, and between them the programs the learner cannot yet see. In
-Chapter 1 it shows no link from one asset to another, because that is what the chapter finds
+Chapter 2 it shows no link from one asset to another, because that is what the chapter finds
 storage cannot tell. As the learner builds records in later chapters, the map gains what those
 records hold, and a link appears on it only once something the learner built records it.
 
-The shop's platform starts with deliberately too little information. Chapter 1 gives the learner
+The shop's platform starts with deliberately too little information. Chapter 2 gives the learner
 storage and nothing else. Each later chapter adds one kind of record, built by the learner, and
 the engine keeps what they built: what a figure shows is the shop plus the learner's own graded
 work from every earlier chapter (`docs/lab.md`, "The learner's state").
@@ -99,10 +99,11 @@ records about it.
 
 | Ch | Title | The learner builds | Central experiment | What breaks | Introduces |
 | --- | --- | --- | --- | --- | --- |
-| 1 | The invisible data system | nothing yet: storage is all there is | an essay, read with four figures: a query over `clean_orders` reproduces `daily_sales` and explains Thursday, and three changes show what that does and does not establish | an analyst's copy makes two sources fit; an edited program leaves nothing that fits and no trace; a failed night leaves the dashboard looking up to date over a table a day behind | asset, metadata |
-| 2 | What is metadata? | descriptive records for the shop's assets: meaning, owner, columns with their meaning and unit | ask Chapter 1's questions again of storage plus the records, and see which become answerable | a column in `products` that names a person is data about the business, not a record about the file; a record nobody updates goes stale while storage moves on | descriptive, operational, schema |
-| 3 | Metadata as a model | entity types, attributes, identifiers and relationship types; the records checked against them | merge two records that spell the same owner differently | a reference to an entity that does not exist; a fact the model has no type for | entity, attribute, identifier, dataset |
-| 4 | Metadata as a graph | the model as nodes and edges; traversals | predict what a traversal returns, then run it | a traversal that follows the wrong kind of edge and returns half the shop | graph, node, edge, traversal |
+| 1 | The shop and its platform | nothing yet: storage is all there is | a notebook, read and run: the shop's files and the warehouse's tables, read with the platform's own SQL, then the dashboard, with the head of the shop's one line in front of the tour | nothing: the chapter shows what the platform holds, and what it does not show: the programs, when they are due to run, and any notes | asset |
+| 2 | The invisible data system | nothing yet: storage is all there is | an essay, read with four figures: a query over `clean_orders` reproduces `daily_sales` and explains Thursday, and three changes show what that does and does not establish | an analyst's copy makes two sources fit; an edited program leaves nothing that fits and no trace; a failed night leaves the dashboard looking up to date over a table a day behind | metadata |
+| 3 | What is metadata? | descriptive records for the shop's assets: meaning, owner, columns with their meaning and unit | ask Chapter 2's questions again of storage plus the records, and see which become answerable | a column in `products` that names a person is data about the business, not a record about the file; a record nobody updates goes stale while storage moves on | descriptive, operational, schema |
+| 4 | Metadata as a model | entity types, attributes, identifiers and relationship types; the records checked against them | merge two records that spell the same owner differently | a reference to an entity that does not exist; a fact the model has no type for | entity, attribute, identifier, dataset |
+| 5 | Metadata as a graph | the model as nodes and edges; traversals | predict what a traversal returns, then run it | a traversal that follows the wrong kind of edge and returns half the shop | graph, node, edge, traversal |
 
 ### Part II: Lineage
 
@@ -111,28 +112,28 @@ observed one, and designs the event a computation should emit before meeting Ope
 
 | Ch | Title | The learner builds | Central experiment | What breaks | Introduces |
 | --- | --- | --- | --- | --- | --- |
-| 5 | What is lineage? | "made from" edges through jobs: A to job to B, then a chain of two jobs; dependency and impact queries | predict everything affected if `orders.parquet` changes | a hand-written dependency that the program does not have; a declared edge that went stale when the program changed | lineage, job, upstream, downstream |
-| 6 | Jobs, runs and events | a run per execution, with its times, status, inputs, outputs and code version; the learner designs the event a run emits | predict what the job's record alone cannot say about Thursday, then read the runs | an event with no run identifier merges two nights; an event with no inputs proves nothing | run, event |
-| 7 | OpenLineage | the learner's events as OpenLineage run events: START, COMPLETE and FAIL, a run's UUID, a job's namespace and name, inputs, outputs, facets; create, edit and replay | predict what a consumer knows after a START with no outputs and a COMPLETE with outputs | two producers name the same table differently and the lineage does not join | OpenLineage, facet, namespace, producer |
-| 8 | From events to graphs | the ingestion pipeline: parse, normalise, metadata objects, graph edges, each stage built and run over the week's events | predict how many nodes and edges the week produces | a malformed event; a facet the parser does not know | ingestion, normalise |
+| 6 | What is lineage? | "made from" edges through jobs: A to job to B, then a chain of two jobs; dependency and impact queries | predict everything affected if `orders.parquet` changes | a hand-written dependency that the program does not have; a declared edge that went stale when the program changed | lineage, job, upstream, downstream |
+| 7 | Jobs, runs and events | a run per execution, with its times, status, inputs, outputs and code version; the learner designs the event a run emits | predict what the job's record alone cannot say about Thursday, then read the runs | an event with no run identifier merges two nights; an event with no inputs proves nothing | run, event |
+| 8 | OpenLineage | the learner's events as OpenLineage run events: START, COMPLETE and FAIL, a run's UUID, a job's namespace and name, inputs, outputs, facets; create, edit and replay | predict what a consumer knows after a START with no outputs and a COMPLETE with outputs | two producers name the same table differently and the lineage does not join | OpenLineage, facet, namespace, producer |
+| 9 | From events to graphs | the ingestion pipeline: parse, normalise, metadata objects, graph edges, each stage built and run over the week's events | predict how many nodes and edges the week produces | a malformed event; a facet the parser does not know | ingestion, normalise |
 
 ### Part III: Deeper lineage
 
 | Ch | Title | The learner builds | Central experiment | What breaks | Introduces |
 | --- | --- | --- | --- | --- | --- |
-| 9 | Column-level lineage | the course's SQL parsed into column derivations; `revenue` from `price` and `quantity` | predict which source columns `revenue` depends on, including through the filter on `status` | `SELECT *`; an alias chain; a function the parser cannot see into | column lineage |
-| 10 | Schema evolution | schema versions; added, removed, renamed and retyped columns, followed downstream | predict which changes break `daily_sales` | a rename that looks like a drop and an add; a type change that truncates | schema evolution, breaking change |
-| 11 | Identity | the identity laboratory: rules over namespace, name, environment and version | predict whether two references are the same asset | case, a path through a link, production and development collapsing into one | identity, qualified name, environment |
-| 12 | Runtime metadata | observations from execution: duration, status, rows, bytes, errors, freshness | predict which asset is stale on Monday morning after a failed night | a run that succeeded and wrote no rows; two clocks that disagree | observation, freshness |
+| 10 | Column-level lineage | the course's SQL parsed into column derivations; `revenue` from `price` and `quantity` | predict which source columns `revenue` depends on, including through the filter on `status` | `SELECT *`; an alias chain; a function the parser cannot see into | column lineage |
+| 11 | Schema evolution | schema versions; added, removed, renamed and retyped columns, followed downstream | predict which changes break `daily_sales` | a rename that looks like a drop and an add; a type change that truncates | schema evolution, breaking change |
+| 12 | Identity | the identity laboratory: rules over namespace, name, environment and version | predict whether two references are the same asset | case, a path through a link, production and development collapsing into one | identity, qualified name, environment |
+| 13 | Runtime metadata | observations from execution: duration, status, rows, bytes, errors, freshness | predict which asset is stale on Monday morning after a failed night | a run that succeeded and wrote no rows; two clocks that disagree | observation, freshness |
 
 ### Part IV: Metadata becomes operational
 
 | Ch | Title | The learner builds | Central experiment | What breaks | Introduces |
 | --- | --- | --- | --- | --- | --- |
-| 13 | Data quality as metadata | quality observations per run (rows, missing customer ids, duplicate orders) and assertions over them | predict which night fails "no order without a customer" | an assertion that passes because the rows it should catch were filtered first | data quality, assertion |
-| 14 | Provenance | a query from a figure on the dashboard back to the rows, the program and the run behind it | predict which orders make up Thursday's revenue | provenance through a sum is a set; a source overwritten since the run | provenance |
-| 15 | Impact analysis | impact queries over dataset and column lineage | rename `orders.customer_id`: predict what breaks, then ask the graph | a reader the graph never heard of: the analysis is only as complete as the lineage | impact analysis |
-| 16 | Root-cause analysis | a backwards search over lineage, runs, observations and changes | start from "the dashboard is wrong" and find where Thursday's fault entered | two plausible causes; a cause outside the recorded system | root cause |
+| 14 | Data quality as metadata | quality observations per run (rows, missing customer ids, duplicate orders) and assertions over them | predict which night fails "no order without a customer" | an assertion that passes because the rows it should catch were filtered first | data quality, assertion |
+| 15 | Provenance | a query from a figure on the dashboard back to the rows, the program and the run behind it | predict which orders make up Thursday's revenue | provenance through a sum is a set; a source overwritten since the run | provenance |
+| 16 | Impact analysis | impact queries over dataset and column lineage | rename `orders.customer_id`: predict what breaks, then ask the graph | a reader the graph never heard of: the analysis is only as complete as the lineage | impact analysis |
+| 17 | Root-cause analysis | a backwards search over lineage, runs, observations and changes | start from "the dashboard is wrong" and find where Thursday's fault entered | two plausible causes; a cause outside the recorded system | root cause |
 
 ### Part V: When the simple model breaks
 
@@ -141,12 +142,12 @@ contradicts them, and makes their metadata system survive it.
 
 | Ch | Title | The learner builds | Central experiment | What breaks | Introduces |
 | --- | --- | --- | --- | --- | --- |
-| 17 | Missing events | a delivery path between producers and the collector, with loss | predict the graph when one COMPLETE never arrives | a run that is running for ever; a dependency nobody can prove | delivery, at least once |
-| 18 | Duplicate events | idempotent ingestion | replay an event: predict whether the lineage doubles | a retry whose event differs in time only | idempotent, deduplication |
-| 19 | Out-of-order events | event time against arrival time, and an ordering rule | deliver Tuesday's run after Wednesday's | last-writer-wins by arrival overwrites newer state | event time, arrival time |
-| 20 | Conflicting metadata | precedence rules that keep where each claim came from | two systems disagree about an owner and a schema: predict which the figure shows | "newest wins" chooses a stale claim | precedence |
-| 21 | Identity across systems | aliases and resolution rules across the warehouse, a file path, a transformation tool's model name and the dashboard's dataset | predict which references merge | over-merging two environments' tables of one name | alias, entity resolution |
-| 22 | Metadata at scale | a cost model from ten assets to ten million and billions of events: indexes, partitions, retention, compaction, ingestion rate, traversal depth | predict which query fails first as the platform grows | an unbounded traversal; retention that deletes the lineage of an asset still in use | index, partition, retention, compaction |
+| 18 | Missing events | a delivery path between producers and the collector, with loss | predict the graph when one COMPLETE never arrives | a run that is running for ever; a dependency nobody can prove | delivery, at least once |
+| 19 | Duplicate events | idempotent ingestion | replay an event: predict whether the lineage doubles | a retry whose event differs in time only | idempotent, deduplication |
+| 20 | Out-of-order events | event time against arrival time, and an ordering rule | deliver Tuesday's run after Wednesday's | last-writer-wins by arrival overwrites newer state | event time, arrival time |
+| 21 | Conflicting metadata | precedence rules that keep where each claim came from | two systems disagree about an owner and a schema: predict which the figure shows | "newest wins" chooses a stale claim | precedence |
+| 22 | Identity across systems | aliases and resolution rules across the warehouse, a file path, a transformation tool's model name and the dashboard's dataset | predict which references merge | over-merging two environments' tables of one name | alias, entity resolution |
+| 23 | Metadata at scale | a cost model from ten assets to ten million and billions of events: indexes, partitions, retention, compaction, ingestion rate, traversal depth | predict which query fails first as the platform grows | an unbounded traversal; retention that deletes the lineage of an asset still in use | index, partition, retention, compaction |
 
 ### Part VI: Building a metadata platform
 
@@ -155,29 +156,29 @@ through them.
 
 | Ch | Title | The learner builds |
 | --- | --- | --- |
-| 23 | Build the metadata store | JSON documents, then tables, then an indexed store, then a graph representation, each passing the same tests |
-| 24 | Build the event collector | validation, deduplication, ordering and persistence, run against the week's events with Part V's faults |
-| 25 | Build the lineage graph | persistent, time-stamped edges from stored events |
-| 26 | Build the query layer | what depends on X, where did X come from, who owns X, which assets are stale, which jobs failed, what a schema change affects |
-| 27 | Build the metadata interface | an asset browser, a graph explorer, a lineage view, run history, schema history, quality observations and impact analysis, as views of the learner's own store |
+| 24 | Build the metadata store | JSON documents, then tables, then an indexed store, then a graph representation, each passing the same tests |
+| 25 | Build the event collector | validation, deduplication, ordering and persistence, run against the week's events with Part V's faults |
+| 26 | Build the lineage graph | persistent, time-stamped edges from stored events |
+| 27 | Build the query layer | what depends on X, where did X come from, who owns X, which assets are stale, which jobs failed, what a schema change affects |
+| 28 | Build the metadata interface | an asset browser, a graph explorer, a lineage view, run history, schema history, quality observations and impact analysis, as views of the learner's own store |
 
-Chapter 24 introduces *collector*. Part VI introduces no other new terms, because it builds what
+Chapter 25 introduces *collector*. Part VI introduces no other new terms, because it builds what
 Parts I to V named.
 
 ### Part VII: Real systems
 
 | Ch | Title | What it connects |
 | --- | --- | --- |
-| 28 | OpenLineage in practice | real producers and the reference consumer, real events and facets, against the learner's own collector |
-| 29 | Airflow, Spark, dbt and Trino | where each system's metadata comes from: a scheduler's task instances, an engine's query plan, a transformation tool's manifest and run results, a query engine's events |
-| 30 | Metadata platforms | the architectures of OpenMetadata, DataHub, Apache Atlas and Marquez compared: how metadata arrives (pushed or pulled), how it is modelled, stored, indexed and served |
-| 31 | Metadata for ML and AI | training data to training run to model to evaluation to deployment to inference; features, experiments, embeddings, vector indexes, retrieval systems and generated artefacts |
+| 29 | OpenLineage in practice | real producers and the reference consumer, real events and facets, against the learner's own collector |
+| 30 | Airflow, Spark, dbt and Trino | where each system's metadata comes from: a scheduler's task instances, an engine's query plan, a transformation tool's manifest and run results, a query engine's events |
+| 31 | Metadata platforms | the architectures of OpenMetadata, DataHub, Apache Atlas and Marquez compared: how metadata arrives (pushed or pulled), how it is modelled, stored, indexed and served |
+| 32 | Metadata for ML and AI | training data to training run to model to evaluation to deployment to inference; features, experiments, embeddings, vector indexes, retrieval systems and generated artefacts |
 
 ### Part VIII: The complete system
 
 | Ch | Title | The learner does |
 | --- | --- | --- |
-| 32 | Build the whole thing | receive a second, unfamiliar platform and model it, instrument it, capture and ingest its lineage, track its schemas and quality, diagnose a failure, analyse an impact and explain a result's provenance |
+| 33 | Build the whole thing | receive a second, unfamiliar platform and model it, instrument it, capture and ingest its lineage, track its schemas and quality, diagnose a failure, analyse an impact and explain a result's provenance |
 
 ## Questioning the requirement, chapter by chapter
 
@@ -187,48 +188,49 @@ and its notes say which (`CLAUDE.md`, "Question the requirement").
 
 | Ch | A requirement that sounds settled | What it could be asking |
 | --- | --- | --- |
-| 1 | "Every table must have an owner." (questioned in the prose) | who is responsible for it; which team is; which program writes it; which account controls it in the warehouse |
-| 2 | "Every column must have a description." | what the column means; its unit; where its values come from; whether it may be empty. A description that repeats the column's name meets it as written |
-| 3 | "Each asset has one owner." | one person, one team, or one identifier for an owner two records spell differently |
-| 4 | "Show everything related to `daily_sales`." | what it is made from; what reads it; who is responsible for it; where it is kept. Each is a different kind of edge |
-| 5 | "Record the lineage of `daily_sales`." | what its program declares it reads, what it was seen to read, or both; between tables or between columns |
-| 6 | "Record every run." | to find failures; to know when an asset was last written; to audit who changed what. Each needs a different event |
-| 7 | "Our programs must emit OpenLineage." | which events, with which facets, under which namespace and name |
-| 8 | "The graph must show the current lineage." | current as of the last event received, the last run, or the last change to a program |
-| 9 | "Show which columns `revenue` depends on." | the columns its value is computed from, or also those that decide which rows count, such as `status` |
-| 10 | "Warn us of breaking changes." | breaking for which reader: a program that reads by name, the dashboard, somebody's own query |
-| 11 | "The same table must have one identity." | the same name, the same rows, the same environment, or the same version |
-| 12 | "The dashboard must be fresh." | refreshed lately; built from the latest data; showing the latest day. Chapter 1's failed night met the first and neither of the others |
-| 13 | "No order without a customer." | in the raw file, in `clean_orders`, or on the dashboard. An assertion on `clean_orders` passes because the rows were filtered first |
-| 14 | "Show where Thursday's figure came from." | the rows; the program; the run; the rows as they were when the run read them |
-| 15 | "Tell us what breaks if `customer_id` is renamed." | what fails, or also what keeps running and gives a wrong answer |
-| 16 | "Find the cause of the wrong figure." | where the data first went wrong; the change that did it; the decision behind that change |
-| 17 | "Lineage must be complete." | complete for the programs that send events, or for every program that touches the data |
-| 18 | "Ingestion must ignore duplicates." | the same event twice; the same run reported twice; the same content at another time |
-| 19 | "Show the latest state of each run." | latest by when it happened, or by when it arrived |
-| 20 | "Show the correct owner." | the newest claim; the claim from the most trusted system; every claim with where it came from. Chapter 1's owner returns |
-| 21 | "Merge the same dataset across systems." | the same name, the same rows, or the same thing to the business; across environments or not |
-| 22 | "Keep lineage for 90 days." | 90 days of events, of edges, or of whatever assets still in use depend on |
-| 23 to 27 | the learner's own query layer must answer "who owns X?" (Chapter 26) | whichever meaning the learner's records keep, and the query layer says which |
-| 28 | "Use the reference consumer." | what the specification requires, against what one implementation does |
-| 29 | "Capture lineage from Airflow, Spark, dbt and Trino." | each system's own meaning of a task, a run and an input |
-| 30 | "Choose a metadata platform that tracks ownership." | each platform's own meaning of an owner, compared from its documentation |
-| 31 | "Record the training data of the model." | the snapshot it read; the query that chose it; the features computed from it |
-| 32 | the unfamiliar platform's own requirements | the learner questions each before building to it |
+| 1 | none: the chapter tours what the platform holds, and leaves its first requirement to Chapter 2 | |
+| 2 | "Every table must have an owner." (questioned in the prose) | who is responsible for it; which team is; which program writes it; which account controls it in the warehouse |
+| 3 | "Every column must have a description." | what the column means; its unit; where its values come from; whether it may be empty. A description that repeats the column's name meets it as written |
+| 4 | "Each asset has one owner." | one person, one team, or one identifier for an owner two records spell differently |
+| 5 | "Show everything related to `daily_sales`." | what it is made from; what reads it; who is responsible for it; where it is kept. Each is a different kind of edge |
+| 6 | "Record the lineage of `daily_sales`." | what its program declares it reads, what it was seen to read, or both; between tables or between columns |
+| 7 | "Record every run." | to find failures; to know when an asset was last written; to audit who changed what. Each needs a different event |
+| 8 | "Our programs must emit OpenLineage." | which events, with which facets, under which namespace and name |
+| 9 | "The graph must show the current lineage." | current as of the last event received, the last run, or the last change to a program |
+| 10 | "Show which columns `revenue` depends on." | the columns its value is computed from, or also those that decide which rows count, such as `status` |
+| 11 | "Warn us of breaking changes." | breaking for which reader: a program that reads by name, the dashboard, somebody's own query |
+| 12 | "The same table must have one identity." | the same name, the same rows, the same environment, or the same version |
+| 13 | "The dashboard must be fresh." | refreshed lately; built from the latest data; showing the latest day. Chapter 2's failed night met the first and neither of the others |
+| 14 | "No order without a customer." | in the raw file, in `clean_orders`, or on the dashboard. An assertion on `clean_orders` passes because the rows were filtered first |
+| 15 | "Show where Thursday's figure came from." | the rows; the program; the run; the rows as they were when the run read them |
+| 16 | "Tell us what breaks if `customer_id` is renamed." | what fails, or also what keeps running and gives a wrong answer |
+| 17 | "Find the cause of the wrong figure." | where the data first went wrong; the change that did it; the decision behind that change |
+| 18 | "Lineage must be complete." | complete for the programs that send events, or for every program that touches the data |
+| 19 | "Ingestion must ignore duplicates." | the same event twice; the same run reported twice; the same content at another time |
+| 20 | "Show the latest state of each run." | latest by when it happened, or by when it arrived |
+| 21 | "Show the correct owner." | the newest claim; the claim from the most trusted system; every claim with where it came from. Chapter 2's owner returns |
+| 22 | "Merge the same dataset across systems." | the same name, the same rows, or the same thing to the business; across environments or not |
+| 23 | "Keep lineage for 90 days." | 90 days of events, of edges, or of whatever assets still in use depend on |
+| 24 to 28 | the learner's own query layer must answer "who owns X?" (Chapter 27) | whichever meaning the learner's records keep, and the query layer says which |
+| 29 | "Use the reference consumer." | what the specification requires, against what one implementation does |
+| 30 | "Capture lineage from Airflow, Spark, dbt and Trino." | each system's own meaning of a task, a run and an input |
+| 31 | "Choose a metadata platform that tracks ownership." | each platform's own meaning of an owner, compared from its documentation |
+| 32 | "Record the training data of the model." | the snapshot it read; the query that chose it; the features computed from it |
+| 33 | the unfamiliar platform's own requirements | the learner questions each before building to it |
 
 ## What the learner writes
 
-- **Choices in a figure** (Chapter 1 on): a query built from choices, a rule set, a change to
+- **Choices in a figure** (Chapter 2 on): a query built from choices, a rule set, a change to
   apply. The figure shows the SQL a choice means.
-- **Records** (Chapter 2 on): descriptive records in a small, line-based notation the engine parses
-  and checks; JSON from Chapter 6.
-- **The course's SQL subset** (Chapter 9 on, read from Chapter 1): `SELECT` with expressions,
+- **Records** (Chapter 3 on): descriptive records in a small, line-based notation the engine parses
+  and checks; JSON from Chapter 7.
+- **The course's SQL subset** (Chapter 10 on, read from Chapter 2): `SELECT` with expressions,
   `DISTINCT`, `WHERE`, `GROUP BY`, `ORDER BY`, `CAST`, a few functions, and named parameters. The
-  shop's programs are written in it, the engine runs it, and Chapter 9 derives column lineage from
+  shop's programs are written in it, the engine runs it, and Chapter 10 derives column lineage from
   its parse.
-- **Events** (Chapters 6 to 8): JSON, first in the learner's own design, then as OpenLineage run
+- **Events** (Chapters 7 to 9): JSON, first in the learner's own design, then as OpenLineage run
   events.
-- **Code** (Part VI, and Chapter 32): Python, run in the browser by Pyodide, decided at
+- **Code** (Part VI, and Chapter 33): Python, run in the browser by Pyodide, decided at
   checkpoint 1 because the learner reads and writes this code and Python is a data engineer's
   language. The engine stays TypeScript; the learner's Python runs in a Web Worker against tests, and
   the two exchange JSON. Pyodide 0.28.3's core is about 5.3 MB to download, compressed, on the
@@ -238,8 +240,8 @@ and its notes say which (`CLAUDE.md`, "Question the requirement").
 
 ## OpenLineage, placed
 
-OpenLineage appears in Chapter 7, after the learner has designed an event from the problem in
-Chapter 6, and returns in Chapters 8, 17 to 19 and 28. What the course states about it is checked
+OpenLineage appears in Chapter 8, after the learner has designed an event from the problem in
+Chapter 7, and returns in Chapters 9, 18 to 20 and 29. What the course states about it is checked
 against the specification (`docs/sources.md`), and the specification's silences are named as
 silences. For a batch job it expects a START and one terminal event per run, and events about a
 run accumulate; a streaming job or a service may never send a terminal event and instead sends
@@ -251,13 +253,27 @@ page also disagree on whether an `OTHER` event may follow a terminal one, and th
 
 The author reviews the course at five checkpoints:
 
-1. After Chapter 1, the plan, the engine's design and the platform move (now).
-2. After Chapter 8: the event model and OpenLineage are in place.
-3. After Chapter 16: metadata is operational.
-4. After Chapter 22: the failure chapters.
-5. Before Chapter 32.
+1. After Chapter 2, the plan, the engine's design and the platform move (now).
+2. After Chapter 9: the event model and OpenLineage are in place.
+3. After Chapter 17: metadata is operational.
+4. After Chapter 23: the failure chapters.
+5. Before Chapter 33.
 
 ## Decisions since the brief
+
+### 11 October 2026: two chapters where there was one
+
+The author asked whether calling the two notebooks "Chapter 1, part 1" and "part 2" had been a way
+to avoid renumbering, and it had: "part" then named both the course's eight parts and half a
+chapter. The author's answer was to do the right thing, so the tour is now Chapter 1, "The shop and
+its platform" (a notebook, introducing *asset*), and the investigation Chapter 2, "The invisible
+data system" (the chapter's page, and a notebook, introducing *metadata*). Every later chapter
+moves up one, to 33. The live documents, the code and the tests use the new numbers; dated
+entries below this one keep the numbers they were written with, in which Chapter 1 is today's
+Chapter 2. The essay's notes moved from `docs/notes/chapter-01` to `chapter-02`, and
+`docs/notes/chapter-01.md` is the new chapter's. Chapter 1 has no page on the course yet: the front
+page links its notebook, and its start button opens it. Like Chapter 2, it has no prediction or
+experiment, under the decision of 10 October that made Chapter 1 an essay.
 
 ### 11 October 2026: the front page links the notebooks
 
@@ -352,7 +368,7 @@ asset cards, the dashboard) and no experiment, prediction or challenge: the Thur
 the rebuild, the change lab, the sort and the rules challenge are gone from the page, and their
 figures stay in `packages/views` for later chapters. The author's own essay read as AI-written
 and long, so it was rewritten from scratch against the writing standard (`AGENTS.md`): the same
-structure, about half the length, every number pinned (`docs/notes/chapter-01.md`, "The chapter
+structure, about half the length, every number pinned (`docs/notes/chapter-02.md`, "The chapter
 rewritten as an essay"). The chapter's rules in `CLAUDE.md` still hold for the course; where the
 essay states a conclusion the lab could have shown, the author's addition to "What this is"
 allows it: the experience is a means, not the law. The owner requirement is questioned in the
@@ -371,7 +387,7 @@ chapter finds. Under the band, the eight parts in reading order, one line each, 
 not yet written marked; then the contents by part, each part one line until it is pressed, with
 how many of its chapters are written, the part of the chapter the button names open. No
 animation, no background art: a tinted band, and the dashboard is the graphic. The words came
-from Haiku's draft of brief AJ (`docs/notes/chapter-01/briefs/round-14`), checked for facts only:
+from Haiku's draft of brief AJ (`docs/notes/chapter-02/briefs/round-14`), checked for facts only:
 two dropped facts restored with the fewest words (Part VI builds the lineage graph, not "the graph
 of relations"; Part VII includes metadata for ML and AI), "the lab" named as the Metadata Lab
 where the page first says it, and a count for a part of one chapter added. A "before you start"
@@ -460,7 +476,7 @@ should do, explains why something matters, or sets up a prediction or a decision
 written for the learner's next action, not for narrative flow; and a sentence the learner would not
 miss is removed, with nothing in its place unless an action belongs there. A content test fails
 the commonest forms of filler. An independent review of Chapter 1 against the rule cut twelve
-passages and redrafted two notes (`docs/notes/chapter-01.md`).
+passages and redrafted two notes (`docs/notes/chapter-02.md`).
 
 ### 7 October 2026: the author's fifth round: experiments, instruments and explanations
 
@@ -542,7 +558,7 @@ of how a learner gets a changed chapter.
    explanation of how the platform works; a count is offered as what it means (none, one, more
    than one); the chapter's notes say, for each prediction, what the learner has seen and how the
    lab tells the explanations apart, and a content test checks the notes have a row for it.
-   Chapter 1's owner and days predictions were rebuilt on this rule (`docs/notes/chapter-01.md`).
+   Chapter 1's owner and days predictions were rebuilt on this rule (`docs/notes/chapter-02.md`).
 2. **A map of the platform, to hand through the chapter**, computed by the lab. The author's sketch
    drew arrows from asset to asset; the map does not, because in Chapter 1 those arrows would
    state what the chapter shows storage cannot tell, and would answer the construction's first

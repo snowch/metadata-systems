@@ -2,7 +2,7 @@
 
 """What the data suggests: inference from contents alone.
 
-Chapter 1's reconstructions are searches the engine can run exhaustively. One is a sum over one
+Chapter 2's reconstructions are searches the engine can run exhaustively. One is a sum over one
 asset: which rows to keep, what to add up, and per what. The other is a set of cleaning rules over
 the raw orders. Each choice is written as SQL and run over Monday's platform, so the engine can
 list every choice that reproduces an asset, and show that two sources fit equally well, or none.

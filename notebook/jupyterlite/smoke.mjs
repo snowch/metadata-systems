@@ -1,11 +1,11 @@
 // Copyright © 2026 Christopher Snow
 
 // Opens the built JupyterLite site in Chromium as a phone, with touch, and presses the row of
-// buttons (notebook/buttons/) as the chapter's texts tell a reader to. For each part: the menu bar
+// buttons (notebook/buttons/) as the chapters' texts tell a reader to. For each chapter: the menu bar
 // and the notebook's toolbar are hidden; the row shows the labels buttons.json gives, each button
 // at least 44 pixels tall; a press disables the row and marks the pressed button busy until the
 // run ends; Run all runs every visible code cell, with no error in any output, and leaves the
-// notebook where it was scrolled. In part 2, Run below from a selected cell does the same. The page
+// notebook where it was scrolled. In Chapter 2, Run below from a selected cell does the same. The page
 // logs no error. The notebook workflow
 // runs it after the build, with Playwright from the course's dependencies.
 //
@@ -79,17 +79,15 @@ try {
       return !!e && e.getBoundingClientRect().height > 0;
     }, selector);
 
-  for (const part of [1, 2]) {
-    await page.goto(
-      `http://127.0.0.1:${port}/notebooks/index.html?path=chapter_01_part_${part}.ipynb`,
-    );
+  for (const chapter of [1, 2]) {
+    await page.goto(`http://127.0.0.1:${port}/notebooks/index.html?path=chapter_0${chapter}.ipynb`);
     await page.waitForFunction(() => document.querySelector(".jp-MarkdownOutput h1"), null, {
       timeout: 120_000,
     });
     await page.waitForTimeout(1000);
     check(
       !(await shown("#menu-panel-wrapper")) && !(await shown(".jp-NotebookPanel-toolbar")),
-      `part ${part}: the menu bar and the toolbar are hidden`,
+      `Chapter ${chapter}: the menu bar and the toolbar are hidden`,
     );
     const row = await page.evaluate(() =>
       [...document.querySelectorAll(".ms-Buttons-button")].map((b) => ({
@@ -99,16 +97,16 @@ try {
     );
     check(
       JSON.stringify(row.map((b) => b.label)) === JSON.stringify(labels),
-      `part ${part}: the row's buttons are ${labels.join(", ")}`,
+      `Chapter ${chapter}: the row's buttons are ${labels.join(", ")}`,
     );
     check(
       row.every((b) => b.height >= 44),
-      `part ${part}: every button is at least 44 pixels tall`,
+      `Chapter ${chapter}: every button is at least 44 pixels tall`,
     );
     await page.evaluate(() => {
       document.querySelector(".jp-WindowedPanel-outer").scrollTop = 300;
     });
-    await run("Run all", `part ${part}, Run all`);
+    await run("Run all", `Chapter ${chapter}, Run all`);
     const cells = await page.evaluate(() =>
       [...document.querySelectorAll(".jp-CodeCell")]
         .filter((c) => !c.querySelector(".jp-InputArea.lm-mod-hidden, .jp-Placeholder"))
@@ -116,19 +114,19 @@ try {
     );
     check(
       cells.length > 0 && cells.every((p) => /^\[\d+\]:$/.test(p)),
-      `part ${part}: every visible code cell ran (${cells.length})`,
+      `Chapter ${chapter}: every visible code cell ran (${cells.length})`,
     );
     const failed = await page
       .locator(
         '[data-mime-type="application/vnd.jupyter.stderr"], .jp-OutputArea-output.jp-mod-error',
       )
       .count();
-    check(failed === 0, `part ${part}: no output is an error`);
-    if (part === 2) {
+    check(failed === 0, `Chapter ${chapter}: no output is an error`);
+    if (chapter === 2) {
       const day = page.locator(".jp-CodeCell", { hasText: 'day = "2026-09-10"' }).first();
       await day.scrollIntoViewIfNeeded();
       await day.locator(".jp-InputPrompt").tap();
-      await run("Run below", "part 2, Run below from the day's cell");
+      await run("Run below", "Chapter 2, Run below from the day's cell");
     }
   }
   check(errors.length === 0, `the page logs no error${errors.length ? `: ${errors[0]}` : ""}`);

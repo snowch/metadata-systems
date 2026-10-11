@@ -1,7 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 // What storage records: for each asset, exactly the fields its system keeps, as of Monday
-// morning (docs/lab.md, "Where its data lives"). This is all Chapter 1's learner can see.
+// morning (docs/lab.md, "Where its data lives"). This is all Chapter 2's learner can see.
 //
 // - Object storage keeps a file's location, size and last-modified time; a Parquet file's own
 //   footer holds its columns, their types and its row count.

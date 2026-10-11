@@ -1,6 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
-// The words of Chapter 1, "The invisible data system": an essay on what a platform's state records
+// The words of Chapter 2, "The invisible data system": an essay on what a platform's state records
 // and what it cannot say about how its assets came to be. Every number is pinned by
 // invisible-system.facts.test.ts, read off the engine (packages/lab), which the page never names.
 

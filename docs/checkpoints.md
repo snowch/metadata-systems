@@ -39,7 +39,7 @@ author's brief for this course.
 A reviewer on another model read the built chapter as its learner and wrote 32 findings (3 high,
 17 medium, 12 low); an independent sceptic attacked each against the lab and the build, upholding
 10, upholding 20 in part, rejecting 1 and finding 1 already fixed
-(`docs/notes/chapter-01/review/`). The three high findings were real: the page said a failed
+(`docs/notes/chapter-02/review/`). The three high findings were real: the page said a failed
 night looks like a quiet one, which the lab contradicts; it said the reporting tool keeps the query
 behind its chart, which the lab does not model; and it used "rebuild" in two senses. Two of those
 false statements, and a third, came from the managing session's own briefs, written without being
@@ -61,7 +61,7 @@ The revision, code first and then the prose process:
 - the closing note's two unsourced claims about real systems became two sourced ones (Iceberg's
   snapshots, Delta Lake's history).
 
-`docs/notes/chapter-01.md` records what each finding got and what the second prose pass caught.
+`docs/notes/chapter-02.md` records what each finding got and what the second prose pass caught.
 
 ### What the author should look at
 
@@ -72,7 +72,7 @@ The revision, code first and then the prose process:
    at its end.
 3. The lab's design (`docs/lab.md`), above all the shop's week and its Thursday incident, which
    later chapters measure (13), trace (14) and find (16).
-4. `docs/notes/chapter-01.md`: what the prose process caught, the managing session's read, and
+4. `docs/notes/chapter-02.md`: what the prose process caught, the managing session's read, and
    the review with what each finding got.
 
 ### Decisions taken, for approval
@@ -115,7 +115,7 @@ On 7 October 2026 the author sent consolidated feedback on Chapter 1: keep the d
 prediction one the learner can reason about; add a small map of the platform that stays to hand;
 define "asset" early and "metadata" without saying it is kept apart from the data; and close with
 a short summary. All five are done, the first as a course-wide rule; `docs/plan.md` records the
-decisions and `docs/notes/chapter-01.md` the audit of every prediction. One choice differs from the
+decisions and `docs/notes/chapter-02.md` the audit of every prediction. One choice differs from the
 author's sketch, and the plan says why: the map draws no arrow from one asset to another.
 
 Settled since this report was first drafted: `main` exists and the site deploys from it; and the

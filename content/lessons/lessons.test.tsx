@@ -111,7 +111,7 @@ describe("the course's chapters", () => {
     for (const c of PLAN) {
       const row = plan.split("\n").find((line) => line.startsWith(`| ${c.number} | ${c.title} |`));
       expect(row, `chapter ${c.number} in docs/plan.md`).toBeDefined();
-      if (c.introduces.length && c.number !== 24) {
+      if (c.introduces.length && c.number !== 25) {
         const cells = (row ?? "").split("|").map((x) => x.trim());
         expect(cells[cells.length - 2], `chapter ${c.number}'s terms`).toBe(
           c.introduces.join(", "),

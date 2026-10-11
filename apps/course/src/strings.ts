@@ -1,7 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 // The shell's own words, drafted by the prose process from the brief in
-// docs/notes/chapter-01/briefs/F-figure-labels.md (CLAUDE.md).
+// docs/notes/chapter-02/briefs/F-figure-labels.md (CLAUDE.md).
 
 export const STRINGS = {
   brand: "Metadata Systems",
@@ -36,14 +36,17 @@ export const STRINGS = {
   toWrite: "Still to be written",
   progress: "{passed} of {total} challenges complete",
   noChallenges: "No challenges",
-  // Under a chapter's line, its notebooks (brief AT).
-  notebooksLead:
-    "The same chapter is also available as two notebooks, where you run its Python code in your browser; the first time, the browser downloads about 13 MB.",
+  // A chapter that is a notebook (brief AU): the note under its line when it has no page, and the
+  // link under its line when it has one.
+  notebookNote:
+    "A notebook: you run its Python in your browser, and the first open downloads about 13 MB.",
+  notebookAlso:
+    "This chapter as a notebook: run its Python in your browser. About 13 MB first time.",
   previous: "Previous",
   next: "Next",
   pagerLabel: "Previous and next chapter",
   notYet: "The next chapter is still to be written",
-  // The chapter-wide start again, drafted from docs/notes/chapter-01/briefs/revision/N.
+  // The chapter-wide start again, drafted from docs/notes/chapter-02/briefs/revision/N.
   startAgain: "Start this chapter again",
   startAgainNote:
     "The chapter keeps your predictions, sorts and challenge work in your browser. Starting again clears them all, and cannot be undone.",

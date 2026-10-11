@@ -2,8 +2,8 @@
 
 """Every sentence of the notebooks that states a fact, pinned against the engine, and the prose rules.
 
-Chapter 1 is two notebooks, one per part. Their words are their markdown cells and the labels in
-their code cells. A number in them is a number the engine produced; if the shop changes, this fails
+Chapters 1 and 2 are a notebook each. Their words are their markdown cells and the labels in their
+code cells. A number in them is a number the engine produced; if the shop changes, this fails
 until the words change with it.
 """
 
@@ -18,17 +18,17 @@ from shop import figures
 from shop.infer import KEEP
 
 ROOT = Path(__file__).resolve().parents[2]
-PARTS = {
-    1: ROOT / "notebook" / "chapter_01_part_1.py",
-    2: ROOT / "notebook" / "chapter_01_part_2.py",
+CHAPTERS = {
+    1: ROOT / "notebook" / "chapter_01.py",
+    2: ROOT / "notebook" / "chapter_02.py",
 }
-SOURCE = {part: path.read_text(encoding="utf-8") for part, path in PARTS.items()}
+SOURCE = {chapter: path.read_text(encoding="utf-8") for chapter, path in CHAPTERS.items()}
 
 
-def markdown_cells(part: int) -> list[str]:
-    """The text of every `mo.md(...)` cell of a part, in the notebook's order."""
+def markdown_cells(chapter: int) -> list[str]:
+    """The text of every `mo.md(...)` cell of a chapter, in the notebook's order."""
     out = []
-    for node in ast.parse(SOURCE[part]).body:
+    for node in ast.parse(SOURCE[chapter]).body:
         if not isinstance(node, ast.FunctionDef):
             continue
         for stmt in node.body:
@@ -44,14 +44,14 @@ def markdown_cells(part: int) -> list[str]:
     return out
 
 
-def strings(part: int) -> list[str]:
-    """Every string constant in a part: its words, its labels, and its code's strings."""
-    tree = ast.parse(SOURCE[part])
+def strings(chapter: int) -> list[str]:
+    """Every string constant in a chapter: its words, its labels, and its code's strings."""
+    tree = ast.parse(SOURCE[chapter])
     return [n.value for n in ast.walk(tree) if isinstance(n, ast.Constant) and isinstance(n.value, str)]
 
 
-CELLS = {part: markdown_cells(part) for part in PARTS}
-TEXT = {part: "\n\n".join(cells) for part, cells in CELLS.items()}
+CELLS = {chapter: markdown_cells(chapter) for chapter in CHAPTERS}
+TEXT = {chapter: "\n\n".join(cells) for chapter, cells in CELLS.items()}
 
 
 def flat(s: str) -> str:
@@ -63,10 +63,10 @@ class TheWordsMatchTheEngine(unittest.TestCase):
     def setUpClass(cls):
         cls.week = shop.run_week()
         cls.w = cls.week.warehouse
-        cls.text = {part: flat(text) for part, text in TEXT.items()}
+        cls.text = {chapter: flat(text) for chapter, text in TEXT.items()}
 
-    def says(self, phrase: str, part: int = 2) -> None:
-        self.assertIn(flat(phrase), self.text[part])
+    def says(self, phrase: str, chapter: int = 2) -> None:
+        self.assertIn(flat(phrase), self.text[chapter])
 
     def test_the_situation_and_the_week(self):
         self.assertEqual(shop.ARRIVAL, "2026-09-14T09:00:00Z")
@@ -78,14 +78,14 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertEqual(shop.NIGHTS[-1], "2026-09-14")
         self.says("The last night ends early on Monday 14 September", 1)
 
-    def test_part_1_opens_with_the_message_and_part_2_starts_on_it(self):
-        # The story is introduced first, so the tour of the platform serves the question; part 2
+    def test_chapter_1_opens_with_the_message_and_chapter_2_starts_on_it(self):
+        # The story is introduced first, so the tour of the platform serves the question; Chapter 2
         # holds the investigation (brief AQ).
         first = CELLS[1][1]
         self.assertTrue(first.startswith("You start work on Monday 14 September 2026 at 09:00"))
         self.assertIn("the head of the shop sends you one line: Thursday's revenue looks wrong.", first)
         self.assertIn("you first need to know what the platform holds and what happens on it each night", first)
-        self.assertEqual(CELLS[1][-2], "[Part 2](chapter_01_part_2.ipynb) goes back to the head of the shop's line and starts with Thursday's revenue.")
+        self.assertEqual(CELLS[1][-2], "[Chapter 2](chapter_02.ipynb) goes back to the head of the shop's line and starts with Thursday's revenue.")
         self.says("The head of the shop has sent you one line", 2)
 
     def test_the_three_systems(self):
@@ -147,22 +147,22 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says('one dashboard, `sales_dashboard`, titled "Sales, last 7 days"', 1)
         self.says("each day's revenue in pounds for 7 to 13 September", 1)
 
-    def test_the_parts_link_to_each_other_by_their_notebooks_names(self):
+    def test_the_chapters_link_to_each_other_by_their_notebooks_names(self):
         build = (ROOT / "notebook" / "jupyterlite" / "build_ipynb.py").read_text(encoding="utf-8")
-        names = re.findall(r'"(chapter_01_part_\d\.ipynb)"', build)
-        self.assertEqual(names, ["chapter_01_part_1.ipynb", "chapter_01_part_2.ipynb"])
-        self.assertIn("](chapter_01_part_2.ipynb)", TEXT[1])
-        self.assertIn("](chapter_01_part_1.ipynb)", TEXT[2])
+        names = re.findall(r'"(chapter_\d\d\.ipynb)"', build)
+        self.assertEqual(names, ["chapter_01.ipynb", "chapter_02.ipynb"])
+        self.assertIn("](chapter_02.ipynb)", TEXT[1])
+        self.assertIn("](chapter_01.ipynb)", TEXT[2])
 
-    def test_each_part_opens_and_ends_with_the_way_back_to_the_course(self):
+    def test_each_chapter_opens_and_ends_with_the_way_back_to_the_course(self):
         # Relative links in a notebook open as files of the site, so the course's address is whole.
         nav = {
-            1: "[Back to contents](https://snowch.github.io/metadata-systems/) · Part 1 · [Part 2](chapter_01_part_2.ipynb)",
-            2: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Part 1](chapter_01_part_1.ipynb) · Part 2",
+            1: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Next: Chapter 2](chapter_02.ipynb)",
+            2: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 1](chapter_01.ipynb)",
         }
-        for part, line in nav.items():
-            self.assertTrue(CELLS[part][0].startswith(line + "\n"), part)
-            self.assertEqual(SOURCE[part].count(line), 2, part)
+        for chapter, line in nav.items():
+            self.assertTrue(CELLS[chapter][0].startswith(line + "\n"), chapter)
+            self.assertEqual(SOURCE[chapter].count(line), 2, chapter)
 
     def test_thursday_against_the_days_either_side(self):
         shown = {v["day"]: v["revenue"] for v in self.week.reporting.dashboard()["values"]}
@@ -287,14 +287,14 @@ class TheWordsAboutThePage(unittest.TestCase):
 class TheWordsKeepTheRules(unittest.TestCase):
     """The writing standard's checkable parts (AGENTS.md, scripts/prose.mjs, CLAUDE.md)."""
 
-    def learner_text(self) -> list[str]:
+    def learner_text(self, *chapters: int) -> list[str]:
         # The markdown, and every string with a space in it: labels, options, placeholders. Code
         # identifiers and SQL keywords are not prose, and SQL has no prohibited phrase.
         return [
             t
-            for part in PARTS
-            for t in CELLS[part]
-            + [s for s in strings(part) if " " in s and not s.lstrip().upper().startswith(("SELECT", "\n"))]
+            for chapter in chapters or CHAPTERS
+            for t in CELLS[chapter]
+            + [s for s in strings(chapter) if " " in s and not s.lstrip().upper().startswith(("SELECT", "\n"))]
         ]
 
     def test_no_prohibited_phrase(self):
@@ -310,7 +310,7 @@ class TheWordsKeepTheRules(unittest.TestCase):
             self.assertNotIn("[[", source)
 
     def test_terms_arrive_where_the_chapter_introduces_them(self):
-        # Part 1 introduces "asset", part 2 "metadata", at its "Records made at the time".
+        # Chapter 1 introduces "asset", Chapter 2 "metadata", at its "Records made at the time".
         # A link's address is not read: the course's address has "metadata" in it.
         chapter = [re.sub(r"\]\([^)]*\)", "]", c) for c in CELLS[1] + CELLS[2]]
         first = lambda word: next(i for i, c in enumerate(chapter) if re.search(rf"\b{word}", c, re.I))
@@ -321,8 +321,8 @@ class TheWordsKeepTheRules(unittest.TestCase):
         self.assertLess(first("asset"), len(CELLS[1]))
 
     def test_no_term_of_a_later_chapter(self):
-        # The course's term gate (content/lessons/plan.ts), with the course's one exemption for
-        # Chapter 1: "run" as the verb (run a cell); the noun arrives in Chapter 6.
+        # The course's term gate (content/lessons/plan.ts), chapter by chapter, with the course's
+        # one exemption: "run" as the verb (run a cell); the noun arrives in Chapter 7.
         plan = (ROOT / "content" / "lessons" / "plan.ts").read_text(encoding="utf-8")
         terms = {
             term: int(number)
@@ -330,12 +330,14 @@ class TheWordsKeepTheRules(unittest.TestCase):
             for term in re.findall(r'"([^"]+)"', introduces or "")
         }
         self.assertGreater(len(terms), 40)
+        self.assertEqual((terms["asset"], terms["metadata"], terms["run"]), (1, 2, 7))
         found = [
-            (term, t[:60])
+            (chapter, term, t[:60])
+            for chapter in CHAPTERS
             for term, home in terms.items()
-            if home > 1 and term != "run"
-            for t in self.learner_text()
-            if re.search(rf"\b{re.escape(term)}", t, re.I)
+            if home > chapter and term != "run"
+            for t in self.learner_text(chapter)
+            if re.search(rf"\b{re.escape(term)}", re.sub(r"\]\([^)]*\)", "]", t), re.I)
         ]
         self.assertEqual(found, [])
 

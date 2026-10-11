@@ -78,7 +78,7 @@ From `website/docs/spec/` in `OpenLineage/OpenLineage`, branch `main`, read 6 Oc
   The page separates runtime lineage, a run event "emitted at runtime", from design lineage: a job
   event describes a job's static properties "such as its location in source code or declared
   inputs/outputs", and a dataset event describes metadata changes to a dataset, both "Emitted at
-  design-time and not associated with a `Run`". Chapter 5's declared and observed dependencies
+  design-time and not associated with a `Run`". Chapter 6's declared and observed dependencies
   rest on this distinction.
 - `naming.md`: a dataset's namespace names the data store and its name names the dataset inside
   it. PostgreSQL: `postgres://{host}:{port}` and `{database}.{schema}.{table}`. S3:
@@ -103,12 +103,12 @@ and records it here.
 Marquez's site (marquezproject.ai) and the OpenLineage documentation's front page
 (openlineage.io/docs), both read 6 October 2026, call Marquez the reference implementation of the
 OpenLineage API. Its site says it consumes, stores and visualises OpenLineage metadata through an
-OpenLineage-compatible endpoint. Chapters 8 and 28 read its documentation and source before they
+OpenLineage-compatible endpoint. Chapters 9 and 29 read its documentation and source before they
 say what it does with an event.
 
-## Where each tool's metadata comes from (Chapter 29, as planned)
+## Where each tool's metadata comes from (Chapter 30, as planned)
 
-Read 6 October 2026 to support the plan's description of Chapter 29; the chapter reads further
+Read 6 October 2026 to support the plan's description of Chapter 30; the chapter reads further
 before it states more:
 
 - **Apache Airflow**: the OpenLineage provider's "structure" guide
@@ -127,14 +127,14 @@ before it states more:
 
 ## dbt's sample project, for the course's originality notes
 
-The course's shop must not resemble dbt's jaffle shop, so the plan and Chapter 1's originality
+The course's shop must not resemble dbt's jaffle shop, so the plan and Chapter 2's originality
 note describe it. From docs.getdbt.com, read 6 October 2026: the DuckDB quickstart calls it "our
 fictional Jaffle Shop café"; the BigQuery quickstart's sample data is `jaffle_shop.customers`,
 `jaffle_shop.orders` and `stripe.payment`; and "How we structure our dbt projects" builds it into
 staging, intermediate and marts models from raw customers, orders, items, products, stores and
 supplies.
 
-## Apache Parquet's file metadata (the shop's files; Chapter 1's definition of metadata)
+## Apache Parquet's file metadata (the shop's files; Chapter 2's definition of metadata)
 
 The Parquet format specification, `apache/parquet-format` at the tag
 `apache-parquet-format-2.12.0`, read 7 October 2026 from the repository (parquet.apache.org was not
@@ -148,10 +148,10 @@ reachable from the build environment):
   an optional `created_by`, the application that wrote the file.
 
 They support the engine's choice (`docs/lab.md`) that a Parquet file carries its own column names,
-types and row count, and Chapter 1's statements that a file holds them after its rows and that
+types and row count, and Chapter 2's statements that a file holds them after its rows and that
 metadata can live inside the same file as the data.
 
-## A table's owner in PostgreSQL (Chapter 1's closing note)
+## A table's owner in PostgreSQL (Chapter 2's closing note)
 
 PostgreSQL's documentation, the section "Privileges" (`doc/src/sgml/ddl.sgml` in
 `postgres/postgres` at the branch `REL_18_STABLE`, commit `1370a78`), read 7 October 2026 from
@@ -161,15 +161,15 @@ object only the owner (or a superuser) can do anything with it at first, and oth
 once privileges are granted; the right to modify or destroy an object comes with being its owner
 and cannot be granted on its own. A role here is what the course calls an account.
 
-It supports the closing note's sentences on PostgreSQL, and the fourth reading of Chapter 1's
+It supports the closing note's sentences on PostgreSQL, and the fourth reading of Chapter 2's
 requirement, "which account controls `daily_sales` in the warehouse?": a warehouse's owner is an
 account with rights over the table, an answer to a question about control, not about who is
 responsible. The note says "some real databases": not every database gives a table an owner, and
 the course claims nothing about the others.
 
-## Table formats that keep history (Chapter 1's closing note)
+## Table formats that keep history (Chapter 2's closing note)
 
-Read 6 October 2026, for one sentence of Chapter 1's model-versus-reality note:
+Read 6 October 2026, for one sentence of Chapter 2's model-versus-reality note:
 
 - **Apache Iceberg**: the table specification (iceberg.apache.org/spec). "The table metadata file
   tracks the table schema, partitioning config, custom properties, and snapshots of the table
@@ -212,7 +212,7 @@ environment, so each is read from its source or its publisher's own copy:
   `prefer_related_applications` set to true, served over HTTPS; a service worker is not required.
   MDN documents browsers rather than defining them; Chrome's own page was not reachable.
 
-## The notebook prototype (Chapter 1 as a notebook)
+## The notebook prototype (Chapter 2 as a notebook)
 
 Read 10 October 2026, for `notebook/` and `docs/notes/notebook-prototype.md`.
 
@@ -276,10 +276,10 @@ Read 10 October 2026, for `notebook/` and `docs/notes/notebook-prototype.md`.
 
 Each chapter that relies on one of these reads it first and adds an entry above:
 
-- OpenMetadata, DataHub and Apache Atlas: their documentation and source, for Chapter 30.
-- W3C PROV (PROV-DM and PROV-O), for Chapter 14.
-- Apache Iceberg's schema evolution by column id, for Chapter 10.
-- MLflow and similar experiment trackers, for Chapter 31.
+- OpenMetadata, DataHub and Apache Atlas: their documentation and source, for Chapter 31.
+- W3C PROV (PROV-DM and PROV-O), for Chapter 15.
+- Apache Iceberg's schema evolution by column id, for Chapter 11.
+- MLflow and similar experiment trackers, for Chapter 32.
 
 ## Licences of what the course ships
 

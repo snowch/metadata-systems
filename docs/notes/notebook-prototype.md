@@ -18,7 +18,7 @@ marimo reaches a reader.
   prose is the chapter's approved essay, with part 1's tour of the shop added; the figures are drawn
   by the notebooks' own Python; the cells of code are visible, and the reader can change and run
   every one. The words new to the notebook were drafted by Haiku from briefs AK and AL
-  (`docs/notes/chapter-01/briefs/round-15/`), and those of the two parts from AO and AP
+  (`docs/notes/chapter-02/briefs/round-15/`), and those of the two parts from AO and AP
   (`round-16/`).
 - `notebook/shop/`: the shop's platform in Python, standard library only. Object storage holds
   real JSON Lines and CSV files in a temporary directory and records each file's key, size and
@@ -190,7 +190,7 @@ split there needs a decision (the last open question, below).
   their statuses; the catalogue; the customers; and the night's work as the week's figure shows it
   (the files written again, then the tables, then the dashboard). The programs stay unseen, as the
   chapter requires.
-- The new words are Haiku's drafts of briefs AO and AP (`docs/notes/chapter-01/briefs/round-16/`),
+- The new words are Haiku's drafts of briefs AO and AP (`docs/notes/chapter-02/briefs/round-16/`),
   checked for facts only. AO's first draft copied two wrong facts from the brief itself (that every
   customer has an email address, and every order a customer) and gave titles without each part's
   subject; AP's first draft stated a measurement made on a computer as a rule for every browser.
@@ -377,13 +377,23 @@ notebook opens and ends with "Back to contents · Part 1 · Part 2", the current
   notebook's heading.
 - The front page's start button still opens the chapter's page, which keeps the whole chapter.
 
+### Two chapters
+
+On 11 October 2026 the two parts became Chapters 1 and 2 (`docs/plan.md`, "two chapters where
+there was one"). The source files are now `notebook/chapter_01.py` and `chapter_02.py`, built as
+`chapter_01.ipynb` and `chapter_02.ipynb`; their headings are "Chapter 1: The shop and its
+platform" and "Chapter 2: The invisible data system", the plan's titles; each opens and ends with
+"Back to contents" and a link to the other chapter, "Next: Chapter 2" or "Previous: Chapter 1". In
+the texts, "part 1" and "part 2" became "Chapter 1" and "Chapter 2", the same sentences otherwise.
+The earlier notebook addresses (`?path=chapter_01_part_1.ipynb`) no longer open a notebook, and a
+copy a reader saved under the old name stays in their browser under it; `/notebook/` and
+`/notebook/part-2.html` send a browser to the new ones. The measurements above were taken when the
+notebooks were parts, and their names in this note are the names they had then.
+
 ## Open questions for the author
 
 - Whether the notebook should replace the essay pages, sit beside them, or be dropped.
-- Whether the course's essay page should be split as the notebooks are. The course numbers its
-  chapters and the platform gives each its own page, so two pages would either renumber the plan
-  from Chapter 2 on (33 chapters, with the chapter numbers `CLAUDE.md` and the plan use), or need
-  the platform to let one chapter have two pages.
+- Whether Chapter 1 should also have a page on the course, as Chapter 2 does.
 - Whether the notebook should run every cell as soon as it opens, as the marimo version did. The
   row's extension could do it; the page would then do the 10 to 12 seconds of work on opening, and
   the texts would change.

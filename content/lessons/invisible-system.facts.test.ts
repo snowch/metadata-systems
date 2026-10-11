@@ -1,7 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
-// Every number Chapter 1's words state, read off the engine. If the shop's data or programs change,
-// this fails until the words change with them (docs/notes/chapter-01/facts.md is the brief the
+// Every number Chapter 2's words state, read off the engine. If the shop's data or programs change,
+// this fails until the words change with them (docs/notes/chapter-02/facts.md is the brief the
 // words were drafted from). A number spelled as a word ("three days", "all seven rows") is pinned
 // like a number written in figures, and so is a sentence that states what a record holds.
 
@@ -65,7 +65,7 @@ const [MON, TUE, WED, THU, FRI, SAT, SUN] = DAYS as readonly [
   string,
 ];
 
-describe("the facts Chapter 1 states", () => {
+describe("the facts Chapter 2 states", () => {
   it("has seven assets with the stated row counts, four of them on the page's cards", () => {
     const view = storage();
     expect(view).toHaveLength(7);

@@ -2,7 +2,7 @@
 
 // What the data suggests: inference from contents alone.
 //
-// The learner's two constructions in Chapter 1 are searches the lab can run exhaustively: a sum
+// The learner's two constructions in Chapter 2 are searches the lab can run exhaustively: a sum
 // over one asset (which rows, which number, per what), and a set of cleaning rules over the raw
 // orders. Each choice is written as SQL in the course's subset and run over Monday's storage, so
 // the lab can list every choice that reproduces an asset, and a figure can show that two different

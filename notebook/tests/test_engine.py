@@ -1,6 +1,6 @@
 # Copyright © 2026 Christopher Snow
 
-"""Every number Chapter 1's notebook states, read off the engine.
+"""Every number Chapter 2's notebook states, read off the engine.
 
 The same facts the TypeScript chapter's facts test pins, in pence: if the shop's data or programs
 change, this fails until the words change with them. Run with `python3 -m unittest discover -s

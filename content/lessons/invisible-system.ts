@@ -1,6 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
-// Chapter 1: The invisible data system (Part I, Why metadata exists), written as an essay.
+// Chapter 2: The invisible data system (Part I, Why metadata exists), written as an essay.
 //
 // The prose carries the whole investigation: the shop's state, the questions it cannot answer,
 // Thursday's gap, the fields and what they are for, a reconstruction of `daily_sales` and the
@@ -20,14 +20,14 @@ export const invisibleSystem: LessonInput = {
   id: "invisible-data-system",
   title: "The invisible data system",
   module: 1,
-  order: 1,
+  order: 2,
   objectives: [...LABELS.objectives],
-  introduces: ["asset", "metadata"],
+  introduces: ["metadata"],
   termExemptions: [
     {
       term: "run",
       reason:
-        "Used as the verb: run a query, run the week again, run the tests. The noun, one execution of a program, arrives in Chapter 6.",
+        "Used as the verb: run a query, run the week again, run the tests. The noun, one execution of a program, arrives in Chapter 7.",
     },
   ],
   sections: [

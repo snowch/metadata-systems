@@ -3,7 +3,7 @@
 
 // The figures' own logic: the grader's verdicts, what storage shows differently after a change,
 // how a list of names is written, and the figures that wait for a pass, take a prediction before
-// they answer, or hide a challenge's answer until it is solved, driven through Chapter 1's page.
+// they answer, or hide a challenge's answer until it is solved, driven through Chapter 2's page.
 
 import { render, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
@@ -73,7 +73,7 @@ describe("the map's evidence", () => {
   });
 });
 
-describe("the figures on Chapter 1's page", () => {
+describe("the figures on Chapter 2's page", () => {
   const book = createBook(LESSONS);
   const show = (prepare?: (store: LessonStore) => void) => {
     const storage = memoryStorage();

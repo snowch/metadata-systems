@@ -2,12 +2,12 @@
 
 // The front page: a band with what the course is, the way in (the first chapter, or the first one
 // not finished for a reader who has passed a challenge) and what the course assumes, beside a
-// real figure from Chapter 1, the shop's dashboard, which shows the question the course starts
+// real figure from Chapter 2, the shop's dashboard, which shows the question the course starts
 // from; then the eight parts in reading order, one line each; then every chapter the plan has, by
 // part, each part one line until it is pressed, the part of the chapter the button names already
 // open (the author, 8 October 2026: the page was a title, a paragraph and thirty-one lines of
-// "still to be written"). A chapter that is also a set of notebooks lists them under its line
-// (content/lessons/notebooks.ts).
+// "still to be written"). A chapter that is a notebook links it: from its line when the chapter has
+// no page, under its line when it has one (content/lessons/notebooks.ts).
 
 import { useMemo } from "react";
 
@@ -27,7 +27,16 @@ import { STRINGS } from "../strings";
 
 type Lesson = Book["lessons"][number];
 
-/** The dashboard as Chapter 1 shows it, on the week as it first ran. */
+/** Where the band's button leads: a chapter's page, or its notebook if it has no page. */
+interface Start {
+  href: string;
+  number: number;
+  title: string;
+}
+
+const notebook = (file: string) => notebookHref(import.meta.env.BASE_URL, file);
+
+/** The dashboard as Chapter 2 shows it, on the week as it first ran. */
 const COVER_FIGURE: InteractiveProps["interactive"] = {
   id: "cover-dashboard",
   kind: "dashboard",
@@ -44,13 +53,13 @@ function Cover({
   book,
   storage,
   first,
-  next,
+  start,
   started,
 }: {
   book: Book;
   storage: Storage;
   first: Lesson;
-  next: Lesson;
+  start: Start;
   started: boolean;
 }) {
   const store = useMemo(() => new LessonStore(storage, book.id, first.id), [storage, book, first]);
@@ -65,10 +74,10 @@ function Cover({
         <p className="hero-promise">{STRINGS.cover.promise}</p>
         <p className="cover-lead">{STRINGS.lead}</p>
         <p className="cover-start">
-          <a className="button primary hero-start" href={chapterHref(next.id)}>
+          <a className="button primary hero-start" href={start.href}>
             {fill(started ? STRINGS.continueWith : STRINGS.start, {
-              number: chapterOf(next),
-              title: next.title,
+              number: start.number,
+              title: start.title,
             })}
           </a>
         </p>
@@ -105,16 +114,28 @@ export function ChapterList({ book, storage }: { book: Book; storage: Storage })
     return c !== undefined && c.total > 0 && c.passed < c.total;
   });
   const first = ordered[0];
-  const next = started ? (unfinished ?? first) : first;
-  const openPart = next ? (PLAN.find((c) => c.number === chapterOf(next))?.part ?? 1) : 1;
+  // A reader with challenges left starts at the first chapter that has them; anyone else at the
+  // first chapter there is, page or notebook.
+  const opening = PLAN.find((c) => written.has(c.number) || NOTEBOOKS.has(c.number));
+  const start: Start | undefined =
+    started && unfinished
+      ? { href: chapterHref(unfinished.id), number: chapterOf(unfinished), title: unfinished.title }
+      : opening && {
+          href: written.has(opening.number)
+            ? chapterHref((written.get(opening.number) as Lesson).id)
+            : notebook(NOTEBOOKS.get(opening.number) as string),
+          number: opening.number,
+          title: opening.title,
+        };
+  const openPart = start ? (PLAN.find((c) => c.number === start.number)?.part ?? 1) : 1;
   return (
     <>
-      {first && next && (
+      {first && start && (
         <Cover
           book={book}
           storage={storage}
           first={first}
-          next={next}
+          start={start}
           started={started && unfinished !== undefined}
         />
       )}
@@ -137,7 +158,17 @@ export function ChapterList({ book, storage }: { book: Book; storage: Storage })
             <ol className="chapter-list">
               {chapters.map((c) => {
                 const lesson = written.get(c.number);
+                const file = NOTEBOOKS.get(c.number);
                 const label = fill(STRINGS.chapter, { number: c.number, title: c.title });
+                if (!lesson && file)
+                  return (
+                    <li key={c.number}>
+                      <a className="chapter-link" href={notebook(file)}>
+                        <span className="chapter-title">{label}</span>
+                        <span className="meta">{STRINGS.notebookNote}</span>
+                      </a>
+                    </li>
+                  );
                 if (!lesson)
                   return (
                     <li key={c.number} className="chapter-to-write">
@@ -146,7 +177,6 @@ export function ChapterList({ book, storage }: { book: Book; storage: Storage })
                     </li>
                   );
                 const done = completion.get(lesson.id);
-                const notebooks = NOTEBOOKS.get(c.number);
                 return (
                   <li key={c.number}>
                     <a className="chapter-link" href={chapterHref(lesson.id)}>
@@ -157,17 +187,10 @@ export function ChapterList({ book, storage }: { book: Book; storage: Storage })
                           : STRINGS.noChallenges}
                       </span>
                     </a>
-                    {notebooks && (
-                      <div className="chapter-notebooks">
-                        <p className="meta">{STRINGS.notebooksLead}</p>
-                        <ol>
-                          {notebooks.map((n) => (
-                            <li key={n.file}>
-                              <a href={notebookHref(import.meta.env.BASE_URL, n)}>{n.title}</a>
-                            </li>
-                          ))}
-                        </ol>
-                      </div>
+                    {file && (
+                      <a className="chapter-notebook" href={notebook(file)}>
+                        {STRINGS.notebookAlso}
+                      </a>
                     )}
                   </li>
                 );

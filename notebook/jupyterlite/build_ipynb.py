@@ -1,9 +1,9 @@
 # Copyright © 2026 Christopher Snow
 
-"""Builds Chapter 1 as Jupyter notebooks, for JupyterLite, from the chapter's two source files.
+"""Builds Chapters 1 and 2 as Jupyter notebooks, for JupyterLite, from their source files.
 
-The chapter is in two parts, one notebook each. Each part is written as a Python file of cells
-(`notebook/chapter_01_part_1.py` and `_part_2.py`), in marimo's file format, which keeps the chapter
+Chapters 1 and 2 are a notebook each. Each is written as a Python file of cells
+(`notebook/chapter_01.py` and `chapter_02.py`), in marimo's file format, which keeps the chapter
 diffable and lets the tests read every sentence; marimo itself no longer reaches a reader (the
 author ruled it out as too big for a phone). This turns each file into a Jupyter notebook, cell by
 cell, with the same prose and the same visible code:
@@ -17,7 +17,7 @@ cell, with the same prose and the same visible code:
 Anything in a source file this does not know how to carry over stops the build.
 
 Usage: python3 build_ipynb.py OUT_DIR [--check]
-  writes OUT_DIR/chapter_01_part_1.ipynb and OUT_DIR/chapter_01_part_2.ipynb.
+  writes OUT_DIR/chapter_01.ipynb and OUT_DIR/chapter_02.ipynb.
   --check  runs each notebook here, in CPython, first, and stops if a cell raises.
 """
 
@@ -32,11 +32,11 @@ HERE = Path(__file__).resolve().parent
 
 HIDDEN = {"jupyter": {"source_hidden": True}}
 
-# The two parts: each source file, and the name of the Jupyter notebook built from it. The parts link
-# to each other by these names.
-PARTS = {
-    1: (HERE.parent / "chapter_01_part_1.py", "chapter_01_part_1.ipynb"),
-    2: (HERE.parent / "chapter_01_part_2.py", "chapter_01_part_2.ipynb"),
+# The chapters: each source file, and the name of the Jupyter notebook built from it. The chapters
+# link to each other by these names.
+CHAPTERS = {
+    1: (HERE.parent / "chapter_01.py", "chapter_01.ipynb"),
+    2: (HERE.parent / "chapter_02.py", "chapter_02.ipynb"),
 }
 
 # Jupyter runs from the top: these come first. In the browser the three packages the page bundles
@@ -113,9 +113,9 @@ def note(stmts: list[ast.stmt]) -> str:
 widgets.VBox([widgets.HTML({"<p>" + code_font(label) + "</p>"!r}), note])"""
 
 
-def build(part: int) -> nbformat.NotebookNode:
-    """One part's Jupyter notebook."""
-    source = PARTS[part][0].read_text(encoding="utf-8")
+def build(chapter: int) -> nbformat.NotebookNode:
+    """One chapter's Jupyter notebook."""
+    source = CHAPTERS[chapter][0].read_text(encoding="utf-8")
     out = []
     for node in ast.parse(source).body:
         if not isinstance(node, ast.FunctionDef):
@@ -149,7 +149,7 @@ def build(part: int) -> nbformat.NotebookNode:
         else:
             raise SystemExit(f"no Jupyter form for this hidden cell of the source file:\n{code}")
     if not any("piplite" in "".join(c.source) for c in out):
-        raise SystemExit(f"part {part} has no warning: the setup has nowhere to go")
+        raise SystemExit(f"chapter {chapter} has no warning: the setup has nowhere to go")
     for i, cell in enumerate(out):
         cell["id"] = f"cell-{i + 1:02d}"
     nb = nbformat.v4.new_notebook(cells=out)
@@ -161,8 +161,8 @@ def build(part: int) -> nbformat.NotebookNode:
 
 
 def build_all() -> dict[str, nbformat.NotebookNode]:
-    """Both parts, by notebook name."""
-    return {name: build(part) for part, (_, name) in PARTS.items()}
+    """Every chapter, by notebook name."""
+    return {name: build(chapter) for chapter, (_, name) in CHAPTERS.items()}
 
 
 def check(nb: nbformat.NotebookNode) -> None:

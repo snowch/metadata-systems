@@ -4,7 +4,7 @@
 
 `run_week()` runs the shop's first week, night by night, and returns the platform as the learner
 finds it on Monday morning: `storage`, `warehouse` and `reporting`. `run_week(["copy"])`,
-`["refunds"]` and `["failed"]` run the week with one of Chapter 1's three changes.
+`["refunds"]` and `["failed"]` run the week with one of Chapter 2's three changes.
 """
 
 from .data import ARRIVAL, DAYS

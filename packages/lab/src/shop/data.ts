@@ -39,7 +39,7 @@ export const PRODUCT_COLUMNS = [
   { name: "category", type: STRING },
   { name: "list_price", type: PRICE },
   // The member of staff who last edited the product in the shop's catalogue: data about the
-  // product, not a record about the file (Chapter 2 asks which it is).
+  // product, not a record about the file (Chapter 3 asks which it is).
   { name: "updated_by", type: STRING },
 ] as const;
 

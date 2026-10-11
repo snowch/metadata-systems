@@ -4,7 +4,7 @@
 
 Each figure shows only what the learner has been told: the pipeline names the systems and the
 assets each holds, and never draws an asset made from another, because which asset is made from
-which is what Chapter 1 shows the platform cannot tell. Colours follow the page's theme: text and
+which is what Chapter 2 shows the platform cannot tell. Colours follow the page's theme: text and
 lines use the current colour, and fills are translucent mixes of it.
 """
 

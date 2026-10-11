@@ -1,7 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 // A parsed query. Every node keeps where it was written, so a problem can point at it and, from
-// Chapter 9, a column's lineage can point at the expression that made it.
+// Chapter 10, a column's lineage can point at the expression that made it.
 
 import type { Pos } from "./errors";
 import type { SqlType } from "../values";

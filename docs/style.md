@@ -39,7 +39,7 @@ filler unless they carry a specific fact the learner needs:
   quietly...", a figure that "asks nothing of you";
 - what the learner "has been told" or "already knows", unless that fact is the point.
 
-The standing example is the note Chapter 1 opened from every reference figure's badge: "You have
+The standing example is the note Chapter 2 opened from every reference figure's badge: "You have
 what you were told about the platform, kept to hand. It asks nothing of you." Neither sentence
 told the learner anything to know or do, and the note is gone. The first pass below scans for
 these forms, and a content test fails the commonest of them; the second pass applies the test to
@@ -54,7 +54,7 @@ they only read shows what has been worked out. Say which figures are which, and 
 asks, in the actions on the page (choose an answer and press a button), never only that they ask.
 Where the learner needs "you ask it something and it shows you what it finds", a sentence such as
 "the page queries the underlying data model" is the wrong one. The page never names what computes
-a figure (`CLAUDE.md`, "No lab on the page"): the standing example was Chapter 1's opening, which
+a figure (`CLAUDE.md`, "No lab on the page"): the standing example was Chapter 2's opening, which
 once named a lab and listed its SQL before it said what the learner does with a figure, and now
 names neither.
 

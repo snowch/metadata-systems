@@ -12,7 +12,7 @@ and where the two differ, the code and its tests are right and this file is out 
   with real rows, programs written in the course's SQL subset that really transform them, a
   scheduler, a clock and the storage systems that hold the results.
 - **The learner's metadata system**: the records, events, store, graph and queries the learner
-  builds, chapter by chapter, about the shop. In Chapter 1 it is empty: the learner has the shop's
+  builds, chapter by chapter, about the shop. In Chapter 2 it is empty: the learner has the shop's
   storage and nothing else.
 
 ## The shop
@@ -65,7 +65,7 @@ deliberate:
 - one day has a cancelled order, which the raw file keeps and revenue leaves out;
 - one day has an order that the export wrote twice;
 - on Thursday the checkout sent some orders with no customer id, and the rule in clean orders
-  that drops such orders made Thursday's revenue low. This is the shop's incident: Chapter 1 shows
+  that drops such orders made Thursday's revenue low. This is the shop's incident: Chapter 2 shows
   its symptom and later chapters measure it, trace it and find its cause;
 - no order has a quantity of 0 or less, so nothing in the week's data shows that clean orders
   has a rule for them.
@@ -77,7 +77,7 @@ facts test; this file states none.
 
 A figure can run the week again with a change to the shop and compare what the learner can see
 before and after. Each change is a function of the shop's definition, so the changed week is as
-deterministic as the plain one. Chapter 1 uses three:
+deterministic as the plain one. Chapter 2 uses three:
 
 - **An analyst's copy.** A script copies `clean_orders` to `shop-scratch/clean_orders_copy.parquet`
   every night, before daily sales runs.
@@ -112,7 +112,7 @@ Three more things the figures ask of it:
   (a system nothing flows into first), the assets each holds in the week asked about, and the
   flows between systems, each from what a program reads to what it writes. A flow names two
   systems and nothing else: never a program, never an asset. The map shows what a newcomer is
-  told on the first morning, and nothing Chapter 1 finds storage cannot tell. `mapTally` counts
+  told on the first morning, and nothing Chapter 2 finds storage cannot tell. `mapTally` counts
   what it holds, kind by kind and in all, for the count under the opening's map.
 - **The week, as it ran** (`weekTimeline`): the days the shop took orders, the night of work after
   each with when its first write began and its last ended, and the morning the learner starts
@@ -127,7 +127,7 @@ Three more things the figures ask of it:
 
 ## The course's SQL subset
 
-The programs, the queries a learner builds and, from Chapter 9, the queries the learner writes
+The programs, the queries a learner builds and, from Chapter 10, the queries the learner writes
 are all in one small SQL dialect, parsed and run by the engine (`packages/lab/src/sql`): `SELECT`
 with expressions and aliases, `DISTINCT`, `FROM` one table or file, `WHERE`, `GROUP BY`, `ORDER
 BY`, `CAST`, `SUM`, `COUNT`, `MIN`, `MAX`, `LOWER`, `COALESCE`, three-valued logic with `NULL`, and
@@ -143,8 +143,8 @@ graded work from every earlier chapter.
 - Each chapter's work is stored by the platform's runtime, one key per chapter
   (`ms:v1:<chapter id>`), and is graded again every time it is read, as the runtime grades a
   challenge on load.
-- When a figure needs what the learner built earlier (their records in Chapter 3, their event
-  design in Chapter 7), the book reads that chapter's stored work, grades it, and uses it only if
+- When a figure needs what the learner built earlier (their records in Chapter 4, their event
+  design in Chapter 8), the book reads that chapter's stored work, grades it, and uses it only if
   it passes. Otherwise the figure uses the course's reference and says so on the page.
 - So there is no separate "engine state" to drift from the learner's work or to be edited into a
   pass, and resetting a chapter's work resets what later chapters see of it.
@@ -153,7 +153,7 @@ graded work from every earlier chapter.
 
 The same code gives the same rows, times and identifiers on every machine. The engine has no wall
 clock (its clock is the week's), no `Math.random` (an identifier the engine needs, such as a run's
-UUID from Chapter 6, is derived from the run's job and time), and no formatting that depends on
+UUID from Chapter 7, is derived from the run's job and time), and no formatting that depends on
 the browser's locale or time zone. Every time is UTC.
 
 ## What the engine does not model

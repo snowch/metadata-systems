@@ -60,7 +60,7 @@ Before a technology or a standard appears, the chapter answers, in this order:
 
 No chapter starts with a product's terminology. OpenLineage is the course's main case study and
 an open standard, not the definition of metadata: the learner designs an event for a run in
-Chapter 6, from the problem, and meets OpenLineage in Chapter 7 as one answer to a problem they
+Chapter 7, from the problem, and meets OpenLineage in Chapter 8 as one answer to a problem they
 already understand. The course is not an OpenLineage tutorial and not a catalogue of metadata
 products; a product appears where it illuminates an idea, and its architecture is compared, never
 its marketing.
@@ -87,7 +87,7 @@ lab" and "Metadata Lab" in anything a learner reads.
 **A figure shows only what the learner has been told or has built.** It never draws a relation the
 chapter asks the learner to find, and no caption, label or text gives away a challenge's or a
 prediction's answer before the learner has worked for it. The platform map is the standing
-example. It stays to hand through every chapter, and in Chapter 1 it has no arrow from one asset to
+example. It stays to hand through every chapter, and in Chapter 2 it has no arrow from one asset to
 another, because which asset is made from which is what that chapter shows storage cannot tell.
 The map gains a relation only once something the learner built records it.
 
@@ -100,7 +100,7 @@ shop's data, and still shows only what the learner has been told or has built; i
 decoration. Detail the learner's next step does not need goes in a section's `details`, a control
 the reader opens, where it first matters, and nowhere else. A chapter's opening sets up the
 smallest model its first question needs, and adds structure when the investigation makes it
-relevant. Chapter 1's opening is the standing example: a short situation, the map with its count,
+relevant. Chapter 2's opening is the standing example: a short situation, the map with its count,
 the shop's week, the assets, the dashboard, then the question.
 
 ## Accuracy
@@ -215,7 +215,7 @@ just raised the question that needs it, never as a definition up front: plain En
 term second. `docs/plan.md` lists the terms each chapter introduces; the term gate
 (`termProblems`) fails a chapter that uses a term before the chapter that introduces it, unless
 the chapter lists the word under `termExemptions` with a reason. *Metadata* itself is introduced
-at the end of Chapter 1, by the questions the learner could not answer.
+at the end of Chapter 2, by the questions the learner could not answer.
 
 **Length follows the material.** The ten sections of the lesson format (question, motivation,
 prediction, investigation, construction, failure experiment, explanation, generalisation,
@@ -240,7 +240,7 @@ work?". The plain model, in the words every chapter uses: in a figure the learne
 it checks, it shows you, you work out what it means; a figure they only read shows what has been
 worked out. The page says which figures are which, and says how the learner asks in the actions
 on the page (choose an answer, an asset or the parts of a query, and press a button), never only
-that they ask: "You ask a question by using a figure" was false of Chapter 1's first figure,
+that they ask: "You ask a question by using a figure" was false of Chapter 2's first figure,
 which asks nothing, and silent on how. Where the learner needs "you ask it something and it shows
 you what it finds", a sentence such as "the page queries the underlying data model" does not
 belong. How a mechanism is built comes after, and where the learner's next step does not need
@@ -372,7 +372,7 @@ information to choose yet" is an option the learner can take. The lesson is neve
 means X". It is that the platform has its own meaning, the requirement did not say which meaning
 it wanted, and a field's name does not say which question the field answers.
 
-Chapter 1's owner is the standing example. "Every table must have an owner" could ask who is
+Chapter 2's owner is the standing example. "Every table must have an owner" could ask who is
 responsible for a table, which team is, which program writes it, or which account controls it in
 the warehouse, and each needs something different stored. The shop's warehouse records an account:
 that meets the requirement as written, and answers only the last question, while "Who should I

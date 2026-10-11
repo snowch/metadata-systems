@@ -1,7 +1,7 @@
 # Copyright © 2026 Christopher Snow
 
 """The Jupyter pages' controls and warnings: the buttons the texts tell the reader to press exist on
-the page, and each part's warning states what was measured on the pages.
+the page, and each chapter's warning states what was measured on the pages.
 
 notebook/buttons/ is a JupyterLab extension that adds a row of large buttons above every notebook's
 cells, because on a phone the menus at the top of the page open when tapped but their items do
@@ -17,7 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = {
-    part: (ROOT / "notebook" / f"chapter_01_part_{part}.py").read_text(encoding="utf-8") for part in (1, 2)
+    chapter: (ROOT / "notebook" / f"chapter_0{chapter}.py").read_text(encoding="utf-8") for chapter in (1, 2)
 }
 BUTTONS = ROOT / "notebook" / "buttons"
 LABELS = json.loads((BUTTONS / "buttons.json").read_text(encoding="utf-8"))
@@ -78,8 +78,8 @@ class TheWarnings(unittest.TestCase):
             ],
             2: [
                 ("downloads about 13 MB", gzip),
-                ("the page downloaded less than 1 MB when opened from part 1's link", stored),
-                ("Part 1's link opens this page in a new tab", "part 2 from part 1's link (a new tab)"),
+                ("the page downloaded less than 1 MB when opened from Chapter 1's link", stored),
+                ("Chapter 1's link opens this page in a new tab", "part 2 from part 1's link (a new tab)"),
                 ("running every cell took 10 to 12 seconds", run),
                 ("running every cell took 10 to 12 seconds", live_run),
                 ("the page used about 420 MB of memory", memory),
