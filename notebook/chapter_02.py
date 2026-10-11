@@ -28,7 +28,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.callout(mo.md("The page runs Python in your browser, and the first time you open it on its own, your browser downloads about 13 MB. Measured on a computer, the page downloaded less than 1 MB when opened from Chapter 1's link, in a browser that had opened Chapter 1. Chapter 1's link opens this page in a new tab, and Chapter 1 stays open in its own tab. On a computer, running every cell took 10 to 12 seconds, and the page used about 420 MB of memory. If a phone runs short of memory, the browser may reload the page, and a reload loses anything you have not saved."), kind="warn")
+    mo.callout(mo.md("The page runs Python in your browser, and the first time you open it on its own, your browser downloads about 13 MB. Measured on a computer, the page downloaded less than 1 MB when opened from Chapter 1's link, in a browser that had opened Chapter 1. Chapter 1's link opens this page in a new tab. Chapter 1 stays open in its own tab and keeps its own memory. On a phone, closing Chapter 1 leaves more memory for this page. On a computer, running every cell took 10 to 12 seconds, and the page used about 420 MB of memory. If a phone runs short of memory, the browser may reload the page, and a reload loses anything you have not saved."), kind="warn")
     return
 
 
@@ -83,14 +83,14 @@ def _(mo):
     mo.md(r"""
     ## Questions the platform cannot answer
 
-    Questions like the head of the shop's arrive every week on a platform you did not build:
+    Messages like the head's arrive every week on a platform you did not build. Each one raises questions like these:
 
     - Is Thursday's total wrong, and since when?
     - Can we delete `products.csv`? Does anything still read it?
     - If the checkout renames a column in `orders.jsonl`, what stops working?
     - Who should I ask about `daily_sales`?
 
-    Each is answered by something that happened, or by a decision somebody made: a job that reads a file, a rule somebody chose, a person who took responsibility. None of them is answered by the rows a table holds today.
+    The rows answer part of the first question: whether the total differs. The full answers come from what happened, or from a decision that someone made: a job that reads a file, a rule that a person chose, a person who took responsibility. The rows a table holds today hold neither.
     """)
     return
 
@@ -100,7 +100,7 @@ def _(mo):
     mo.md(r"""
     ## Thursday
 
-    Start with the arithmetic. `orders.jsonl` holds every order the shop took, as the checkout sent it. Thursday's orders add up to 20550 pence. `daily_sales` holds one row per day, with amounts in pence, and its Thursday row says 5150; the dashboard shows £51.50. Somewhere between the file and the table, 15400 pence, £154.00, went missing.
+    Thursday's orders in `orders.jsonl` add up to 20550 pence. `daily_sales` says 5150 for Thursday, and the dashboard shows £51.50. The two totals differ by 15400 pence, £154.00.
 
     The cell below reads every order in `orders.jsonl` and adds up `price_pence` times `quantity` for one day. The day is set to Thursday, `2026-09-10`, and you can change it and run the cell again.
     """)
@@ -118,7 +118,7 @@ def _(storage):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The code cell below reads the row from `daily_sales` for the day that the code cell above sets. If you change the day in the code cell above, run the code cell below too. It does not run again by itself. Select the code cell above and press **Run below**, which runs that cell and every cell below it.
+    The cell below reads the row from `daily_sales` for the day that the cell above sets. If you change the day in the cell above, run the cell below too. It does not run again by itself. Select the cell above and press **Run below**.
     """)
     return
 
@@ -134,7 +134,7 @@ def _(mo):
     mo.md(r"""
     It is not only Thursday. On Monday, Friday and Sunday the raw orders add up to the day's row in `daily_sales`. On Tuesday, Wednesday, Thursday and Saturday they do not. The platform holds both sets of numbers and nothing that connects them: no record of which orders `daily_sales` counts, which job decided that, or why.
 
-    The cell below puts, for every day, the total of the raw orders in `orders.jsonl` beside that day's row in `daily_sales`. It shows whether the two are the same.
+    The cell below puts, for every day, the total of the raw orders in `orders.jsonl` beside that day's row in `daily_sales`. It shows whether the two are the same. The `files=` argument of `warehouse.sql` lets the query read `orders.jsonl` from object storage as a table called `raw_orders`.
     """)
     return
 
@@ -161,11 +161,40 @@ def _(warehouse):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    The cell below lists Thursday's orders in `orders.jsonl` that `clean_orders` does not have. Look at what these orders have in common, then compare their total with Thursday's gap of 15400 pence.
+    """)
+    return
+
+
+@app.cell
+def _(warehouse):
+    warehouse.sql(
+        """
+        SELECT * FROM raw_orders
+        WHERE date(ordered_at) = '2026-09-10'
+          AND order_id NOT IN (SELECT order_id FROM clean_orders)
+        """,
+        files={"raw_orders": "s3://shop-raw/orders.jsonl"},
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Orders 7021, 7023 and 7025 have no customer id. Together they are worth 15400 pence, the whole of Thursday's gap. `clean_orders` does not have them. Their absence from `clean_orders` shows which orders are missing, not why: nothing on the platform records the rule that left them out.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     ## What the platform holds
 
     Take `daily_sales`. The warehouse records two columns, `day` and `revenue_pence`, with their types; 7 rows and a size in bytes; a created time, 1 September, and a last-altered time, 02:30 on Monday 14 September; and an owner, `etl_service`. It records nothing else about the table.
 
-    The cell below reads the warehouse's record of `daily_sales` from its catalogue, which you query with SQL. `information_schema.tables` has one row per table, and `information_schema.columns` has one row per column, with the column's type.
+    The cell below reads the warehouse's record of `daily_sales`. The warehouse keeps a record of its own tables, which you query with SQL as `information_schema`. `information_schema.tables` has one row per table, and `information_schema.columns` has one row per column, with the column's type.
     """)
     return
 
@@ -185,9 +214,9 @@ def _(warehouse):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Object storage records as much about a file: its location, its size and when it was last modified. The reporting tool records the dashboard's title, who created it and when, when it last refreshed, and the values it shows.
+    Object storage records three things about a file: its key, its size in bytes and when it was last modified. A key is the file's full name, such as `s3://shop-raw/orders.jsonl`, where `shop-raw` is the bucket: the container the file sits in. The reporting tool records the dashboard's title, who created it and when, when it last refreshed, and the values it shows.
 
-    The cell below lists the files in the bucket `shop-raw`. For each file, object storage records its key, its size in bytes and when it was last modified.
+    The cell below lists the files in the bucket `shop-raw`.
     """)
     return
 
@@ -215,7 +244,7 @@ def _(reporting):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Everything here describes the asset as it is this morning. No field describes how it got that way: which job wrote it, what it read, what its rows were yesterday, or who decided its rules. The platform has a complete picture of its own state and no account of its history.
+    Everything here describes the asset as it is this morning. No field describes how it got that way: which job wrote it, what it read, what its rows were yesterday, or who decided its rules. The platform records the current state of each asset and none of its history.
     """)
     return
 
@@ -225,11 +254,11 @@ def _(mo):
     mo.md(r"""
     ## What the fields are for
 
-    These fields exist because the systems need them. The warehouse keeps column names and types so that it can run a query; object storage keeps a file's location so that it can serve the file; the reporting tool keeps the values so that it can draw the chart. In the shop's platform, and in most real ones, a system records what its own work needs and nothing more. The questions you want answered are not its work.
+    These fields exist because the systems need them. The warehouse keeps column names and types so that it can run a query; object storage keeps a file's location so that it can serve the file; the reporting tool keeps the values so that it can draw the chart. In the shop's platform, a system records what its own work needs and nothing more. The questions you want answered are not its work.
 
-    The owner field shows how far that goes. "Who should I ask about `daily_sales`?" wants a person or a team. The warehouse answers `etl_service`, the account that all four of the shop's jobs log in as. The field is called owner, but the question it answers is which account controls the table. The requirement that every table has an owner is met, and your question is not.
+    The owner field shows how far that goes. "Who should I ask about `daily_sales`?" wants a person or a team. The requirement is: "Every table must have an owner." The warehouse records `etl_service` as the owner of all three tables. The name looks like an account a program logs in as, and the warehouse records nothing more about it. The field is called owner, but the question it answers is which account controls the table. The requirement is met as written, and your question is not.
 
-    The cell below lists the owner of every table in the catalogue.
+    The cell below lists the owner of every table in the warehouse.
     """)
     return
 
@@ -245,7 +274,9 @@ def _(mo):
     mo.md(r"""
     ## Reconstruction
 
-    When the platform records no history, the usual move is to infer it from the data. For `daily_sales`, that means finding a query over another asset that gives the same rows. One does: read `clean_orders`, keep the completed orders, add up price times quantity per day. It reproduces `daily_sales` exactly, all seven rows. It also explains Thursday: three of Thursday's orders arrived with no customer id, `clean_orders` does not have them, and they are worth 15400 pence, £154.00.
+    When the platform records no history, the usual move is to infer it from the data. For `daily_sales`, that means finding a query over another asset that gives the same rows. One does: read `clean_orders`, keep the completed orders, add up price times quantity per day. It reproduces `daily_sales` exactly, all seven rows. It also explains Thursday.
+
+    Take out the guess you wrote for `daily_sales` at the end of Chapter 1. Compare it with the query in the cell below, which the data supports.
 
     The cell below runs a query over `clean_orders` that adds up price times quantity, in pence, for each day, counting only completed orders. It compares the query's rows with the rows of `daily_sales`; `True` means every row is the same.
     """)
@@ -274,7 +305,7 @@ def _(mo):
 
     The job that writes `daily_sales` is edited, from Saturday's row on, to keep every order that has not been refunded. The shop has no refunds, so from Saturday every order counts, cancelled ones included. Saturday's row in `daily_sales` becomes 21549 instead of 19149, in pence. The dashboard shows £215.49 instead of £191.49. The table still has 7 rows and the same last-altered time, and no simple query over the week's assets reproduces it any more. The evidence has gone, and the platform records nothing about the edit.
 
-    On the last night the job that writes `daily_sales` fails and writes nothing. The table has 6 rows, none for Sunday, and was last altered on Sunday at 02:30, a day earlier than `clean_orders` and the dashboard. The dashboard refreshed at 03:00 on Monday as usual and shows the 6 values it found. Everything the platform records looks like a normal morning with one row fewer. Only a record of the failure would say that a write was due and did not happen.
+    On the last night the job that writes `daily_sales` fails and writes nothing. The table has 6 rows, none for Sunday, and was last altered on Sunday at 02:30, a day earlier than `clean_orders` and the dashboard. The dashboard refreshed at 03:00 on Monday as usual and shows the 6 values it found. Each record is normal on its own. The gap shows only when you compare the last-altered times. Only a record of the failure would say that a write was due and did not happen.
     """)
     return
 
@@ -298,7 +329,7 @@ def _(mo):
         label="Choose a change to the shop",
         full_width=True,
     )
-    mo.vstack([mo.md("Choose a change to the shop from the menu below. Then select the first cell below the menu and press **Run below**. The cells below show the platform on Monday morning, after the week ran with the change you chose. The cells above the menu keep showing the week as it ran."), change])
+    mo.vstack([mo.md("For each change, find which of the platform's records show it, and whether a query still gives every row of `daily_sales`. Choose a change to the shop from the menu below. Then select the first cell below the menu and press **Run below**. The cells below show the platform on Monday morning, after the week ran with the change you chose. The cells above the menu keep showing the week as it ran."), change])
     return (change,)
 
 
@@ -348,7 +379,7 @@ def _(changed):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    **Queries that give every row of `daily_sales`**
+    The cell below lists each query, from a fixed set of simple ones over the week's assets, that gives every row of `daily_sales`, even if it gives a row more. Each row of its result is one query: `source` names the asset it reads; `keep` says which orders it keeps (all, completed or cancelled); `measure` says what it adds up (revenue, quantity or rows); `per` says what it groups by (day, customer or product); and `sql` is the query itself.
     """)
     return
 
@@ -364,7 +395,9 @@ def _(mo):
     mo.md(r"""
     ## A rule the week never tests
 
-    A reconstruction can be checked against the data, but only where the data has something to check. `clean_orders` is made from `orders.jsonl` by a few rules: keep one row of an order the export wrote twice, drop orders with no customer id, keep cancelled orders, and drop orders with a quantity of 0 or less. The last rule is in the job. No order in the week has a quantity of 0 or less, so the rule never removes a row, and a version of the job without it would have produced the same table. From the data, you cannot tell whether the rule exists. The data can confirm a rule only where some row would have triggered it.
+    A reconstruction can be checked against the data, but only where the data has something to check. In the shop's design, which the platform does not record and you cannot see, `clean_orders` is made from `orders.jsonl` by four rules: keep one row of an order the export wrote twice, drop orders with no customer id, keep cancelled orders, and drop orders with a quantity of 0 or less. No order in the week has a quantity of 0 or less, so the rule never removes a row, and a version of the job without it would have produced the same table. From the data, you cannot tell whether the rule exists. The data can confirm a rule only where some row would have triggered it.
+
+    Your guess for `clean_orders` from Chapter 1 meets the same limit.
 
     The cell below counts the orders in `orders.jsonl` with a quantity of 0 or less.
     """)
@@ -400,7 +433,7 @@ def _(mo):
 
     - what an asset is: what `daily_sales` means, what it is for, and who is responsible for it;
     - what happened: each night's write of `daily_sales`, when it ran, what it read, and whether it succeeded;
-    - what was made from what: `daily_sales` is built from the completed orders in `clean_orders`, and the dashboard reads `daily_sales`.
+    - what was made from what: such a record would say that `daily_sales` is built from the completed orders in `clean_orders`, and that the dashboard reads `daily_sales`.
 
     Information of this kind, about an asset or about the platform, is called metadata: what an asset is, where it came from, who is responsible for it, what its numbers mean, how it is made, and how it relates to other assets. Some of it the systems already keep for their own purposes: the names, types, counts and times you read above. The systems do not keep what an asset means, what happened to it or what it was made from; somebody has to record those, and the second and third have to be recorded when the thing happens. A note of what a job read, written the next morning from the data, is a reconstruction, with the limits shown above.
 
@@ -419,22 +452,19 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
-def _(mo):
-    note = mo.ui.text_area(
-        label="Your handover note for `daily_sales`",
-        placeholder="Write what daily_sales means and who to ask about it. Include what runs each night, what it reads and what it writes, and what to do when a night fails.",
-        rows=8,
-        full_width=True,
-    )
-    note
+@app.cell
+def _():
+    note = """
+Write what daily_sales means and who to ask about it. Include what
+runs each night, what it reads and writes, and what to do if a night fails.
+"""
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    You write your handover note in the box above. The cell below shows only what the warehouse records about `daily_sales`, so you can compare it with your note.
+    You write your handover note in the cell above, between the triple quotes, and press **Save** to keep it. The cell below shows only what the warehouse records about `daily_sales`, to compare with your note.
     """)
     return
 
@@ -456,6 +486,11 @@ def _(mo):
     The platform's state answers what exists. It does not answer what happened or why. Inferring the history from the data gave an explanation that fitted, and three ordinary changes made it ambiguous, made it wrong, or left a failed night looking like a normal one. The records that would have answered had to be made when the work was done.
 
     Chapter 3 starts making them: a description of each asset, kept beside the data, with what the asset means and who is responsible for it. It then asks the four questions at the start again, to see which of them that record answers.
+
+    Nothing in this chapter tested your guess for `clean_customers`. What would test it?
+
+    - Pick a table on a platform you work on. What does its record say about who is responsible for it, and what does it say about what the table is made from?
+    - What would a description of `daily_sales` have to hold to answer "Who should I ask about `daily_sales`?"
     """)
     return
 
@@ -471,7 +506,7 @@ def _(mo):
 
     In some real databases, a table's owner is an account too. In PostgreSQL, for example, a new table's owner is normally the account that created it. At first, only the owner (or a superuser) can do anything with the table; other accounts can use it once they are given the right to. The right to alter or drop the table comes with being its owner. The shop's warehouse records the owning account and no such rights.
 
-    A file's size is its real size in bytes. A table's size is an estimate from its rows. All times are UTC. A real platform has hundreds or thousands of assets; searching for queries that rebuild one would cost far more. "No simple query reproduces it" means none that keeps every row, completed orders or cancelled orders of one asset; a query with a condition on the date would.
+    A file's size is its real size in bytes. A table's size is an estimate from its rows. All times are UTC. A real platform has hundreds or thousands of assets; searching for queries that rebuild one would cost far more. "No simple query over the week's assets reproduces it" means none of the simple queries the menu's last cell tries. A query with a condition on the date could still reproduce the edited table.
 
     [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 1](chapter_01.ipynb)
 

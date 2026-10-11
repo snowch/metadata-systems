@@ -222,7 +222,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    [Chapter 2](chapter_02.ipynb) goes back to the head of the shop's line and starts with Thursday's revenue.
+    [Chapter 2](chapter_02.ipynb) goes back to the head of the shop's message and starts with Thursday's revenue.
     """)
     return
 

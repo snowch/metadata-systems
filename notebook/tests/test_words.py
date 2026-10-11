@@ -85,7 +85,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertTrue(first.startswith("You start work on Monday 14 September 2026 at 09:00"))
         self.assertIn("the head of the shop sends you one line: \"Thursday's revenue looks wrong.\"", first)
         self.assertIn("you first need to know what the platform holds and what happens on it each night", first)
-        self.assertEqual(CELLS[1][-2], "[Chapter 2](chapter_02.ipynb) goes back to the head of the shop's line and starts with Thursday's revenue.")
+        self.assertEqual(CELLS[1][-2], "[Chapter 2](chapter_02.ipynb) goes back to the head of the shop's message and starts with Thursday's revenue.")
         self.says("The head of the shop has sent you one line", 2)
 
     def test_the_three_systems(self):
@@ -186,10 +186,20 @@ class TheWordsMatchTheEngine(unittest.TestCase):
             raw[o["ordered_at"][:10]] = raw.get(o["ordered_at"][:10], 0) + o["price_pence"] * o["quantity"]
         daily = {r["day"]: r["revenue_pence"] for r in self.w.sql("SELECT * FROM daily_sales")}
         self.assertEqual((raw["2026-09-10"], daily["2026-09-10"]), (20550, 5150))
-        self.says("Thursday's orders add up to 20550 pence")
-        self.says("its Thursday row says 5150; the dashboard shows £51.50")
+        self.says("Thursday's orders in `orders.jsonl` add up to 20550 pence")
+        self.says("`daily_sales` says 5150 for Thursday, and the dashboard shows £51.50")
         self.assertEqual(raw["2026-09-10"] - daily["2026-09-10"], 15400)
-        self.says("15400 pence, £154.00, went missing")
+        self.says("The two totals differ by 15400 pence, £154.00.")
+        # The orders clean_orders lacks on Thursday, which the new cell lists: all of them have no
+        # customer id, and together they are the whole gap.
+        kept = {r["order_id"] for r in self.w.sql("SELECT order_id FROM clean_orders")}
+        thursday = [o for o in self.week.storage.records(shop.FILES["orders"]) if o["ordered_at"].startswith("2026-09-10")]
+        lacking = [o for o in thursday if o["order_id"] not in kept]
+        self.assertEqual([o["order_id"] for o in lacking], [7021, 7023, 7025])
+        self.assertTrue(all(o["customer_id"] is None for o in lacking))
+        self.assertEqual(sum(o["price_pence"] * o["quantity"] for o in lacking), 15400)
+        self.says("Orders 7021, 7023 and 7025 have no customer id. Together they are worth 15400 pence, the whole of Thursday's gap.")
+        self.assertIn("AND order_id NOT IN (SELECT order_id FROM clean_orders)", SOURCE[2])
         same = [d for d in shop.DAYS if raw[d] == daily[d]]
         self.assertEqual(same, ["2026-09-07", "2026-09-11", "2026-09-13"])
         self.says(
@@ -216,14 +226,20 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         first = self.week.storage.read_text(shop.FILES["products"]).splitlines()[0]
         self.assertEqual(first, "product_id,name,category,list_price_pence,updated_by")
         self.says("`products.csv` names its columns once, in its first line", 1)
-        self.says("its location, its size and when it was last modified")
+        keys = [r["key"] for r in self.week.storage.ls("s3://shop-raw/")]
+        self.assertIn("s3://shop-raw/orders.jsonl", keys)
+        self.assertEqual(set(self.week.storage.ls("s3://shop-raw/")[0]), {"key", "size_bytes", "last_modified"})
+        self.says("Object storage records three things about a file: its key, its size in bytes and when it was last modified.")
+        self.says("A key is the file's full name, such as `s3://shop-raw/orders.jsonl`, where `shop-raw` is the bucket")
         self.says("the dashboard's title, who created it and when, when it last refreshed, and the values it shows")
 
     def test_the_owner_and_the_programs(self):
         owners = {r["table_owner"] for r in self.w.sql("SELECT table_owner FROM information_schema.tables")}
         programs = {e.writer for e in self.week.executions} - {"export"}
         self.assertEqual((owners, len(programs)), ({"etl_service"}, 4))
-        self.says("The warehouse answers `etl_service`, the account that all four of the shop's jobs log in as.")
+        tables = self.w.sql("SELECT table_name FROM information_schema.tables")
+        self.assertEqual(len(tables), 3)
+        self.says('The requirement is: "Every table must have an owner." The warehouse records `etl_service` as the owner of all three tables.')
 
     def test_the_reconstruction_and_thursday(self):
         self.assertEqual(len(shop.queries_that_rebuild(self.week)), 1)
@@ -231,8 +247,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("It reproduces `daily_sales` exactly, all seven rows.")
         gap = shop.day_gap(self.week, "2026-09-10")
         self.assertEqual((gap["left"], gap["left_pence"]), (3, 15400))
-        self.says("three of Thursday's orders arrived with no customer id")
-        self.says("worth 15400 pence, £154.00")
+        self.says("It also explains Thursday.")
 
     def test_the_three_changes(self):
         self.assertEqual(len(shop.CHANGES), 3)
@@ -262,7 +277,16 @@ class TheWordsMatchTheEngine(unittest.TestCase):
             "shows the 6 values it found."
         )
         self.assertEqual(KEEP, ("all", "completed", "cancelled"))
-        self.says("none that keeps every row, completed orders or cancelled orders of one asset")
+        self.says(
+            "\"No simple query over the week's assets reproduces it\" means none of the simple queries "
+            "the menu's last cell tries."
+        )
+        # What the menu's last cell lists for each change, and the columns the text names.
+        counts = [len(shop.queries_that_rebuild(shop.run_week(c), "daily_sales", fit="covers")) for c in ([], ["copy"], ["refunds"], ["failed"])]
+        self.assertEqual(counts, [1, 2, 0, 1])
+        self.assertEqual(set(shop.queries_that_rebuild(self.week)[0]), {"source", "keep", "measure", "per", "sql"})
+        self.says("`source` names the asset it reads; `keep` says which orders it keeps (all, completed or cancelled)")
+        self.says("Each record is normal on its own. The gap shows only when you compare the last-altered times.")
 
     def test_the_rule_the_week_never_tests(self):
         orders = self.week.storage.records(shop.FILES["orders"])

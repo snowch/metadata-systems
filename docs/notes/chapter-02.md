@@ -794,6 +794,32 @@ engineering documents call the engine the engine, and its directory keeps its na
 | --- | --- | --- |
 | none: a sentence removed, and the note's subject changed from the lab to the shop | | |
 
+## Round 17: Chapter 2 against today's Chapter 1, 11 October 2026
+
+The author asked for Chapter 2 to be reviewed against the day's changes to Chapter 1. A reviewer on
+another model read both chapters as built, after Run all, with every cell's output
+(`docs/notes/chapter-02/review/round-17/`); it found 19 things, and an independent sceptic upheld 4,
+upheld 11 in part and rejected 4 (`verdicts.md`). The fixes, code first:
+
+- A new cell lists Thursday's orders that `clean_orders` does not have, so the learner sees the
+  three orders with no customer id instead of being told; the text after it says this shows which
+  orders are missing, not why.
+- The handover note is a cell, a Python string the learner writes in. The box it replaced was a
+  widget, and JupyterLab does not save a widget's contents: a note typed there was lost on Save and
+  reload (tested), though the chapter asked for it. The build's indent handling changed to keep the
+  string's lines whole.
+- The menu's last cell now has its columns and its fit explained, and the menu says what to look for.
+
+The words, from Haiku's draft of brief BD (two slots went back once: F's "It" pointed at the wrong
+thing, and G gave away what the orders have in common): Chapter 1's guesses are taken up for
+`daily_sales` and `clean_orders`, and the closing asks what would test the guess for
+`clean_customers`; the jobs' count and the cleaning rules are marked as the shop's design, which the
+learner cannot see; "in most real ones" is gone from a claim the chapter's close contradicts; the
+owner requirement is stated before it is met; "catalogue" now means only the shop's products;
+"message", not "line"; the warning says why the new tab matters; three reflective questions close
+the chapter. In the whole-chapter read, two repeats were cut and the questions moved after the
+Chapter 3 paragraph, where "them" had lost its referent.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,

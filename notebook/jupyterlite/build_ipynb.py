@@ -10,7 +10,7 @@ cell, with the same prose and the same visible code:
 
 - the setup cells, at the foot of a source file, move to the top, since Jupyter runs from the top,
   with the install of the packages the page bundles;
-- the controls (the menu of changes, the handover note) become ipywidgets; a figure shown with
+- the control (the menu of changes) becomes an ipywidget; a figure shown with
   `mo.Html` is drawn here, from the shop's week, into a Markdown cell (notebook/shop/figures.py);
   a column of outputs is `display`; a callout (the warning, and
   the steps for running and saving the page) is a box, a div the course's stylesheet draws.
@@ -68,9 +68,11 @@ storage, warehouse, reporting = week.storage, week.warehouse, week.reporting""",
 
 
 def lines_of(source: str, stmts: list[ast.stmt]) -> str:
-    """The statements' source, dedented, as they stand in the source file."""
-    lines = source.splitlines()
-    return textwrap.dedent("\n".join(lines[stmts[0].lineno - 1 : stmts[-1].end_lineno]))
+    """The statements' source as they stand in the source file, less the four spaces marimo
+    indents a cell's body by. A line with less indent is inside a string (the handover note's
+    lines start at the margin) and is kept as it is."""
+    lines = source.splitlines()[stmts[0].lineno - 1 : stmts[-1].end_lineno]
+    return "\n".join(line[4:] if line.startswith("    ") else line for line in lines)
 
 
 def is_call(node: ast.AST, attr: str) -> bool:
@@ -122,14 +124,6 @@ def menu(stmts: list[ast.stmt]) -> str:
 display(HTML({"<p>" + inline(lead) + "</p><p>" + inline(label) + "</p>"!r}), change)"""
 
 
-def note(stmts: list[ast.stmt]) -> str:
-    call = find(stmts, "text_area")
-    label = ast.literal_eval(keyword(call, "label"))
-    placeholder = ast.literal_eval(keyword(call, "placeholder"))
-    return f"""note = widgets.Textarea(placeholder={placeholder!r}, layout=widgets.Layout(width="100%", height="12em"))
-widgets.VBox([widgets.HTML({"<p>" + code_font(label) + "</p>"!r}), note])"""
-
-
 def build(chapter: int) -> nbformat.NotebookNode:
     """One chapter's Jupyter notebook."""
     source = CHAPTERS[chapter][0].read_text(encoding="utf-8")
@@ -160,8 +154,6 @@ def build(chapter: int) -> nbformat.NotebookNode:
             continue  # the setup, which Jupyter runs first (SETUP)
         elif "mo.ui.dropdown(" in code:
             out.append(nbformat.v4.new_code_cell(menu(stmts), metadata=HIDDEN))
-        elif "mo.ui.text_area(" in code:
-            out.append(nbformat.v4.new_code_cell(note(stmts), metadata=HIDDEN))
         elif len(stmts) == 1 and isinstance(first, ast.Expr) and is_call(first.value, "Html"):
             # A figure: drawn here from the shop's week and written into a Markdown cell, so it
             # shows before anything runs.
