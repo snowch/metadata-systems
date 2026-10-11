@@ -119,5 +119,11 @@ class TheBoxes(unittest.TestCase):
         rule = css.split('.jp-OutputArea-output[data-mime-type="application/vnd.jupyter.stdout"] pre {')[1]
         self.assertIn("white-space: pre;", rule.split("}")[0])
 
+
+class TheTheme(unittest.TestCase):
+    def test_the_notebooks_follow_the_readers_light_or_dark_setting(self):
+        overrides = json.loads((ROOT / "notebook" / "jupyterlite" / "overrides.json").read_text(encoding="utf-8"))
+        self.assertIs(overrides["@jupyterlab/apputils-extension:themes"]["adaptive-theme"], True)
+
 if __name__ == "__main__":
     unittest.main()

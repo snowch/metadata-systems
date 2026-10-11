@@ -258,6 +258,15 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 11 October 2026: the notebooks follow the reader's light or dark setting
+
+The notebooks were always in JupyterLab's light theme, and with the menus hidden a reader had no
+way to change it. The site now turns on JupyterLab's own setting to follow the browser
+(`notebook/jupyterlite/overrides.json`, `adaptive-theme`), so a phone or computer set to dark gets
+JupyterLab's dark theme. The boxes, figures, tables and printed files were read in both themes on
+a phone-sized screen; the figures draw in the text's own colour, with a teal and an orange that
+show on either background. The front page keeps its own picker, which the notebooks do not read.
+
 ### 11 October 2026: jobs, not programs
 
 The author found "programs" is not what a data engineer calls the things that run on a platform

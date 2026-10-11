@@ -7,7 +7,8 @@
 // run ends; Run all runs every visible code cell, with no error in any output, and leaves the
 // notebook where it was scrolled; the warning and the steps for running the page are boxes; in
 // Chapter 1 a printed file keeps one record per line, scrolling inside its box, and the page never
-// scrolls sideways. In Chapter 2, Run below from a selected cell does the same. The page
+// scrolls sideways. In Chapter 2, Run below from a selected cell does the same. A browser set to
+// dark gets the dark theme, and one set to light the light. The page
 // logs no error, and the notebooks' earlier names lead to their chapters. The notebook workflow
 // runs it after the build, with Playwright from the course's dependencies.
 //
@@ -175,6 +176,26 @@ try {
     }
   }
   check(errors.length === 0, `the page logs no error${errors.length ? `: ${errors[0]}` : ""}`);
+  // The notebooks follow the reader's light or dark setting (overrides.json).
+  for (const scheme of ["dark", "light"]) {
+    const other = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      isMobile: true,
+      hasTouch: true,
+      colorScheme: scheme,
+    });
+    const themed = await other.newPage();
+    await themed.goto(`http://127.0.0.1:${port}/notebooks/index.html?path=chapter_01.ipynb`);
+    await themed.waitForFunction(() => document.body.dataset.jpThemeLight !== undefined, null, {
+      timeout: 120_000,
+    });
+    const light = await themed.evaluate(() => document.body.dataset.jpThemeLight);
+    check(
+      light === String(scheme === "light"),
+      `a browser set to ${scheme} gets the ${scheme} theme`,
+    );
+    await other.close();
+  }
   // The notebooks' earlier names lead to their chapters. Each is looked up first, which can log
   // that the file is missing, so this comes after the check for errors.
   await page.goto(`http://127.0.0.1:${port}/notebooks/index.html?path=chapter_01_part_2.ipynb`);

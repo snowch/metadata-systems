@@ -471,5 +471,7 @@ check and the reason it exists.
   control at least 40 pixels tall, no line of prose over about 85 characters.
 - **The notebooks, in a browser, as a phone** (`notebook/jupyterlite/smoke.mjs`, in the Notebooks
   workflow): the menu bar and toolbar hidden, the row of buttons there and 44 pixels tall, Run all
-  running every visible cell with no error and keeping the reader's place, Run below the same, and
-  a notebook's earlier name leading to its chapter.
+  running every visible cell with no error and keeping the reader's place, Run below the same, the
+  warning and the steps drawn as boxes, a printed file keeping one record per line, the theme
+  following the browser's light or dark setting, and a notebook's earlier name leading to its
+  chapter.
