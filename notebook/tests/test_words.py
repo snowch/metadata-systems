@@ -217,7 +217,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         owners = {r["table_owner"] for r in self.w.sql("SELECT table_owner FROM information_schema.tables")}
         programs = {e.writer for e in self.week.executions} - {"export"}
         self.assertEqual((owners, len(programs)), ({"etl_service"}, 4))
-        self.says("The warehouse answers `etl_service`, the account that all four of the shop's programs log in as.")
+        self.says("The warehouse answers `etl_service`, the account that all four of the shop's jobs log in as.")
 
     def test_the_reconstruction_and_thursday(self):
         self.assertEqual(len(shop.queries_that_rebuild(self.week)), 1)
@@ -283,8 +283,8 @@ class TheWordsAboutThePage(unittest.TestCase):
             [
                 "The shop stays as it is",
                 "An analyst copies clean_orders every night",
-                "From Saturday, the daily_sales program keeps unrefunded orders",
-                "The daily_sales program fails on the last night",
+                "From Saturday, the daily_sales job keeps unrefunded orders",
+                "The daily_sales job fails on the last night",
             ],
         )
 

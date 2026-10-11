@@ -89,7 +89,8 @@ and an application.
 
 Each table gives, per chapter: what the learner builds; the central experiment; what
 the chapter deliberately breaks; and the terms it introduces, which no earlier chapter may use
-(the term gate). Terms in plain English (owner, file, table, program) are not rationed.
+(the term gate). Terms in plain English (owner, file, table, job) are not rationed: *job* is the everyday word for
+what runs each night from Chapter 1, and Chapter 6 makes it precise as a node in the lineage graph.
 
 ### Part I: Why metadata exists
 
@@ -111,7 +112,7 @@ observed one, and designs the event a computation should emit before meeting Ope
 
 | Ch | Title | The learner builds | Central experiment | What breaks | Introduces |
 | --- | --- | --- | --- | --- | --- |
-| 6 | What is lineage? | "made from" edges through jobs: A to job to B, then a chain of two jobs; dependency and impact queries | predict everything affected if `orders.parquet` changes | a hand-written dependency that the program does not have; a declared edge that went stale when the program changed | lineage, job, upstream, downstream |
+| 6 | What is lineage? | "made from" edges through jobs: A to job to B, then a chain of two jobs; dependency and impact queries | predict everything affected if `orders.jsonl` changes | a hand-written dependency that the job does not have; a declared edge that went stale when the job changed | lineage, upstream, downstream |
 | 7 | Jobs, runs and events | a run per execution, with its times, status, inputs, outputs and code version; the learner designs the event a run emits | predict what the job's record alone cannot say about Thursday, then read the runs | an event with no run identifier merges two nights; an event with no inputs proves nothing | run, event |
 | 8 | OpenLineage | the learner's events as OpenLineage run events: START, COMPLETE and FAIL, a run's UUID, a job's namespace and name, inputs, outputs, facets; create, edit and replay | predict what a consumer knows after a START with no outputs and a COMPLETE with outputs | two producers name the same table differently and the lineage does not join | OpenLineage, facet, namespace, producer |
 | 9 | From events to graphs | the ingestion pipeline: parse, normalise, metadata objects, graph edges, each stage built and run over the week's events | predict how many nodes and edges the week produces | a malformed event; a facet the parser does not know | ingestion, normalise |
@@ -188,11 +189,11 @@ and its notes say which (`CLAUDE.md`, "Question the requirement").
 | Ch | A requirement that sounds settled | What it could be asking |
 | --- | --- | --- |
 | 1 | none: the chapter tours what the platform holds, and leaves its first requirement to Chapter 2 | |
-| 2 | "Every table must have an owner." (questioned in the prose) | who is responsible for it; which team is; which program writes it; which account controls it in the warehouse |
+| 2 | "Every table must have an owner." (questioned in the prose) | who is responsible for it; which team is; which job writes it; which account controls it in the warehouse |
 | 3 | "Every column must have a description." | what the column means; its unit; where its values come from; whether it may be empty. A description that repeats the column's name meets it as written |
 | 4 | "Each asset has one owner." | one person, one team, or one identifier for an owner two records spell differently |
 | 5 | "Show everything related to `daily_sales`." | what it is made from; what reads it; who is responsible for it; where it is kept. Each is a different kind of edge |
-| 6 | "Record the lineage of `daily_sales`." | what its program declares it reads, what it was seen to read, or both; between tables or between columns |
+| 6 | "Record the lineage of `daily_sales`." | what its job declares it reads, what it was seen to read, or both; between tables or between columns |
 | 7 | "Record every run." | to find failures; to know when an asset was last written; to audit who changed what. Each needs a different event |
 | 8 | "Our programs must emit OpenLineage." | which events, with which facets, under which namespace and name |
 | 9 | "The graph must show the current lineage." | current as of the last event received, the last run, or the last change to a program |
@@ -256,6 +257,16 @@ The author reviews the course at five checkpoints:
 5. Before Chapter 33.
 
 ## Decisions since the brief
+
+### 11 October 2026: jobs, not programs
+
+The author found "programs" is not what a data engineer calls the things that run on a platform
+each night. Chapters 1 and 2 now say *jobs* (Haiku's draft of brief BA, which changed only the word
+and its articles), and the platform diagram's label between systems reads "unseen jobs move data
+each night". *Job* leaves Chapter 6's rationed terms and joins the plain words (owner, file,
+table): a reader meets it as the everyday word from Chapter 1, and Chapter 6 makes it precise, a
+node in the lineage graph between the assets it reads and writes. *Run*, the noun, stays Chapter
+7's. The engine's code keeps its names (`PROGRAM_ACCOUNT`, `executions`): no learner reads them.
 
 ### 11 October 2026: only the notebooks
 

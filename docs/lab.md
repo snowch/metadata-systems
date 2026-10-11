@@ -15,7 +15,7 @@ notebooks"), and the TypeScript engine with them.
 ## Two halves
 
 - **The shop**: a small online shop's data platform, which really runs. It has files and tables
-  with real rows, programs written in the course's SQL subset that really transform them, a
+  with real rows, jobs written in SQL that really transform them, a
   scheduler, a clock and the storage systems that hold the results.
 - **The learner's metadata system**: the records, events, store, graph and queries the learner
   builds, chapter by chapter, about the shop. In Chapter 2 it is empty: the learner has the shop's
@@ -35,19 +35,19 @@ customers and staff.
 | The reporting tool | `sales_dashboard`, a chart of revenue per day | the dashboard's title, who created it, when it last refreshed and the values it shows |
 
 These records are the engine's choice of what a typical system of each kind keeps; the engine does not
-model why a system keeps a field. The reporting tool keeps no query: a program fills the
-dashboard, as programs fill the tables. A program that writes no rows still moves its table's
+model why a system keeps a field. The reporting tool keeps no query: a job fills the
+dashboard, as jobs fill the tables. A job that writes no rows still moves its table's
 last-written time, so in the engine only a failed write leaves the time stale. Real systems differ:
 some table formats keep history the shop's warehouse does not, such as Apache Iceberg's snapshots
 and Delta Lake's record of each write (`docs/sources.md`). Each chapter's model-versus-reality
 note says which difference matters to it.
 
-### The programs
+### The jobs
 
-Four programs run each night, in this order, all logged in as the warehouse account `etl_service`.
+Four jobs run each night, in this order, all logged in as the warehouse account `etl_service`.
 Their SQL (SQLite's) is in `notebook/shop/week.py`; the platform does not record it.
 
-| Program | Reads | Writes | How |
+| Job | Reads | Writes | How |
 | --- | --- | --- | --- |
 | clean customers | `customers.jsonl` | `clean_customers` | replaces the table: lower-cases every email and drops customers with no email |
 | clean orders | `orders.jsonl` | `clean_orders` | replaces the table: keeps one copy of each order, drops orders with no customer id, drops orders whose quantity is 0 or less |
@@ -55,13 +55,13 @@ Their SQL (SQLite's) is in `notebook/shop/week.py`; the platform does not record
 | dashboard refresh | `daily_sales` | `sales_dashboard` | reads every row and redraws the chart |
 
 `daily_sales` is appended to, not rebuilt: each night adds one row and never revisits the rows
-before it. That is common in real platforms, and it is why a change to the program shows only in
+before it. That is common in real platforms, and it is why a change to the job shows only in
 the rows written after the change.
 
 ### The week
 
 The course's week is Monday 7 to Sunday 13 September 2026. Each night the export writes the
-orders placed so far, then the four programs run. The learner arrives on Monday 14 September,
+orders placed so far, then the four jobs run. The learner arrives on Monday 14 September,
 after the last night's run, and finds the shop as that run left it.
 
 The week's orders are hand-written in `notebook/shop/data.py`, so each property below is
@@ -87,7 +87,7 @@ changed week is as deterministic as the plain one. Chapter 2 uses three:
 
 - **An analyst's copy.** A script copies `clean_orders` to `shop-scratch/clean_orders_copy.csv`
   every night, before daily sales runs.
-- **A program edited for refunds.** From Saturday's row on, daily sales keeps every order whose
+- **A job edited for refunds.** From Saturday's row on, daily sales keeps every order whose
   status is not "refunded", where it kept completed orders. The shop has no refunds yet, so the
   edit changes nothing except on a day with a cancelled order.
 - **A failed night.** On the last night, daily sales fails and writes nothing.
@@ -124,7 +124,7 @@ output:
 
 ## SQL
 
-The programs and the queries a learner runs are SQLite's SQL, run by Python's `sqlite3`.
+The jobs and the queries a learner runs are SQLite's SQL, run by Python's `sqlite3`.
 `warehouse.sql(query, files={...})` reads files from object storage as tables for one query, as
 a query engine that reads files would, and `storage.sql(uri, query)` runs a query over one file.
 Money is held as whole pence, so sums are exact; `pounds` formats an amount where a person reads
@@ -149,6 +149,6 @@ randomness, and no formatting that depends on a locale or time zone. Every time 
 - Columnar formats: the raw files are JSON Lines and CSV, which carry no types; a Parquet file's
   footer, which would, is not modelled.
 - A table's size: the warehouse's figure is a deterministic estimate from the rows.
-- Concurrency inside a night: the programs run one after another.
+- Concurrency inside a night: the jobs run one after another.
 - Time zones: every time is UTC, and an order's day is its UTC date.
 - Permissions, until a chapter needs them.

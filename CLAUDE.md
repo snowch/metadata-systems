@@ -68,7 +68,7 @@ its marketing.
 ## Every figure is computed from the shop
 
 `notebook/shop` is the engine, in Python: a small data platform that really runs, with files and tables with
-real rows, programs that really transform them, a clock, a scheduler, and the learner's own
+real rows, jobs that really transform them, a clock, a scheduler, and the learner's own
 metadata system on top. A figure shows what the engine computes. It is never a scripted animation
 and never a hand-drawn diagram of something the engine could compute. If a chapter needs a figure
 that shows something the engine does not compute, the engine is where the work goes first.
@@ -264,7 +264,7 @@ explains; they never guess an explanation the page then reveals.
   evidence that the effect exists: first "is there a discrepancy?", then "why?".
 - **Independent evidence.** A prediction tests a belief against something the learner could check
   for themselves (what adding up the raw orders gives), not an implementation failure they would
-  have to guess (did the program drop some orders?).
+  have to guess (did the job drop some orders?).
 - **"I can't tell yet" is an option** where nothing the learner has seen settles the question.
   It is never marked wrong: refusing an unjustified assumption is part of the skill, and its
   result says what evidence settled the question.
@@ -371,7 +371,7 @@ means X". It is that the platform has its own meaning, the requirement did not s
 it wanted, and a field's name does not say which question the field answers.
 
 Chapter 2's owner is the standing example. "Every table must have an owner" could ask who is
-responsible for a table, which team is, which program writes it, or which account controls it in
+responsible for a table, which team is, which job writes it, or which account controls it in
 the warehouse, and each needs something different stored. The shop's warehouse records an account:
 that meets the requirement as written, and answers only the last question, while "Who should I
 ask about `daily_sales`?" needed one of the first two. Chapter 2 questions it in its prose.

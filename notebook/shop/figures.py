@@ -77,7 +77,7 @@ def tally(systems) -> str:
     return f"{' + '.join(parts)} = {total} asset{'' if total == 1 else 's'}"
 
 
-def pipeline(week: Week, flow_label: str = "unseen programs move data each night") -> str:
+def pipeline(week: Week, flow_label: str = "unseen jobs move data each night") -> str:
     """The three systems, in the order data moves through them, with what each holds and a count."""
     systems = platform_assets(week)
     cells = []

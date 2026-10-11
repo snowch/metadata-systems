@@ -36,7 +36,7 @@ export const PLAN: readonly PlannedChapter[] = [
   C(3, 1, "What is metadata?", ["descriptive", "operational", "schema"]),
   C(4, 1, "Metadata as a model", ["entity", "attribute", "identifier", "dataset"]),
   C(5, 1, "Metadata as a graph", ["graph", "node", "edge", "traversal"]),
-  C(6, 2, "What is lineage?", ["lineage", "job", "upstream", "downstream"]),
+  C(6, 2, "What is lineage?", ["lineage", "upstream", "downstream"]),
   C(7, 2, "Jobs, runs and events", ["run", "event"]),
   C(8, 2, "OpenLineage", ["OpenLineage", "facet", "namespace", "producer"]),
   C(9, 2, "From events to graphs", ["ingestion", "normalise"]),

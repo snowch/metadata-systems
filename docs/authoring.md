@@ -115,7 +115,7 @@ A prediction is an experiment, built around what the learner should learn (`CLAU
 - **Establish the effect before asking for its cause.** "Is there a difference?" comes before
   "where is it?", "what could explain it?" and "which explanation fits?".
 - **Prefer independent evidence**: a total the learner could add up, rows they could read, not
-  a failure inside a program they cannot see.
+  a failure inside a job they cannot see.
 - **"I can't tell yet" is an answer** where nothing on the page settles the question.
 - **A count is asked as what it means.** None, one, or more than one.
 - **The output answers, and only after the learner runs it.** A notebook shows a cell's output

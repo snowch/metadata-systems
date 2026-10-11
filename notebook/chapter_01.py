@@ -21,7 +21,7 @@ def _(mo):
     - Name the shop's three systems, and what each one holds: files, tables or a dashboard.
     - Read the shop's products, customers and orders as their files store them.
     - Read the rows of the warehouse's three tables, and the values the dashboard shows.
-    - Say what happens on the platform each night, and what you cannot see of it: the programs, when they are due to run, and any notes.
+    - Say what happens on the platform each night, and what you cannot see of it: the jobs, when they are due to run, and any notes.
     """)
     return
 
@@ -49,7 +49,7 @@ def _(mo):
     mo.md(r"""
     You start work on Monday 14 September 2026 at 09:00, as the data engineer of an online shop that sells bicycle parts. The shop opened its online store a week ago, on Monday 7 September. Nobody who built its data platform is there to ask, and nothing about it is written down. Before you have sat down, the head of the shop sends you one line: Thursday's revenue looks wrong. You cannot yet tell whether it is wrong; to find out, you first need to know what the platform holds and what happens on it each night.
 
-    The platform has three systems: object storage, which holds files; a warehouse, which holds tables; and a reporting tool, which holds a dashboard. Every night, programs read the files, write the tables and refresh the dashboard. You can read everything the three systems hold. You cannot see the programs, when they are due to run, or any note anybody kept.
+    The platform has three systems: object storage, which holds files; a warehouse, which holds tables; and a reporting tool, which holds a dashboard. Every night, jobs read the files, write the tables and refresh the dashboard. You can read everything the three systems hold. You cannot see the jobs, when they are due to run, or any note anybody kept.
 
     In the cells, `storage`, `warehouse` and `reporting` name the shop's three systems: object storage, the warehouse and the reporting tool.
     """)
@@ -81,7 +81,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The shop's first week ran from Monday 7 to Sunday 13 September. Each night, in the early hours of the next day, the three files are written again, then programs write the tables and refresh the dashboard. The last night ends early on Monday 14 September, before you start work.
+    The shop's first week ran from Monday 7 to Sunday 13 September. Each night, in the early hours of the next day, the three files are written again, then jobs write the tables and refresh the dashboard. The last night ends early on Monday 14 September, before you start work.
     """)
     return
 
