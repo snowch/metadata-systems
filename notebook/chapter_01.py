@@ -47,7 +47,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    You start work on Monday 14 September 2026 at 09:00, as the data engineer of an online shop that sells bicycle parts. The shop opened its online store a week ago, on Monday 7 September. Nobody who built its data platform is there to ask, and nothing about it is written down. Before you have sat down, the head of the shop sends you one line: Thursday's revenue looks wrong. You cannot yet tell whether it is wrong; to find out, you first need to know what the platform holds and what happens on it each night.
+    You start work on Monday 14 September 2026 at 09:00, as the data engineer of an online shop that sells bicycle parts. The shop opened its online store a week ago, on Monday 7 September. Nobody who built its data platform is there to ask, and nothing about it is written down. Before you have sat down, the head of the shop sends you one line: "Thursday's revenue looks wrong." You cannot yet tell whether it is wrong; to find out, you first need to know what the platform holds and what happens on it each night.
 
     The platform has three systems: object storage, which holds files; a warehouse, which holds tables; and a reporting tool, which holds a dashboard. Every night, jobs read the files, write the tables and refresh the dashboard. You can read everything the three systems hold. You cannot see the jobs, when they are due to run, or any note anybody kept.
 
@@ -81,14 +81,14 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The shop's first week ran from Monday 7 to Sunday 13 September. Each night, in the early hours of the next day, the three files are written again, then jobs write the tables and refresh the dashboard. The last night ends early on Monday 14 September, before you start work.
+    The shop's first week ran from Monday 7 to Sunday 13 September. Each night, in the early hours of the next day, an export from the shop's checkout and catalogue writes the three files to object storage again, then jobs write the tables and refresh the dashboard. The last night ends early on Monday 14 September, before you start work.
     """)
     return
 
 
 @app.cell(hide_code=True)
 def _(figures, mo, week):
-    mo.Html(figures.figure(figures.week_strip(week), "The shop's first week: order days, a night's work after each, and the morning you start."))
+    mo.Html(figures.figure(figures.week_strip(week), "The shop's first week: order days, the export and jobs after each, and the morning you start."))
     return
 
 

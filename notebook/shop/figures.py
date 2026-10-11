@@ -91,9 +91,9 @@ _WEEK_STYLE = (
 def week_strip(
     week: Week,
     start_label: str = "You start work at 09:00",
-    keys: tuple[str, str, str] = ("the days the shop took orders", "a night's work", "the morning you start work"),
+    keys: tuple[str, str, str] = ("the days the shop took orders", "the export and jobs", "the morning you start work"),
 ) -> str:
-    """The shop's first week on one line: the order days, each night's work, and the morning you start."""
+    """The shop's first week on one line: the order days, the export and jobs each night, and the morning you start."""
     days = list(DAYS) + ["2026-09-14"]
     width, left, top, row = _WEEK_WIDTH, 4, 42, 26
     col = (width - 2 * left) / len(days)
@@ -128,7 +128,7 @@ def week_strip(
     height = y - 6
     heard = (
         f"The shop's first week: the shop took orders from {_day_label(DAYS[0])} to {_day_label(DAYS[-1])} September; "
-        f"each night's work ran in the early hours of the next day; you start work at 09:00 on Mon 14."
+        f"each night's export and jobs ran in the early hours of the next day; you start work at 09:00 on Mon 14."
     )
     svg = (
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" width="{width}" height="{height}">'

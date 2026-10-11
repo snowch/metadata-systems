@@ -83,7 +83,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         # holds the investigation (brief AQ).
         first = CELLS[1][1]
         self.assertTrue(first.startswith("You start work on Monday 14 September 2026 at 09:00"))
-        self.assertIn("the head of the shop sends you one line: Thursday's revenue looks wrong.", first)
+        self.assertIn("the head of the shop sends you one line: \"Thursday's revenue looks wrong.\"", first)
         self.assertIn("you first need to know what the platform holds and what happens on it each night", first)
         self.assertEqual(CELLS[1][-2], "[Chapter 2](chapter_02.ipynb) goes back to the head of the shop's line and starts with Thursday's revenue.")
         self.says("The head of the shop has sent you one line", 2)
