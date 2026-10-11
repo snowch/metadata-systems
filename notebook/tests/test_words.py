@@ -309,6 +309,25 @@ class TheWordsKeepTheRules(unittest.TestCase):
         found = [(p, t[:60]) for t in self.learner_text() for p in phrases if p.lower() in t.lower()]
         self.assertEqual(found, [])
 
+    def test_no_filler(self):
+        # CLAUDE.md, "Silence is preferable to filler": the forms the author named, as
+        # apps/course/src/strings.test.ts holds the front page to them.
+        filler = [
+            r"\byou have (what you need|everything)\b",
+            r"\beverything (is )?in place\b",
+            r"\bnow you can (begin|start)\b",
+            r"\bwhere things get interesting\b",
+            r"\basks nothing of you\b",
+            r"\bkept to hand\b",
+            r"\b(is|are) (quietly )?waiting\b",
+            r"\bquietly\b",
+            r"\byou (have been|were) told\b",
+            r"\b(as )?you already know\b",
+            r"\blet's\b",
+        ]
+        found = [(f, t[:60]) for t in self.learner_text() for f in filler if re.search(f, t, re.I)]
+        self.assertEqual(found, [])
+
     def test_no_em_dash_and_no_placeholder(self):
         self.assertEqual([t[:60] for t in self.learner_text() if "—" in t], [])
         for source in SOURCE.values():
@@ -326,9 +345,9 @@ class TheWordsKeepTheRules(unittest.TestCase):
         self.assertLess(first("asset"), len(CELLS[1]))
 
     def test_no_term_of_a_later_chapter(self):
-        # The course's term gate (content/lessons/plan.ts), chapter by chapter, with the course's
+        # The course's term gate (content/plan/plan.ts), chapter by chapter, with the course's
         # one exemption: "run" as the verb (run a cell); the noun arrives in Chapter 7.
-        plan = (ROOT / "content" / "lessons" / "plan.ts").read_text(encoding="utf-8")
+        plan = (ROOT / "content" / "plan" / "plan.ts").read_text(encoding="utf-8")
         terms = {
             term: int(number)
             for number, introduces in re.findall(r'C\((\d+), \d+, "[^"]+"(?:, \[([^\]]*)\])?\)', plan)

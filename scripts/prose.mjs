@@ -94,20 +94,13 @@ const PROHIBITED = [
 ];
 
 /**
- * The learner-facing sources: chapter prose, labels and structure, the figures' own strings, and
- * the app's strings. Every string literal in these files is scanned. Excluded: tests and docs
- * (they quote and teach the standard, and quote bad phrasing on purpose); the platform packages
- * (platform/), whose strings the course replaces through runtimeStrings() where they are
- * learner-facing, and which are synced from snowch/learning-platform, never edited here; and
- * code identifiers.
+ * The learner-facing sources written in TypeScript: the front page's words. Every string literal
+ * in them is scanned. The chapters are notebooks, written in Python (notebook/chapter_0N.py);
+ * notebook/tests/test_words.py reads this file's phrases and holds the notebooks to them. Excluded:
+ * tests and docs, which quote and teach the standard, and quote bad phrasing on purpose; and code
+ * identifiers.
  */
-const FILES = [
-  "content/lessons/invisible-system.prose.ts",
-  "content/lessons/invisible-system.labels.ts",
-  "content/lessons/invisible-system.ts",
-  "packages/views/src/strings.ts",
-  "apps/course/src/strings.ts",
-];
+const FILES = ["apps/course/src/strings.ts"];
 
 /** Every string literal in a TypeScript source file, one per line of the file it came from. */
 function* stringsOf(source) {

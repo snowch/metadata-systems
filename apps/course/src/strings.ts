@@ -29,40 +29,17 @@ export const STRINGS = {
   footer: "Everything runs in your browser. Nothing is sent anywhere.",
   copyright: "© 2026 Christopher Snow",
   start: "Start with Chapter {number}: {title}",
-  continueWith: "Continue with Chapter {number}: {title}",
   contents: "Contents",
+  // Under "Contents": what opening a chapter does (brief AY).
+  contentsNote:
+    "Each written chapter opens as a notebook, a page where you run the chapter's Python code in your browser; the first time you open one, your browser downloads about 13 MB.",
   part: "Part {number}: {title}",
   chapter: "{number}. {title}",
   toWrite: "Still to be written",
-  progress: "{passed} of {total} challenges complete",
-  // A chapter that is a notebook: the note under its line when it has no page (brief AU); the link
-  // at the right of its line when it has one, and the sentence under "Contents" (brief AX).
-  notebookNote:
-    "A notebook: you run its Python in your browser, and the first open downloads about 13 MB.",
-  notebookLink: "Open notebook",
-  notebooksNote:
-    'A chapter with an "Open notebook" link can also be opened as a notebook, where you run its Python code in your browser; the first time, the browser downloads about 13 MB.',
-  previous: "Previous",
-  next: "Next",
-  pagerLabel: "Previous and next chapter",
-  notYet: "The next chapter is still to be written",
-  // The chapter-wide start again, drafted from docs/notes/chapter-02/briefs/revision/N.
-  startAgain: "Start this chapter again",
-  startAgainNote:
-    "The chapter keeps your predictions, sorts and challenge work in your browser. Starting again clears them all, and cannot be undone.",
-  startAgainConfirm: "Clear everything in this chapter",
-  startAgainCancel: "Keep my work",
-  startAgainDone: "This chapter's work is cleared.",
-  // The link at the top of a chapter to the start-again control at its foot.
-  startAgainTop: "Start this chapter again",
-  // The course-wide start again, on the front page: clears every chapter's work.
-  startCourseAgain: "Start the course again",
-  startCourseAgainNote:
-    "Every chapter keeps your predictions, sorts and challenge work in your browser. Starting the course again clears them all, in every chapter, and cannot be undone.",
-  startCourseAgainConfirm: "Clear all my work in every chapter",
-  startCourseAgainCancel: "Keep my work",
-  startCourseAgainDone: "All your work is cleared.",
+  // The dashboard in the band, worded as the chapters' figures had it (brief F).
+  refreshed: "Last refreshed {time}.",
+  chartLabel: "{title}, last refreshed {time}.",
+  weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as readonly string[],
   missing: "There is no page at {path}.",
-  noLesson: "There is no chapter called {id}.",
   back: "Back to chapters",
 };

@@ -147,9 +147,11 @@ reachable from the build environment):
   columns and their types), a required `num_rows`, the row groups, optional key/value metadata and
   an optional `created_by`, the application that wrote the file.
 
-They support the engine's choice (`docs/lab.md`) that a Parquet file carries its own column names,
-types and row count, and Chapter 2's statements that a file holds them after its rows and that
-metadata can live inside the same file as the data.
+They supported the TypeScript engine's choice that a Parquet file carries its own column names,
+types and row count, and the statements of Chapter 2's former page that a file holds them after its
+rows and that metadata can live inside the same file as the data. The notebooks' shop writes JSON
+Lines and CSV, and no notebook mentions Parquet (`docs/lab.md`, "What the engine does not model");
+the entry stays for the chapter that brings a columnar format in.
 
 ## A table's owner in PostgreSQL (Chapter 2's closing note)
 
@@ -212,7 +214,7 @@ environment, so each is read from its source or its publisher's own copy:
   `prefer_related_applications` set to true, served over HTTPS; a service worker is not required.
   MDN documents browsers rather than defining them; Chrome's own page was not reachable.
 
-## The notebook prototype (Chapter 2 as a notebook)
+## The notebooks (JupyterLite, and marimo before it)
 
 Read 10 October 2026, for `notebook/` and `docs/notes/notebook-prototype.md`.
 
@@ -284,15 +286,13 @@ Each chapter that relies on one of these reads it first and adds an entry above:
 ## Licences of what the course ships
 
 - The course's own code and text: copyright Christopher Snow (`CLAUDE.md`).
-- The learning platform's packages, copied into `platform/`: the same author, from
-  `snowch/learning-platform`.
-- Every npm dependency the built site includes: checked by `scripts/licences.mjs` against a list
-  of open licences on every `npm run check`.
-- The JupyterLite version's page: JupyterLite, JupyterLab, Jupyter Notebook and the widgets' front
+- Every npm dependency the front page includes (React and React DOM, MIT; the typefaces below):
+  checked by `scripts/licences.mjs` against a list of open licences on every `npm run check`.
+- The chapters' notebooks: JupyterLite, JupyterLab, Jupyter Notebook and the widgets' front
   end (BSD-3-Clause), the Pyodide kernel (BSD-3-Clause) and Pyodide (as below); every wheel it
   bundles is checked by `notebook/licences.py` on every build (22 on 10 October 2026, among them
   IPython, traitlets, jedi, ipywidgets and comm, under BSD, MIT, Apache-2.0 and MPL-2.0).
-- The JupyterLite page's row of buttons (`notebook/buttons/`): the course's own code, built with
+- The notebooks' row of buttons (`notebook/buttons/`): the course's own code, built with
   `@jupyter/builder` (BSD-3-Clause); what the build adds to the site bundles the runtimes of
   `css-loader` and `style-loader` (MIT), listed in the built extension's
   `third-party-licenses.json`.

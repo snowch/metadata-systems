@@ -4,8 +4,8 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "The course content: one module per chapter, typed by the lesson schema, prose as Markdown strings.",
+  "description": "The course as data: its plan, and the chapters that are written, each a notebook.",
   "exports": {
-    ".": "./lessons/index.ts"
+    ".": "./plan/index.ts"
   }
 }

@@ -3,8 +3,14 @@
 The shop's data platform, which computes every figure, and the metadata system the learner builds
 on top of it. What a figure shows, the engine computed. The page never names the engine: a figure
 is a diagram or a figure of the shop's data, with a caption (`CLAUDE.md`, "No lab on the page").
-This file is the engine's design; the code is `packages/lab`, which keeps its directory's name,
-and where the two differ, the code and its tests are right and this file is out of date.
+This file is the engine's design; the code is `notebook/shop`, in Python with the standard library
+only, so it runs unchanged in a notebook in the browser (Pyodide) and in CI. Where the two differ,
+the code and its tests (`notebook/tests`) are right and this file is out of date.
+
+Until 11 October 2026 a TypeScript engine (`packages/lab`) computed the figures of the chapters'
+pages, with its own SQL subset and Parquet files modelled as records. The pages went when the
+notebooks became the only version of each chapter (`docs/plan.md`, "11 October 2026: only the
+notebooks"), and the TypeScript engine with them.
 
 ## Two halves
 
@@ -24,8 +30,8 @@ customers and staff.
 
 | System | What it holds | What it records about each thing it holds |
 | --- | --- | --- |
-| Object storage, bucket `shop-raw` | `customers.parquet`, `orders.parquet`, `products.parquet`, written each night by an export from the shop's checkout and catalogue | the object's key, size and last-modified time; a Parquet file's own footer holds its column names and types and its row count |
-| The warehouse, database `shop`, schema `analytics` | `clean_customers`, `clean_orders`, `daily_sales` | each table's columns and types, row count, last-altered time and the role that owns it |
+| Object storage, bucket `shop-raw` | `orders.jsonl`, `customers.jsonl` (JSON Lines) and `products.csv`, written each night by an export from the shop's checkout and catalogue | each file's key, size and last-modified time; the files are real text, so a reader parses them to see their fields |
+| The warehouse, database `shop`, schema `analytics` (SQLite, with a catalogue the learner queries as `information_schema.tables` and `.columns`) | `clean_customers`, `clean_orders`, `daily_sales` | each table's columns and declared types, row count, an estimated size, created and last-altered times, and the account that owns it |
 | The reporting tool | `sales_dashboard`, a chart of revenue per day | the dashboard's title, who created it, when it last refreshed and the values it shows |
 
 These records are the engine's choice of what a typical system of each kind keeps; the engine does not
@@ -38,13 +44,13 @@ note says which difference matters to it.
 
 ### The programs
 
-Four programs run each night, in this order, all as the warehouse role `etl_service`. Their code
-is in `packages/lab/src/shop/programs.ts`, in the course's SQL subset.
+Four programs run each night, in this order, all logged in as the warehouse account `etl_service`.
+Their SQL (SQLite's) is in `notebook/shop/week.py`; the platform does not record it.
 
 | Program | Reads | Writes | How |
 | --- | --- | --- | --- |
-| clean customers | `customers.parquet` | `clean_customers` | replaces the table: lower-cases every email and drops customers with no email |
-| clean orders | `orders.parquet` | `clean_orders` | replaces the table: keeps one copy of each order, drops orders with no customer id, drops orders whose quantity is 0 or less |
+| clean customers | `customers.jsonl` | `clean_customers` | replaces the table: lower-cases every email and drops customers with no email |
+| clean orders | `orders.jsonl` | `clean_orders` | replaces the table: keeps one copy of each order, drops orders with no customer id, drops orders whose quantity is 0 or less |
 | daily sales | `clean_orders` | `daily_sales` | appends one row for the day before: that day's revenue, the sum of price times quantity over its completed orders |
 | dashboard refresh | `daily_sales` | `sales_dashboard` | reads every row and redraws the chart |
 
@@ -58,7 +64,7 @@ The course's week is Monday 7 to Sunday 13 September 2026. Each night the export
 orders placed so far, then the four programs run. The learner arrives on Monday 14 September,
 after the last night's run, and finds the shop as that run left it.
 
-The week's orders are hand-written in `packages/lab/src/shop/data.ts`, so each property below is
+The week's orders are hand-written in `notebook/shop/data.py`, so each property below is
 deliberate:
 
 - some days are plain, and on them the raw orders add up to the day's revenue;
@@ -70,16 +76,16 @@ deliberate:
 - no order has a quantity of 0 or less, so nothing in the week's data shows that clean orders
   has a rule for them.
 
-Every number a chapter states about the week is computed by the engine and pinned by that chapter's
-facts test; this file states none.
+Every number a chapter states about the week is computed by the engine and pinned by
+`notebook/tests/test_words.py`; this file states none.
 
 ### Changes
 
-A figure can run the week again with a change to the shop and compare what the learner can see
-before and after. Each change is a function of the shop's definition, so the changed week is as
-deterministic as the plain one. Chapter 2 uses three:
+A notebook can run the week again with a change to the shop (`run_week(["copy"])`) and compare
+what the learner can see before and after. Each change is applied before the week runs, so the
+changed week is as deterministic as the plain one. Chapter 2 uses three:
 
-- **An analyst's copy.** A script copies `clean_orders` to `shop-scratch/clean_orders_copy.parquet`
+- **An analyst's copy.** A script copies `clean_orders` to `shop-scratch/clean_orders_copy.csv`
   every night, before daily sales runs.
 - **A program edited for refunds.** From Saturday's row on, daily sales keeps every order whose
   status is not "refunded", where it kept completed orders. The shop has no refunds yet, so the
@@ -89,77 +95,60 @@ deterministic as the plain one. Chapter 2 uses three:
 Later chapters add their own: a renamed column, a late file, a duplicated event, a second
 environment.
 
-## What a figure can ask of the engine
+## What a notebook can ask of the engine
 
-`packages/lab` answers three kinds of question, and the figures show each answer with its
+`notebook/shop` answers three kinds of question, and the notebooks show each answer with its
 evidence:
 
-- **What storage records.** The storage view: for each asset, exactly the fields the table above
-  lists, as of Monday morning.
-- **What the data suggests.** Inference from contents alone: which queries over the other assets
-  reproduce an asset's rows, which assets show the same numbers as another, what a last-written
-  time implies. The engine searches a fixed space of queries and reports every one that fits, so a
-  figure can show that two different sources fit equally well.
+- **What storage records.** `storage.ls()`, `warehouse.sql(...)` over `information_schema`, and
+  `reporting.dashboard()`: for each asset, exactly the fields the table above lists, as of Monday
+  morning.
+- **What the data suggests.** Inference from contents alone (`notebook/shop/infer.py`):
+  `queries_that_rebuild` searches every sum over one asset (which rows to keep, what to add up,
+  per what) and reports each one that reproduces a table, so a notebook can show that two sources
+  fit equally well; `cleaning_rules_that_fit` searches every setting of the cleaning rules that
+  turns the raw orders into `clean_orders`; `day_gap` sets one day's raw orders against the rows
+  `clean_orders` keeps.
 - **What only a record answers.** The questions whose answers are in neither: who is responsible
   for an asset, what a number's unit is, what changed and why.
 
-Each question's classification is computed by running the storage view and the inference search,
-never written into the lesson.
+Two more things the notebooks draw from it (`notebook/shop/figures.py`), as SVG in a cell's
+output:
 
-Three more things the figures ask of it:
+- **The platform** (`pipeline`): the three systems in the order data moves through them, the
+  assets each holds, and one label for the flow between them. It draws no arrow from one asset to
+  another: which asset is made from which is what Chapter 2 shows storage cannot tell.
+- **The week, as it ran** (`week_strip`, from `timeline`): the days the shop took orders, the night
+  of work after each with when its first write began and its last ended, and the morning the
+  learner starts (`ARRIVAL`). It says when the nights were and nothing about what a night wrote.
 
-- **The map of the platform** (`platformMap`): the systems in the order data moves through them
-  (a system nothing flows into first), the assets each holds in the week asked about, and the
-  flows between systems, each from what a program reads to what it writes. A flow names two
-  systems and nothing else: never a program, never an asset. The map shows what a newcomer is
-  told on the first morning, and nothing Chapter 2 finds storage cannot tell. `mapTally` counts
-  what it holds, kind by kind and in all, for the count under the opening's map.
-- **The week, as it ran** (`weekTimeline`): the days the shop took orders, the night of work after
-  each with when its first write began and its last ended, and the morning the learner starts
-  (`ARRIVAL`). It says when the nights were and nothing about what a night wrote, which writer ran
-  when, or which asset is made from which.
-- **A prediction's answer** (`runProbe`): the owner a table's system records, what kind of
-  name it is, and how many of the warehouse's tables record an owner at all (`owner-kind`, which
-  the requirement figure reads as well); one day's total over an asset against the target's row for that day,
-  as the same, more or less, with every day's two totals for the evidence (`day-total`); how many
-  settings of the cleaning rules rebuild `clean_orders` (`clean-fits`). A prediction's option
-  names the answers it stands for, so the lesson never stores the answer.
+## SQL
 
-## The course's SQL subset
-
-The programs, the queries a learner builds and, from Chapter 10, the queries the learner writes
-are all in one small SQL dialect, parsed and run by the engine (`packages/lab/src/sql`): `SELECT`
-with expressions and aliases, `DISTINCT`, `FROM` one table or file, `WHERE`, `GROUP BY`, `ORDER
-BY`, `CAST`, `SUM`, `COUNT`, `MIN`, `MAX`, `LOWER`, `COALESCE`, three-valued logic with `NULL`, and
-named parameters such as `:day`. Money is held as whole pennies, so sums are exact. Joins arrive
-with the chapter that needs them. A construct outside the subset is refused with a plain message,
-not a parse error.
+The programs and the queries a learner runs are SQLite's SQL, run by Python's `sqlite3`.
+`warehouse.sql(query, files={...})` reads files from object storage as tables for one query, as
+a query engine that reads files would, and `storage.sql(uri, query)` runs a query over one file.
+Money is held as whole pence, so sums are exact; `pounds` formats an amount where a person reads
+it.
 
 ## The learner's state
 
-What a figure shows is a pure function of two things: the shop's definition, and the learner's
-graded work from every earlier chapter.
-
-- Each chapter's work is stored by the platform's runtime, one key per chapter
-  (`ms:v1:<chapter id>`), and is graded again every time it is read, as the runtime grades a
-  challenge on load.
-- When a figure needs what the learner built earlier (their records in Chapter 4, their event
-  design in Chapter 8), the book reads that chapter's stored work, grades it, and uses it only if
-  it passes. Otherwise the figure uses the course's reference and says so on the page.
-- So there is no separate "engine state" to drift from the learner's work or to be edited into a
-  pass, and resetting a chapter's work resets what later chapters see of it.
+A notebook runs the shop's week from its definition each time its cells run, so what a figure shows
+is a function of the shop's definition and the cells the learner has run or changed. JupyterLite
+keeps the learner's edited copy of a notebook in the browser's storage, on that device; nothing is
+sent anywhere. When a later chapter needs what the learner built earlier (their records, their
+event design), it will say how it gets it; no chapter does yet.
 
 ## Determinism
 
 The same code gives the same rows, times and identifiers on every machine. The engine has no wall
-clock (its clock is the week's), no `Math.random` (an identifier the engine needs, such as a run's
-UUID from Chapter 7, is derived from the run's job and time), and no formatting that depends on
-the browser's locale or time zone. Every time is UTC.
+clock (its clock is the week's: every writer's start and duration is fixed in `week.py`), no
+randomness, and no formatting that depends on a locale or time zone. Every time is UTC.
 
 ## What the engine does not model
 
-- Real storage formats: a Parquet file's footer is modelled as the fields it records, not as
-  bytes. Sizes are estimated from the rows.
+- Columnar formats: the raw files are JSON Lines and CSV, which carry no types; a Parquet file's
+  footer, which would, is not modelled.
+- A table's size: the warehouse's figure is a deterministic estimate from the rows.
 - Concurrency inside a night: the programs run one after another.
 - Time zones: every time is UTC, and an order's day is its UTC date.
 - Permissions, until a chapter needs them.

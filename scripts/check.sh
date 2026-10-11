@@ -16,28 +16,22 @@ echo "== copyright =="
 # Every source file carries its author's copyright line; `node scripts/copyright.mjs` adds it.
 node scripts/copyright.mjs --check
 
-echo "== the platform copy is unedited =="
-# platform/ is the learning platform's packages at the commit platform/SOURCE.json records. A fix
-# to the platform is made in snowch/learning-platform and synced here, never made here.
-node scripts/sync-platform.mjs --check
-
 echo "== licences =="
 # Every package the built site can include carries an open licence.
 node scripts/licences.mjs
 
 echo "== types =="
-# Strict TypeScript over the lab, the views, the content, the app, the platform and the tests.
+# Strict TypeScript over the course's plan, the front page and the tests.
 npx tsc --noEmit -p tsconfig.json
 
 echo "== unit and integration tests =="
-# The lab and the schema under Node with no DOM; the runtime, the figures and every chapter under
-# jsdom. Every chapter is parsed, its references pass, its starting points fail, its numbers are
-# pinned to the lab, and it renders whole.
+# The plan against docs/plan.md, each notebook's heading against the plan, and the front page's
+# words, icon and tokens.
 npx vitest run
 
-echo "== the notebook prototype's engine and words =="
-# Chapters 1 and 2 as notebooks (notebook/): the shop's platform in Python, and every number and
-# sentence the notebooks state, pinned against it. Standard library only, so any Python 3.12 or
+echo "== the chapters' engine and words =="
+# The chapters are notebooks (notebook/): the shop's platform in Python, every number and sentence
+# the notebooks state, pinned against it, and the dashboard the front page shows. Standard library only, so any Python 3.12 or
 # later runs it. The JupyterLite site itself needs JupyterLite's packages and the network, and is
 # built in its own workflow (.github/workflows/notebook.yml) and in the deploy.
 python3 -m unittest discover -s notebook/tests -t notebook
@@ -51,10 +45,10 @@ echo "== the course builds =="
 # The production bundle, under the base path GitHub Pages serves it from.
 npm run build -w @ms/course
 
-echo "== educational tests, in a browser =="
-# Every challenge completable and refusing a wrong attempt, predictions committed before they are
-# answered, work graded again on load, no console error, no horizontal scroll, at desktop and
-# phone widths. Needs Playwright's Chromium; CI installs it.
+echo "== the front page, in a browser =="
+# Its links lead to the chapters' notebooks, a former chapter address leads to its notebook, and
+# it has no console error, no horizontal scroll, no text under 11 pixels and, on a phone, no control
+# under 40 pixels tall, at desktop and phone widths. Needs Playwright's Chromium; CI installs it.
 npx playwright test
 
 echo

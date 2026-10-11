@@ -50,31 +50,30 @@ answers "what does this depend on?".
 
 ## The engine
 
-Every figure is computed by the engine (`packages/lab`, described in `docs/lab.md`): a small
-online shop's data platform that really runs. The page never names it: a figure is a diagram or a
-figure of the shop's data, with a caption and no badge, mark or note (`CLAUDE.md`, "No lab on the
-page"). Three raw files arrive each night (`customers.parquet`,
-`orders.parquet`, `products.parquet`); programs written in the course's SQL subset clean them
-(`clean_customers`, `clean_orders`), add them up (`daily_sales`), and refresh a dashboard
-(`sales_dashboard`). The course's week is Monday 7 to Sunday 13 September 2026, and the learner
+Every chapter is a Jupyter notebook that runs in the browser, and every figure in it is computed
+by the engine (`notebook/shop`, in Python, described in `docs/lab.md`): a small online shop's
+data platform that really runs. The page never names it: a figure is a diagram or a figure of the
+shop's data, with a caption and no badge, mark or note (`CLAUDE.md`, "No lab on the page"). Three
+raw files arrive each night (`orders.jsonl`, `customers.jsonl`, `products.csv`); programs in SQL
+clean them (`clean_customers`, `clean_orders`), add them up (`daily_sales`), and refresh a
+dashboard (`sales_dashboard`). The course's week is Monday 7 to Sunday 13 September 2026, and the learner
 arrives on Monday 14 September. On Thursday something went wrong, and the dashboard shows it.
 
-A small map of the platform stays to hand through a chapter: the systems in the order data moves
-through them, the assets each holds, and between them the programs the learner cannot yet see. In
-Chapter 2 it shows no link from one asset to another, because that is what the chapter finds
+A diagram of the platform opens each chapter: the systems in the order data moves through them,
+the assets each holds, and between them the programs the learner cannot yet see. In Chapter 2 it
+shows no link from one asset to another, because that is what the chapter finds
 storage cannot tell. As the learner builds records in later chapters, the map gains what those
 records hold, and a link appears on it only once something the learner built records it.
 
 The shop's platform starts with deliberately too little information. Chapter 2 gives the learner
-storage and nothing else. Each later chapter adds one kind of record, built by the learner, and
-the engine keeps what they built: what a figure shows is the shop plus the learner's own graded
-work from every earlier chapter (`docs/lab.md`, "The learner's state").
+storage and nothing else. Each later chapter adds one kind of record, built by the learner; how
+a later notebook gets what the learner built earlier is for the first chapter that needs it to
+decide (`docs/lab.md`, "The learner's state").
 
 ## How a chapter runs
 
-Every chapter follows the loop **predict, build, run, inspect, explain, change, run again**, inside
-the platform's ten sections: question, motivation, prediction, investigation, construction,
-failure experiment, explanation, generalisation, challenge, reflection. Read as the learner meets
+Every chapter follows the loop **predict, build, run, inspect, explain, change, run again**, in
+sections that follow its material, each headed by its subject. Read as the learner meets
 it, the loop asks: a real question; what can I believe about it now; predict; act on the figure;
 observe; what did that prove; what can the data not tell me; what would a system have to record.
 A prediction is built around what the learner should learn, asks for a belief about a result the
@@ -99,8 +98,8 @@ records about it.
 
 | Ch | Title | The learner builds | Central experiment | What breaks | Introduces |
 | --- | --- | --- | --- | --- | --- |
-| 1 | The shop and its platform | nothing yet: storage is all there is | a tour, on a page and in a notebook: the shop's files, the warehouse's tables, the dashboard and the nights, with the head of the shop's one line in front of it, and a guess, written down, at which asset each table is made from | nothing: the chapter shows what the platform holds, and what it does not show: the programs, when they are due to run, and any notes | asset |
-| 2 | The invisible data system | nothing yet: storage is all there is | an essay, read with four figures: a query over `clean_orders` reproduces `daily_sales` and explains Thursday, and three changes show what that does and does not establish | an analyst's copy makes two sources fit; an edited program leaves nothing that fits and no trace; a failed night leaves the dashboard looking up to date over a table a day behind | metadata |
+| 1 | The shop and its platform | nothing yet: storage is all there is | a tour, in a notebook: the shop's files, the warehouse's tables, the dashboard and the nights, with the head of the shop's one line in front of it, and a guess, written down, at which asset each table is made from | nothing: the chapter shows what the platform holds, and what it does not show: the programs, when they are due to run, and any notes | asset |
+| 2 | The invisible data system | nothing yet: storage is all there is | an essay in a notebook: a query over `clean_orders` reproduces `daily_sales` and explains Thursday, and three changes show what that does and does not establish | an analyst's copy makes two sources fit; an edited program leaves nothing that fits and no trace; a failed night leaves the dashboard looking up to date over a table a day behind | metadata |
 | 3 | What is metadata? | descriptive records for the shop's assets: meaning, owner, columns with their meaning and unit | ask Chapter 2's questions again of storage plus the records, and see which become answerable | a column in `products` that names a person is data about the business, not a record about the file; a record nobody updates goes stale while storage moves on | descriptive, operational, schema |
 | 4 | Metadata as a model | entity types, attributes, identifiers and relationship types; the records checked against them | merge two records that spell the same owner differently | a reference to an entity that does not exist; a fact the model has no type for | entity, attribute, identifier, dataset |
 | 5 | Metadata as a graph | the model as nodes and edges; traversals | predict what a traversal returns, then run it | a traversal that follows the wrong kind of edge and returns half the shop | graph, node, edge, traversal |
@@ -220,23 +219,20 @@ and its notes say which (`CLAUDE.md`, "Question the requirement").
 
 ## What the learner writes
 
-- **Choices in a figure** (Chapter 2 on): a query built from choices, a rule set, a change to
-  apply. The figure shows the SQL a choice means.
+- **Changes to a cell** (Chapter 2 on): a query to edit, a change to the week to choose from a
+  menu, a note to write. The cell shows what it ran and what it found.
 - **Records** (Chapter 3 on): descriptive records in a small, line-based notation the engine parses
   and checks; JSON from Chapter 7.
-- **The course's SQL subset** (Chapter 10 on, read from Chapter 2): `SELECT` with expressions,
-  `DISTINCT`, `WHERE`, `GROUP BY`, `ORDER BY`, `CAST`, a few functions, and named parameters. The
-  shop's programs are written in it, the engine runs it, and Chapter 10 derives column lineage from
-  its parse.
+- **SQL** (read from Chapter 1, written from Chapter 2): SQLite's, which the shop's programs are
+  written in and the engine runs. Chapter 10 derives column lineage from a parse of the programs'
+  SQL; which subset it parses is that chapter's decision.
 - **Events** (Chapters 7 to 9): JSON, first in the learner's own design, then as OpenLineage run
   events.
-- **Code** (Part VI, and Chapter 33): Python, run in the browser by Pyodide, decided at
-  checkpoint 1 because the learner reads and writes this code and Python is a data engineer's
-  language. The engine stays TypeScript; the learner's Python runs in a Web Worker against tests, and
-  the two exchange JSON. Pyodide 0.28.3's core is about 5.3 MB to download, compressed, on the
-  first visit, and cached after (measured from its CDN on 6 October 2026). The course will serve
-  it from its own site, so that no figure fetches from a third party, and its licence, MPL-2.0,
-  joins the licence check when it is added.
+- **Code** (every chapter's cells, and Part VI's own programs): Python, run in the browser by
+  Pyodide, decided at checkpoint 1 because the learner reads and writes this code and Python is a
+  data engineer's language. The engine is Python too, in the same kernel. The site serves Pyodide
+  and every package a notebook loads from its own address, so nothing is fetched from a third
+  party, and each package's licence is checked in the build (`notebook/licences.py`).
 
 ## OpenLineage, placed
 
@@ -260,6 +256,23 @@ The author reviews the course at five checkpoints:
 5. Before Chapter 33.
 
 ## Decisions since the brief
+
+### 11 October 2026: only the notebooks
+
+The author decided that the course has only the notebook version of each chapter. The chapters'
+pages are gone, and with them the TypeScript engine (`packages/lab`), the figures and the book
+(`packages/views`), the chapters as lesson data (`content/lessons`), the copy of the learning
+platform (`platform/`) and their tests; the Python engine (`notebook/shop`) is the only engine.
+Asked how, the author chose to keep the front page as the hub, at the same address and with the
+same look: the band with the shop's dashboard (now written by the Python engine,
+`notebook/front_dashboard.py`, and checked against it), the eight parts, and the contents by part,
+where a written chapter's title opens its notebook and an unwritten one is listed. A former
+chapter address (`#/chapter/shop-and-platform`, `#/chapter/invisible-data-system`) leads to the
+chapter's notebook. Each chapter's originality note moved from its lesson data to its notes, under
+"Originality", where a test now looks for it. `CLAUDE.md`, `docs/lab.md` and `docs/authoring.md`
+were rewritten around the notebooks; `docs/platform.md` went. The learning platform itself is
+unchanged: the digital-design course still uses it. Dated entries below keep the pages, figures
+and paths they were written with.
 
 ### 11 October 2026: Chapter 1's page
 

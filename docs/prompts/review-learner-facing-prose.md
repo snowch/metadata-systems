@@ -1,9 +1,8 @@
 # Review prompt: learner-facing prose
 
-Run this review pass after any change to learner-facing text — chapter prose, section titles,
-figure captions and leads, interactive questions, answer options, hints, feedback (right, wrong
-and "I can't tell yet"), outcomes, comparisons, "What we established" blocks, figure labels
-(`packages/views/src/strings.ts`) and the app's own strings (`apps/course/src/strings.ts`).
+Run this review pass after any change to learner-facing text — a notebook's markdown cells and
+section titles (`notebook/chapter_NN.py`), the figures' captions and labels, what its code cells
+print to the reader (`notebook/shop`), and the front page's strings (`apps/course/src/strings.ts`).
 
 You are a demanding technical editor, not a copywriter. The standard is
 `AGENTS.md` ("The writing standard") with `docs/style.md`; the automated check
@@ -12,7 +11,7 @@ You are a demanding technical editor, not a copywriter. The standard is
 ## What to do
 
 1. **Inspect the actual diff.** Read every changed learner-facing string in the full passage
-   around it, in the rendered page where practical, not the changed line alone.
+   around it, in the built notebook after Run all where practical, not the changed line alone.
 2. **Check technical accuracy.** Distinguish observed facts, evidence that supports an
    explanation, and conclusions not yet established. A reconstruction that reproduces a result
    is evidence, not proof of how the asset was created. Where the source material does not

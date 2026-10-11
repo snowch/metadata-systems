@@ -202,6 +202,16 @@ def _(figures, mo, week):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    ## Your guesses about the warehouse tables
+
+    For each of the three tables, write down which file or table you think it is made from, and what on this page makes you think so. Keep what you wrote. Chapter 2 asks what evidence like this can establish.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     [Chapter 2](chapter_02.ipynb) goes back to the head of the shop's line and starts with Thursday's revenue.
     """)
     return

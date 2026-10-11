@@ -1,13 +1,12 @@
 # Copyright © 2026 Christopher Snow
 
-# Chapter 1 as Jupyter notebooks, one per part of the chapter, in JupyterLite: a prototype beside
-# the course. On every branch it checks the engine's facts and the notebooks' words, builds the
-# site with Pyodide and every package inside it, so a page fetches nothing from a third party,
-# presses the row of buttons in a browser, and keeps the result as an artifact to read before
-# anything is merged. On main, deploy.yml builds the
-# same site into the published course under /jupyterlite/.
+# The chapters, each a Jupyter notebook in JupyterLite. On every branch it checks the engine's
+# facts and the notebooks' words, builds the site with Pyodide and every package inside it, so a
+# page fetches nothing from a third party, presses the row of buttons in a browser, and keeps the
+# result as an artifact to read before anything is merged. On main, deploy.yml builds the same site
+# into the published course under /jupyterlite/.
 
-name: Notebook prototype
+name: Notebooks
 
 on:
   push:
@@ -46,10 +45,10 @@ jobs:
       - name: Install JupyterLite, its Pyodide kernel and the widgets
         run: pip install -r notebook/jupyterlite/requirements.txt
 
-      - name: Build the chapter as a JupyterLite site
+      - name: Build the chapters as a JupyterLite site
         run: notebook/jupyterlite/build.sh jupyterlite-site
 
-      - name: Press the row of buttons in both parts, as a phone
+      - name: Press the row of buttons in each chapter, as a phone
         run: node notebook/jupyterlite/smoke.mjs jupyterlite-site
 
       - name: List what the page bundles

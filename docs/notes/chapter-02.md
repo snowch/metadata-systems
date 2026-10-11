@@ -1,5 +1,11 @@
 # Chapter 2: The invisible data system
 
+Since 11 October 2026 the chapter is a notebook only (`notebook/chapter_02.py`, built as
+`chapter_02.ipynb`; `docs/plan.md`, "11 October 2026: only the notebooks"). The notes below were
+written for the chapter's page and keep its figures, its components and its paths as they were;
+the notebook carries the same essay, with cells the learner runs in place of the page's figures,
+and draws two figures: the platform and the dashboard.
+
 This chapter was Chapter 1 until 11 October 2026, when the tour of the shop became a chapter of its
 own (`docs/notes/chapter-01.md`); the sections below keep the numbers they were written with. On
 the same day the chapter's opening (the first morning and the three systems), its map's lead about
@@ -100,9 +106,21 @@ construction states what the field holds (`etl_service`, the account all four pr
 as), the question that record answers (which account controls the table) and the question it
 does not (who to ask about `daily_sales`), so the requirement is met as written and not as meant.
 The requirement figure (`requirement`) the chapter carried until 9 October 2026 asked the learner
-to choose what to store first; the essay states the finding instead, and the figure stays in
-`packages/views` for a later chapter. The lab's warehouse still records an owner for every table,
-so the record exists to be read.
+to choose what to store first; the essay states the finding instead. The figure went with the pages on 11 October 2026; the
+notebook's warehouse records an owner for every table, and a cell reads it.
+
+## Originality
+
+The obvious example for a first investigation of a data platform is a tour of a data catalogue's
+screens over a ready-made sample project, such as dbt's jaffle shop, with its documentation and
+its dependency diagram already generated for the reader. This chapter is a first morning told as
+an essay: the learner is handed an undocumented platform and one line from the head of the shop,
+and every conclusion is drawn from the shop's own data, which the notebook's cells show. The
+chapter's spine is the gap between a reconstruction that fits and the truth: the rebuild is
+evidence, and the copy, the edit and the failed night each break that evidence in a way the data
+alone cannot repair. The shop, a bicycle-parts retailer, its data, its Thursday incident and its
+programs are invented for the course. (Until 11 October 2026 this note was the chapter page's
+`originalityNote`; it moved here when the notebook became the only version.)
 
 ## What was built for it
 

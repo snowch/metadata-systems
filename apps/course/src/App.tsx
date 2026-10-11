@@ -1,104 +1,40 @@
 // Copyright © 2026 Christopher Snow
 
-// The course shell: header, routes, footer. Chapters render through the platform's runtime with
-// this course's book; the shell knows nothing about metadata.
+// The course shell: header, the front page, footer. Every chapter is a notebook in the site's
+// JupyterLite pages, which the front page links; the shell knows nothing about metadata. An
+// address of a chapter's former page (#/chapter/<id>) leads to the chapter's notebook.
 
-import { useMemo, useState } from "react";
+import { useEffect } from "react";
 
-import { LESSONS } from "@ms/content";
-import { PREDICTION_KINDS, createBook, runtimeStrings } from "@ms/views";
-import { browserStorage, LessonView } from "@platform/lesson-runtime";
+import { CHAPTER_PAGES, NOTEBOOKS, notebookHref } from "@ms/content";
 
 import { fill } from "./fill";
-import { ChapterList } from "./pages/ChapterList";
-import { Pager } from "./pages/Pager";
-import { StartAgain } from "./pages/StartAgain";
-import { StartCourseAgain } from "./pages/StartCourseAgain";
-import { chapterHref, useRoute } from "./route";
+import { FrontPage } from "./pages/FrontPage";
+import { useRoute } from "./route";
 import { STRINGS } from "./strings";
 import { useTheme, type Theme } from "./theme";
 
 export function App() {
   const route = useRoute();
   const [theme, setTheme] = useTheme();
-  const storage = useMemo(() => browserStorage(), []);
-  const book = useMemo(() => createBook(LESSONS), []);
-  const strings = useMemo(() => runtimeStrings(), []);
-  // Bumped when a chapter is started again, so the chapter mounts afresh on the cleared state.
-  const [fresh, setFresh] = useState(0);
+  const file =
+    route.kind === "chapter" ? NOTEBOOKS.get(CHAPTER_PAGES.get(route.id) ?? 0) : undefined;
+  useEffect(() => {
+    if (file) window.location.replace(notebookHref(import.meta.env.BASE_URL, file));
+  }, [file]);
 
   let page: React.ReactNode;
-  if (route.kind === "list")
+  if (route.kind === "list") page = <FrontPage />;
+  else if (file) page = null;
+  else
     page = (
       <>
-        <ChapterList key={fresh} book={book} storage={storage} />
-        <StartCourseAgain
-          storage={storage}
-          bookId={book.id}
-          onCleared={() => setFresh((n) => n + 1)}
-        />
-      </>
-    );
-  else if (route.kind === "chapter") {
-    const lesson = book.lessons.find((l) => l.id === route.id);
-    // A chapter keeps the learner's work only if it asks for any: a challenge, or a figure that
-    // takes a commitment. Only such a chapter offers to start again.
-    const keeps =
-      lesson !== undefined &&
-      (lesson.challenges.length > 0 ||
-        lesson.sections.some((s) => s.interactives.some((x) => PREDICTION_KINDS.includes(x.kind))));
-    page = lesson ? (
-      <>
-        {keeps && (
-          <p className="chapter-start-again">
-            <a
-              href="#start-again"
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById("start-again")?.scrollIntoView({ behavior: "smooth" });
-                document.getElementById("start-again")?.querySelector("button")?.focus();
-              }}
-            >
-              {STRINGS.startAgainTop}
-            </a>
-          </p>
-        )}
-        <LessonView
-          key={`${lesson.id}:${fresh}`}
-          book={book}
-          lesson={lesson}
-          storage={storage}
-          lessonHref={chapterHref}
-          strings={strings}
-        />
-        {keeps && (
-          <StartAgain
-            storage={storage}
-            bookId={book.id}
-            lessonId={lesson.id}
-            onCleared={() => setFresh((n) => n + 1)}
-          />
-        )}
-        <Pager book={book} lessonId={lesson.id} />
-      </>
-    ) : (
-      <>
-        <h1>{fill(STRINGS.noLesson, { id: route.id })}</h1>
+        <h1>{fill(STRINGS.missing, { path: route.kind === "chapter" ? route.id : route.path })}</h1>
         <p>
           <a href="#/">{STRINGS.back}</a>
         </p>
       </>
     );
-  } else {
-    page = (
-      <>
-        <h1>{fill(STRINGS.missing, { path: route.path })}</h1>
-        <p>
-          <a href="#/">{STRINGS.back}</a>
-        </p>
-      </>
-    );
-  }
 
   return (
     <>

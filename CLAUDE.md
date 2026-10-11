@@ -5,9 +5,10 @@ Project instructions for anyone, human or AI, working on this course. They are b
 ## What this is
 
 *Metadata Systems: From Raw Files to a Working Metadata Platform*: an interactive, browser-based
-course on metadata and data lineage, built on the author's shared learning platform
-(`snowch/learning-platform`). The learner does not read about metadata systems; they build a
-small one inside a small data platform, break it, and repair it.
+course on metadata and data lineage. Each chapter is a Jupyter notebook that runs in the
+learner's browser (JupyterLite, with Python by Pyodide), and a small front page lists the chapters
+by part. The learner does not read about metadata systems; they build a small one inside a small
+data platform, break it, and repair it.
 
 Every chapter follows one loop: **predict, build, run, inspect, explain, change, run again.**
 Read as the learner meets it, the loop is a sequence of questions: here is a real question; what
@@ -26,9 +27,8 @@ Every figure uses one vocabulary, shared with the author's other courses: inspec
 experiment, break, explain, drill down, replay.
 
 Read `docs/plan.md` for the parts and chapters, what each builds and in what order, and the
-decisions taken since the brief; `docs/lab.md` for the engine (`packages/lab`), the shop's data
-platform that computes every figure; `docs/platform.md` for what this course takes from the
-learning platform and what is its own; `docs/sources.md` for the specifications every technical
+decisions taken since the brief; `docs/lab.md` for the engine (`notebook/shop`), the shop's data
+platform that computes every figure; `docs/sources.md` for the specifications every technical
 claim is checked against; and `docs/authoring.md` for how a chapter is made. Edit every
 learner-facing string against `docs/style.md`.
 
@@ -67,27 +67,28 @@ its marketing.
 
 ## Every figure is computed from the shop
 
-`packages/lab` is the engine: a small data platform that really runs, with files and tables with
+`notebook/shop` is the engine, in Python: a small data platform that really runs, with files and tables with
 real rows, programs that really transform them, a clock, a scheduler, and the learner's own
 metadata system on top. A figure shows what the engine computes. It is never a scripted animation
 and never a hand-drawn diagram of something the engine could compute. If a chapter needs a figure
 that shows something the engine does not compute, the engine is where the work goes first.
 
-A number in a learner-facing string is a number the engine produced, and a facts test pins it. A
-prediction's answer comes from running the engine, never from the lesson's data.
+A number in a learner-facing string is a number the engine produced, and a test in
+`notebook/tests` pins it. A
+prediction's answer comes from running the engine, never from the chapter's words.
 
 **No lab on the page.** The learner never meets the engine, and nothing they read names a lab, an
 engine or a simulator. A figure is a diagram (the page drawing something: the pipeline, the week)
-or a figure of the shop's data (the asset cards, the dashboard), with a caption and nothing else:
-no badge, no mark, no note on how it runs, and no control that explains it. Its `timeModel` is
-`none`, the platform's name for a figure that states no model, and it declares no role, so the
-runtime draws no badge; the facts it shows are stated as the shop's. The prose check fails "the
-lab" and "Metadata Lab" in anything a learner reads.
+or a figure of the shop's data (a cell's rows, the dashboard), with a caption and nothing else:
+no badge, no mark, no note on how it runs, and no control that explains it; the facts it shows are
+stated as the shop's. The code a learner runs names the shop's systems (`storage`, `warehouse`,
+`reporting`) and the chapter's helpers, never an engine. The notebooks' tests and the prose check
+fail "the lab" and "Metadata Lab" in anything a learner reads.
 
 **A figure shows only what the learner has been told or has built.** It never draws a relation the
-chapter asks the learner to find, and no caption, label or text gives away a challenge's or a
+chapter asks the learner to find, and no caption, label or text gives away an exercise's or a
 prediction's answer before the learner has worked for it. The platform map is the standing
-example. It stays to hand through every chapter, and in Chapter 2 it has no arrow from one asset to
+example. It appears in every chapter, and in Chapter 2 it has no arrow from one asset to
 another, because which asset is made from which is what that chapter shows storage cannot tell.
 The map gains a relation only once something the learner built records it.
 
@@ -140,32 +141,32 @@ original work.
   the standard's published rules.
 - The shop, its people, its data and every scenario are invented for the course. Names of real
   companies, people or products do not appear as part of the scenario.
-- Every lesson carries an `originalityNote` in its data: the obvious textbook or vendor example
-  for its topic and how this chapter's example differs. It is written in the same commit as the
-  lesson, and a test fails a lesson without one.
+- Every chapter's notes carry a section headed "Originality": the obvious textbook or vendor
+  example for its topic and how this chapter's example differs. It is written in the same commit
+  as the chapter, and a test fails a chapter whose notes lack one.
 - Every dependency and every typeface carries an open licence, recorded in `docs/sources.md`.
 
 ## Haiku drafts the prose; you check it
 
 Every string a learner reads goes to a Haiku subagent to draft before it lands: chapter prose,
-hints, the feedback after a failed test, model-versus-reality notes, labels inside the figures.
+hints, the messages a check prints, model-versus-reality notes, labels inside the figures.
 Haiku writes shorter, plainer sentences than a model with the whole repository in its head. It
 also drops facts and gets them wrong. So the work splits four ways:
 
 1. **You write the brief as a list of facts**, not as prose: what the text must say, each point
-   checked against the engine, the lesson data or the code *before* the brief goes out. Haiku copies
+   checked against the engine, the notebook's output or the code *before* the brief goes out. Haiku copies
    a wrong fact faithfully. Attach `docs/style.md`. A prose brief gets its wording copied.
 2. **Haiku writes the sentences, a section at a time.**
 3. **You check the facts, and nothing else.** Where a fact is missing, add the fewest words that
    carry it. Do not rewrite Haiku's sentences. If a draft is wrong, send it back with a note.
 4. **Then read the whole chapter, start to finish.** This is `docs/style.md`'s second pass, where
    repeats and broken joins show. It also asks whether each figure showed the mechanism the prose
-   claims it shows. Read it from the built page in every state its figures reach, before and after
-   each commitment and after each change: some faults show only there, such as a correct
-   prediction printing its long option twice.
+   claims it shows. Read it from the built notebook after Run all, and again after changing what
+   a cell asks you to change: some faults show only there, such as a printed table that gives
+   away the answer to the question above it.
 
 The mechanism is the Agent tool with `model: "haiku"`. Engineering documents (this file, the plan,
-`docs/lab.md`, `docs/platform.md`) are written directly. They still pass the checklist.
+`docs/lab.md`, `docs/authoring.md`) are written directly. They still pass the checklist.
 
 ## Voice
 
@@ -194,9 +195,9 @@ activity instead), artificially dramatic fragments ("one thing to take away"), f
 and wordplay, personification of systems or data ("nothing says who made it" - say what the
 metadata does not hold), vague references ("the rest", "what survives"), meta-commentary about
 what an exercise is doing, feedback that marks an answer wrong without explaining the correct
-conclusion, overstatement of what evidence shows, and closing slogans. Also reject instructional scaffolding in the prose: headings and sentences that name the reader's cognitive activity instead of the technical subject, curriculum narration and over-signposting ("this chapter works through", "notice what this table claims"), and redundant summary layers ("what this chapter established", "the one-sentence version"). AGENTS.md names these rules and where the checks live. `scripts/prose.mjs`
-(`npm run check:prose`, run by `npm run check`) fails on confirmed regressions of these; the
-editorial review pass in `docs/prompts/review-learner-facing-prose.md` catches the rest.
+conclusion, overstatement of what evidence shows, and closing slogans. Also reject instructional scaffolding in the prose: headings and sentences that name the reader's cognitive activity instead of the technical subject, curriculum narration and over-signposting ("this chapter works through", "notice what this table claims"), and redundant summary layers ("what this chapter established", "the one-sentence version"). AGENTS.md names these rules and where the checks live. `notebook/tests/test_words.py` (for the
+notebooks) and `scripts/prose.mjs` (for the front page, `npm run check:prose`, run by
+`npm run check`) fail on confirmed regressions of these; the editorial review pass in `docs/prompts/review-learner-facing-prose.md` catches the rest.
 `AGENTS.md` states the same rules for agents and where the checks live.
 
 **Silence is preferable to filler.** Write for the learner's next action, not for narrative flow,
@@ -213,13 +214,12 @@ and its standing example.
 **Terms are rationed per chapter.** A term arrives because the figure in front of the learner has
 just raised the question that needs it, never as a definition up front: plain English first, the
 term second. `docs/plan.md` lists the terms each chapter introduces; the term gate
-(`termProblems`) fails a chapter that uses a term before the chapter that introduces it, unless
-the chapter lists the word under `termExemptions` with a reason. *Metadata* itself is introduced
-at the end of Chapter 2, by the questions the learner could not answer.
+(in `notebook/tests/test_words.py`) fails a chapter that uses a term before the chapter that
+introduces it, unless the test lists the word as an exemption with its reason ("run" as the
+verb). *Metadata* itself is introduced at the end of Chapter 2, by the questions the learner could not answer.
 
-**Length follows the material.** The ten sections of the lesson format (question, motivation,
-prediction, investigation, construction, failure experiment, explanation, generalisation,
-challenge, reflection) stay whatever the length. A chapter closes with a short summary of what its
+**Length follows the material.** A chapter's sections follow its material, each under a heading
+that names its subject. A chapter closes with a short summary of what its
 experiments showed and could not show, said once and not explained again, then reflective
 questions that carry it to new situations and lead into the next chapter. To improve a chapter,
 sharpen what its interactions ask before adding material.
@@ -272,8 +272,8 @@ explains; they never guess an explanation the page then reveals.
   exact figure to hit.
 - **Where nothing the learner has seen can tell the options apart**, as with how this shop happened
   to set up its warehouse, do not ask them to guess: ask what they would do in the shop's place,
-  and let the figure show what the shop does beside their choice, called neither right nor wrong (the
-  prediction figure's `choose` mode); where the question is what a requirement means, question the
+  and let the notebook show what the shop does beside their choice, called neither right nor
+  wrong; where the question is what a requirement means, question the
   requirement (below).
 
 A prediction is an experiment, and its notes answer the twelve questions every experiment's do
@@ -286,8 +286,7 @@ metadata is for before they have needed it.
 
 ## Experiments, instruments and explanations
 
-A figure is one of three things, and its notes say which (its `role`, which the platform can
-show as a badge; this course's figures declare none, so the page shows no badge):
+A figure is one of three things, and its notes say which; the page never labels it:
 
 - **An explanation** (`reference`): the page telling the learner something, in a figure because a
   figure tells it better. The map is one. It asks nothing.
@@ -314,8 +313,7 @@ observe. But it must have a learning purpose and a learner action that serves it
 say both. A notes block's objective says what the learner should understand or discover, never
 what the figure displays. Weak: "the learner sees what storage records about a table". Strong:
 "the learner discovers that the warehouse's owner, an account, does not say who is responsible
-for the table". The content tests fail an objective written as what the figure shows; only
-reading catches the rest.
+for the table". Only reading catches an objective written as what the figure shows.
 
 An experiment has a learning job: what the learner will understand, discover or be able to do
 because they did it, and the action that causes that learning. "They can see the metadata" is an
@@ -343,8 +341,8 @@ predicted the outcome; whether any option gives the explanation away; whether "I
 could be the right engineering response; the question that follows; and whether it is really an
 experiment, or an instrument or a reference. An instrument or a reference answers two: the
 question it serves, and why the learner needs it then. A figure that completes another experiment
-(a check after the learner's own work) names the experiment it is part of. The content tests fail
-a figure without a role, without its block, or with a question unanswered.
+(a check after the learner's own work) names the experiment it is part of. Review fails a figure
+without its block, or with a question unanswered; no test does.
 
 ## Question the requirement
 
@@ -368,7 +366,7 @@ The learner commits first, as they would at work, where a familiar word invites 
 The exercise then shows the other reasonable readings, each beside what it needs, before the
 figure shows what the platform records; last, it shows which readings that record satisfies. No
 reasonable reading is marked wrong because the platform chose another, and "there is not enough
-information to choose yet" is an option the learner can take. The lesson is never "this field
+information to choose yet" is an option the learner can take. The point is never "this field
 means X". It is that the platform has its own meaning, the requirement did not say which meaning
 it wanted, and a field's name does not say which question the field answers.
 
@@ -376,12 +374,12 @@ Chapter 2's owner is the standing example. "Every table must have an owner" coul
 responsible for a table, which team is, which program writes it, or which account controls it in
 the warehouse, and each needs something different stored. The shop's warehouse records an account:
 that meets the requirement as written, and answers only the last question, while "Who should I
-ask about `daily_sales`?" needed one of the first two. The figure is `requirement`.
+ask about `daily_sales`?" needed one of the first two. Chapter 2 questions it in its prose.
 
 Every chapter looks for its own chance to do this, wherever its material raises a requirement that
 sounds obvious; `docs/plan.md` lists a candidate for each. A chapter's notes say, under
 "Requirements", which requirement the chapter questions and with which figure, or why none fits,
-and the content tests fail notes that say neither. A requirement exercise is not a prediction
+and a test (`notebook/tests/test_notes.py`) fails notes that say neither. A requirement exercise is not a prediction
 with a hidden answer: the prediction rule above holds for its choice, and the figure answers only
 what the platform does.
 
@@ -389,14 +387,13 @@ what the platform does.
 
 A review has two halves, and the test suite does neither on its own.
 
-- **The mechanical half** drives the built page at phone and desktop widths and in the dark
-  theme, presses every control, moves every input to both ends, reaches each part of the page by a
-  jump as well as by scrolling, runs every challenge with the reference and with plausible wrong
-  attempts, and writes down what broke.
+- **The mechanical half** opens the built site's front page and each notebook at phone and
+  desktop widths and in the dark theme, presses Run all and Run below, runs every exercise with
+  the intended change and with plausible wrong ones, saves, reloads, and writes down what broke.
 - **The reading half** gives each chapter to its own reviewer with a written brief, reading as a
   learner who has done every earlier chapter and none after. Every finding quotes the page;
   a finding suggests a direction and never rewrites; a number or a cross-reference is checked
-  before it is asserted; a review never contains a challenge's answer. Reviewers over-call, so
+  before it is asserted; a review never contains an exercise's answer. Reviewers over-call, so
   each finding is attacked by an independent sceptic before it is acted on.
 
 Reviewers and sceptics run on a model other than the one that built the chapter. After a review,
@@ -440,46 +437,39 @@ Read for these before calling a chapter finished:
 
 ## Things that will break the build
 
-`npm run check` is exactly what CI runs (`scripts/check.sh`). Each line below is a check and the
-reason it exists.
+`npm run check` is exactly what CI's Check runs (`scripts/check.sh`); the Notebooks workflow
+(`.github/workflows/notebook.yml`) builds the notebooks' site and drives it. Each line below is a
+check and the reason it exists.
 
 - **Prettier, with `*.md` ignored.** Prose files keep their own line breaks.
 - **The copyright line** ("Copyright © 2026 Christopher Snow") near the top of every source file,
   and on every page's footer. `node scripts/copyright.mjs` adds it.
-- **The platform copy is unedited.** `platform/` is a copy of `snowch/learning-platform`'s
-  packages at the commit `platform/SOURCE.json` records; `node scripts/sync-platform.mjs --check`
-  fails if a file there differs. Change the platform in its own repository, then sync.
-- **`tsc` strict**, with `noUncheckedIndexedAccess` and `verbatimModuleSyntax`.
-- **A lesson without an `originalityNote`, with its sections out of order, or with a challenge
-  nobody mounts, fails to parse.** The content tests parse every lesson.
-- **The filler check** fails learner-facing text that uses the commonest forms of filler
-  (`docs/style.md`): a backstop for the rule, which only reading enforces.
-- **The term gate** across chapters, and **the model gate**: a figure may name only a model the
-  book declares (`modelProblems`).
-- **Every figure has its block in the chapter's notes** under "Figures": twelve answers for an
-  experiment (a figure that takes a commitment), two for a diagram or a figure of the shop's data.
-  A figure may declare a role, which the platform badges; this course's figures declare none, and
-  every figure's `timeModel` is `none`, so the page shows no badge and no model note.
-- **A figure below a prediction states what the prediction found only if it waits for the
-  learner's answer** (`waits`), directly or through another figure that does, and no caption,
-  lead, after-text, task or section prose below it states it: the next figure down is in view
-  while the learner is still choosing.
-- **Every chapter's notes say which requirement it questions, or why none,** under "Requirements",
-  naming each requirement figure; and a requirement figure's record answers some of its readings
-  and not all, and no text the learner reads before its second press names that record.
-- **Every challenge's reference passes its own tests, and its starting point does not.**
-- **The whole chapter renders in jsdom with no figure problem.**
-- **The chapter's stated numbers are pinned** by its facts test against the engine.
+- **Every npm package the front page ships carries an open licence** (`scripts/licences.mjs`), and
+  every Python package a notebook can load (`notebook/licences.py`, in the site's build).
+- **`tsc` strict**, with `noUncheckedIndexedAccess` and `verbatimModuleSyntax`, over the plan, the
+  front page and the tests.
+- **The plan as data agrees with `docs/plan.md`**, chapter by chapter, title and terms; each
+  written chapter's notebook is headed with the plan's title.
+- **The engine is pinned.** `notebook/tests` runs the shop's week and holds every number and
+  sentence the notebooks state to it, the dashboard the front page ships included.
+- **The notebooks' words keep the rules:** the term gate, the filler check, the prohibited phrases
+  (`scripts/prose.mjs`, which also checks the front page), no em dash, every chapter's closing
+  naming the next chapter, the links between chapters and back to the contents, and only the
+  buttons the page has.
+- **Every written chapter's notes** carry a "Requirements" and an "Originality" section
+  (`notebook/tests/test_notes.py`).
 - **The engine is deterministic.** The same code gives the same rows, times and identifiers on every
-  machine: no clock, no `Math.random`, no locale-dependent formatting.
+  machine: no clock, no randomness, no locale-dependent formatting.
 - **The icon and the manifest keep to the course** (`node scripts/icons.mjs` draws the icon and
   writes every file). Every icon `index.html` or the manifest names is there at the size it claims,
   their colours are the tokens', the manifest's paths and identity stay inside the course's own
   path on an origin the author's courses share, and the maskable icon keeps its mark inside the
   safe zone.
-- **The Playwright suite drives the built site at desktop and phone widths**: every challenge
-  completable with its reference and refusing a wrong attempt, saved work graded again on load
-  and not bypassable through storage, resettable, a prediction committed before it is answered,
-  no console error, no horizontal scroll even after every figure is used, no visible text under
-  11 pixels, every phone control at least 40 pixels tall, no line of prose over about 85
-  characters.
+- **The front page, in a browser, at desktop and phone widths** (Playwright): every chapter listed,
+  a written chapter's title opening its notebook, a former chapter address leading to its
+  notebook, no console error, no horizontal scroll, no visible text under 11 pixels, every phone
+  control at least 40 pixels tall, no line of prose over about 85 characters.
+- **The notebooks, in a browser, as a phone** (`notebook/jupyterlite/smoke.mjs`, in the Notebooks
+  workflow): the menu bar and toolbar hidden, the row of buttons there and 44 pixels tall, Run all
+  running every visible cell with no error and keeping the reader's place, Run below the same, and
+  a notebook's earlier name leading to its chapter.

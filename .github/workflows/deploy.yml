@@ -45,7 +45,7 @@ jobs:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}/
         run: npm run build -w @ms/course
 
-      # Chapter 1 as Jupyter notebooks, a prototype beside the course, at /jupyterlite/: Pyodide and
+      # The chapters as Jupyter notebooks, at /jupyterlite/, which the front page links: Pyodide and
       # every package inside the site, so a page fetches nothing from a third party
       # (.github/workflows/notebook.yml builds the same on every branch).
       - uses: actions/setup-python@v5

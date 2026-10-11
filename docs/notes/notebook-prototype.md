@@ -3,7 +3,10 @@
 The author asked whether the course could be delivered as notebooks that run in the browser, for
 readers who are data engineers and think in notebooks, and then for a prototype of Chapter 1. This
 note records what was built, why each choice was made, what was measured, and what is still open.
-The course itself is unchanged: the prototype is published beside it, under `/jupyterlite/`.
+The prototype was published beside the course, under `/jupyterlite/`. On 11 October 2026 the
+author made the notebooks the only version of each chapter (`docs/plan.md`, "11 October 2026: only
+the notebooks"): the site's address is unchanged, and the course's front page links each chapter's
+notebook. This note keeps the prototype's record as it was made.
 
 The notebook was first built in marimo, then in JupyterLite to compare, and the author ruled marimo
 out as too big for a phone ("marimo ruled out", at the end). The sections before that one record
@@ -392,7 +395,8 @@ notebooks were parts, and their names in this note are the names they had then.
 
 ## Open questions for the author
 
-- Whether the notebook should replace the essay pages, sit beside them, or be dropped.
+- Whether the notebook should replace the essay pages, sit beside them, or be dropped: answered
+  on 11 October 2026, when the notebooks replaced the pages.
 - Whether the notebook should run every cell as soon as it opens, as the marimo version did. The
   row's extension could do it; the page would then do the 10 to 12 seconds of work on opening, and
   the texts would change.

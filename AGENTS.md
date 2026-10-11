@@ -10,17 +10,17 @@ human or AI; this file adds the parts an agent most often gets wrong. Read both 
 - `docs/style.md` — the style checklist every learner-facing string is edited against.
 - `docs/authoring.md` — how a chapter is made.
 - `scripts/check.sh` — exactly what CI runs; run it before pushing.
-- `content/lessons/lessons.test.tsx` — the content tests: the filler backstop, the term gate,
-  answer-leak checks, the facts tests' home is `content/lessons/invisible-system.facts.test.ts`.
+- `notebook/tests/test_words.py` — the notebooks' words: every number pinned against the engine,
+  the filler backstop, the prohibited phrases, the term gate; `notebook/tests/test_notes.py` holds
+  each written chapter's notes to their "Requirements" and "Originality" sections.
 
 ## What counts as learner-facing text
 
-Every string a learner reads: chapter prose, section titles, figure captions and leads,
-interactive questions, answer options, hints, feedback (right, wrong and "I can't tell yet"),
-outcomes, comparisons, "What we established" blocks, labels in the figures
-(`packages/views/src/strings.ts`), the app's own strings (`apps/course/src/strings.ts`), and the
-front page. It lives in `content/lessons/*.ts`, `packages/views/src/strings.ts` and
-`apps/course/src/strings.ts`, and in `props` inside `content/lessons/invisible-system.ts`.
+Every string a learner reads: a notebook's markdown cells and section titles, the labels,
+options, placeholders and messages its code cells print, the figures' captions, and the front
+page's words. The chapters' words live in `notebook/chapter_NN.py` (the source each notebook is
+built from) and in the helpers under `notebook/shop` that print to the reader; the front page's
+live in `apps/course/src/strings.ts`.
 
 ## The writing standard (added to the Voice rules in CLAUDE.md and docs/style.md)
 
@@ -82,13 +82,14 @@ meaning, invent evidence, or cut useful teaching content for brevity.
 
 ## The automated prose check
 
-`node scripts/prose.mjs` (also `npm run check:prose`) fails on known-bad phrases — confirmed
-regressions, each added when found — and on "the lab" and "Metadata Lab": the page names no lab,
-and never says what computes a figure (`CLAUDE.md`, "No lab on the page"). It is a narrow backstop for wording the standard rejects, not
+`node scripts/prose.mjs` (also `npm run check:prose`) fails the front page's words on known-bad
+phrases — confirmed regressions, each added when found — and on "the lab" and "Metadata Lab": the
+page names no lab, and never says what computes a figure (`CLAUDE.md`, "No lab on the page").
+`notebook/tests/test_words.py` reads the same list and holds the notebooks to it. It is a narrow
+backstop for wording the standard rejects, not
 a general style judge: short sentences, passive constructions, "nothing" and metaphor are fine in
 themselves. When a review finds a new failure mode, add its phrase to the list in
-`scripts/prose.mjs` with a comment naming the rule. The list of files it scans covers every
-learner-facing source; exclusions are documented in the script.
+`scripts/prose.mjs` with a comment naming the rule; both checks pick it up.
 
 `docs/prompts/review-learner-facing-prose.md` is the editorial review pass for a human or an
 agent to run after any change to learner-facing text. The automated check and the editorial

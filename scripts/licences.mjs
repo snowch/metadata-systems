@@ -27,7 +27,7 @@ const nodes = JSON.parse(execFileSync("npm", ["query", ".prod"], { encoding: "ut
 const problems = [];
 let checked = 0;
 for (const n of nodes) {
-  // The course's own workspaces (the root, apps/, packages/, platform/, content) live outside
+  // The course's own workspaces (the root, apps/, content) live outside
   // node_modules; only installed dependencies are checked.
   if (!String(n.location ?? "").includes("node_modules")) continue;
   checked++;

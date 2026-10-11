@@ -1,74 +1,45 @@
 # Writing a chapter
 
-How a chapter is made, from the engine to the review. Chapter 2, `content/lessons/invisible-system.ts`,
-is the worked example; copy its shape.
+How a chapter is made, from the engine to the review. A chapter is a Jupyter notebook the learner
+runs in the browser. Chapter 2, `notebook/chapter_02.py`, is the worked example; copy its shape.
+
+Until 11 October 2026 a chapter was also a page of the course, written as data for the learning
+platform's lesson format and drawn by figures in TypeScript. The author kept only the notebooks
+(`docs/plan.md`, "11 October 2026: only the notebooks"); the notes of Chapters 1 and 2 still
+describe the pages' figures, as a record of how the chapters were designed.
 
 ## The engine first
 
-A chapter starts in `packages/lab`, not in its prose. Decide what the learner must discover, then
-make the engine compute it: a figure shows what the engine computes, a prediction's answer is a
-probe the engine runs, and a challenge's expected values come from the engine's grader. If the
-engine cannot compute what a figure needs, the engine gains it, with a test, before the figure
-exists. `docs/lab.md` says what the engine models and what it does not. The page never names the
-engine (`CLAUDE.md`, "No lab on the page").
+A chapter starts in `notebook/shop`, not in its prose. Decide what the learner must discover, then
+make the engine compute it: a figure shows what the engine computes, and a prediction's answer is
+what a cell prints when the learner runs it. If the engine cannot compute what a figure needs, the
+engine gains it, with a test in `notebook/tests`, before the figure exists. `docs/lab.md` says what
+the engine models and what it does not. The page never names the engine (`CLAUDE.md`, "No lab on
+the page").
 
-## A chapter is data
+## A chapter is a source file
 
-A chapter is one module in `content/lessons/` exporting a `LessonInput` (from
-`@platform/lesson-schema`), listed in `content/lessons/index.ts`. Its `module` is its part and its
-`order` is its chapter number, both as `content/lessons/plan.ts` gives them; the content tests hold
-the title and the introduced terms to the plan as well.
+A chapter is `notebook/chapter_NN.py`, a Python file of cells in marimo's file format, which keeps
+the chapter diffable and lets the tests read every sentence. `notebook/jupyterlite/build_ipynb.py`
+turns it into `chapter_NN.ipynb`, cell by cell, and stops on anything it does not know how to
+carry over: a markdown cell (`mo.md`) is a markdown cell; a figure (`mo.Html`, from
+`notebook/shop/figures.py`) is an SVG in a cell's output; a control (`mo.ui.dropdown`,
+`mo.ui.text_area`) is an ipywidget; the setup cells at the foot of the file move to the top. A new
+chapter is added to `CHAPTERS` in `build_ipynb.py`, in `notebook/tests/test_words.py`, and to
+`NOTEBOOKS` in `content/plan/notebooks.ts`, which the front page reads.
 
-- `objectives`: what the learner can do afterwards, each starting with a verb.
-- `introduces`: the terms the plan gives the chapter; the term gate fails any earlier chapter that
-  uses one, including chapters not yet written. `termExemptions` lists a word used in another
-  sense, with the reason (Chapter 2 uses "run" as a verb; the noun is Chapter 7's).
-- `sections`: exactly ten, in the platform's order. A figure (`interactives`) has an `id`, a
-  `kind` from the book's registry, a `timeModel` (`none`: the page states no model, so the
-  platform draws no badge and no note), a plain-text `caption`, Markdown `lead` and `after`, and
-  `props` its schema checks. It may declare a `role` (what it asks of the learner: `experiment`,
-  `inspect` or `reference`; "Experiments, instruments and references", below), which the
-  platform would badge; this course's figures declare none.
-- `challenges`: built from choices for now (`gradedDirection: "answer"` with `choice` fields and
-  `answers` tests naming a grader the book has). Each has five hints, a starting point that fails
-  and a reference that passes.
-- `modelVsReality` and `originalityNote`, written in the same commit as the chapter.
+- The first cell links back to the contents (the absolute address of the front page: a relative
+  link in JupyterLite opens a file of the site) and on to the next chapter by its notebook's
+  name, then gives the heading `# Chapter N: {title}`, the plan's title, and the objectives.
+- The second is the warning about the download and the memory a phone has.
+- Every section is a `## ` heading that names its subject, never the reader's activity.
+- The last section closes with what the chapter's experiments showed and could not show, then
+  reflective questions, and names the next chapter; the last cell repeats the links.
+- The page tells the learner to press **Run all**, **Run below** and **Save**, the row of buttons
+  `notebook/buttons/` puts above the cells; the tests hold the page to the buttons it has.
 
-Keep the words out of the structure file: the chapter's paragraphs go in `<id>.prose.ts`, its
-titles, captions and labels in `<id>.labels.ts`. Captions, titles and option labels render as plain
-text: no Markdown in them.
-
-A figure's `lead` and `after` are chapter prose: the page draws them outside the figure's card, at
-the prose's measure, and the card holds the caption and the figure itself. Write a lead as the text
-that brings the reader to the figure, not as part of the figure. In the figures' own strings
-(`packages/views/src/strings.ts`), a name between backticks is set as code wherever the figure
-draws the sentence itself.
-
-## The figures
-
-The registry is `INTERACTIVES` in `packages/views/src/book.tsx`. Each figure parses its props with
-a zod schema and says so in its place when they do not fit.
-
-A figure carries no badge, no mark and no note: the page never names what computes it
-(`CLAUDE.md`, "No lab on the page"). The platform can badge a figure by a declared role; this
-course's figures declare none, and every figure's `timeModel` is `none`.
-
-| kind | props | what it does |
-| --- | --- | --- |
-| `platform-map` | `changes?`, `dock?`, `tally?` | the platform as the engine's `platformMap` computes it: the systems in the order data moves through them, the assets each holds, and between two systems the programs the learner cannot see, never a link from one asset to another; with `tally`, a count under the systems, kind by kind and in all (`mapTally`), in this place only; once the learner scrolls past it, a button at the foot of the window opens the same map over the page, unless `dock` is false |
-| `week-timeline` | `changes?` | the shop's first week on one line, as the engine's `weekTimeline` computes it: a column a day, the band of days the shop took orders, a bar at each night's work where its hours fall, and a line at the morning the learner starts, with a key; a screen reader hears one sentence that says the same; it names no asset and no program |
-| `dashboard` | `changes?` | the reporting tool's chart as Monday morning shows it, one bar per value, from the engine's week |
-| `lab-prediction` | `question`, `options` (each a value, a label, and either `means`, the answers of a naming probe it stands for, or `range`, the counts of a counting probe), `probe` (`owner-kind` of an asset; `day-total` of a source, a filter, a target and a day; `clean-fits`), `explain?`, `changes?`, `requires?` (a challenge id), `mode?` (`predict`, the default, or `choose`), `compare?` (for a choice: its button, `commit`, in words about what it shows, and the line after it, `mine` with `{choice}` and `lab` with `{answer}`), `undecided?` (the option "I can't tell yet": a value, a label, and the `line` shown after it, with `{answer}`) | the learner commits to an option, and the commitment stays (no "Predict again"); the engine runs the probe and answers with the option that stands for what it found, with its evidence; a prediction is marked right or not, "I can't tell yet" and a choice are set beside what the engine found and marked neither; `explain` shows only after the commit; with `requires`, the figure waits until the learner's own work on that challenge passes |
-| `requirement` | `requirement` (its words, as written), `question`, `options` (each a value, a label, `short`, what it needs stored, `asks`, the question it asks with names between backticks, and `means`, the probe's answers that answer it), `undecided` (the option to store nothing until the requirement says what it is for), `probe` (`owner-kind` of an asset), `buttons` (`choose` and `show`), `headings` (`asks`, `store`, `answers`), `text` (`mine` with `{choice}`, `undecided`, `meanings`, `lab` with `{value}`, `{owned}` and `{tables}`, `explain?`) | a requirement questioned (`CLAUDE.md`, "Question the requirement"): the learner chooses what to store, or nothing yet; the figure then shows the questions the requirement could be asking, each beside what it needs stored, with their own row marked; at a second press the engine runs the probe, says what the platform records, and the same table gains a column saying which questions that record answers, in words and without colour; no reading is called wrong, and both presses stay |
-| `decision` | `question`, `options` (each a value, a label, `means?`, for an explanation a check will read, the findings that support it: `left`, `lower`, `moved`, and `after?`, a line on what the option can show, never what it leads to), `commit`, `mine` (with `{choice}`), `test?` (how to go on with the figures that follow), `waits?` (an earlier figure that takes a commitment) | a decision in an investigation: where to look first, or which explanation to test; the figure keeps the choice and reveals nothing of the answer: after the choice it shows the learner's line, the chosen option's `after` and `test`, and the testing is theirs; with `waits`, a line stands in its place until the learner has committed their answer in that figure, so a decision that states what a prediction found cannot give it away |
-| `hypothesis-check` | `of` (the `decision` figure it checks), `options` (the same explanations, in the same order), `requires` (a challenge id), `probe` (`day-gap`: a source, the asset a rebuild reads and the rows it keeps, a target and a day), `button`, `headings` (`explanation`, `supported`), `text` (`mine` with `{choice}`, `none`, `lab` with `{orders}`, `{kept}`, `{left}` and `{leftTotal}`, `explain?`) | waits until the learner's own work on the challenge passes; at a press, reads the day's rows against the rows the rebuild keeps, and marks which explanations they support, the learner's choice marked; says what the rows show, never why |
-| `storage-inspector` | `initial?`, `from?` (a `decision` figure, and for each of its options the asset to open), `changes?` | every asset by the system that holds it; for the one chosen, what its system records, what storage says about each of the chapter's eight questions (the same eight for every asset), its columns and its rows; a table wider than its box says so; with `from`, it opens on the asset the learner chose in that decision, until they choose another here |
-| `change-lab` | `changes` (each an id, a label and an outcome), `afterAll?`, `challengeId`, `target?`, `prediction` (a question and options with count ranges) | waits until the learner's own query passes; for each change, takes a committed prediction of how many queries in the builder's choices will rebuild the target, then runs the week with it and shows those queries (the engine's answer), what storage holds on Monday morning with the comparison against the first run labelled as the engine's, and the learner's query against the new target; each outcome shows once its prediction is committed, and `afterAll` once all are |
-| `question-map` | `asset?`, `challengeId`, `weeks?` (each a change id and its label) | the learner places the chapter's questions about one asset in three groups and commits, for good; the engine then places them (storage, the data, only a record), each with its evidence and, for a question only a record answers, the kind of record that would; a week selector runs the placement on each change and marks the questions that moved; a query and its source are named only once the learner's own query passes |
-| `challenge` | `challengeId` | the runtime's challenge runner with the book's choice editor, which shows the SQL the choices mean and its result |
-
-The book's graders are `reproduces` (a sum compared with a target day by day) and `same-rows` (a
-set of cleaning rules compared with `clean_orders` as multisets).
+The chapter's notes, `docs/notes/chapter-NN.md`, are written in the same commit, with a section
+"Figures", a section "Requirements" and a section "Originality" (below).
 
 ## A diagram carries what prose would make the learner hold
 
@@ -77,58 +48,43 @@ nights or their own place in an investigation in mind, a figure carries it, and 
 only what the next question needs (`CLAUDE.md`, "Every figure is computed from the shop"). Such
 a figure is a diagram with one job, named in its block under "Figures": the platform's
 architecture, its assets, time, a flow, or where the learner stands. It is still computed from
-the shop's data, and it still shows only what the learner has been told or has built. Detail the
-next step does not need goes in the section's `details`, a control the reader opens, where it
-first matters. A chapter's opening sets up the smallest
-model its first question needs, and adds structure when the investigation makes it relevant.
+the shop's data, and it still shows only what the learner has been told or has built. A chapter's
+opening sets up the smallest model its first question needs, and adds structure when the
+investigation makes it relevant.
 
 A mechanism is explained from the learner's side first (`CLAUDE.md`, "Interaction is the
-explanation"): what the learner does and what happens when they do, then how it is built. A brief
-for a figure's words says which is which, and keeps implementation words (SQL, query engine,
-memory, page load) out of the text that says what the learner does. The plain model, in every
-chapter: in a figure the learner uses, you ask, it checks, it shows you, you work out what it
-means; a figure they only read shows what has been worked out. A brief takes which figures are
-which, and the actions that ask (the answers, lists and buttons), from the built page, not from
-memory of the components.
+explanation"): what the learner does and what happens when they do, then how it is built. In a
+notebook the learner asks by running a cell, or by changing one and pressing Run below; the page
+says which cells to change and what to look for in what they print.
 
 ## Experiments, instruments and references
 
 Every figure's block in the notes says what it asks of the learner (`CLAUDE.md`, "Experiments,
 instruments and explanations"): nothing, for a diagram or a figure of the shop's data; a
-commitment, for an experiment. A figure may declare a `role`, which the platform would badge, with
-a note the badge opens (`roleNotes` on the book, `roles` and `roleBadgeLabel` in
-`packages/views/src/strings.ts`); this course's figures declare none, so the page shows no badge
-and the page never says what computes a figure.
+commitment, for an experiment. A cell the learner changes and runs again is an experiment when the
+page asks for an expectation first.
 
-- `experiment`: the learner commits (to a prediction, a choice, a decision or a query they build),
-  acts, and the evidence answers. Every figure that takes a commitment before the figure
-  answers (`PREDICTION_KINDS` in `packages/views/src/book.tsx`: a prediction, a requirement, a
-  decision, a change run after a prediction, a sort) is one, and so is a challenge. Prefer it.
-- `inspect`: an instrument the learner examines for evidence, such as the inspector or the
-  dashboard. Never present it as the activity: put a question in front of it and say what to look
-  for. Chapter 2's inspector follows a decision about where to look first (`where-first`) and
-  opens on the asset chosen there (`from`).
-- `reference`: what the learner has been told, kept to hand, such as the platform map. It asks
+- `experiment`: the learner commits (writes down a prediction, chooses a change, edits a query),
+  runs the cell, and the output answers. Prefer it.
+- `inspect`: an instrument the learner examines for evidence, such as a cell that lists what
+  storage records. Never present it as the activity: put a question in front of it and say what to
+  look for.
+- `reference`: what the page shows to hold in mind, such as the platform's diagram. It asks
   nothing.
 
-These three are the labels the learner sees, and the only ones. Designing or reviewing a figure,
-use the finer list in `CLAUDE.md` ("Experiments, instruments and explanations"): show, inspect,
-predict, test, investigate, experiment, which a figure may combine. It is a lens for the notes,
-never a label on the page. On the page, "figure" names an interactive box and nothing else: a
-number is a total, a value or a count, and the content tests fail "figure" used for one.
+These are a lens for the notes, never labels on the page. On the page, "figure" names a drawing
+in a cell's output and nothing else: a number is a total, a value or a count.
 
-Before a figure is built, it gets a block in the chapter's notes, under "Figures", in the page's
-order: a heading with its id, its role, and for an experiment twelve answers, each under its own
-label.
+A figure's block in the chapter's notes, under "Figures", in the page's order: a heading with its
+name, its role, and for an experiment twelve answers, each under its own label.
 
 ```
-### `predict-days`
+### `the-thursday-cell`
 
 - **Role:** experiment
 - **Objective:** what the learner should understand, discover or be able to do afterwards,
-  never what the figure displays ("the learner discovers that the warehouse's owner, an account,
-  does not say who is responsible", not "the learner sees what storage records").
-- **Known before:** what is on the page above the figure, not what the engine knows.
+  never what the figure displays.
+- **Known before:** what is on the page above it.
 - **Driving question:** the question, hypothesis or decision that drives it.
 - **The action:** what the learner does.
 - **Why the action:** why the learner must act to learn it, and not only look.
@@ -136,33 +92,14 @@ label.
 - **Consequence:** what they believed before, what the evidence lets them believe after, and what
   a wrong prediction teaches.
 - **Predictable:** whether they could reason to the outcome from what is on the page.
-- **Gives nothing away:** why no option, caption or line above it carries the explanation.
-- **Not knowing:** whether "I can't tell yet" could be the right engineering response, and
-  whether the figure offers it.
+- **Gives nothing away:** why no line above it, and no output in view, carries the explanation.
+- **Not knowing:** whether "I can't tell yet" could be the right engineering response.
 - **Next question:** the question the result raises, and where the chapter takes it.
 - **An experiment:** why it is an experiment, and not an instrument or a reference.
 ```
 
-An instrument or a reference answers two, **Serves** (the question it serves) and **Why now**
-(why the learner needs it at that point). A figure that completes another experiment, such as a
-check after the learner's own work, gives **Part of** and that experiment's id instead of the
-twelve. The content tests fail a figure without a role, a commitment that is not an experiment, a
-block missing, out of the page's order or not repeating the figure's role, and an answer missing.
-
-## The front page
-
-The front page (`apps/course/src/pages/ChapterList.tsx`) is the course's own, like the rest of
-the shell. It holds a band with the course's title, one bold line on what the learner does, the
-lead, the way in (the first chapter, or the first one not finished once a challenge has passed),
-and what the course assumes of the learner; beside them, Chapter 2's dashboard as the chapter
-shows it, mounted from the book's own figure with its caption and no badge. The rule for that
-figure is the chapters' rule: computed from the shop's data, never decoration, showing nothing a chapter
-asks the learner to find. Under the band, the eight parts of `PLAN` in reading order, one line
-each, then the contents by part, each a `details` with how many of its chapters are written. The
-page's words are the shell's (`apps/course/src/strings.ts`, `cover`), drafted through the prose
-process like every other string a learner reads; the browser tests hold the band's figure, the
-parts' order and the contents' state, and the aesthetics tests run on the front page as well as
-on a chapter.
+An instrument or a reference answers two, **Serves** and **Why now**. Review, not a test, holds the
+notes to these blocks.
 
 ## Predictions
 
@@ -170,107 +107,76 @@ A prediction is an experiment, built around what the learner should learn (`CLAU
 "Interaction is the explanation").
 
 - **State the objective first.** If it cannot be said in a sentence, redesign the exercise.
-- **Ask for an observable result.** Each option names a result and the belief it reflects ("51.50:
-  `daily_sales` holds the total of Thursday's orders"), in parallel form and length, so that none
-  is chosen for its wording. An option never says why the result will be what it is: that is the
-  explanation, and it comes after the evidence.
+- **Ask for an observable result**, and the belief it reflects. A prediction never says why the
+  result will be what it is: that is the explanation, and it comes after the evidence.
 - **Establish the effect before asking for its cause.** "Is there a difference?" comes before
-  "where is it?", "what could explain it?" and "which explanation fits?", and the later questions
-  are an investigation, not a reveal: the learner decides where to look first (a `decision` whose
-  choice opens the inspector), chooses an explanation to test (another `decision`), tests it with
-  the figures that follow, and the rows are read against their choice only after their own work
-  passes (`hypothesis-check`). Chapter 2's Thursday is the example. Each decision waits for the
-  answer before it (`waits`): the first states the difference the prediction found, and the
-  figure just below a prediction is in view while the learner is still choosing.
+  "where is it?", "what could explain it?" and "which explanation fits?".
 - **Prefer independent evidence**: a total the learner could add up, rows they could read, not
   a failure inside a program they cannot see.
-- **Offer "I can't tell yet"** where nothing on the page settles the question (`undecided` on the
-  figure). It is marked neither right nor wrong, and its line says what was found.
-- **A count is asked as what it means.** None, one, or more than one are explanations; "four or
-  five" is a number to hit.
-- **Where the page gives no grounds, ask a choice.** If nothing above the figure lets a learner
-  tell the options apart (how this shop happened to set up its warehouse), ask what they would do
-  in the shop's place, with `mode: "choose"`: the figure shows what the shop does beside their
-  choice, and neither is called right. Chapter 2's owner question began as one; when the question
-  is what a requirement means, the requirement figure ("Requirements", below) asks it better.
-- **The figure answers.** A naming probe's answer is a word the option lists under `means`; a
-  counting probe's is a count inside the option's `range`. The lesson never stores the answer.
-
-The content tests also fail a prediction whose option stands for no answer at all, other than
-"I can't tell yet".
+- **"I can't tell yet" is an answer** where nothing on the page settles the question.
+- **A count is asked as what it means.** None, one, or more than one.
+- **The output answers, and only after the learner runs it.** A notebook shows a cell's output
+  once the cell has run; a page that prints the answer in a cell above the question gives it
+  away, and Run all runs every cell. Put the question before the cell that answers it, and say
+  in the prose to write the expectation down before running on.
 
 ## Requirements
 
 Some exercises question a requirement instead of predicting a result (`CLAUDE.md`, "Question the
-requirement"). Look for one in every chapter: `docs/plan.md` lists a candidate for each, a
-requirement that sounds settled in that chapter's material. To build one:
+requirement"). Look for one in every chapter: `docs/plan.md` lists a candidate for each.
 
-- **State the requirement in words**, as somebody at the shop would write it, and say nothing yet
-  about what it means. The figure shows it apart, as a quotation.
+- **State the requirement in words**, as somebody at the shop would write it.
 - **List what it could be asking**, each as a question, and what each question needs recorded.
-  Every reading must be one a reasonable engineer could hold; none is there to be wrong.
-- **Let the learner commit first**, to what they would record, or to nothing until they know what
-  the requirement is for. Only then show the readings, and only after a second press what the
-  platform records.
-- **Let the figure say which readings the record answers.** A probe reads what the platform records,
-  each reading names the answers that satisfy it under `means`, and the figure marks them. The
-  record should answer some readings and not others: that is the gap the learner experiences. The
-  explanation then says whether the requirement is met as written, and under which meanings.
+  Every reading must be one a reasonable engineer could hold.
+- **Let the learner commit first**, then show the readings, then what the platform records.
+- **Say which readings the record answers**, and whether the requirement is met as written, and
+  under which meanings.
 
-The chapter's notes get a section, "Requirements", that names the figure and walks the five things
-`CLAUDE.md` keeps apart; a chapter with no requirement to question says why under the same
-heading. The content tests fail notes without the section, a requirement figure the section does
-not name, a requirement figure whose record answers every reading or none, and one that names the
-platform's record in any text the learner reads before the second press.
+The chapter's notes get a section, "Requirements", that names the exercise and walks the five
+things `CLAUDE.md` keeps apart; a chapter with no requirement to question says why under the same
+heading. `notebook/tests/test_notes.py` fails a written chapter whose notes lack the section.
+
+## Originality
+
+The notes' section "Originality" names the obvious textbook or vendor example for the chapter's
+topic and says how this chapter's example differs (`CLAUDE.md`, "Originality and copyright").
+`notebook/tests/test_notes.py` fails a written chapter whose notes lack it.
 
 ## The prose process
 
 `CLAUDE.md` states the rule: every string a learner reads is drafted by a Haiku subagent from a
 brief of facts and checked by the managing model for facts only. For a chapter:
 
-1. Write the fact sheet, `docs/notes/chapter-NN/facts.md`, every number read off the engine, with the
-   chapter's working words (each with one meaning on the page) and the words it must not use.
+1. Write the fact sheet, `docs/notes/chapter-NN/facts.md`, every number read off the engine, with
+   the chapter's working words (each with one meaning on the page) and the words it must not use.
 2. Write one brief per group of sections (`briefs/`), each a numbered list of facts per string,
    with the keys the drafts come back under. Scan the briefs for banned words before they go out.
 3. Run the drafts in parallel. Check facts only: a dropped fact gets the fewest words that carry
    it; a wrong fact goes back with a note; nothing is rewritten. Record what the check caught in
    the chapter's note.
-4. Place the strings, then read the whole chapter from a dump of the built page
-   (`docs/notes/chapter-NN/review/page.md`), start to finish, in every state its figures reach:
-   before and after each commitment, and after each change.
+4. Place the strings, then read the whole chapter in the built notebook, start to finish, after
+   Run all, and again after each change a cell asks for.
 5. Review: a reader on another model, then an independent sceptic on each finding, then fixes:
    code first, fact briefs for wording second, then one more read.
 
 ## What the tests hold a chapter to
 
-`npm run check` is exactly what CI runs.
+`npm run check` is exactly what CI's Check runs; the Notebooks workflow builds the site and drives
+it.
 
-- The schema and the platform's checks: ten sections in order, five hints, a reference, an
-  originality note, every challenge mounted, every choice's reference one of its options.
-- The term gate against the whole plan, and the plan's list against `docs/plan.md`.
-- The model gate: every figure runs a model the book has a note for.
-- `content/lessons/lessons.test.tsx`: every reference passes and every starting point fails; no
-  prediction's answer appears in its question, caption, lead or after-text; every figure has a
-  role and its block in the chapter's notes, in the page's order, with every answer its role
-  needs; a prediction's result is stated below it only in a figure that waits for its answer;
-  every option stands for an answer or a count, other than "I can't tell yet"; the notes
-  have a "Requirements" section naming every requirement figure; a requirement figure's record
-  answers some readings and not all, and no text before its second press names that record; the
-  whole chapter renders in jsdom with no figure problem.
-- `content/lessons/<id>.facts.test.ts`: every number the chapter's words state, read off the engine.
-- `tests/educational/chapter.spec.ts`, at desktop and phone widths: the chapter renders whole with
-  no console error and no horizontal scroll, even after every figure is used; each challenge is
-  completable through the page with its reference and refuses its starting point; saved work is
-  graded again on load and a tampered mark earns nothing; a reset takes two steps; hints come one
-  rung at a time; a prediction is committed before the figure answers; a requirement's meanings come
-  after the learner's choice and before what the platform records; a change's outcome waits for
-  its run; every figure's badge names its role; the inspector opens where the learner chose to
-  look first.
-- `tests/educational/aesthetics.spec.ts`: no visible text under 11 pixels, every phone control at
-  least 40 pixels tall, no line of prose much over 85 characters; the map's names whole and its
-  systems even at every width; the map's button clear of the page's foot on a phone; a
-  challenge's choices filling their rows.
-- `apps/course/src/tokens.test.ts`: text at 4.5:1 on every surface it sits on, and a control's
-  edge at 3:1, in both themes, computed from `tokens.css`.
+- `notebook/tests/test_engine.py`: the engine's week, its changes and its inference.
+- `notebook/tests/test_words.py`: every number and sentence the notebook states, read off the
+  engine; the term gate against the plan; the filler check and the prohibited phrases; no em
+  dash; the links between chapters and back to the contents; the closing names the next chapter;
+  only the buttons the page has.
+- `notebook/tests/test_notes.py`: the notes' "Requirements" and "Originality" sections.
+- `notebook/tests/test_jupyterlite.py`: the texts name every button of the row and no other
+  control, the build adds the row to the site, and each chapter's warning states what was
+  measured.
+- `content/plan/notebooks.test.ts` and `plan.test.ts`: the plan against `docs/plan.md`, and each
+  notebook headed with its chapter's title.
+- `notebook/jupyterlite/smoke.mjs`, as a phone, in the Notebooks workflow: the menu bar and toolbar
+  hidden, the row of buttons there and 44 pixels tall, Run all and Run below running every cell
+  with no error and keeping the reader's place.
 
 A commit carries the tests for the code it changes, so every commit passes the check on its own.

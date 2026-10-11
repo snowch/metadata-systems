@@ -8,30 +8,35 @@ one").
 
 ## What the chapter does
 
-The chapter is a page of the course (`content/lessons/shop-and-platform.ts`) and a notebook
-(`notebook/chapter_01.py`, built into the site as `chapter_01.ipynb`); the front page links both.
-Each opens with the head of the shop's one line, "Thursday's revenue looks wrong", and says why you
-look round first; then the three systems, the files, the warehouse's three tables, the dashboard
-and the nights, and what the tour could not show. The page then asks the learner to write down,
-for each table, which asset they think it is made from and why, with nothing to grade: Chapter 2
-asks what such evidence can establish. Like Chapter 2, it has no prediction, experiment or
-challenge: the author's decision of 10 October 2026 (`docs/plan.md`, "Chapter 1 as an essay")
-holds for the tour it came from. It introduces *asset*; Chapter 2 introduces *metadata*.
+The chapter is a notebook (`notebook/chapter_01.py`, built into the site as `chapter_01.ipynb`),
+which the front page's title for the chapter and its start button open. It opens with the head of
+the shop's one line, "Thursday's revenue looks wrong", and says why you look round first; then the
+three systems, the files, the warehouse's three tables, the dashboard and the nights, and what the
+tour could not show. Its last section, "Your guesses about the warehouse tables", asks the learner
+to write down, for each table, which asset they think it is made from and why, with nothing to
+grade: Chapter 2 asks what such evidence can establish. Like Chapter 2, it has no prediction,
+experiment or challenge: the author's decision of 10 October 2026 (`docs/plan.md`, "Chapter 1 as an
+essay") holds for the tour it came from. It introduces *asset*; Chapter 2 introduces *metadata*.
 
-The page's opening, its map's lead and the sentence that gives the word "asset" moved from
-Chapter 2's page word for word; the rest of its words are Haiku's drafts of brief AV
+From 11 October 2026 until the same evening the chapter was also a page of the course
+(`content/lessons/shop-and-platform.ts`), whose opening, map lead and sentence giving the word
+"asset" had moved from Chapter 2's page; its other words were Haiku's drafts of brief AV
 (`docs/notes/chapter-01/briefs/`; the files' and the task's titles went back once, for taking the
-titles of other sections), with its first section's title from brief AW. The page's facts come
-from the engine (`packages/lab`), whose files are Parquet and whose amounts are in pounds; the
-notebook's come from its Python port, whose files are JSON Lines and CSV and whose amounts are in
-pence. Each is pinned by its own tests: `content/lessons/shop-and-platform.facts.test.ts` and
-`notebook/tests/`. The notebook's words were drafted from briefs AO to AT in
-`docs/notes/chapter-02/briefs/round-16/`, written when the two chapters were one.
+titles of other sections), with its first section's title from brief AW. When the notebooks became
+the only version, the page's last section, the written guesses, moved into the notebook with its
+words unchanged. The notebook's other words were drafted from briefs AO to AT in
+`docs/notes/chapter-02/briefs/round-16/`, written when the two chapters were one. Its facts come
+from the Python engine (`notebook/shop`), whose files are JSON Lines and CSV and whose amounts are
+in pence, and `notebook/tests/` pins them.
 
 ## Figures
 
-Every figure on the page, in its order. Each is a diagram or a figure of the shop's data, with a
-caption and nothing else (`CLAUDE.md`, "No lab on the page"); none takes a commitment.
+Every figure of the chapter, in its order. Each is a diagram or a figure of the shop's data, with a
+caption and nothing else (`CLAUDE.md`, "No lab on the page"); none takes a commitment. The blocks
+were written for the page's figures. In the notebook, `platform`, `week` and `dashboard` are drawn
+in a cell's output (`notebook/shop/figures.py`); `products`, `customers`, `orders` and `tables` are
+cells whose code the learner can read and run, and which print the files' first lines and the
+tables' rows: the same questions, served by output the learner produces.
 
 ### `platform`
 
