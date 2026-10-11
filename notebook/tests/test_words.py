@@ -108,7 +108,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
     def test_the_shops_files(self):
         products = self.week.storage.records(shop.FILES["products"])
         self.assertEqual((len(products), len({p["category"] for p in products})), (8, 6))
-        self.says("holds the shop's catalogue: 8 products in 6 categories", 1)
+        self.says("holds the shop's product catalogue: 8 products in 6 categories", 1)
         self.assertEqual(list(products[0]), ["product_id", "name", "category", "list_price_pence", "updated_by"])
         for name in ("`product_id`", "`list_price_pence`", "`updated_by`"):
             self.says(name, 1)

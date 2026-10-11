@@ -97,7 +97,7 @@ def _(mo):
     mo.md(r"""
     ## The product catalogue
 
-    `products.csv`, in object storage, holds the shop's catalogue: 8 products in 6 categories. Each product has an id (`product_id`), a name, a category, a list price in pence (`list_price_pence`) and the member of staff who last edited it (`updated_by`). `products.csv` names its columns once, in its first line, and has no types: every value is text.
+    `products.csv`, in object storage, holds the shop's product catalogue: 8 products in 6 categories. Each product has an id (`product_id`), a name, a category, a list price in pence (`list_price_pence`) and the member of staff who last edited it (`updated_by`). `products.csv` names its columns once, in its first line, and has no types: every value is text.
 
     The cell below prints `products.csv` exactly as it is stored.
     """)

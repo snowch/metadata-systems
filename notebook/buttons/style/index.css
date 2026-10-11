@@ -252,3 +252,13 @@
   max-width: 560px;
   height: auto;
 }
+
+/* A name in the text (a file, a table, a column) stays on one line. JupyterLab lets inline code
+   break anywhere, so on a phone "updated_by" could split as "upda" and "ted_by". The longest name
+   the chapters use, information_schema.columns, fits a 360-pixel phone's column. */
+/* JupyterLab sets inline code in .jp-ThemedContainer .jp-RenderedHTMLCommon code, so this rule
+   names the same container to outrank it. */
+.jp-ThemedContainer .jp-RenderedMarkdown :not(pre) > code {
+  white-space: nowrap;
+  overflow-wrap: normal;
+}

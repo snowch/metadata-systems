@@ -151,6 +151,26 @@ try {
         size >= 11,
         `Chapter 1: at 360 pixels wide the week's words show at ${size.toFixed(1)} pixels`,
       );
+      // No name set as code in the text breaks across two lines, and none runs past the page.
+      const names = await page.evaluate(async () => {
+        const outer = document.querySelector(".jp-WindowedPanel-outer");
+        const broken = new Set();
+        let wide = false;
+        for (let y = 0; y <= outer.scrollHeight; y += 400) {
+          outer.scrollTop = y;
+          await new Promise((r) => setTimeout(r, 60));
+          for (const c of document.querySelectorAll(".jp-RenderedMarkdown :not(pre) > code")) {
+            if (c.getClientRects().length > 1) broken.add(c.textContent);
+          }
+          wide ||= document.documentElement.scrollWidth > document.documentElement.clientWidth;
+        }
+        outer.scrollTop = 0;
+        return { broken: [...broken], wide };
+      });
+      check(
+        names.broken.length === 0 && !names.wide,
+        `Chapter 1: at 360 pixels wide no name in the text breaks across lines${names.broken.length ? `: ${names.broken.join(", ")}` : ""}`,
+      );
       await page.setViewportSize({ width: 390, height: 844 });
       await page.waitForTimeout(300);
     }
