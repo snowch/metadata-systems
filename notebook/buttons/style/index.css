@@ -48,7 +48,8 @@
   color: var(--jp-ui-font-color2);
 }
 
-/* The arrows to the chapters either side, at the row's right end, as tall as the buttons. */
+/* The arrows to the chapters either side, and the link to the contents between them, at the
+   row's right end, as tall as the buttons. */
 .ms-Buttons-link {
   flex: none;
   display: inline-flex;
@@ -69,8 +70,9 @@
   border-radius: var(--jp-border-radius);
 }
 
-.ms-Buttons-button + .ms-Buttons-link {
-  margin-left: auto;
+/* The links keep to the row's right end, whichever of them a chapter has. */
+.ms-Buttons-button:last-of-type {
+  margin-right: auto;
 }
 
 .ms-Buttons-link:hover {
@@ -87,9 +89,9 @@
   line-height: 1;
 }
 
-/* On a phone, the arrows without their numbers, and the row closer together: so it fits 360
-   pixels, with the five controls 44 pixels tall, with room to spare in a wider typeface than the
-   one a phone uses (DejaVu Sans, on the notebook workflow's runner, takes 333 pixels). */
+/* On a phone, the arrows without their numbers, and the row closer together: so it fits 360 pixels,
+   with the five controls 44 pixels tall, with room to spare in a wider typeface than the one a phone
+   uses (DejaVu Sans, on the notebook workflow's runner, takes 333 pixels). */
 @media (max-width: 429px) {
   .ms-Buttons {
     gap: 4px;
@@ -106,6 +108,14 @@
   }
 
   .ms-Buttons-number {
+    display: none;
+  }
+}
+
+/* Below 600 pixels, no link to the contents: the text has one at its top and its end. With it, the
+   row takes about 490 pixels, more in a wider typeface. */
+@media (max-width: 599px) {
+  .ms-Buttons-contents {
     display: none;
   }
 }

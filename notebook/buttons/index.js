@@ -20,8 +20,10 @@
 // stays in view while the cells scroll, and the links the chapter's text gives are at its top and
 // its end only. The chapters are the site's files named chapter_NN.ipynb, so a new chapter gains its
 // arrows when its file is added. Each arrow is a link that opens its chapter in a new tab, as the
-// text's links do; their names are the text's links' own words. On a phone the arrows show without
-// their chapters' numbers, so that the row fits 360 pixels (style/index.css).
+// text's links do; their names are the text's links' own words. Between them, a link to the course's
+// contents, which opens in a new tab too. On a phone the arrows show without their chapters' numbers,
+// so that the row fits 360 pixels, and below 600 pixels the contents link does not show, so that the
+// row fits (style/index.css); the chapter's text links to the contents at its top and its end.
 
 import { NotebookActions, INotebookTracker } from "@jupyterlab/notebook";
 import { Widget } from "@lumino/widgets";
@@ -129,7 +131,25 @@ async function arrows(app, panel, widget) {
     link.setAttribute("aria-label", `${which}: Chapter ${number}`);
     link.title = `${which}: Chapter ${number}`;
     widget.node.append(link);
+    if (which === "Previous") widget.node.append(contents());
   }
+  if (!widget.node.querySelector(".ms-Buttons-contents")) {
+    widget.node.querySelector(".ms-Buttons-next")?.before(contents());
+  }
+}
+
+/** A link to the course's contents, for the place between the arrows. The site's notebooks open at
+    notebooks/index.html inside the site, which the course's front page holds at jupyterlite/ (the
+    deploy workflow), so the contents are two folders up. Its name is the text's own link's. */
+function contents() {
+  const link = document.createElement("a");
+  link.className = "ms-Buttons-link ms-Buttons-contents";
+  link.href = new URL("../../", window.location.href).href;
+  link.target = "_blank";
+  link.textContent = "Contents";
+  link.setAttribute("aria-label", "Back to contents");
+  link.title = "Back to contents";
+  return link;
 }
 
 // The notebooks' names until 11 October 2026, when the two parts of Chapter 1 became Chapters 1 and

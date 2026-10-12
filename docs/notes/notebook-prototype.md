@@ -471,6 +471,28 @@ long.
   Chapter 13 stayed open. `smoke.mjs` checks each chapter's arrows, their height and their new tab,
   that the row fits 360 pixels, and that Chapter 1's Next arrow opens Chapter 2.
 
+### A link to the contents between the arrows
+
+The author asked for a button to the contents between the arrows, and agreed to one on wider
+screens only, opening in a new tab.
+
+- It is a link like the arrows, 44 pixels tall, to the course's front page, which opens in a new
+  tab so that the reader's notebook stays open. Its text is "Contents"; its accessible name and
+  tooltip are the text's own link's words, "Back to contents". The front page is two folders above
+  the notebook's page (`jupyterlite/notebooks/index.html` beside the course, the deploy workflow),
+  so the link is relative and leads to the front page wherever the site is served. Chapter 1 has it
+  before its Next arrow, the last chapter after its Previous arrow.
+- Width. It shows from 600 pixels. At 430 pixels, the first width tried, the three buttons, both
+  arrows with their numbers and the link took about 490 pixels in Inter, and the Next arrow was cut
+  off. On a phone the text's own link to the contents, at its top and its end, is the way back.
+- The rule that pushed the arrows to the row's right end was "a link straight after a button"; with
+  the contents link hidden, Chapter 1's Next arrow would have sat beside Save. The last button now
+  takes the free space after it instead, whichever links follow.
+- Checked on the built site at 360, 430, 599, 600 and 1280 pixels, light and dark: the link shows
+  from 600, between the arrows, and the row does not scroll. `smoke.mjs` checks every chapter at
+  600 pixels (the link's name, text, address, new tab, height and place, and that the row fits) and
+  at 360 (that it does not show).
+
 ### The menu bar and the toolbar hidden
 
 After the row was published, the author reported that the buttons did not seem to work, and asked

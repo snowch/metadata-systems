@@ -4,8 +4,8 @@
 // buttons (notebook/buttons/) as the chapters' texts tell a reader to. For each chapter: the menu bar
 // and the notebook's toolbar are hidden; the row shows the labels buttons.json gives, each button
 // at least 44 pixels tall, and arrows to the chapters either side, which open in a new tab, the row
-// fitting 360 pixels; a press disables the row and marks the pressed button busy until the
-// run ends; Run all runs every visible code cell, with no error in any output, and leaves the
+// fitting 360 pixels, with a link to the contents between them from 600 pixels wide; a press
+// disables the row and marks the pressed button busy until the run ends; Run all runs every visible code cell, with no error in any output, and leaves the
 // notebook where it was scrolled; the warning and the steps for running the page are boxes; in
 // Chapter 1 a printed file keeps one record per line, scrolling inside its box, and the page never
 // scrolls sideways. In Chapter 2, Run below from a selected cell does the same. In Chapter 3 the
@@ -120,7 +120,7 @@ try {
     ].filter(Boolean);
     await page
       .waitForFunction(
-        (n) => document.querySelectorAll(".ms-Buttons-link").length === n,
+        (n) => document.querySelectorAll(".ms-Buttons-link:not(.ms-Buttons-contents)").length === n,
         expected.length,
         { timeout: 10_000 },
       )
@@ -130,16 +130,54 @@ try {
     const arrows = await page.evaluate(() => {
       const bar = document.querySelector(".ms-Buttons");
       return {
-        links: [...bar.querySelectorAll(".ms-Buttons-link")].map((a) => ({
+        links: [...bar.querySelectorAll(".ms-Buttons-link:not(.ms-Buttons-contents)")].map((a) => ({
           name: `${a.getAttribute("aria-label")}|${new URL(a.href).searchParams.get("path")}`,
           height: a.getBoundingClientRect().height,
           tab: a.target,
         })),
         fits: bar.scrollWidth <= bar.clientWidth,
+        contents: bar.querySelector(".ms-Buttons-contents")?.getBoundingClientRect().width ?? -1,
       };
+    });
+    // From 600 pixels wide, a link to the contents between the arrows, which opens the course's
+    // front page in a new tab, the row still fitting; on a phone it does not show.
+    await page.setViewportSize({ width: 600, height: 900 });
+    await page.waitForTimeout(300);
+    const wide = await page.evaluate(() => {
+      const bar = document.querySelector(".ms-Buttons");
+      const links = [...bar.querySelectorAll(".ms-Buttons-link")];
+      const at = links.findIndex((a) => a.classList.contains("ms-Buttons-contents"));
+      const link = links[at];
+      return link
+        ? {
+            name: link.getAttribute("aria-label"),
+            text: link.textContent,
+            to: new URL(link.href).pathname,
+            tab: link.target,
+            height: link.getBoundingClientRect().height,
+            between:
+              links.slice(0, at).every((a) => a.classList.contains("ms-Buttons-previous")) &&
+              links.slice(at + 1).every((a) => a.classList.contains("ms-Buttons-next")),
+            fits: bar.scrollWidth <= bar.clientWidth,
+          }
+        : null;
     });
     await page.setViewportSize({ width: 390, height: 844 });
     await page.waitForTimeout(300);
+    check(
+      wide?.name === "Back to contents" &&
+        wide.text === "Contents" &&
+        wide.to === "/" &&
+        wide.tab === "_blank" &&
+        wide.height >= 44 &&
+        wide.between &&
+        wide.fits,
+      `Chapter ${chapter}: at 600 pixels wide, "Contents" between the arrows opens the front page in a new tab (${JSON.stringify(wide)})`,
+    );
+    check(
+      arrows.contents === 0,
+      `Chapter ${chapter}: at 360 pixels wide, "Contents" does not show`,
+    );
     check(
       JSON.stringify(arrows.links.map((a) => a.name)) === JSON.stringify(expected) &&
         arrows.links.every((a) => a.height >= 44 && a.tab === "_blank"),
