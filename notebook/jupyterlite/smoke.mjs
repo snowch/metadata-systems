@@ -266,8 +266,8 @@ try {
       await day.locator(".jp-InputPrompt").tap();
       await run("Run below", "Chapter 2, Run below from the day's cell");
     }
-    // Chapters 3 and 4 ask the reader to change a cell and press Run below: the record's dots in
-    // Chapter 3, two spellings in Chapter 4. Typed as a reader would, the check below answers.
+    // Chapters 3 to 5 ask the reader to change a cell and press Run below: the record's dots in
+    // Chapter 3, two spellings in Chapter 4, a direction in Chapter 5. Typed as a reader would.
     const rewrite = async (hasText, from, to) => {
       // Held as an element: once its text changes, a locator by its text would find nothing.
       const cell = await page
@@ -317,17 +317,25 @@ try {
       const who = await output("field = 'responsible'");
       check(who.includes("Jo Marsh"), "Chapter 3: the record names Jo Marsh");
     }
-    if (chapter === 6) {
-      await rewrite(
-        "job build_daily_sales reads: ........",
-        ["job build_daily_sales reads: ........", "job build_daily_sales writes: ........"],
-        ["job build_daily_sales reads: clean_orders", "job build_daily_sales writes: daily_sales"],
+    if (chapter === 5) {
+      const before = await output('graph.traverse("j.marsh"');
+      check(
+        before.includes("sales_dashboard"),
+        "Chapter 5: against its arrows, the traversal from j.marsh reaches the dashboard",
       );
-      await run("Run below", "Chapter 6, Run below from the records");
+      await rewrite('graph.traverse("j.marsh"', ['"responsible": "in"'], ['"responsible": "out"']);
+      await run("Run below", "Chapter 5, Run below from the traversal");
+      const after = await output('graph.traverse("j.marsh"');
+      check(
+        after.includes("No rows."),
+        `Chapter 5: along its arrows, it reaches no node (${after.slice(0, 40)})`,
+      );
+    }
+    if (chapter === 6) {
       const walk = await output('lineage.downstream("s3://shop-raw/orders.jsonl")');
       check(
         walk.includes("sales_dashboard"),
-        "Chapter 6: with its lines filled in, the walk reaches the dashboard",
+        "Chapter 6: downstream of orders.jsonl reaches the dashboard",
       );
     }
     if (chapter === 4) {

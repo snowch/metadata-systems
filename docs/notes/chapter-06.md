@@ -5,30 +5,35 @@ A working note. Written on 12 October 2026 with Chapter 5, as a notebook (`noteb
 ## What the chapter does
 
 The checkout's developer asks what renaming `customer_id` in `orders.jsonl` affects (Chapter 2's
-third question). The head of the shop gives the reader the repository of the jobs' code; the export
-and the analyst's script are not in it. The reader:
+third question). To answer it, the head of the shop gives the reader the repository of the jobs'
+code; the export and anything done by hand are not in it. The reader:
 
-- reads the four jobs' code, then records what each reads and writes as lines (`job ... reads:`,
-  `job ... writes:`), filling in the two for `build_daily_sales` from its code; the model gains the
-  type `job`, so a job, a plain word since Chapter 1, becomes a node between assets;
-- sees the platform's map with arrows for the first time, drawn from those lines: records of what
-  was made from what, and by which job, are **lineage**;
-- writes what a change to `orders.jsonl` affects, then walks **downstream** (3 jobs, 3 assets, to
-  the dashboard), **upstream** from the dashboard, and downstream from `products.csv`: nothing, as
-  far as the lines go (Chapter 2's second question);
-- adds Jo Marsh's belief as a line (`build_daily_sales` reads `clean_customers`), sees the
-  dashboard seem to depend on `customers.jsonl`, and compares the lines with the code: the line is
-  not borne out;
-- tries a change, the `source` change, in which `build_daily_sales` reads the analyst's copy from
-  Saturday: the lines written from today's code go stale (2 rows), while `daily_sales` holds the same
-  rows, so only the code shows it, and the code shows only now;
+- reads the four jobs' code, and the records gain lines from it for what each job reads and writes
+  (`job ... reads:`, `job ... writes:`), beside Chapter 5's records in full; the model gains the type
+  `job`, so a job, a plain word since Chapter 1, becomes a node between assets;
+- sees the platform's map with arrows for the first time, drawn from those lines in the direction
+  data moves (unlike Chapter 5's arrows, and the page says so): records of what was made from what,
+  and by which job, are **lineage**;
+- writes which assets the rename affects, then reads the traversal **downstream** of `orders.jsonl`
+  (3 jobs, 3 assets): the most the rename could affect; the code narrows it, since only
+  `build_clean_orders` names `customer_id`; columns wait for Chapter 10. Then **upstream** from the
+  dashboard, and downstream from `products.csv`: nothing, as far as the lines go (Chapter 2's
+  second question);
+- adds Jo Marsh's belief as a line (the daily sales job counts only known customers, so reads
+  `clean_customers`), sees the dashboard seem to depend on `customers.jsonl`, writes from the code
+  whether the belief holds and which job leaves out orders with no customer id, then compares the
+  lines with the code: the line is not borne out, and `build_clean_orders`' `WHERE` answers Jo's
+  Chapter 5 question;
+- tries the `source` change, in which `build_daily_sales` reads the analyst's copy from Saturday:
+  the lines written from today's code go stale (2 rows), while `daily_sales` holds the same rows;
 - questions "Record the lineage of `daily_sales`." (below).
 
 ## What was built for it
 
 - `notebook/shop/week.py`: `repository(week)`, the jobs' code as the shop's repository holds it,
   built from the same SQL the week runs, so the code shown is the code that runs; `reads_and_writes`
-  (a small rule: `read("...")`, a table after `FROM` or `JOIN`, `write` or `refresh`); and the
+  (a small rule: `read("...")`, a name after `FROM` or `JOIN`, which is a name `read` gave or a
+  warehouse table, and `write` or `refresh`); and the
   `source` change, which brings `copy` with it.
 - `notebook/shop/graph.py`: `downstream` and `upstream` (walks over `reads` and `writes`), `only`
   (the lineage edges and the assets and jobs alone, for the map), the drawing in the order data
@@ -47,54 +52,77 @@ and the analyst's script are not in it. The reader:
 ### `code`
 
 - **Role:** inspect
-- **Serves:** the evidence the reader records lines from: what each job reads and writes.
-- **Why now:** the records cell asks the reader to fill in two lines from it.
+- **Serves:** the evidence for what each job reads and writes, which columns it names, and what it
+  leaves out.
+- **Why now:** the developer's and Jo's questions are both answered from it.
 
 ### `lineage-map`
 
 - **Role:** reference, drawn from the reader's lines
 - **Serves:** the platform's map gains its relations, because something the reader built now records
   them (`CLAUDE.md`, "A figure shows only what the learner has been told or has built").
-- **Why now:** the developer's question is answered by walking it.
+- **Why now:** the rename's traversal is read against it. The prose above it does not list its
+  parts; the prediction below it asks about a column, which the drawing does not show.
 
 ### `downstream`
 
 - **Role:** experiment
-- **Objective:** the reader learns that what a change affects is a walk along recorded lineage, and
-  only as good as the lines.
-- **Known before:** the map; the code.
-- **Driving question:** which assets does a change to `orders.jsonl` affect?
-- **The action:** write the expectation and why, then read the walk, then the upstream walk and the
-  walk from `products.csv`.
-- **Why the action:** the reader commits to an impact list, as the developer would need.
-- **Evidence:** 6 nodes downstream; 6 upstream from the dashboard; none downstream of `products.csv`.
-- **Consequence:** the answer for `products.csv` is "nothing the lines know of", not "nothing".
-- **Predictable:** yes, from the map.
-- **Gives nothing away:** the prose above names the question, not the nodes.
+- **Objective:** the reader learns that a traversal along lineage between files and tables gives the
+  most a change could affect, and that which assets a column's rename reaches needs more than these
+  lines.
+- **Known before:** the code; the map.
+- **Driving question:** which assets does renaming `customer_id` in `orders.jsonl` affect?
+- **The action:** write the expectation and why; read the traversal; read which jobs' code names the
+  column; then the upstream traversal and the one from `products.csv`.
+- **Why the action:** the reader commits to an impact list, as the developer needs, and sees the
+  traversal and the code disagree on how far it reaches.
+- **Evidence:** 6 nodes downstream; only `build_clean_orders` names `customer_id`; 6 upstream from the
+  dashboard; none downstream of `products.csv`.
+- **Consequence:** a reader who listed every asset downstream learns it is an upper bound; one who
+  listed only `clean_orders` learns the jobs after it still read what it writes.
+- **Predictable:** in part, from the code and the map.
+- **Gives nothing away:** the prose above names the question, not the nodes or the columns.
 - **Not knowing:** right for `products.csv`'s readers outside the repository, and the prose says so.
 - **Next question:** what if a line is wrong?
 - **An experiment:** commit, run, compare.
 
-### `belief` and `stale`
+### `belief`
 
 - **Role:** experiment
-- **Objective:** the reader discovers that lineage written by hand records a belief, which the code
-  can refute, and goes stale when the code changes, which the data does not show.
-- **Known before:** the lines, the code, the comparison's rule.
+- **Objective:** the reader discovers that a line written by hand records a belief, which the code
+  can refute, and that the code answers the question the belief was about.
+- **Known before:** the code; Jo's Chapter 5 question; the `drops` line.
+- **Driving question:** does `build_daily_sales` read `clean_customers`, and which job leaves out
+  orders with no customer id?
+- **The action:** see the belief's effect on a traversal; write both answers from the code; read
+  the comparison.
+- **Why the action:** the effect first (the dashboard seems to depend on `customers.jsonl`), then
+  the evidence from an independent source, the code.
+- **Evidence:** one row, Jo's line; `WHERE customer_id IS NOT NULL` in `build_clean_orders`.
+- **Consequence:** the reader can tell Jo where the orders are lost.
+- **Predictable:** yes, from the code.
+- **Gives nothing away:** the page states Jo's belief and its effect, not whether it holds.
+- **Not knowing:** not the right answer: the code settles it.
+- **Next question:** what happens to a line written from the code when the code changes?
+- **An experiment:** commit, run, compare.
+
+### `stale`
+
+- **Role:** experiment
+- **Objective:** the reader discovers that lines written from code go stale when the code changes,
+  and that the rows of the table made do not show it.
+- **Known before:** the lines, the code, the comparison.
 - **Driving question:** will the comparison report anything after the change, and will the rows of
   `daily_sales` change?
 - **The action:** write both expectations, then run the changed week, the comparison and the rows'
   comparison.
-- **Why the action:** the two outcomes differ (the comparison reports, the rows do not), which is
-  the lesson.
-- **Evidence:** 2 rows from the comparison; `True` for the rows.
-- **Consequence:** the reader sees that code, not data, shows the change, and that code shows only
-  now, which motivates Chapter 7.
-- **Predictable:** yes.
-- **Gives nothing away:** the prose above says the copy holds the same rows, which the reader needs
-  to reason; it does not say what the comparison reports.
-- **Not knowing:** not the right answer for these two questions; it is for "which nights read which
-  source", which the chapter leaves to Chapter 7.
+- **Why the action:** the two outcomes differ (the comparison reports, the rows do not).
+- **Evidence:** 2 rows from the comparison; `True` for the rows; storage gains the copy.
+- **Consequence:** the code shows the change, and only as it is now, which motivates Chapter 7.
+- **Predictable:** yes; the prose says the copy holds the same rows, which the reader needs to
+  reason.
+- **Gives nothing away:** it does not say what the comparison reports.
+- **Not knowing:** right for "which nights read which source", which the chapter leaves to Chapter 7.
 - **Next question:** what did the job read each night?
 - **An experiment:** commit, run, compare.
 
@@ -103,12 +131,15 @@ and the analyst's script are not in it. The reader:
 The chapter questions "Record the lineage of `daily_sales`.", the plan's candidate.
 
 1. **What it says:** record the lineage of `daily_sales`.
-2. **What it might mean:** what someone says its job reads; what its job's code reads now; what it
-   read each night; between tables or between columns.
+2. **What it might mean:** what someone says its job reads; what its job's code reads now (and,
+   followed back, which tables and files it is made from); what it read each night; which columns
+   each of its columns is made from.
 3. **What each needs:** a person's line; the repository; a record made each time the job does its
    work; the input columns of each output column.
-4. **What the records hold:** lines written from today's code, and a person's belief once added.
+4. **What the records hold:** lines written from today's code.
 5. **Whether it is met:** as written, yes; under the code reading, today; under the other two, no.
+
+The head sets the requirement after the stale lines.
 
 ## Originality
 
@@ -130,6 +161,30 @@ Briefs FA, FB and FC (`docs/notes/chapter-06/briefs/`), and GA for both chapters
 | FB | | slot D stated the change to the job as a fact; the brief has it as a supposition the cell tries |
 | FC | | |
 | GA | | |
+| HB | | |
+
+Brief HB, after the review: every fact present and right. The three `#` notes came back with their
+`#`, which the cell already has, and lost it in placing. The agent tried one message, which the
+permissions refused; nothing was sent.
+
+## The review
+
+A reviewer on another model read the chapter as a learner (`review/findings.md`, 16 findings) and an
+independent sceptic attacked each finding (`review/verdicts.md`). Acted on: the rename answered, the
+traversal an upper bound and the code the narrower answer (1); the parts list above the prediction
+cut, and the prediction moved to a question the drawing does not answer (2); Chapter 5's records and
+model in full (3); the two lines for `build_daily_sales` written in, so no output contradicts the
+prose before an edit (4); the arrows' direction said (5); Jo's belief grounded in Jo's Chapter 5
+question, with a prediction from the code (7); the analyst's copy as Chapter 2's change, not a
+script that exists (8); the rows of `daily_sales`, not "the data" (9); the rule for names after
+`FROM` (10); "the code shows only now" said once (11); the tab title (12); "traversal" and "the
+comparison" (13); the requirement's situation and its readings (14); why the repository now (15);
+the fourth objective (16). Rejected by the sceptic: 6 (the definition of lineage is the general idea
+that Chapters 7 and 10 need).
+
+The reader no longer writes the two lines for `build_daily_sales`: the dots made every output below
+them contradict the prose until the reader filled them in, and the transcription taught nothing the
+code above does not show.
 
 ## Measured
 

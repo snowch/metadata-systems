@@ -266,18 +266,21 @@ The author reviews the course at five checkpoints:
 
 The author asked for Chapters 5 and 6. Both keep their rows. Chapter 5's reader turns Chapter 4's
 records into a graph (each entity a node, each line naming another entity an edge), predicts
-traversals before running them, and finds that a walk along every edge reaches the dashboard for
-the wrong reason (a shared owner) and `clean_orders` from `clean_customers` by the same route; the
-requirement is "Show everything related to `daily_sales`.". Chapter 6's reader gets the jobs' code
-in a repository, records what each job reads and writes, and sees the platform's map gain arrows,
-drawn from those lines; walks downstream and upstream; adds a manager's belief as a line and refutes
-it against the code; and sees a line written from today's code go stale when the code changes,
-while the data shows nothing; the requirement is "Record the lineage of `daily_sales`.". Decisions
+traversals before running them, changes a traversal's direction and runs it again, and finds that a
+traversal along every edge reaches the dashboard for the wrong reason (a shared person responsible)
+and misses `clean_orders`, whose `drops` line Jo Marsh's question is about; the requirement is "Show
+everything related to `daily_sales`.". Chapter 6's reader gets the jobs' code in a repository, to
+answer the developer's rename, and sees the platform's map gain arrows, drawn from lines of what
+each job reads and writes; finds that the traversal downstream is the most a rename could affect,
+and the code which job names the column; adds Jo's belief as a line and refutes it against the code,
+which also answers Jo; and sees a line written from today's code go stale when the code changes,
+while the rows of `daily_sales` show nothing; the requirement is "Record the lineage of
+`daily_sales`.". Both were revised after an outside review (their notes, "The review"). Decisions
 the plan did not make:
 
 - **The jobs' code becomes visible in Chapter 6**, in a repository the head of the shop opens. It is
   the course's small notation around the SQL the week runs (`docs/lab.md`, "The repository"), so the
-  code cannot drift from what runs. The export and the analyst's script stay outside it, which is
+  code cannot drift from what runs. The export and anything done by hand stay outside it, which is
   how the chapter shows lineage to be only as complete as its lines.
 - **Lineage by hand, then against code; what ran is Chapter 7's.** The chapter's stale line is
   found by comparing the lines with the code as it is now; which nights read which source is left

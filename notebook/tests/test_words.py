@@ -177,9 +177,14 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("## Before Chapter 5", 4)
         self.says("Chapter 5 follows them from one entity to the next.", 4)
         self.says("## Before Chapter 6", 5)
-        self.says("Chapter 6 gives you the jobs' code", 5)
+        self.says("In Chapter 6 you read the jobs' code", 5)
         self.says("## Before Chapter 7", 6)
         self.says("Chapter 7 records each time a job does its work", 6)
+
+    def test_each_chapter_has_its_own_title_in_its_tab(self):
+        for chapter, source in SOURCE.items():
+            title = re.search(r"^# Chapter \d+: (.*)$", TEXT[chapter], re.M).group(1)
+            self.assertIn(f'app_title="{title}"', source, chapter)
 
     def test_each_chapter_opens_and_ends_with_the_way_back_to_the_course(self):
         # Relative links in a notebook open as files of the site, so the course's address is whole.
@@ -543,7 +548,17 @@ class TheWordsOfChapter5(unittest.TestCase):
     def test_the_records_are_chapter_4s(self):
         self.assertEqual(self.model.check(self.records), [])
         self.assertIn("column of: dataset", self.model.text)
-        self.says("The model cell adds one line, `column of: dataset`")
+        self.assertIn("dataset drops: text", self.model.text)
+        self.assertIn("dataset clean_orders drops: orders with no customer id", self.records.text)
+        # Chapter 4's records after both changes: the merge, and the data engineer a team.
+        four = literal(4, "typed_records")
+        after = (four.replace("responsible: Jo Marsh", "responsible: j.marsh").replace("responsible: Sam Lund", "responsible: s.lund")
+                 .replace("responsible: the data engineer", "responsible: data_engineering"))
+        lines = lambda t: {l for l in t.splitlines() if l.strip() and not l.startswith("#")}
+        extra = {"team data_engineering name: the data engineer", "column daily_sales.day of: daily_sales", "column daily_sales.revenue_pence of: daily_sales"}
+        self.assertEqual(lines(self.records.text), lines(after) | extra)
+        self.assertEqual(len(lines(self.records.text)), 20)
+        self.says("The shop's records are 20 lines.")
 
     def test_the_graph(self):
         nodes = self.graph.nodes()
@@ -563,18 +578,21 @@ class TheWordsOfChapter5(unittest.TestCase):
         self.says("There are 3 parts.")
 
     def test_the_traversals(self):
-        self.assertIn('graph.traverse("daily_sales", {"responsible": "out", "team": "out"})', SOURCE[5])
-        first = self.graph.traverse("daily_sales", {"responsible": "out", "team": "out"})
-        self.assertEqual([(r["node"], r["steps"]) for r in first], [("j.marsh", 1), ("finance", 2)])
-        self.says("The traversal reaches `j.marsh` by 1 edge and `finance` by 2 edges.")
+        self.assertIn('graph.traverse("j.marsh", {"responsible": "in"})', SOURCE[5])
+        first = self.graph.traverse("j.marsh", {"responsible": "in"})
+        self.assertEqual([(r["node"], r["steps"]) for r in first], [("daily_sales", 1), ("sales_dashboard", 1)])
+        self.says("The traversal reaches `daily_sales` and `sales_dashboard`, each by 1 edge")
+        self.assertEqual(len(self.graph.traverse("j.marsh", {"responsible": "out"})), 0)
+        self.says('With `"out"`, the traversal reaches no node, and the cell shows "No rows."')
+        self.says("took the traversal from `j.marsh` from 2 nodes to none")
         every = self.graph.traverse("daily_sales")
         self.assertEqual({r["node"] for r in every}, {"j.marsh", "daily_sales.day", "daily_sales.revenue_pence", "sales_dashboard", "finance"})
-        self.says("The traversal reaches 5 nodes: `j.marsh`, the 2 columns, `sales_dashboard` and `finance`.")
         [dash] = [r for r in every if r["node"] == "sales_dashboard"]
-        self.says(f"The path to `sales_dashboard` is `{dash['path']}`.")
+        self.says(f"Read the `path` of `sales_dashboard` in the table above: `{dash['path']}`.")
+        self.says("The traversal does not reach `clean_orders`.")
         shared = self.graph.traverse("clean_customers")
-        self.assertEqual([r["node"] for r in shared], ["data_engineering", "clean_orders"])
-        self.says("The cell reaches `data_engineering`, then `clean_orders`")
+        self.assertEqual([(r["node"], r["steps"]) for r in shared], [("data_engineering", 1), ("clean_orders", 2)])
+        self.says("It reaches `data_engineering` by 1 edge, then `clean_orders` by 2")
         self.assertEqual({e["edge"] for e in self.graph.edges()}, {"responsible", "team", "of"})
 
 
@@ -583,12 +601,7 @@ class TheWordsOfChapter6(unittest.TestCase):
     def setUpClass(cls):
         cls.week = shop.run_week()
         cls.text = flat(TEXT[6])
-        blank = literal(6, "typed_records")
-        cls.blank = shop.typed_records(blank)
-        cls.records = shop.typed_records(
-            blank.replace("job build_daily_sales reads: ........", "job build_daily_sales reads: clean_orders")
-            .replace("job build_daily_sales writes: ........", "job build_daily_sales writes: daily_sales")
-        )
+        cls.records = shop.typed_records(literal(6, "typed_records"))
         cls.model = shop.model(literal(6, "model"))
         cls.lineage = shop.graph(cls.records, cls.model).only(["reads", "writes"], ["dataset", "dashboard", "job"])
         cls.repo = shop.repository(cls.week)
@@ -600,29 +613,37 @@ class TheWordsOfChapter6(unittest.TestCase):
         self.assertEqual([r["file"] for r in self.repo], [
             "jobs/build_clean_customers.py", "jobs/build_clean_orders.py", "jobs/build_daily_sales.py", "jobs/refresh_dashboard.py",
         ])
-        # The filled-in records agree with the code; the blank ones do not, on the two dotted lines.
         self.assertEqual(shop.compare_with_code(self.records, self.repo), [])
-        self.assertEqual(len(self.model.check(self.blank)), 2)
         self.assertEqual(self.model.check(self.records), [])
-        self.says("the check reports the two lines, and the walks stop at `clean_orders`")
-        blank_walk = shop.graph(self.blank, self.model).only(["reads", "writes"], ["dataset", "dashboard", "job"]).downstream("s3://shop-raw/orders.jsonl")
-        self.assertEqual([r["node"] for r in blank_walk][-1], "clean_orders")
+        # Chapter 5's records and model in full, then the files' and the jobs' lines.
+        lines = lambda t: {l for l in t.splitlines() if l.strip() and not l.startswith("#")}
+        self.assertLessEqual(lines(literal(5, "typed_records")), lines(self.records.text))
+        self.assertLessEqual(lines(literal(5, "model")), lines(self.model.text))
+        self.says("The records cell holds Chapter 5's records in full.")
+        self.says("The model cell holds Chapter 5's model")
+        # Only build_clean_orders' code names the column the developer renames.
+        self.assertEqual([r["file"] for r in self.repo if "customer_id" in r["code"]], ["jobs/build_clean_customers.py", "jobs/build_clean_orders.py"])
+        [orders] = [r for r in self.repo if r["file"] == "jobs/build_clean_orders.py"]
+        self.assertIn("customer_id IS NOT NULL", orders["code"])
+        self.assertIn("SELECT DISTINCT order_id, customer_id", orders["code"])
+        self.says("Only the code of `build_clean_orders` names `customer_id`: in its `SELECT` and in its `WHERE`.")
+        self.says("The code of `build_clean_orders` has `WHERE customer_id IS NOT NULL`.")
 
     def test_the_map(self):
         self.assertEqual((len(self.lineage.nodes()), len(self.lineage.edges())), (11, 8))
         self.assertEqual(len(self.lineage.drawing()._parts()), 3)
-        self.says("The drawing has 3 parts:")
 
     def test_downstream_and_upstream(self):
         down = [r["node"] for r in self.lineage.downstream("s3://shop-raw/orders.jsonl")]
         self.assertEqual(down, ["build_clean_orders", "clean_orders", "build_daily_sales", "daily_sales", "refresh_dashboard", "sales_dashboard"])
-        self.says("Downstream of `orders.jsonl` there are 6 nodes. The 3 jobs are `build_clean_orders`, `build_daily_sales` and `refresh_dashboard`. The 3 assets are `clean_orders`, `daily_sales` and `sales_dashboard`.")
+        self.says("Downstream of `orders.jsonl` there are 6 nodes: the jobs `build_clean_orders`, `build_daily_sales` and `refresh_dashboard`, and the assets `clean_orders`, `daily_sales` and `sales_dashboard`.")
         up = [r["node"] for r in self.lineage.upstream("sales_dashboard")]
         self.assertEqual((len(up), up[-1]), (6, "s3://shop-raw/orders.jsonl"))
         self.assertFalse({"s3://shop-raw/customers.jsonl", "clean_customers"} & set(up))
-        self.says("Upstream of `sales_dashboard` there are 6 nodes. The farthest back is `orders.jsonl`.")
+        self.assertEqual(self.lineage.upstream("sales_dashboard")[-1]["steps"], 6)
+        self.says("Upstream of `sales_dashboard` there are 6 nodes. The farthest back is `orders.jsonl`, 6 steps away.")
         self.assertEqual(self.lineage.downstream("s3://shop-raw/products.csv"), [])
-        self.says("Downstream of `products.csv` there is nothing.")
+        self.says("Downstream of `products.csv` there is nothing: the cell shows \"No rows.\"")
 
     def test_the_belief_and_the_stale_line(self):
         self.assertIn('jos_line = "job build_daily_sales reads: clean_customers"', SOURCE[6])
@@ -630,14 +651,14 @@ class TheWordsOfChapter6(unittest.TestCase):
         reached = [r["node"] for r in shop.graph(with_jo, self.model).downstream("s3://shop-raw/customers.jsonl")]
         self.assertEqual(len(reached), 6)
         self.assertTrue({"daily_sales", "sales_dashboard"} <= set(reached))
-        self.says("downstream of `customers.jsonl` reaches 6 nodes, `daily_sales` and `sales_dashboard` among them")
+        self.says("With Jo's line, downstream of `customers.jsonl` there are 6 nodes, `daily_sales` and `sales_dashboard` among them.")
         [row] = shop.compare_with_code(with_jo, self.repo)
         self.assertEqual(row["says"], "reads: clean_customers")
         self.says("The comparison lists one row: Jo's line.")
         changed = shop.run_week(["source"])
         stale = shop.compare_with_code(self.records, shop.repository(changed))
         self.assertEqual([(r["says"], r["code"]) for r in stale], [("reads: clean_orders", ""), ("", "reads: s3://shop-scratch/clean_orders_copy.csv")])
-        self.says("It finds 2 rows.")
+        self.says("It lists 2 rows.")
         self.assertEqual(changed.warehouse.sql("SELECT * FROM daily_sales"), self.week.warehouse.sql("SELECT * FROM daily_sales"))
         self.says("`True`: the rows of `daily_sales` are the same in the changed week as today.")
         from shop import week as w
@@ -733,7 +754,7 @@ class TheWordsKeepTheRules(unittest.TestCase):
             (5, "## The records as a graph", ("node", "edge", "graph")),
             (5, "## Following edges", ("traversal",)),
             (6, "## Lineage", ("lineage",)),
-            (6, "The cell above walked from `orders.jsonl`", ("downstream", "upstream")),
+            (6, "The cell above follows edges from `orders.jsonl`", ("downstream", "upstream")),
         ):
             # The chapter's title is the plan's, and may name its term ("Metadata as a graph").
             cells = [re.sub(r"^# Chapter \d+: .*$", "", re.sub(r"\]\([^)]*\)", "]", c), flags=re.M) for c in CELLS[number]]
