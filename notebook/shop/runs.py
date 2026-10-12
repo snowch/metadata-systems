@@ -54,7 +54,7 @@ FIELD_NOTES = {
     'reads': 'what the program is about to read',
     'writes': 'what the program wrote',
     'rows_read': 'how many rows the program read',
-    'rows_written': 'how many rows the program wrote',
+    'rows_written': 'how many rows the program wrote or removed',
     'object': 'for a program started by a change to a file, that file',
     'object_version': 'the identifier object storage gave that version of the file',
     'object_change': '`created`, `overwritten` or `deleted`',
@@ -166,7 +166,7 @@ def runs(events: Events, by=("run",)) -> Runs:
     """The events grouped into runs: one row for each value of the fields in `by`.
 
     `day` in `by` is the UTC date of an event's `time`. Where the events of one group disagree on
-    a field, the row lists every value they hold.
+    a field, the row lists every value they hold; the row counts are added up.
     """
     by = tuple(by)
     for f in by:
@@ -194,6 +194,11 @@ def runs(events: Events, by=("run",)) -> Runs:
                     row["finished"] = max(finishes) if finishes else None
                 else:
                     row["first"], row["last"] = min(e["time"] for e in group), max(e["time"] for e in group)
+                continue
+            if f in ("rows_read", "rows_written"):
+                # Counts add up: a row that holds two runs holds both runs' rows.
+                counts = [e[f] for e in group if e.get(f) is not None]
+                row[f] = sum(counts) if counts else None
                 continue
             values = []
             for e in group:

@@ -33,7 +33,7 @@ The page runs Python in your browser, and the first time you open it on its own 
 
 The page downloaded less than 1 MB when opened from Chapter 7's link, in a browser that had opened and run Chapter 7 (measured on a computer). Chapter 7's link opens this page in a new tab. Chapter 7 stays open in its own tab and keeps its own memory. On a phone, closing Chapter 7 leaves more memory for this page.
 
-Running every cell took 9 to 12 seconds, and the page used about 420 MB of memory. If a phone runs short of memory, the browser may reload the page, and a reload loses anything you have not saved.
+Running every cell took 9 to 12 seconds, and the page used about 400 MB of memory. If a phone runs short of memory, the browser may reload the page, and a reload loses anything you have not saved.
 
 </details>
 
@@ -240,7 +240,7 @@ consumer.runs()
 job | state | started | ended | inputs | outputs | events | 
 shop/build_clean_orders | START | 2026-09-11T02:05:00Z |  | s3://shop-raw/orders.jsonl |  | 1 |
 
-The consumer's row has the state `START`, the start time, the input `orders.jsonl`, no output and no end time.
+The consumer writes each name as its namespace, then `/`, then the name. Its row has the state `START`, the start time, the input `orders.jsonl`, no output and no end time.
 
 It knows that the run began, and what the run reads. It knows nothing about `clean_orders`, because the `START` names no output.
 
@@ -395,7 +395,7 @@ shop/refresh_dashboard | 7 | 7 | 7 | 0 |
 shop/record_return | 5 | 5 | 5 | 0 | 
 shop/remove_return | 1 | 1 | 1 | 0 |
 
-The counts show 6 jobs that sent events: the four jobs and the two functions. Each run sent a `START`, then a `COMPLETE`, except the run of `build_daily_sales` on Monday 14, which sent a `FAIL`.
+The counts show 6 programs that sent events: the four jobs and the two functions. Each run sent a `START`, then a `COMPLETE`, except the run of `build_daily_sales` on Monday 14, which sent a `FAIL`.
 
 The requirement could mean several things, each needing something different:
 

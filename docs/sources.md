@@ -109,6 +109,13 @@ not copied. They support these claims, beyond those above:
   `eventType` is optional and, where present, one of the six; `run.runId` has the format `uuid`;
   a job and a dataset require `namespace` and `name`; input and output datasets add `inputFacets` and
   `outputFacets`; a job or dataset facet may carry `_deleted`.
+- `spec/OpenLineage.md`, on a run event: "Sending at least a START event and a COMPLETE/FAIL/ABORT
+  event is required." The schema states the same in the description of `eventType` but does not list
+  `eventType` among the required fields, so the requirement is the specification's, not a rule the
+  schema can check on one event. The same page says "An OpenAPI spec is also provided for HTTP-based
+  implementations": the specification also defines an interface for sending events over HTTP.
+- `website/docs/spec/run-cycle.md`: `ABORT` signifies that the job "has been stopped abnormally",
+  `FAIL` that it "has failed".
 - `spec/OpenLineage.md`: "All metadata is additive"; a facet sent again with the same name for the
   same entity "replaces the previous facet instance for that entity entirely"; a custom facet uses a
   prefix named after the project that defines it, its key `{prefix}_{name}` in camelCase, and its

@@ -196,14 +196,17 @@ def mapping() -> Rows:
 
 
 def summary(events: list[dict]) -> Rows:
-    """Job by job: how many runs sent events, and how many events of each type."""
+    """Job by job: how many runs sent events, how many events of each type, and how many break the
+    specification's rules."""
     out: dict[str, dict] = {}
     for e in events:
         key = f"{e['job']['namespace']}/{e['job']['name']}"
-        row = out.setdefault(key, {"job": key, "runs": set(), "START": 0, "COMPLETE": 0, "FAIL": 0})
+        row = out.setdefault(key, {"job": key, "runs": set(), "START": 0, "COMPLETE": 0, "FAIL": 0, "breaking a rule": 0})
         row["runs"].add(e["run"]["runId"])
         if e.get("eventType") in row:
             row[e["eventType"]] += 1
+        if problems(e):
+            row["breaking a rule"] += 1
     return Rows({**r, "runs": len(r["runs"])} for r in out.values())
 
 
@@ -372,7 +375,7 @@ class Consumer:
         nodes: list[tuple[str, str]] = []
         edges: list = []
         for r in self._runs.values():
-            j = ("job", r["job"].split("/", 1)[1])
+            j = ("job", r["job"])
             if j not in nodes:
                 nodes.append(j)
             for side, attribute in (("inputs", "reads"), ("outputs", "writes")):

@@ -1,0 +1,432 @@
+[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 7](chapter_07.ipynb) · [Next: Chapter 9](chapter_09.ipynb)
+
+# Chapter 8: OpenLineage
+
+**Objectives**
+
+- Find where each of Chapter 7's fields goes in an open standard's events.
+- Find what a program that receives the events holds after each one.
+- Check an event written by hand, and find why two names for one table do not join.
+- Question a requirement about the events the shop's programs must send. 
+
+## A form other programs can read
+
+The head of the shop wants to see the shop's runs in a tool the shop did not write.
+
+Chapter 7's events use field names the shop chose. A tool written elsewhere would have to learn them, and the field names of every other shop it reads from.
+
+**OpenLineage** is an open specification for events about data processing. It sets their form, so that a program written by one team can send them and a program written by another can read them. It defines three kinds of event. This chapter uses one, the run event, which describes a run of a job. The other two describe a job, or a dataset, on its own.
+
+The head's requirement reads "Our programs must emit OpenLineage." To emit an event is to send it. 
+
+The platform map shows the shop's three systems and the returns desk, as Chapter 7 left them. 
+
+[figure] The shop's three systems with the returns desk on Monday morning: object storage holds three return files, and the warehouse holds the table returns. 
+
+<div class="ms-box ms-box-warning">
+
+The page runs Python in your browser, and the first time you open it on its own your browser downloads about 13 MB.
+
+<details><summary>Time and memory</summary>
+
+The page downloaded less than 1 MB when opened from Chapter 7's link, in a browser that had opened and run Chapter 7 (measured on a computer). Chapter 7's link opens this page in a new tab. Chapter 7 stays open in its own tab and keeps its own memory. On a phone, closing Chapter 7 leaves more memory for this page.
+
+Running every cell took 9 to 12 seconds, and the page used about 400 MB of memory. If a phone runs short of memory, the browser may reload the page, and a reload loses anything you have not saved.
+
+</details>
+
+</div> 
+
+<div class="ms-box ms-box-steps">
+
+**Running and saving the page**
+
+1. Nothing on the page runs until you run it. Run every cell first: press **Run all**, at the top of the page.
+2. A cell does not run again when a cell it uses changes. After you change a cell, select it and press **Run below**: it runs that cell and every cell below it.
+3. To keep your changes, press **Save**, or press Ctrl+S (Cmd+S on a Mac). After a reload, the page shows your saved copy, which stays in this browser and is shown instead of the chapter, even after the chapter is updated.
+
+</div> 
+
+[hidden code cell]
+
+[hidden code cell]
+
+[hidden code cell]
+
+## One run as OpenLineage events
+
+The next cell runs the week with the returns desk and with the `failed` change, in which `build_daily_sales` fails on its last night, as in Chapter 2.
+
+It makes every run's events in OpenLineage's form. It prints the two events of `build_clean_orders`'s run on Friday 11, which read the orders up to Thursday. It prints the first event in full. Of the second, it prints only the fields that differ from the first: its type, its time, its inputs and its outputs. 
+
+```python
+week8 = shop.run_week(["returns", "failed"])
+events = shop.openlineage.run_events(week8)
+friday = [e for e in events if e["job"]["name"] == "build_clean_orders" and e["eventTime"].startswith("2026-09-11")]
+print(shop.openlineage.show(friday[0]))
+print(shop.openlineage.show({k: friday[1][k] for k in ("eventType", "eventTime", "inputs", "outputs")}))
+```
+
+[output]
+{
+  "eventType": "START",
+  "eventTime": "2026-09-11T02:05:00Z",
+  "run": {
+    "runId": "01a08e36-04e0-7f2d-a476-dd470ff68684",
+    "facets": {
+      "nominalTime": {
+        "_producer": "https://example.org/shop/jobs/tree/v1",
+        "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/NominalTimeRunFacet.json#/$defs/NominalTimeRunFacet",
+        "nominalStartTime": "2026-09-11T02:05:00Z"
+      }
+    }
+  },
+  "job": {
+    "namespace": "shop",
+    "name": "build_clean_orders",
+    "facets": {
+      "jobType": {
+        "_producer": "https://example.org/shop/jobs/tree/v1",
+        "_schemaURL": "https://openlineage.io/spec/facets/2-0-4/JobTypeJobFacet.json#/$defs/JobTypeJobFacet",
+        "processingType": "BATCH",
+        "integration": "SHOP",
+        "jobType": "JOB"
+      },
+      "sourceCodeLocation": {
+        "_producer": "https://example.org/shop/jobs/tree/v1",
+        "_schemaURL": "https://openlineage.io/spec/facets/1-1-0/SourceCodeLocationJobFacet.json#/$defs/SourceCodeLocationJobFacet",
+        "type": "git",
+        "url": "https://example.org/shop/repository/blob/b178023/jobs/build_clean_orders.py",
+        "version": "b178023"
+      }
+    }
+  },
+  "inputs": [
+    {
+      "namespace": "s3://shop-raw",
+      "name": "orders.jsonl"
+    }
+  ],
+  "outputs": [],
+  "producer": "https://example.org/shop/jobs/tree/v1",
+  "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent"
+}
+{
+  "eventType": "COMPLETE",
+  "eventTime": "2026-09-11T02:05:52Z",
+  "inputs": [
+    {
+      "namespace": "s3://shop-raw",
+      "name": "orders.jsonl",
+      "inputFacets": {
+        "inputStatistics": {
+          "_producer": "https://example.org/shop/jobs/tree/v1",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-0/InputStatisticsInputDatasetFacet.json#/$defs/InputStatisticsInputDatasetFacet",
+          "rowCount": 27
+        }
+      }
+    }
+  ],
+  "outputs": [
+    {
+      "namespace": "warehouse://shop-warehouse",
+      "name": "shop.analytics.clean_orders",
+      "outputFacets": {
+        "outputStatistics": {
+          "_producer": "https://example.org/shop/jobs/tree/v1",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-2/OutputStatisticsOutputDatasetFacet.json#/$defs/OutputStatisticsOutputDatasetFacet",
+          "rowCount": 23
+        }
+      }
+    }
+  ]
+}
+
+
+The first event's `eventType` is `START`. The second's is `COMPLETE`. A run that fails sends `FAIL` in place of `COMPLETE`. `eventTime` is when the event happened. `schemaURL` is the address of the version of the specification's schema that the event follows.
+
+`run.runId` is the run's identifier. The specification requires a UUID, a standard form of identifier. The shop makes UUIDs of version 7, which begin with the run's start time. The specification's documentation recommends that version.
+
+A job is named by a **namespace** and a name inside it. Here the namespace is `shop` and the name is `build_clean_orders`.
+
+A dataset is named the same way. `orders.jsonl` is named `orders.jsonl` in the namespace `s3://shop-raw`, its bucket. The shop's producers name `clean_orders` as `shop.analytics.clean_orders` in the namespace `warehouse://shop-warehouse`. That name is the shop's choice: a database `shop`, a schema `analytics`, then the table.
+
+`producer` is the address of the code that made the event. Here it is `https://example.org/shop/jobs/tree/v1`, which makes the events of all four jobs. That code is the event's **producer**.
+
+Further metadata comes in a **facet**. A facet is a named object that holds its own fields. Each facet has `_producer`, the code that made it, and `_schemaURL`, the address of the facet's own schema.
+
+In these events, `jobType` says the job is a batch job, one that starts and finishes. `sourceCodeLocation` holds the code version, `b178023`. The shop fills it with its own hash of the code, which is Chapter 7's `code_version`, not a commit. `nominalTime` holds the time the run was due to start. `inputStatistics` holds the rows read, 27. `outputStatistics` holds the rows written, 23.
+
+The next cell lists where each of Chapter 7's fields went. 
+
+```python
+shop.openlineage.mapping()
+```
+
+[output]
+field | in OpenLineage | 
+run | run.runId | 
+job | job.namespace and job.name | 
+type | eventType: START, or COMPLETE or FAIL | 
+time | eventTime | 
+status | eventType: COMPLETE or FAIL | 
+code_version | job.facets.sourceCodeLocation.version | 
+reads | inputs | 
+writes | outputs | 
+rows_read | inputs[].inputFacets.inputStatistics.rowCount | 
+rows_written | outputs[].outputFacets.outputStatistics.rowCount | 
+object | run.facets.shop_objectChange.object | 
+object_version | run.facets.shop_objectChange.version, and inputs[].facets.version.datasetVersion | 
+object_change | run.facets.shop_objectChange.change |
+
+## What a consumer knows
+
+A program that receives events is a consumer. The cell after the next one sends the `START` alone to a consumer: the shop's own, a small one. It keeps one row for each run, and it adds to that row what each event says.
+
+Before you read on, write in the next cell what the consumer knows about the run after the `START` alone, and what it knows about `clean_orders`. 
+
+```python
+expected = """
+After the START alone, what does it know about the run?
+........
+What does it know about clean_orders?
+........
+"""
+```
+
+```python
+consumer = shop.openlineage.Consumer()
+consumer.send(friday[0])
+consumer.runs()
+```
+
+[output]
+job | state | started | ended | inputs | outputs | events | 
+shop/build_clean_orders | START | 2026-09-11T02:05:00Z |  | s3://shop-raw/orders.jsonl |  | 1 |
+
+The consumer writes each name as its namespace, then `/`, then the name.
+
+Its row holds the state `START`, the start time, and the input `orders.jsonl`. It holds no output and no end time. The START named the input and no output.
+
+From this row alone, a run still working and a run that stopped without sending another event look the same.
+
+The next cell sends the COMPLETE. 
+
+```python
+consumer.send(friday[1])
+consumer.runs()
+```
+
+[output]
+job | state | started | ended | inputs | outputs | events | 
+shop/build_clean_orders | COMPLETE | 2026-09-11T02:05:00Z | 2026-09-11T02:05:52Z | s3://shop-raw/orders.jsonl | warehouse://shop-warehouse/shop.analytics.clean_orders | 2 |
+
+The row now holds the state `COMPLETE`, the end time `2026-09-11T02:05:52Z`, the output `warehouse://shop-warehouse/shop.analytics.clean_orders`, and 2 events.
+
+The COMPLETE named the input again, with its row count, and added the output.
+
+The specification says that events about one run add to each other. Its words: "All metadata is additive". A facet sent again under the same name replaces the earlier one.
+
+The consumer lists the repeated input once, matching it by its namespace and name. The shop's consumer is written that way.
+
+The next cell sends every event of the week to a new consumer, prints how many runs it holds, and lists the runs whose state is `FAIL`. 
+
+```python
+everything = shop.openlineage.Consumer().send(*events)
+print(len(everything.runs()), "runs")
+everything.runs(state="FAIL")
+```
+
+[output]
+34 runs
+
+
+[output]
+job | state | started | ended | inputs | outputs | events | 
+shop/build_daily_sales | FAIL | 2026-09-14T02:30:00Z | 2026-09-14T02:30:21Z | warehouse://shop-warehouse/shop.analytics.clean_orders |  | 2 |
+
+The consumer holds 34 runs. One of them has the state `FAIL`: `build_daily_sales` on Monday 14. It has no output. 
+
+## An event written by hand
+
+The analyst's copy sends no events. The analyst writes the two events of Friday 11's copy by hand.
+
+The next cell holds them as Python dictionaries, `start` and `complete`.
+
+The `runId` comes from `shop.openlineage.uuid7`, which makes a version 7 UUID from a start time.
+
+The cell checks `start` against the specification's rules:
+
+- the fields every run event must have: `eventTime`, `producer`, `schemaURL`, `run` with a `runId`, and `job` with a namespace and a name;
+- a `runId` that is a UUID;
+- an `eventType` from the specification's list, where the event has one;
+- a time in the specification's date-time form;
+- addresses that are URIs;
+- in each facet, a `_producer` and a `_schemaURL`. 
+
+```python
+start = {
+    "eventType": "START",
+    "eventTime": "2026-09-11T02:15:00Z",
+    "run": {"runId": shop.openlineage.uuid7("2026-09-11T02:15:00Z", "copy")},
+    "job": {"namespace": "analyst", "name": "copy_clean_orders"},
+    "inputs": [{"namespace": "warehouse://shop-warehouse", "name": "analytics.clean_orders"}],
+    "outputs": [],
+    "producer": "https://example.org/analyst/copy-script/v1",
+    "schemaURL": shop.openlineage.SCHEMA_URL,
+}
+complete = {
+    **start,
+    "eventType": "COMPLETE",
+    "eventTime": "2026-09-11T02:15:17Z",
+    "outputs": [{"namespace": "s3://shop-scratch", "name": "clean_orders_copy.csv"}],
+}
+shop.openlineage.check(start)
+```
+
+[output]
+The event breaks none of the specification's rules that the check tests.
+
+The check finds no problems in `start`.
+
+The cell after the next one sends the week's events and the analyst's two events to a new consumer, and follows edges upstream from the copy, `s3://shop-scratch/clean_orders_copy.csv`.
+
+Before you read on, write in the next cell whether that traversal will reach `orders.jsonl`. 
+
+```python
+expected_join = """
+Will the traversal reach orders.jsonl?
+........
+"""
+```
+
+```python
+joined = shop.openlineage.Consumer().send(*events, start, complete)
+joined.lineage().upstream("s3://shop-scratch/clean_orders_copy.csv")
+```
+
+[output]
+node | type | steps | path | 
+analyst/copy_clean_orders | job | 1 | s3://shop-scratch/clean_orders_copy.csv <-writes- analyst/copy_clean_orders | 
+warehouse://shop-warehouse/analytics.clean_orders | dataset | 2 | s3://shop-scratch/clean_orders_copy.csv <-writes- analyst/copy_clean_orders -reads-> warehouse://shop-warehouse/analytics.clean_orders |
+
+The traversal reaches 2 nodes, `analyst/copy_clean_orders` and `warehouse://shop-warehouse/analytics.clean_orders`, and stops. It does not reach `orders.jsonl`.
+
+Compare the analyst's input in the cell above with the name the jobs' events gave `clean_orders` earlier: `analytics.clean_orders` against `shop.analytics.clean_orders`. The analyst left out the database.
+
+The consumer joins two datasets only when their namespace and their name are the same. To the consumer, the two names are two datasets.
+
+Change the analyst's input to the jobs' name, `"shop.analytics.clean_orders"`, select that cell and press **Run below**. The traversal then reaches 4 nodes, through `shop/build_clean_orders`, to `orders.jsonl`.
+
+The specification's naming page gives a namespace and a name for each kind of data store it lists. It lists no form for the store the shop's warehouse runs on, so the shop's producers must agree on one.
+
+The page warns of the same failure for a store it lists: names made under Snowflake's older form of account name do not connect to names made under the newer form, so the lineage does not join. 
+
+## An event that breaks a rule
+
+The next cell copies `start`, sets its `runId` to `"copy-friday"`, deletes its `producer`, and checks it. 
+
+```python
+broken = {**start, "run": {"runId": "copy-friday"}}
+del broken["producer"]
+shop.openlineage.check(broken)
+```
+
+[output]
+where | problem | 
+producer | Every run event needs this field, and the event does not have it. | 
+run.runId | The run's identifier is not a UUID. |
+
+```python
+refusing = shop.openlineage.Consumer().send(broken)
+print(len(refusing.refused), "event set aside;", len(refusing.runs()), "runs")
+```
+
+[output]
+1 event set aside; 0 runs
+
+
+The check lists 2 problems: `producer` is missing, and `run.runId` is not a UUID.
+
+The cell above sent the event to a new consumer. The consumer set it aside and holds no run from it.
+
+Setting such an event aside is how the shop's consumer is written. The specification says what an event must hold. 
+
+## "Our programs must emit OpenLineage."
+
+The head of the shop set this requirement at the start of the chapter.
+
+Before you read on, write in the next cell what you would check to say that the shop meets it. 
+
+```python
+reading = """
+What would you check to say the shop meets the requirement?
+........
+"""
+```
+
+The requirement could mean four things:
+
+- which programs: a list of every program that touches the shop's data, and whether each sends events;
+- which events: for each run, one START and one COMPLETE, ABORT or FAIL, as the specification requires (ABORT is for a run stopped abnormally, FAIL for one that failed); RUNNING and OTHER are optional;
+- which facets: a list of the facets each event must carry; the specification requires none;
+- which names: one namespace and name for each dataset, which every producer uses.
+
+Each reading needs something different. The next cell counts, job by job, the runs, the events of each type, and the events that break the specification's rules. 
+
+```python
+shop.openlineage.summary(events)
+```
+
+[output]
+job | runs | START | COMPLETE | FAIL | breaking a rule | 
+shop/build_clean_customers | 7 | 7 | 7 | 0 | 0 | 
+shop/build_clean_orders | 7 | 7 | 7 | 0 | 0 | 
+shop/build_daily_sales | 7 | 7 | 6 | 1 | 0 | 
+shop/refresh_dashboard | 7 | 7 | 7 | 0 | 0 | 
+shop/record_return | 5 | 5 | 5 | 0 | 0 | 
+shop/remove_return | 1 | 1 | 1 | 0 | 0 |
+
+In all, 6 programs sent events: the four jobs and the two functions. Every run sent a START and a COMPLETE, except the run of `build_daily_sales` on Monday 14, which sent a FAIL. No event breaks the specification's rules.
+
+Taken one reading at a time:
+
+- which programs: not met for every program; the export and the analyst's copy send nothing;
+- which events: met, for the jobs and the functions;
+- which facets: the shop sends some of the standard facets and one of its own, `shop_objectChange`, for a function's file change, named with the shop's prefix as the specification asks of a facet that is not standard. Whether these are the facets meant, the requirement does not say;
+- which names: met within the shop's own producers; the analyst's hand-written events used another name until you changed it.
+
+As written, "Our programs" covers every program, so the shop does not meet the requirement until the export and the analyst's copy send events too. 
+
+## Before Chapter 9
+
+The shop's runs, in OpenLineage's form, showed the following. After a START, the consumer held the run's input and no output. The output came with the COMPLETE. A failed run sent a FAIL. An event written by hand passed the check, but two names for one table did not join until you changed one. An event that broke two rules was set aside.
+
+The experiments could not show how a consumer keeps a week of events and turns them into a graph that answers questions. They could not show what a consumer does with an event that arrives damaged.
+
+Chapter 9 builds that consumer, one stage at a time, from the events as received to a graph.
+
+- Which programs on a platform you work on would need to send events for its lineage to be whole?
+- How should your platform name its warehouse's tables, and who must agree on the names?
+- What should a consumer do with a `START` whose run never sends another event? 
+
+### How this differs from a real platform
+
+The shop, its programs, its producers and their addresses are invented for the course. The addresses at `example.org` lead nowhere.
+
+Here the shop's own code makes each event and hands it straight to the consumer. A real producer is usually a library inside the program that runs the job. The specification also defines an HTTP interface for sending events to a consumer.
+
+The consumer is the shop's own, not a product. It takes a run's state from the last event it received. The OpenLineage documentation calls Marquez the reference implementation of its API. Chapter 29 compares real consumers.
+
+The specification does not say what a consumer does with a missing, repeated or late event. Chapters 18 to 20 take that up.
+
+The specification's schema and its page on the run cycle disagree on one point. The schema allows OTHER events, which carry extra metadata, after a run's COMPLETE, ABORT or FAIL. The run cycle page says no event follows those.
+
+The namespaces `warehouse://shop-warehouse` and `reporting://shop-reporting` are the shop's choice.
+
+[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 7](chapter_07.ipynb) · [Next: Chapter 9](chapter_09.ipynb)
+
+---
+
+Everything runs in your browser. Nothing is sent anywhere. © 2026 Christopher Snow 
+

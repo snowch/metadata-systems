@@ -11,7 +11,7 @@
 
 ## From events to a graph
 
-The shop's collector keeps every event it receives, each as one line of JSON, in the order it received them. The events come from the jobs, from the functions, and now from the analyst's script, which has sent its own since Chapter 8.
+The shop keeps every event it receives, each as one line of JSON, in the order it received them. The events come from the jobs, from the functions, and now from the analyst's script, which has sent its own since Chapter 8.
 
 The head of the shop wants a graph of the platform kept up to date from these events, not drawn from lines written by hand as in Chapter 6.
 
@@ -31,7 +31,7 @@ The page runs Python in your browser, and the first time you open it on its own 
 
 The page downloaded less than 1 MB when opened from Chapter 8's link, in a browser that had opened and run Chapter 8 (measured on a computer). Chapter 8's link opens this page in a new tab. Chapter 8 stays open in its own tab and keeps its own memory. On a phone, closing Chapter 8 leaves more memory for this page.
 
-Running every cell took 9 to 12 seconds, and the page used about 420 MB of memory. If a phone runs short of memory, the browser may reload the page, and a reload loses anything you have not saved.
+Running every cell took 9 to 12 seconds, and the page used about 410 MB of memory. If a phone runs short of memory, the browser may reload the page, and a reload loses anything you have not saved.
 
 </details>
 
@@ -332,9 +332,9 @@ Chapter 10 reads the jobs' SQL to find which columns each column is made from.
 
 ### How this differs from a real platform
 
-The shop, its collector and its four stages are the course's own. Every rule in them is the shop's choice: the forms it normalises to, a run's state from its latest event, and the facets it reads.
+The shop and its four stages are the course's own. Every rule in them is the shop's choice: the forms it normalises to, a run's state from its latest event, and the facets it reads.
 
-Here the week's events are made at once, after the week has run. A real collector receives them one at a time, over a network, while the jobs run.
+Here the week's events are made at once, after the week has run. A real platform receives them one at a time, over a network, while the jobs run.
 
 Chapter 29 compares how real consumers store events.
 

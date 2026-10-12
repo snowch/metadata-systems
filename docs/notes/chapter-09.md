@@ -140,6 +140,19 @@ line the reader sees cut and a facet the reader's own Chapter 8 introduced.
 
 Brief KA, draft under `drafts/`.
 
+## The review
+
+A reviewer on another model read the chapter as a learner (`review/findings.md`, 11 findings) and an
+independent sceptic attacked each one (`review/verdicts.md`). Acted on: the opening no longer says the
+analyst's script sent events since Chapter 8 (1); the requirement section gives the three readings,
+each with what it needs and with `record_return` separating the second from the third, before the
+record, and a verdict per reading after it (2, 3, 4); the edges prediction asks for the two kinds,
+and the 41 runs are counted as 35 by night and 6 by the functions (5); the facet section says what the
+cell asks for, not what appears (7); "job" for every program, and the stage "knowing", went (8, 9);
+the START table shows only the columns the prose uses (10). Rejected: a time-normalising experiment
+(6) and the loose ends (11). Brief NA drafted the new paragraphs; every fact was right. The drafting
+agent tried one message, which was refused.
+
 ## Measured
 
 12 October 2026, local build (`docs/notes/notebook-prototype.md`, "Chapters 7, 8 and 9"): Run all 8.3 to 9.0 s; peak memory 403 to 411 MB;

@@ -123,9 +123,9 @@ def _(mo):
     mo.md(r"""
     The lines say what the job reads and what it writes. They do not say when it did its work, or how many rows it read or wrote.
 
-    The warehouse records that `clean_orders` has 44 rows and was last written at `2026-09-14T02:05:52Z`: the work of the last night only.
+    The warehouse records that `clean_orders` has 44 rows and was last written at `2026-09-14T02:05:52Z`. That is the work of the last night only.
 
-    Each night, `build_clean_orders` replaces the whole table, so nothing on the platform keeps what an earlier night did.
+    Each night, `build_clean_orders` replaces the whole table. Nothing on the platform records what the job did on an earlier night.
     """)
     return
 
@@ -201,13 +201,13 @@ def _(mo):
 
     Rows read minus rows written gives the rows left out: 0, 0, 1, 4, 4, 4 and 4.
 
-    Each night, the job rebuilds the table from every order so far, so a night's count includes the rows left out on earlier nights.
+    Each night the job rebuilds the table from every order so far, so the count for a night includes the rows left out on earlier nights. The run on Thursday 10 left out 1. The run on Friday 11, which read the orders up to Thursday, left out 3 more. After it, the count stays at 4.
 
-    The run on Thursday 10 left out 1 row: the export's second copy of order 7015, which Chapter 2's rules keep once.
+    That is what the events show: how many rows each run left out, and that the count of rows left out rose by 3 on Friday 11. They do not say which orders, or why.
 
-    The run on Friday 11, which read the orders up to Thursday, left out 3 more: Thursday's three orders with no customer id. After it, the count stays at 4.
+    Which orders comes from earlier chapters. The 1 is the export's second copy of order 7015, which Chapter 2's rules keep once. The 3 are Thursday's 3 orders with no customer id.
 
-    The answer to Jo's question: 3 orders, all placed on Thursday, left out from the run on Friday 11 onwards.
+    For Jo, the answer is 3 orders, all placed on Thursday, left out from the run on Friday 11 onwards.
     """)
     return
 
@@ -239,13 +239,11 @@ def _(figures, mo, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Grouping by `job` and `day` gave one row for each night, because each job runs once a night.
-
     The next cell runs the week with the returns desk and groups `record_return`'s events by `job` and `day`. Its design adds `object` and `object_change`.
 
-    On Wednesday 9 the desk created two returns: `r-202` at 10:05 and `r-203` at 15:40.
+    On Wednesday 9 the desk created 2 returns: `r-202` at 10:05 and `r-203` at 15:40.
 
-    Before you read on, write in the next cell how many rows the grouping will show for Wednesday 9, and why.
+    Before you read on, write in the next cell what the grouping will show for Wednesday 9: how many rows, and how many times `record_return` did its work.
     """)
     return
 
@@ -254,7 +252,7 @@ def _(mo):
 def _():
     expected_wednesday = """
 How many rows will the grouping show for Wednesday 9,
-and why?
+and how many times did record_return do its work?
 ........
 """
     return
@@ -272,11 +270,11 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Wednesday 9 shows one row with 4 events and two objects, `r-202.json` and `r-203.json`. It starts at 10:05:02 and finishes at 15:40:05: two runs, merged into one that seems to last five and a half hours.
+    Wednesday 9 shows 1 row with 4 events, 2 objects (`r-202.json` and `r-203.json`), 2 rows read and 2 written, starting at `10:05:02` and finishing at `15:40:05`. The 2 runs of `record_return` were merged into one row.
 
-    `job` and `day` tell runs apart only for a program that does its work at most once a day.
+    Grouping by `job` and `day` worked for the jobs because each job does its work once a night. Grouping by `job` and `day` tells runs apart only for a program that does its work at most once a day.
 
-    `time` cannot tell them apart either: a run's start and its finish have different times.
+    `time` does not tell them apart either: a run's start and its finish have different times. Pairing each start with the next finish works on Wednesday, because the 2 runs did not overlap. It fails when 2 runs of one program overlap, or when a run never sends its finish.
 
     What ties the events of one run together is `run`: an identifier the program makes when it starts and repeats in each event it sends.
 
@@ -312,18 +310,18 @@ def _(mo):
     mo.md(r"""
     ## What each run read
 
-    Chapter 6 left a question: with the `source` change, on which nights did `build_daily_sales` read `clean_orders`, and on which the analyst's copy? The code shows only what the job does now.
+    Chapter 6 left a question: with the `source` change, on which nights did `build_daily_sales` read `clean_orders`, and on which did it read the analyst's copy? The code shows only what the job does now.
 
-    The next cell runs the week with the returns desk and the `source` change, adds `reads`, `writes` and `code_version` to the design, and lists the runs of `build_daily_sales`.
+    The next cell runs the week with the returns desk and the `source` change. Its design is `run`, `job`, `type`, `time`, `reads` and `code_version`. It lists the runs of `build_daily_sales` and of `remove_return`.
     """)
     return
 
 
 @app.cell
-def _(shop, with_run):
+def _(shop):
     changed = shop.run_week(["returns", "source"])
-    with_reads = with_run + ["reads", "writes", "code_version"]
-    shop.runs(shop.events(changed, with_reads), by=["run"]).where(job="build_daily_sales")
+    with_reads = ["run", "job", "type", "time", "reads", "code_version"]
+    shop.runs(shop.events(changed, with_reads), by=["run"]).where(job=["build_daily_sales", "remove_return"])
     return
 
 
@@ -334,9 +332,13 @@ def _(mo):
 
     The runs on Sunday 13 and Monday 14 read `s3://shop-scratch/clean_orders_copy.csv`, with code version `c715bde`.
 
-    Each run recorded what it read when it ran. The code in the repository shows only what the job does now.
+    Chapter 6's change took effect from Saturday's row. The run on Sunday 13, early in the morning, writes Saturday's row, so it is the first run that reads the copy.
 
-    The next cell makes a graph from what each run read and wrote, as Chapter 6 made one from its lines, and follows edges upstream from `sales_dashboard`. Its events carry `run`, `job`, `type`, `reads` and `writes`.
+    The events record what each run read when it ran. The code in the repository shows only what the job does now.
+
+    The run of `remove_return` on Saturday 12 has an empty `reads`: the file it removed was gone when it started, and it read nothing.
+
+    The next cell makes a graph from what each run read and wrote in the week with no changes, as Chapter 6 made one from its lines, and follows edges upstream from `sales_dashboard`. Its events carry `run`, `job`, `type`, `reads` and `writes`.
 
     Before you read on, write in the next cell what that traversal would reach if the events carried no `reads`.
     """)
@@ -367,9 +369,9 @@ def _(mo):
 
     Delete `"reads"` from the list in the cell above, select that cell and press **Run below**.
 
-    Without `reads`, it reaches only `refresh_dashboard`: `daily_sales` seems to be made from nothing.
+    Without `reads`, the traversal reaches only `refresh_dashboard`. The graph shows no input for `daily_sales`, or for anything else.
 
-    Events that list nothing read do not show that the run read nothing. `remove_return` really read nothing, and its events look the same as events that leave `reads` out.
+    A run that read nothing, as `remove_return`'s did, also gives the graph no input. From the graph, a run that read nothing and a run whose events left `reads` out look the same.
 
     Put `"reads"` back and press **Run below** again.
     """)
@@ -404,16 +406,13 @@ What does "Record every run." mean to you?
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The requirement could mean four things, each needing its own fields:
-
-    - to find the runs that failed: `run` and `status`;
-    - to know when each asset was last written: `time` and `writes`;
-    - to know which version of the code each run used: `run` and `code_version`;
-    - to know which object change started a run: `run`, `object`, `object_version` and `object_change`.
+    The table sets your design against 4 readings. Each needs its own fields, which the table lists.
 
     As the cell first stands, `yours` holds `run`, `job`, `type`, `time` and `status`, and meets the first reading only.
 
-    As written, any design meets "Record every run." if each run sends events. Which readings it meets depends on its fields.
+    As written, a design meets "Record every run." if each run sends events and the events keep each run apart. That needs `run`: without it, 2 runs of one function on one day became one row.
+
+    Which of the readings a design meets depends on its fields. A field's name does not say which reading it serves: `time` is when an event was sent, not when the data was written.
     """)
     return
 
@@ -423,11 +422,11 @@ def _(mo):
     mo.md(r"""
     ## Before Chapter 8
 
-    Chapter 6's lines and the warehouse could not say what each night did. Events grouped into runs answered Jo's question: 3 orders, left out from the run on Friday 11. Grouping by `job` and `day` merged two runs of `record_return` on Wednesday 9, and `run` told them apart. The runs recorded which nights `build_daily_sales` read the analyst's copy. Events without `reads` made `daily_sales` seem made from nothing.
+    Chapter 6's lines and the warehouse could not say what each night did. Events grouped into runs gave Jo the count, 3 orders, left out from the run on Friday 11. Earlier chapters said which orders. Grouping by `job` and `day` merged 2 runs of `record_return` on Wednesday 9, and `run` told them apart. The runs showed which nights `build_daily_sales` read the analyst's copy. Without `reads`, the graph showed no input for `daily_sales`, as it shows none for a run that read nothing.
 
-    Nothing here shows how a program the shop did not write would know what each field means.
+    The experiments could not show how a program the shop did not write would know what each field means.
 
-    Chapter 8 writes the same runs in the form an open standard sets, which programs the shop did not write can read.
+    Chapter 8 writes the same runs in the form an open standard sets, which programs written elsewhere can read.
 
     - What does a platform you work on record about each time a job does its work?
     - In your design, which events exist for a program that stops before it finishes?

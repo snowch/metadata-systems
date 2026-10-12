@@ -186,7 +186,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("## Before Chapter 8", 7)
         self.says("Chapter 8 writes the same runs in the form an open standard sets", 7)
         self.says("## Before Chapter 9", 8)
-        self.says("Chapter 9 builds that, one stage at a time", 8)
+        self.says("Chapter 9 builds that consumer, one stage at a time", 8)
         self.says("## Before Chapter 10", 9)
         self.says("Chapter 10 reads the jobs' SQL", 9)
 
@@ -703,17 +703,18 @@ class TheWordsOfChapter7(unittest.TestCase):
         self.assertEqual(left, [0, 0, 1, 4, 4, 4, 4])
         self.says("Rows read minus rows written gives the rows left out: 0, 0, 1, 4, 4, 4 and 4.")
         self.assertEqual(shop.data.DUPLICATED, 7015)
-        self.says("The run on Thursday 10 left out 1 row: the export's second copy of order 7015")
+        self.says("The 1 is the export's second copy of order 7015, which Chapter 2's rules keep once.")
         thursday = [o for o in shop.data.ORDERS if o[6].startswith("2026-09-10") and o[1] is None]
         self.assertEqual(len(thursday), 3)
-        self.says("The answer to Jo's question: 3 orders, all placed on Thursday, left out from the run on Friday 11 onwards.")
+        self.says("For Jo, the answer is 3 orders, all placed on Thursday, left out from the run on Friday 11 onwards.")
+        self.says("They do not say which orders, or why.")
 
     def test_two_runs_on_one_day(self):
         design = ["job", "type", "time", "rows_read", "rows_written", "object", "object_change"]
         by_day = shop.runs(shop.events(self.returns, design).where(job="record_return"), by=["job", "day"])
         [wednesday] = [r for r in by_day if r["day"] == "2026-09-09"]
-        self.assertEqual((wednesday["events"], wednesday["started"], wednesday["finished"]), (4, "2026-09-09T10:05:02Z", "2026-09-09T15:40:05Z"))
-        self.says("Wednesday 9 shows one row with 4 events and two objects, `r-202.json` and `r-203.json`. It starts at 10:05:02 and finishes at 15:40:05")
+        self.assertEqual((wednesday["events"], wednesday["rows_read"], wednesday["rows_written"], wednesday["started"], wednesday["finished"]), (4, 2, 2, "2026-09-09T10:05:02Z", "2026-09-09T15:40:05Z"))
+        self.says("Wednesday 9 shows 1 row with 4 events, 2 objects (`r-202.json` and `r-203.json`), 2 rows read and 2 written, starting at `10:05:02` and finishing at `15:40:05`.")
         runs = shop.runs(shop.events(self.returns, design + ["run", "object_version"])).where(job=["record_return", "remove_return"])
         self.assertEqual(len(runs), 6)
         self.says("There are 6 runs of the two functions, one for each change to a return's file.")
@@ -736,7 +737,11 @@ class TheWordsOfChapter7(unittest.TestCase):
         without = shop.lineage(shop.runs(shop.events(self.week, ["run", "job", "type", "writes"])))
         self.assertEqual([r["node"] for r in without.upstream("sales_dashboard")], ["refresh_dashboard"])
         self.says("With `reads`, the traversal reaches 6 nodes, back to `orders.jsonl`.")
-        self.says("Without `reads`, it reaches only `refresh_dashboard`")
+        self.says("Without `reads`, the traversal reaches only `refresh_dashboard`.")
+        changed = shop.run_week(["returns", "source"])
+        [removed] = shop.runs(shop.events(changed, ["run", "job", "type", "time", "reads", "code_version"])).where(job="remove_return")
+        self.assertIn(removed["reads"], (None, ""))
+        self.says("The run of `remove_return` on Saturday 12 has an empty `reads`")
 
     def test_the_readings(self):
         rows = shop.readings(["run", "job", "type", "time", "status"])
@@ -762,10 +767,11 @@ class TheWordsOfChapter8(unittest.TestCase):
         self.assertEqual(complete["inputs"][0]["inputFacets"]["inputStatistics"]["rowCount"], 27)
         self.assertEqual(complete["outputs"][0]["outputFacets"]["outputStatistics"]["rowCount"], 23)
         self.assertEqual(complete["job"]["facets"]["sourceCodeLocation"]["version"], "b178023")
-        self.says("In these events, `inputStatistics` holds the rows read, 27. `outputStatistics` holds the rows written, 23. `sourceCodeLocation` holds the code version, `b178023`.")
+        self.says("`sourceCodeLocation` holds the code version, `b178023`.")
+        self.says("`inputStatistics` holds the rows read, 27. `outputStatistics` holds the rows written, 23.")
         self.assertEqual(start["run"]["runId"][14], "7")
         self.assertEqual(start["producer"], shop.openlineage.PRODUCER)
-        self.says("Here it is `https://example.org/shop/jobs/tree/v1`.")
+        self.says("Here it is `https://example.org/shop/jobs/tree/v1`, which makes the events of all four jobs.")
         self.assertEqual((complete["outputs"][0]["namespace"], complete["outputs"][0]["name"]), ("warehouse://shop-warehouse", "shop.analytics.clean_orders"))
 
     def test_the_consumer(self):
@@ -776,7 +782,7 @@ class TheWordsOfChapter8(unittest.TestCase):
         c.send(friday[1])
         [row] = c.runs()
         self.assertEqual((row["state"], row["ended"], row["events"]), ("COMPLETE", "2026-09-11T02:05:52Z", 2))
-        self.says("The row now has the state `COMPLETE`, the end time `2026-09-11T02:05:52Z`")
+        self.says("The row now holds the state `COMPLETE`, the end time `2026-09-11T02:05:52Z`")
         everything = shop.openlineage.Consumer().send(*self.events)
         self.assertEqual((len(everything.runs()), len(everything.runs(state="FAIL"))), (34, 1))
         self.says("The consumer holds 34 runs. One of them has the state `FAIL`: `build_daily_sales` on Monday 14.")
@@ -795,23 +801,29 @@ class TheWordsOfChapter8(unittest.TestCase):
         self.assertEqual(OL.problems(start), [])
         up = OL.Consumer().send(*self.events, start, complete).lineage().upstream("s3://shop-scratch/clean_orders_copy.csv")
         self.assertEqual(len(up), 2)
-        self.says("The traversal reaches 2 nodes, `copy_clean_orders` and `analytics.clean_orders`, and stops.")
+        self.assertEqual([r["node"] for r in up], ["analyst/copy_clean_orders", "warehouse://shop-warehouse/analytics.clean_orders"])
+        self.says("The traversal reaches 2 nodes, `analyst/copy_clean_orders` and `warehouse://shop-warehouse/analytics.clean_orders`, and stops.")
         start["inputs"] = [{"namespace": "warehouse://shop-warehouse", "name": "shop.analytics.clean_orders"}]
         complete["inputs"] = start["inputs"]
         up = OL.Consumer().send(*self.events, start, complete).lineage().upstream("s3://shop-scratch/clean_orders_copy.csv")
         self.assertEqual([r["node"] for r in up][-1], "s3://shop-raw/orders.jsonl")
         self.assertEqual(len(up), 4)
-        self.says("The traversal then reaches 4 nodes, through `build_clean_orders`, to `orders.jsonl`.")
+        self.says("The traversal then reaches 4 nodes, through `shop/build_clean_orders`, to `orders.jsonl`.")
+
         broken = {**start, "run": {"runId": "copy-friday"}}
         del broken["producer"]
         self.assertEqual(OL.problems(broken), [("producer", "missing"), ("run.runId", "run_id")])
         self.says("The check lists 2 problems: `producer` is missing, and `run.runId` is not a UUID.")
+        refusing = OL.Consumer().send(broken)
+        self.assertEqual((len(refusing.refused), len(refusing.runs())), (1, 0))
 
     def test_the_summary(self):
         rows = shop.openlineage.summary(self.events)
         self.assertEqual(len(rows), 6)
         self.assertEqual(sum(r["FAIL"] for r in rows), 1)
-        self.says("The counts show 6 programs that sent events: the four jobs and the two functions.")
+        self.assertEqual(sum(r["breaking a rule"] for r in rows), 0)
+        self.says("In all, 6 programs sent events: the four jobs and the two functions.")
+        self.says("No event breaks the specification's rules.")
 
 
 class TheWordsOfChapter9(unittest.TestCase):
@@ -842,7 +854,7 @@ class TheWordsOfChapter9(unittest.TestCase):
     def test_objects(self):
         o = self.objs
         self.assertEqual((len(o.jobs), len(o.runs), len(o.datasets), len(o.unknown)), (7, 41, 12, 6))
-        self.says("The stage made 7 jobs (the four jobs, the two functions and the analyst's copy), 41 runs and 12 datasets. It also found 6 facets it does not know.")
+        self.says("The stage made 7 job records, one for each program that sent events: the four jobs, the two functions and the analyst's script. It made 41 run records and 12 dataset records, and it listed 6 facets it does not read.")
         [still] = o.runs_of(state="START")
         self.assertEqual((still["job"], still["started"]), ("shop/build_daily_sales", "2026-09-09T02:30:00Z"))
         self.assertEqual({u["facet"] for u in o.unknown}, {"shop_objectChange"})
@@ -856,21 +868,22 @@ class TheWordsOfChapter9(unittest.TestCase):
     def test_edges_and_current(self):
         e = self.edges
         self.assertEqual((len(e.by_run), len(e.by_job)), (80, 17))
-        self.says("There are 80 edges by run and 17 by job.")
+        self.says("There are 80 edges by run and 17 edges by job.")
+        self.says("The week has 41 runs: 35 by night (7 nights, each with the four jobs and the analyst's script) and 6 by the functions, during the day.")
         daily = {(r["edge"], r["dataset"].rsplit("/", 1)[-1]): r for r in e.of("shop/build_daily_sales")}
         self.assertEqual(daily[("reads", "shop.analytics.clean_orders")]["runs"], 5)
         self.assertEqual((daily[("reads", "shop.analytics.clean_orders")]["first"], daily[("reads", "shop.analytics.clean_orders")]["last"]), ("2026-09-08T02:30:21Z", "2026-09-12T02:30:21Z"))
         self.assertEqual(daily[("reads", "clean_orders_copy.csv")]["runs"], 2)
         self.assertEqual(daily[("writes", "shop.analytics.daily_sales")]["runs"], 6)
-        self.says("It reads `clean_orders` in 5 runs, the first at `2026-09-08T02:30:21Z` and the last at `2026-09-12T02:30:21Z`. It reads the analyst's copy in 2 runs, on Sunday 13 and Monday 14. It writes `daily_sales` in 6 runs.")
+        self.says("It reads `clean_orders` in 5 runs, the first at `2026-09-08T02:30:21Z` and the last at `2026-09-12T02:30:21Z`. It reads the analyst's copy in 2 runs, on Sunday 13 and Monday 14. It writes `daily_sales` in 6 runs, not 7.")
         latest = e.latest()
         self.assertEqual(len(latest), 13)
-        self.says("Counting each job's latest run only, 13 of the 17 edges by job remain.")
+        self.says("That cell lists 13 of the 17 edges by job.")
         dropped = {(r["job"], r["dataset"].rsplit("/", 1)[-1]) for r in e.by_job} - {(r["job"], r["dataset"].rsplit("/", 1)[-1]) for r in latest}
         self.assertEqual(dropped, {("shop/build_daily_sales", "shop.analytics.clean_orders"), ("shop/record_return", "r-201.json"), ("shop/record_return", "r-202.json"), ("shop/record_return", "r-203.json")})
         held = {r["return_id"] for r in shop.run_week(["returns"]).warehouse.sql("SELECT return_id FROM returns")}
         self.assertEqual(held, {"r-201", "r-202", "r-204"})
-        self.says("For `record_return` it also drops `r-201.json` and `r-202.json`, whose rows are still in the table `returns`")
+        self.says("The rows of `r-201` and `r-202` are still in the table `returns`. The row of `r-203` was removed when its file was deleted.")
         g = e.graph()
         self.assertEqual((len(g.nodes()), len(g.edges())), (19, 17))
 

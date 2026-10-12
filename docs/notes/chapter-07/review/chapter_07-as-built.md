@@ -266,10 +266,10 @@ Without `object_version`, nothing would say which version of the file each run r
 
 Chapter 6 left a question: with the `source` change, on which nights did `build_daily_sales` read `clean_orders`, and on which the analyst's copy? The code shows only what the job does now.
 
-The next cell runs the week with the `source` change, adds `reads`, `writes` and `code_version` to the design, and lists the runs of `build_daily_sales`. 
+The next cell runs the week with the returns desk and the `source` change, adds `reads`, `writes` and `code_version` to the design, and lists the runs of `build_daily_sales`. 
 
 ```python
-changed = shop.run_week(["source"])
+changed = shop.run_week(["returns", "source"])
 with_reads = with_run + ["reads", "writes", "code_version"]
 shop.runs(shop.events(changed, with_reads), by=["run"]).where(job="build_daily_sales")
 ```
@@ -277,12 +277,12 @@ shop.runs(shop.events(changed, with_reads), by=["run"]).where(job="build_daily_s
 [output]
 run | events | job | started | finished | rows_read | rows_written | object | object_change | object_version | reads | writes | code_version | 
 run-003 | 2 | build_daily_sales | 2026-09-08T02:30:00Z | 2026-09-08T02:30:21Z | 6 | 1 |  |  |  | clean_orders | daily_sales | 256e271 | 
-run-007 | 2 | build_daily_sales | 2026-09-09T02:30:00Z | 2026-09-09T02:30:21Z | 13 | 1 |  |  |  | clean_orders | daily_sales | 256e271 | 
-run-011 | 2 | build_daily_sales | 2026-09-10T02:30:00Z | 2026-09-10T02:30:21Z | 19 | 1 |  |  |  | clean_orders | daily_sales | 256e271 | 
-run-015 | 2 | build_daily_sales | 2026-09-11T02:30:00Z | 2026-09-11T02:30:21Z | 23 | 1 |  |  |  | clean_orders | daily_sales | 256e271 | 
-run-019 | 2 | build_daily_sales | 2026-09-12T02:30:00Z | 2026-09-12T02:30:21Z | 31 | 1 |  |  |  | clean_orders | daily_sales | 256e271 | 
-run-023 | 2 | build_daily_sales | 2026-09-13T02:30:00Z | 2026-09-13T02:30:21Z | 39 | 1 |  |  |  | s3://shop-scratch/clean_orders_copy.csv | daily_sales | c715bde | 
-run-027 | 2 | build_daily_sales | 2026-09-14T02:30:00Z | 2026-09-14T02:30:21Z | 44 | 1 |  |  |  | s3://shop-scratch/clean_orders_copy.csv | daily_sales | c715bde |
+run-008 | 2 | build_daily_sales | 2026-09-09T02:30:00Z | 2026-09-09T02:30:21Z | 13 | 1 |  |  |  | clean_orders | daily_sales | 256e271 | 
+run-014 | 2 | build_daily_sales | 2026-09-10T02:30:00Z | 2026-09-10T02:30:21Z | 19 | 1 |  |  |  | clean_orders | daily_sales | 256e271 | 
+run-019 | 2 | build_daily_sales | 2026-09-11T02:30:00Z | 2026-09-11T02:30:21Z | 23 | 1 |  |  |  | clean_orders | daily_sales | 256e271 | 
+run-024 | 2 | build_daily_sales | 2026-09-12T02:30:00Z | 2026-09-12T02:30:21Z | 31 | 1 |  |  |  | clean_orders | daily_sales | 256e271 | 
+run-029 | 2 | build_daily_sales | 2026-09-13T02:30:00Z | 2026-09-13T02:30:21Z | 39 | 1 |  |  |  | s3://shop-scratch/clean_orders_copy.csv | daily_sales | c715bde | 
+run-033 | 2 | build_daily_sales | 2026-09-14T02:30:00Z | 2026-09-14T02:30:21Z | 44 | 1 |  |  |  | s3://shop-scratch/clean_orders_copy.csv | daily_sales | c715bde |
 
 The runs on Tuesday 8 to Saturday 12 read `clean_orders`, with code version `256e271`.
 

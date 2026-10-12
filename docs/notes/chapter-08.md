@@ -9,7 +9,8 @@ The head of the shop wants the runs in a tool the shop did not write, and sets t
 "Our programs must emit OpenLineage." The reader meets **OpenLineage** as one answer to a problem
 Chapter 7 left: the shop's field names are its own. The reader:
 
-- reads the two OpenLineage run events of `build_clean_orders`'s run on Friday 11, with the
+- reads the two OpenLineage run events of `build_clean_orders`'s run on Friday 11 (the second where
+  it differs), with the
   **namespace**, the **producer** and the **facet** each named where they first appear, and a table
   of where each of Chapter 7's fields went;
 - writes what a consumer knows after the START alone, sends it, then the COMPLETE: the input first,
@@ -133,6 +134,23 @@ words fixed both ("the cell after the next one sends", "write in the next cell")
 ("the same cell then counts"). The check's message for no problems came back as a description of
 itself, and its second sentence was kept. The objective that quoted the requirement used the term
 OpenLineage before the section that introduces it, and now names the requirement without it.
+
+## The review
+
+A reviewer on another model read the chapter as a learner (`review/findings.md`, 17 findings) and an
+independent sceptic attacked each one (`review/verdicts.md`). Acted on: the analyst's naming is no
+longer described before the prediction about the join, and the comparison comes after the result (2);
+the sentence that said what a START holds moved after the consumer's row (1); OpenLineage is defined
+by its three kinds of event, of which the chapter uses one (5); a cell now sends the broken event to a
+consumer and shows it set aside (6); the requirement section lists what each reading needs, counts
+the events that break the rules, and gives a verdict per reading, which as written is not met (3);
+"the schema requires" became the specification's requirement (4); the second event prints only where
+it differs, and the facets printed are each explained (7); the job nodes keep their namespace (13);
+ABORT, the code version as the shop's hash, the shop's naming choice, the shop's matching of a
+repeated input and the reality note's real differences (14, 15, 10, 12, 17). Rejected: a claim that
+the specification is silent on delivery (it defines an HTTP interface), and the platform map's use.
+Brief MA drafted the new paragraphs; two references to "the next cell" were fixed with the fewest
+words, and the readings' lead sentence restored.
 
 ## Measured
 

@@ -168,6 +168,21 @@ Brief IA (`docs/notes/chapter-07/briefs/`, with `common.md` for Chapters 7 to 9)
 `drafts/`: every fact present and right. The figure's flow label came back shorter than the brief's
 sentence, as its limit asked; the caption's backticks were lost in placing and put back.
 
+## The review
+
+A reviewer on another model read the chapter as a learner (`review/findings.md`, 10 findings) and an
+independent sceptic attacked each one (`review/verdicts.md`). Acted on: the answer to Jo separates
+what the events show (counts per run, the rise of 3 on Friday 11) from what earlier chapters say
+(which orders) (1); the clause that explained the grouping moved after the Wednesday prediction, which
+now asks how many rows and how many runs (2); the "without reads" conclusion rests on something shown,
+`remove_return`'s empty `reads`, in a narrower table (3, 10); one sentence ties the first run on the
+copy, Sunday 13, to Saturday's row (4); merged runs now add their row counts, so Wednesday's row shows
+2 and 2 (8); "five and a half hours", a number the engine did not produce, went (9); "any design meets
+it as written" now needs `run` (6); and `rows_written` covers a removal. Rejected by the sceptic: the
+figure's date (5) and the objective (7). Brief LA drafted the new paragraphs; the draft wrote every
+small number as a figure, and five that were not counts went back to words, and "every night" back to
+the brief's "once a night". One stray session listing by the drafting agent changed nothing.
+
 ## Measured
 
 12 October 2026, local build (`docs/notes/notebook-prototype.md`, "Chapters 7, 8 and 9"): Run all 8.0 to 9.3 s; peak memory 397 to 421 MB;
