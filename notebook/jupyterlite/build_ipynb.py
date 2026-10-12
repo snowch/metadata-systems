@@ -1,8 +1,8 @@
 # Copyright © 2026 Christopher Snow
 
-"""Builds Chapters 1 and 2 as Jupyter notebooks, for JupyterLite, from their source files.
+"""Builds the written chapters as Jupyter notebooks, for JupyterLite, from their source files.
 
-Chapters 1 and 2 are a notebook each. Each is written as a Python file of cells
+Each written chapter is a notebook. Each is written as a Python file of cells
 (`notebook/chapter_01.py` and `chapter_02.py`), in marimo's file format, which keeps the chapter
 diffable and lets the tests read every sentence; marimo itself no longer reaches a reader (the
 author ruled it out as too big for a phone). This turns each file into a Jupyter notebook, cell by
@@ -45,6 +45,8 @@ HIDDEN = {"jupyter": {"source_hidden": True}}
 CHAPTERS = {
     1: (HERE.parent / "chapter_01.py", "chapter_01.ipynb"),
     2: (HERE.parent / "chapter_02.py", "chapter_02.ipynb"),
+    3: (HERE.parent / "chapter_03.py", "chapter_03.ipynb"),
+    4: (HERE.parent / "chapter_04.py", "chapter_04.ipynb"),
 }
 
 # Jupyter runs from the top: these come first. In the browser the three packages the page bundles

@@ -257,6 +257,28 @@ MB a profile on disk serves from its cache. Each range is over runs at both widt
 - Part 1 needs less memory than the single notebook did (0.79 to 0.82 GB against 0.97 to 1.16 GB
   in marimo, 391 to 414 MB against 0.42 to 0.45 GB in JupyterLite); part 2 about as much.
 
+## Chapters 3 and 4
+
+Measured 12 October 2026 on the built site served locally (`python3 -m http.server`-like, logging
+each response's bytes), in Chromium with a profile kept on disk, by pressing **Run all** in the row
+of buttons and waiting until no cell waits to run. "From the link" opens the chapter before, runs
+it, then follows its "Next" link.
+
+| | Chapter 3 | Chapter 4 |
+| --- | --- | --- |
+| Opened alone: files, as stored | 151 files, 25.79 MB | 151 files, 25.78 MB |
+| Opened from the chapter before's link, after it ran | 11 files, 0.32 MB, in a new tab | 11 files, 0.32 MB, in a new tab |
+| Run all, from the press until no cell waits (desktop, phone, from the link) | 8.9 to 9.6 s | 8.9 to 10.5 s |
+| Peak memory of a renderer process, opened alone | 400 to 418 MB | 400 to 406 MB |
+| Peak memory, with the chapter before open in its own tab | 630 to 639 MB | 624 to 626 MB |
+| Cells with an error output; console errors | none | none |
+
+The files a chapter downloads opened alone are the same as Chapter 2's, so the compressed size is
+the 12.5 MB measured for it above. Each chapter's warning (brief CD) states: about 13 MB the first
+time on its own; less than 1 MB from the chapter before's link; 9 to 11 seconds to run every cell;
+about 420 MB (Chapter 3) and about 410 MB (Chapter 4). The published pages' times are still to be
+measured; the earlier chapters took about 2 s longer there.
+
 ## Phones
 
 Nothing here measured a real phone, so the page says only what was measured and what one report

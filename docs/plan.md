@@ -258,6 +258,34 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 12 October 2026: Chapters 3 and 4 written
+
+The author asked for Chapters 3 and 4. Both are notebooks in Chapter 2's form, prose with cells,
+and each keeps the plan's row: Chapter 3's reader writes a record of `daily_sales` from what the
+shop's people say, asks Chapter 2's four questions of it, meets `updated_by` (a column that names
+people and is data, not a record about the file), questions "Every column must have a
+description.", and watches a record go stale; Chapter 4's reader counts owners and finds spellings,
+writes a model of types, attributes and identifiers, merges the two spellings of Jo Marsh, meets a
+value that names nothing and a fact the model has no type for, and questions "Each asset has one
+owner." Where Chapters 1 and 2 ask for nothing to be predicted, these ask the reader to write an
+expectation in a cell before the cells that answer it, which **Save** keeps, as Chapter 1's
+guesses are kept; nothing grades it. Two decisions the plan did not make:
+
+- **Records are lines of text in notations of the course's own**, `asset [column] field: value` in
+  Chapter 3 and `type identifier attribute: value` in Chapter 4, with a model of
+  `type attribute: text | type or type` lines. Line notations keep a record readable and editable
+  on a phone, avoid any product's format (dbt's YAML, a catalogue's JSON), and let Chapter 4 grow
+  out of Chapter 3's by one word at the start of each line (`docs/lab.md`, "What a notebook can ask
+  of the engine").
+- **A fourth change**, `column`: from Saturday's row, `daily_sales` gains `order_count`. With
+  Chapter 2's edited job it is Chapter 3's stale-record experiment: the check sees the column, not
+  the changed meaning.
+
+The people the chapters add (Jo Marsh, in finance, who built the dashboard and is the reporting
+tool's `j.marsh`; Sam Lund, who keeps the catalogue and is `s.lund` in `updated_by`; the staff list)
+are invented for the course. `docs/notes/chapter-03.md` and `chapter-04.md` have the figures'
+blocks, the requirements, the originality notes and what the prose process caught.
+
 ### 12 October 2026: two outside reviews of Chapters 1 and 2
 
 Two reviewers read both chapters; the author accepted their findings, and Haiku drafted the

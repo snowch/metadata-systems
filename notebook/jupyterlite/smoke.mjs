@@ -7,8 +7,10 @@
 // run ends; Run all runs every visible code cell, with no error in any output, and leaves the
 // notebook where it was scrolled; the warning and the steps for running the page are boxes; in
 // Chapter 1 a printed file keeps one record per line, scrolling inside its box, and the page never
-// scrolls sideways. In Chapter 2, Run below from a selected cell does the same. A browser set to
-// dark gets the dark theme, and one set to light the light. The page
+// scrolls sideways. In Chapter 2, Run below from a selected cell does the same. In Chapter 3 the
+// reader's record, typed in, passes its check, and in Chapter 4 the merge, typed in, leaves the
+// model's check 3 problems. A browser set to dark gets the dark theme, and one set to light the
+// light. The page
 // logs no error, and the notebooks' earlier names lead to their chapters. The notebook workflow
 // runs it after the build, with Playwright from the course's dependencies.
 //
@@ -82,7 +84,7 @@ try {
       return !!e && e.getBoundingClientRect().height > 0;
     }, selector);
 
-  for (const chapter of [1, 2]) {
+  for (const chapter of [1, 2, 3, 4]) {
     await page.goto(`http://127.0.0.1:${port}/notebooks/index.html?path=chapter_0${chapter}.ipynb`);
     await page.waitForFunction(() => document.querySelector(".jp-MarkdownOutput h1"), null, {
       timeout: 120_000,
@@ -131,7 +133,7 @@ try {
       return { figures: [...found.values()], stubs };
     });
     check(
-      figures.figures.length === (chapter === 1 ? 3 : 2) &&
+      figures.figures.length === ({ 1: 3, 2: 2 }[chapter] ?? 1) &&
         figures.figures.every((f) => f.shown && f.image !== false) &&
         figures.stubs === 0,
       `Chapter ${chapter}: its ${figures.figures.length} figures show before anything runs, with no code cell`,
@@ -263,6 +265,70 @@ try {
       await day.scrollIntoViewIfNeeded();
       await day.locator(".jp-InputPrompt").tap();
       await run("Run below", "Chapter 2, Run below from the day's cell");
+    }
+    // Chapters 3 and 4 ask the reader to change a cell and press Run below: the record's dots in
+    // Chapter 3, two spellings in Chapter 4. Typed as a reader would, the check below answers.
+    const rewrite = async (hasText, from, to) => {
+      // Held as an element: once its text changes, a locator by its text would find nothing.
+      const cell = await page
+        .locator(".jp-CodeCell", { has: page.locator(".jp-InputArea", { hasText }) })
+        .first()
+        .elementHandle();
+      await cell.scrollIntoViewIfNeeded();
+      const editor = await cell.$(".cm-content");
+      await editor.tap();
+      await page.keyboard.press("ControlOrMeta+a");
+      const text = (await editor.innerText()).replace(/\u00a0/g, " ");
+      await page.keyboard.insertText(from.reduce((t, f, i) => t.replaceAll(f, to[i]), text));
+      await (await cell.$(".jp-InputPrompt")).tap();
+    };
+    const output = async (hasText) => {
+      const cell = page
+        .locator(".jp-CodeCell", { has: page.locator(".jp-InputArea", { hasText }) })
+        .first();
+      await cell.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
+      return cell.locator(".jp-OutputArea").innerText();
+    };
+    if (chapter === 3) {
+      await rewrite(
+        "daily_sales means: ........",
+        [
+          "daily_sales means: ........",
+          "responsible: ........",
+          "day means: ........",
+          "revenue_pence means: ........",
+          "unit: ........",
+        ],
+        [
+          "daily_sales means: the value of every completed order",
+          "responsible: Jo Marsh",
+          "day means: the UTC date",
+          "revenue_pence means: the value of the day's completed orders",
+          "unit: pence",
+        ],
+      );
+      await run("Run below", "Chapter 3, Run below from the record");
+      const checked = await output('records.check(warehouse, "daily_sales")');
+      check(
+        checked.includes("No problems found."),
+        `Chapter 3: the filled record passes its check (${checked.slice(0, 60)})`,
+      );
+      const who = await output("field = 'responsible'");
+      check(who.includes("Jo Marsh"), "Chapter 3: the record names Jo Marsh");
+    }
+    if (chapter === 4) {
+      await rewrite(
+        "dataset daily_sales means:",
+        ["responsible: Jo Marsh", "responsible: Sam Lund"],
+        ["responsible: j.marsh", "responsible: s.lund"],
+      );
+      await run("Run below", "Chapter 4, Run below from the records");
+      const problems = (await output("model.check(records)"))
+        .split("\n")
+        .filter((l) => l.includes("This value") || l.includes("The model")).length;
+      check(problems === 3, `Chapter 4: after the merge the check lists 3 problems (${problems})`);
+      if (problems !== 3) console.log((await output("model.check(records)")).slice(0, 400));
     }
   }
   check(errors.length === 0, `the page logs no error${errors.length ? `: ${errors[0]}` : ""}`);

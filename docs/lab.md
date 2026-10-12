@@ -92,6 +92,12 @@ changed week is as deterministic as the plain one. Chapter 2 uses three:
   edit changes nothing except on a day with a cancelled order.
 - **A failed night.** On the last night, daily sales fails and writes nothing.
 
+Chapter 3 adds a fourth:
+
+- **A new column.** From Saturday's row on, daily sales also writes each day's number of completed
+  orders into a new column, `order_count`; the rows before have none. The warehouse's catalogue
+  records the column at once, so a check of a person's records against it sees the change.
+
 Later chapters add their own: a renamed column, a late file, a duplicated event, a second
 environment.
 
@@ -111,6 +117,15 @@ evidence:
   `clean_orders` keeps.
 - **What only a record answers.** The questions whose answers are in neither: who is responsible
   for an asset, what a number's unit is, what changed and why.
+- **What a person's records say, and whether they hold** (`notebook/shop/records.py`). Chapter 3's
+  records (`records`) are lines of text, `asset [column] field: value`, queryable with SQL as a
+  table `records`; their check holds them to what the warehouse and object storage record (every
+  column described, every line about an asset and a column that exist) and cannot test what a
+  description says. Chapter 4's (`typed_records`) start each line with a type and an identifier,
+  and a `model` (each type's attributes, and whether a value is text or names an entity of
+  another type) checks them: unknown types and attributes, and values that name nothing the
+  records describe. `owners` lists every asset with its `responsible` values under three readings
+  of "one owner". Both notations are the course's own.
 
 Two more things the notebooks draw from it (`notebook/shop/figures.py`), when the site is built,
 into Markdown cells (`docs/authoring.md`, "How a figure is drawn"):

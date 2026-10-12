@@ -21,6 +21,7 @@ import html
 import io
 import json
 import os
+import re
 import shutil
 import sqlite3
 import tempfile
@@ -48,24 +49,30 @@ _TABLE_STYLE = (
 )
 
 
+def _code(text: str) -> str:
+    """Escapes text for HTML, and sets a name written in backticks in the code font."""
+    return re.sub(r"`([^`]+)`", r"<code>\1</code>", html.escape(text))
+
+
 def _cell(value, null: str) -> str:
     if value is None:
         return f"<em>{null}</em>"
     if isinstance(value, list):
-        return "<br>".join(html.escape(", ".join(f"{k}: {v}" for k, v in x.items()) if isinstance(x, dict) else str(x)) for x in value)
-    return html.escape(str(value))
+        return "<br>".join(_code(", ".join(f"{k}: {v}" for k, v in x.items()) if isinstance(x, dict) else str(x)) for x in value)
+    return _code(str(value))
 
 
 class Rows(list):
     """Rows as a list of dictionaries, which a notebook shows as a table."""
 
-    def __init__(self, rows=(), null: str = "NULL") -> None:
+    def __init__(self, rows=(), null: str = "NULL", empty: str = "No rows.") -> None:
         super().__init__(rows)
         self.null = null
+        self.empty = empty
 
     def _repr_html_(self) -> str:
         if not self:
-            return "<em>No rows.</em>"
+            return f"<em>{html.escape(self.empty)}</em>"
         names = list(self[0])
         head = "".join(f"<th>{html.escape(n)}</th>" for n in names)
         body = "".join("<tr>" + "".join(f"<td>{_cell(r.get(n), self.null)}</td>" for n in names) + "</tr>" for r in self)
@@ -265,6 +272,13 @@ class Warehouse:
             for name in staged:
                 self.db.execute(f'DROP TABLE IF EXISTS temp."{name}"')
 
+    def add_column(self, table: str, column: str, kind: str) -> None:
+        """A change to a table's columns, which the warehouse's catalogue records at once."""
+        self.db.execute(f"ALTER TABLE main.{table} ADD COLUMN {column} {kind}")
+        [(n,)] = self.db.execute("SELECT COUNT(*) FROM information_schema.columns WHERE table_name = ?", (table,))
+        self.db.execute("INSERT INTO information_schema.columns VALUES (?, ?, ?, ?)", (table, column, n + 1, kind))
+        self.db.commit()
+
     def write(self, table: str, select: str, at: str, *, append: bool = False, **params) -> int:
         """A program's write: replaces the table's rows, or appends to them, and updates the catalogue."""
         if not append:
@@ -272,7 +286,13 @@ class Warehouse:
         cursor = self.db.execute(f"INSERT INTO main.{table} {select}", params)
         added = cursor.rowcount
         rows = self.db.execute(f"SELECT * FROM main.{table}").fetchall()
-        types = tuple(t for _, t in TABLES[table][0])
+        types = tuple(
+            t
+            for (t,) in self.db.execute(
+                "SELECT data_type FROM information_schema.columns WHERE table_name = ? ORDER BY ordinal_position",
+                (table,),
+            )
+        )
         self.db.execute(
             """UPDATE information_schema.tables
                SET row_count = ?, bytes = ?, last_altered = ? WHERE table_name = ?""",

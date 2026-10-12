@@ -17,7 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = {
-    chapter: (ROOT / "notebook" / f"chapter_0{chapter}.py").read_text(encoding="utf-8") for chapter in (1, 2)
+    chapter: (ROOT / "notebook" / f"chapter_0{chapter}.py").read_text(encoding="utf-8") for chapter in (1, 2, 3, 4)
 }
 BUTTONS = ROOT / "notebook" / "buttons"
 LABELS = json.loads((BUTTONS / "buttons.json").read_text(encoding="utf-8"))
@@ -85,6 +85,20 @@ class TheWarnings(unittest.TestCase):
                 ("the page used about 420 MB of memory", memory),
             ],
         }
+        table = {
+            3: ("| Opened from the chapter before's link, after it ran | 11 files, 0.32 MB, in a new tab |", "| Peak memory of a renderer process, opened alone | 400 to 418 MB |"),
+            4: ("| Opened from the chapter before's link, after it ran | 11 files, 0.32 MB, in a new tab | 11 files, 0.32 MB, in a new tab |", "| Peak memory of a renderer process, opened alone | 400 to 418 MB | 400 to 406 MB |"),
+        }
+        runs = "| Run all, from the press until no cell waits (desktop, phone, from the link) | 8.9 to 9.6 s | 8.9 to 10.5 s |"
+        for chapter, memory in ((3, "about 420 MB"), (4, "about 410 MB")):
+            link, peak = table[chapter]
+            expected[chapter] = [
+                ("downloads about 13 MB", gzip),
+                (f"the page downloaded less than 1 MB when opened from Chapter {chapter - 1}'s link", link),
+                (f"Chapter {chapter - 1}'s link opens this page in a new tab", link),
+                ("running every cell took 9 to 11 seconds", runs),
+                (f"the page used {memory} of memory", peak),
+            ]
         for part, pairs in expected.items():
             [warning] = re.findall(r'mo\.callout\(mo\.md\(r"""(.*?)"""\), kind="warn"\)', SOURCE[part], re.S)
             warning = flat(warning)

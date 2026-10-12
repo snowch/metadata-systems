@@ -2,7 +2,7 @@
 
 """Every sentence of the notebooks that states a fact, pinned against the engine, and the prose rules.
 
-Chapters 1 and 2 are a notebook each. Their words are their markdown cells and the labels in their
+Chapters 1 to 4 are a notebook each. Their words are their markdown cells and the labels in their
 code cells. A number in them is a number the engine produced; if the shop changes, this fails
 until the words change with it.
 """
@@ -21,6 +21,8 @@ ROOT = Path(__file__).resolve().parents[2]
 CHAPTERS = {
     1: ROOT / "notebook" / "chapter_01.py",
     2: ROOT / "notebook" / "chapter_02.py",
+    3: ROOT / "notebook" / "chapter_03.py",
+    4: ROOT / "notebook" / "chapter_04.py",
 }
 SOURCE = {chapter: path.read_text(encoding="utf-8") for chapter, path in CHAPTERS.items()}
 
@@ -157,20 +159,29 @@ class TheWordsMatchTheEngine(unittest.TestCase):
     def test_the_chapters_link_to_each_other_by_their_notebooks_names(self):
         build = (ROOT / "notebook" / "jupyterlite" / "build_ipynb.py").read_text(encoding="utf-8")
         names = re.findall(r'"(chapter_\d\d\.ipynb)"', build)
-        self.assertEqual(names, ["chapter_01.ipynb", "chapter_02.ipynb"])
-        self.assertIn("](chapter_02.ipynb)", TEXT[1])
-        self.assertIn("](chapter_01.ipynb)", TEXT[2])
+        self.assertEqual(names, ["chapter_01.ipynb", "chapter_02.ipynb", "chapter_03.ipynb", "chapter_04.ipynb"])
+        for chapter in CHAPTERS:
+            if chapter > 1:
+                self.assertIn(f"](chapter_{chapter - 1:02d}.ipynb)", TEXT[chapter])
+            if chapter < len(CHAPTERS):
+                self.assertIn(f"](chapter_{chapter + 1:02d}.ipynb)", TEXT[chapter])
 
     def test_the_closing_names_the_next_chapter(self):
-        # Chapter 2 ends by naming the chapter after it, which the plan numbers 3.
+        # Chapter 2 ends by naming the chapter after it, which the plan numbers 3; and so on.
         self.says("## Before Chapter 3", 2)
         self.says("Chapter 3 starts making them", 2)
+        self.says("## Before Chapter 4", 3)
+        self.says("is where Chapter 4 starts", 3)
+        self.says("## Before Chapter 5", 4)
+        self.says("Chapter 5 follows those references from one entity to the next.", 4)
 
     def test_each_chapter_opens_and_ends_with_the_way_back_to_the_course(self):
         # Relative links in a notebook open as files of the site, so the course's address is whole.
         nav = {
             1: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Next: Chapter 2](chapter_02.ipynb)",
-            2: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 1](chapter_01.ipynb)",
+            2: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 1](chapter_01.ipynb) · [Next: Chapter 3](chapter_03.ipynb)",
+            3: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 2](chapter_02.ipynb) · [Next: Chapter 4](chapter_04.ipynb)",
+            4: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 3](chapter_03.ipynb)",
         }
         for chapter, line in nav.items():
             self.assertTrue(CELLS[chapter][0].startswith(line + "\n"), chapter)
@@ -255,7 +266,8 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("It also explains Thursday.")
 
     def test_the_three_changes(self):
-        self.assertEqual(len(shop.CHANGES), 3)
+        # Chapter 2's three; Chapter 3 adds a fourth, `column`.
+        self.assertEqual(shop.CHANGES[:3], ("copy", "refunds", "failed"))
         self.says("three small changes to the shop")
         self.says("three ordinary changes")
         self.assertEqual(shop.COPY, "s3://shop-scratch/clean_orders_copy.csv")
@@ -305,6 +317,194 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertEqual(len(shop.cleaning_rules_that_fit(self.week)), 2)
 
 
+def literal(chapter: int, call: str) -> str:
+    """The text a chapter's code passes to `shop.<call>(...)`, or assigns to the name `call`."""
+    for node in ast.walk(ast.parse(SOURCE[chapter])):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr == call and node.args and isinstance(node.args[0], ast.Constant):
+            return node.args[0].value
+        if isinstance(node, ast.Assign) and [getattr(t, "id", None) for t in node.targets] == [call] and isinstance(node.value, ast.Constant):
+            return node.value.value
+    raise KeyError(call)
+
+
+# The record of `daily_sales` as the reader fills it in from the head of the shop's and Jo Marsh's
+# messages: the chapter states what the cells show once it is written.
+FILLED = {
+    "daily_sales means": "the value of every completed order placed that day, by its UTC date",
+    "daily_sales responsible": "Jo Marsh",
+    "daily_sales day means": "the UTC date the orders were placed",
+    "daily_sales revenue_pence means": "the value of the day's completed orders",
+    "daily_sales revenue_pence unit": "pence",
+}
+
+
+class TheWordsOfChapter3(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.week = shop.run_week()
+        cls.w = cls.week.warehouse
+        cls.text = flat(TEXT[3])
+        blank = literal(3, "records")
+        lines = [line for line in blank.splitlines() if line.strip()]
+        assert [line.split(":")[0] for line in lines] == list(FILLED), lines
+        assert all(line.endswith(": ........") for line in lines), lines
+        cls.blank = shop.records(blank)
+        cls.mine = shop.records("\n".join(f"{k}: {v}" for k, v in FILLED.items()))
+        cls.jos = re.search(r'by_jos_meaning = """(.*?)"""', SOURCE[3], re.S).group(1)
+
+    def says(self, phrase: str) -> None:
+        self.assertIn(flat(phrase), self.text)
+
+    def test_the_opening(self):
+        gap = shop.day_gap(self.week, "2026-09-10")
+        self.assertEqual((gap["left_ids"], gap["left_pence"]), ([7021, 7023, 7025], 15400))
+        self.says("Thursday's three orders with no customer id (7021, 7023 and 7025, worth 15400 pence together)")
+        self.assertEqual(self.week.reporting.dashboard()["created_by"], "j.marsh")
+        self.says("Jo Marsh, in finance, built the dashboard and decides what counts as revenue.")
+        self.says("The value of every completed order placed that day, taking the day from the order's time in UTC, in pence.")
+
+    def test_the_record_and_its_check(self):
+        self.assertEqual(len(self.blank.check(self.w, "daily_sales")), 2)
+        self.assertEqual(self.mine.check(self.w, "daily_sales"), [])
+        self.says("With every line written, it finds no problems.")
+        self.assertEqual(self.mine.sql("SELECT value FROM records WHERE asset = 'daily_sales' AND field = 'responsible'"), [{"value": "Jo Marsh"}])
+        self.says("it names Jo Marsh as responsible for `daily_sales`")
+        self.says("`daily_sales revenue_pence unit: pence`")
+
+    def test_jos_meaning_against_the_table(self):
+        files = {"raw_orders": shop.FILES["orders"]}
+        rows = self.w.sql(self.jos, files=files)
+        differ = [(r["day"], r["revenue_pence"], r["meant_pence"]) for r in rows if r["compared"] == "different"]
+        self.assertEqual(differ, [("2026-09-10", 5150, 20550)])
+        self.says("Thursday is the only day that differs: `daily_sales` shows 5150 pence, and Jo Marsh's meaning gives 20550.")
+        every_line = self.jos.replace("(SELECT DISTINCT * FROM raw_orders)", "raw_orders")
+        self.assertEqual([r["day"] for r in self.w.sql(every_line, files=files) if r["compared"] == "different"], ["2026-09-09", "2026-09-10"])
+        self.assertEqual(shop.data.DUPLICATED, 7015)
+        self.says("A query that counted every line of the file would also find Wednesday different, because order 7015 is in the file twice.")
+        rebuilt = self.jos.replace("(SELECT DISTINCT * FROM raw_orders)", "clean_orders")
+        self.assertEqual({r["compared"] for r in self.w.sql(rebuilt)}, {"same"})
+        self.assertIn("FROM clean_orders", SOURCE[3])
+        self.says("Every day is the same, Thursday included.")
+        found = self.mine.sql("SELECT * FROM records WHERE asset LIKE '%products.csv%' OR asset LIKE '%orders.jsonl%' OR value LIKE '%products.csv%' OR value LIKE '%orders.jsonl%'")
+        self.assertEqual(found, [])
+        self.says("It finds none.")
+
+    def test_the_schema_and_the_person(self):
+        counts = {}
+        for r in self.w.sql("SELECT table_name FROM information_schema.columns"):
+            counts[r["table_name"]] = counts.get(r["table_name"], 0) + 1
+        self.assertEqual(counts, {"clean_customers": 5, "clean_orders": 7, "daily_sales": 2})
+        self.says("14 columns in all, 5 in `clean_customers`, 7 in `clean_orders` and 2 in `daily_sales`")
+        edits = self.week.storage.sql(shop.FILES["products"], "SELECT updated_by, COUNT(*) AS products FROM file GROUP BY updated_by")
+        self.assertEqual([(r["updated_by"], r["products"]) for r in edits], [("k.adeyemi", 3), ("r.novak", 2), ("s.lund", 3)])
+        self.says("The cell counts `k.adeyemi` 3, `r.novak` 2 and `s.lund` 3. Three people last edited the 8 products.")
+        first = self.week.storage.read_text(shop.FILES["products"]).splitlines()[0]
+        self.says(f"The file's first line, `{first}`, names the file's columns.")
+
+    def test_the_requirement(self):
+        problems = self.mine.check(self.w)
+        self.assertEqual(len(problems), 12)
+        self.assertEqual({p["asset"] for p in problems}, {"clean_customers", "clean_orders"})
+        self.says("so the check lists the 12 columns of `clean_customers` and `clean_orders`")
+        by_name = shop.records("\n".join(
+            f"{c['table_name']} {c['column_name']} means: {c['column_name'].replace('_', ' ')}"
+            for c in self.w.sql("SELECT table_name, column_name FROM information_schema.columns")
+        ))
+        self.assertIn("by_name = shop.records(", SOURCE[3])
+        self.assertEqual(by_name.check(self.w), [])
+        self.says("With a description for each of the 14 columns, the check finds no problems")
+        self.assertEqual([r["value"] for r in by_name.about("daily_sales")], ["day", "revenue pence"])
+
+    def test_the_record_nobody_updates(self):
+        [p] = self.mine.check(shop.run_week(["column"]).warehouse, "daily_sales")
+        self.assertEqual(p["column"], "order_count")
+        self.says("For change 1, the check reports the new column, `order_count`, with no description.")
+        refunds = shop.run_week(["refunds"])
+        self.assertEqual(self.mine.check(refunds.warehouse, "daily_sales"), [])
+        self.says("For change 2, the check reports nothing: the edit changed no column.")
+        rows = refunds.warehouse.sql(self.jos, files={"raw_orders": shop.FILES["orders"]})
+        differ = [(r["day"], r["revenue_pence"], r["meant_pence"]) for r in rows if r["compared"] == "different"]
+        self.assertEqual(differ, [("2026-09-10", 5150, 20550), ("2026-09-12", 21549, 19149)])
+        self.says("Saturday now differs too: 21549 pence in `daily_sales`, against 19149 by Jo's meaning. Thursday still differs.")
+
+    def test_postgresql_comment(self):
+        # docs/sources.md, "A description inside the database (Chapter 3's closing note)".
+        self.says("In PostgreSQL, the command `COMMENT ON` stores one comment for a table or a column, and a new one replaces the old.")
+
+
+class TheWordsOfChapter4(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.week = shop.run_week()
+        cls.text = flat(TEXT[4])
+        cls.together = shop.records(literal(4, "yours") + literal(4, "jos"))
+        cls.records = shop.typed_records(literal(4, "typed_records"))
+        cls.model = shop.model(literal(4, "model"))
+
+    def says(self, phrase: str) -> None:
+        self.assertIn(flat(phrase), self.text)
+
+    def merged(self) -> "shop.records.TypedRecords":
+        return shop.typed_records(
+            self.records.text.replace("responsible: Jo Marsh", "responsible: j.marsh").replace("responsible: Sam Lund", "responsible: s.lund")
+        )
+
+    def test_the_list_of_owners(self):
+        owners = self.together.sql("SELECT asset, value AS responsible FROM records WHERE field = 'responsible' ORDER BY asset")
+        self.assertEqual(len(owners), 6)
+        self.assertEqual([o["responsible"] for o in owners if o["asset"] == "daily_sales"], ["Jo Marsh", "j.marsh"])
+        [count] = self.together.sql("SELECT COUNT(DISTINCT value) AS owners FROM records WHERE field = 'responsible'")
+        self.assertEqual(count["owners"], 4)
+        self.assertEqual({o["responsible"] for o in owners}, {"the data engineer", "Jo Marsh", "j.marsh", "Sam Lund"})
+        self.says("The cell counts 4 different values of `responsible`: the data engineer, Jo Marsh, `j.marsh` and Sam Lund.")
+        self.assertEqual(self.week.reporting.dashboard()["created_by"], "j.marsh")
+        self.says("the reporting tool records `j.marsh` as the dashboard's creator")
+
+    def test_the_two_notations_hold_the_same_records(self):
+        # Chapter 4's records are Chapter 3's notation's, with a type on each line and the staff list.
+        typed = {(r["identifier"].replace("daily_sales.", "daily_sales "), r["attribute"], r["value"]) for r in self.records if r["type"] in ("dataset", "column", "dashboard")}
+        plain = {(r["asset"] + (" " + r["column"] if r["column"] else ""), r["field"], r["value"]) for r in self.together}
+        self.assertEqual(typed, plain)
+        people = {(r["identifier"], r["attribute"], r["value"]) for r in self.records if r["type"] == "person"}
+        self.assertEqual(people, {("j.marsh", "name", "Jo Marsh"), ("j.marsh", "team", "finance"), ("s.lund", "name", "Sam Lund"), ("s.lund", "team", "catalogue")})
+        self.says("`j.marsh` is Jo Marsh, in finance; `s.lund` is Sam Lund, in catalogue.")
+        self.assertEqual({r["type"] for r in self.model}, {"dataset", "column", "dashboard", "person", "team"})
+        self.says("The model cell defines the types `dataset`, `column`, `dashboard`, `person` and `team`.")
+
+    def test_the_check_and_the_merge(self):
+        problems = self.model.check(self.records)
+        self.assertEqual(len(problems), 5)
+        self.assertEqual(
+            sorted(p["record"].split(":")[0] for p in problems),
+            sorted([
+                "dataset daily_sales responsible", "dataset s3", "dataset clean_customers responsible",
+                "dataset clean_orders responsible", "dataset clean_orders drops",
+            ]),
+        )
+        self.says("The check finds 5 problems.")
+        after = self.model.check(self.merged())
+        self.assertEqual(len(after), 3)
+        self.says("The check then lists 3 problems.")
+        self.assertEqual(sorted({r["value"] for r in self.merged() if r["identifier"] == "daily_sales" and r["attribute"] == "responsible"}), ["j.marsh"])
+
+    def test_the_owners_by_reading(self):
+        self.assertIn('.replace("responsible: Jo Marsh", "responsible: j.marsh")', SOURCE[4])
+        after = shop.typed_records(
+            self.merged().text.replace("responsible: the data engineer", "responsible: data_engineering")
+            + "\nteam data_engineering name: Data engineering\n"
+        )
+        rows = shop.owners(self.week, after)
+        self.assertEqual(len(rows), 7)
+        yes = lambda k: [r["asset"] for r in rows if r[k] == "yes"]
+        self.assertEqual(len(yes("one_owner")), 5)
+        self.assertEqual({r["asset"] for r in rows if r["one_owner"] == "no"}, {"s3://shop-raw/orders.jsonl", "s3://shop-raw/customers.jsonl"})
+        self.says("Of the 7 assets, 5 have one owner under `one_owner`: every asset except `orders.jsonl` and `customers.jsonl`.")
+        self.assertEqual(yes("one_person"), ["s3://shop-raw/products.csv", "daily_sales", "sales_dashboard"])
+        self.says("Three assets have one person under `one_person`: `products.csv`, with `s.lund`, and `daily_sales` and `sales_dashboard`, both with `j.marsh`.")
+        self.assertEqual(yes("one_team"), yes("one_owner"))
+        self.says("Five assets have one team under `one_team`: every asset with an owner.")
+
+
 class TheWordsAboutThePage(unittest.TestCase):
     """The menu of changes offers the engine's changes. Each page's warning states what was measured
     on the pages; test_jupyterlite.py checks it against docs/notes/notebook-prototype.md."""
@@ -317,7 +517,7 @@ class TheWordsAboutThePage(unittest.TestCase):
         ]
         options = ast.literal_eval(next(k.value for k in menu.keywords if k.arg == "options"))
         self.assertEqual(list(options.values()), [[], ["copy"], ["refunds"], ["failed"]])
-        self.assertEqual([c for v in options.values() for c in v], list(shop.CHANGES))
+        self.assertEqual([c for v in options.values() for c in v], list(shop.CHANGES[:3]))
         self.assertEqual(
             list(options),
             [
@@ -383,6 +583,19 @@ class TheWordsKeepTheRules(unittest.TestCase):
         self.assertEqual(first("metadata"), records)
         self.assertTrue(chapter[first("asset")].startswith("An asset is one thing the platform holds"))
         self.assertLess(first("asset"), len(CELLS[1]))
+        # Chapter 3 introduces "descriptive", "operational" and "schema" where it sets the reader's
+        # record beside what the systems record; Chapter 4 its four terms where it asks what the
+        # records describe. Neither uses its terms before then, objectives included.
+        for number, heading, words in (
+            (3, "## What the platform records already", ("descriptive", "operational", "schema")),
+            (4, "## What the records describe", ("entity", "attribute", "identifier", "dataset")),
+        ):
+            cells = [re.sub(r"\]\([^)]*\)", "]", c) for c in CELLS[number]]
+            home = next(i for i, c in enumerate(cells) if c.startswith(heading))
+            for word in words:
+                found = next(i for i, c in enumerate(cells) if re.search(rf"\b{word}", c, re.I))
+                self.assertEqual(found, home, (number, word))
+                self.assertIn(f"**{word}**", cells[home], (number, word))
 
     def test_no_term_of_a_later_chapter(self):
         # The course's term gate (content/plan/plan.ts), chapter by chapter, with the course's

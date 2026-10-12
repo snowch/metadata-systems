@@ -12,7 +12,7 @@ app = marimo.App(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 1](chapter_01.ipynb)
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 1](chapter_01.ipynb) · [Next: Chapter 3](chapter_03.ipynb)
 
     # Chapter 2: The invisible data system
 
@@ -526,7 +526,7 @@ def _(mo):
 
     A file's size is its real size in bytes. A table's size is an estimate from its rows. All times are UTC. A real platform has hundreds or thousands of assets; searching for queries that rebuild one would cost far more. "No simple query over the week's assets reproduces it" means none of the simple queries the menu's last cell tries. A query with a condition on the date could still reproduce the edited table.
 
-    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 1](chapter_01.ipynb)
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 1](chapter_01.ipynb) · [Next: Chapter 3](chapter_03.ipynb)
 
     ---
 

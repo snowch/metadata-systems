@@ -169,6 +169,20 @@ account with rights over the table, an answer to a question about control, not a
 responsible. The note says "some real databases": not every database gives a table an owner, and
 the course claims nothing about the others.
 
+## A description inside the database (Chapter 3's closing note)
+
+PostgreSQL's reference page for `COMMENT` (`doc/src/sgml/ref/comment.sgml` in `postgres/postgres`
+at the branch `master`, commit `a241bc4`), read 12 October 2026 from the repository, because
+postgresql.org refused the build environment. `COMMENT` stores, replaces or removes the comment on
+a database object, a column included (`relation_name.column_name`); only one comment string is
+stored for each object, and a new one replaces it; for most kinds of object only the owner (or a
+superuser) can set it; `psql`'s `\d` family of commands shows comments, built on the functions
+`obj_description` and `col_description`.
+
+It supports the closing note of Chapter 3: some real databases keep a description with a table or
+a column, inside the database. The note says "some": the course claims nothing about databases it
+has not read.
+
 ## Table formats that keep history (Chapter 2's closing note)
 
 Read 6 October 2026, for one sentence of Chapter 2's model-versus-reality note:

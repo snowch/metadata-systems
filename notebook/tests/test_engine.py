@@ -122,7 +122,7 @@ class TheWeekAsItRan(unittest.TestCase):
 
 class TheThreeChanges(unittest.TestCase):
     def test_counts_of_queries_that_give_every_row(self):
-        counts = [len(shop.queries_that_rebuild(shop.run_week([c]), fit="covers")) for c in shop.CHANGES]
+        counts = [len(shop.queries_that_rebuild(shop.run_week([c]), fit="covers")) for c in ("copy", "refunds", "failed")]
         self.assertEqual(counts, [2, 0, 1])
 
     def test_the_analysts_copy(self):
@@ -155,6 +155,77 @@ class TheThreeChanges(unittest.TestCase):
         self.assertNotIn("2026-09-13", days)
         d = week.reporting.dashboard()
         self.assertEqual((d["last_refreshed"], len(d["values"])), ("2026-09-14T03:00:09Z", 6))
+
+
+class TheNewColumn(unittest.TestCase):
+    """Chapter 3's change: from Saturday's row, `daily_sales` gains a column the records do not describe."""
+
+    def test_the_column_arrives_with_saturdays_row(self):
+        week = shop.run_week(["column"])
+        rows = week.warehouse.sql("SELECT * FROM daily_sales ORDER BY day")
+        self.assertEqual([r["order_count"] for r in rows], [None] * 5 + [7, 5])
+        self.assertEqual([r["revenue_pence"] for r in rows], [r["revenue_pence"] for r in shop.run_week().warehouse.sql("SELECT * FROM daily_sales ORDER BY day")])
+        columns = [r["column_name"] for r in week.warehouse.sql("SELECT column_name FROM information_schema.columns WHERE table_name = 'daily_sales' ORDER BY ordinal_position")]
+        self.assertEqual(columns, ["day", "revenue_pence", "order_count"])
+        self.assertEqual(week.reporting.dashboard()["values"], shop.run_week().reporting.dashboard()["values"])
+
+
+class TheRecords(unittest.TestCase):
+    """Chapter 3's records and their check, and Chapter 4's records, model and owners."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.week = shop.run_week()
+
+    def test_a_line_is_an_asset_a_column_a_field_and_a_value(self):
+        r = shop.records("daily_sales revenue_pence unit: pence\ns3://shop-raw/products.csv responsible: Sam Lund\n# a note\n\nnot a fact")
+        self.assertEqual(
+            [(x["line"], x["asset"], x["column"], x["field"], x["value"]) for x in r],
+            [(1, "daily_sales", "revenue_pence", "unit", "pence"), (2, "s3://shop-raw/products.csv", None, "responsible", "Sam Lund")],
+        )
+        self.assertEqual(r.unread, [{"line": 5, "text": "not a fact"}])
+        self.assertEqual(r.sql("SELECT value FROM records WHERE field = 'unit'"), [{"value": "pence"}])
+
+    def test_the_check_wants_a_description_of_every_column(self):
+        empty = shop.records("")
+        problems = empty.check(self.week.warehouse)
+        self.assertEqual(len(problems), 14)
+        dots = shop.records("daily_sales day means: ........\ndaily_sales revenue_pence means: the value")
+        self.assertEqual([(p["asset"], p["column"]) for p in dots.check(self.week.warehouse, "daily_sales")], [("daily_sales", "day")])
+        wrong = shop.records("daily_sales profit means: x\nmonthly_sales means: x\ns3://shop-raw/products.csv means: the catalogue")
+        self.assertEqual([p["line"] for p in wrong.check(self.week.warehouse) if p["line"]], [1, 2])
+
+    def test_a_check_cannot_see_a_change_of_meaning(self):
+        mine = shop.records("daily_sales day means: a day\ndaily_sales revenue_pence means: completed orders")
+        self.assertEqual(mine.check(self.week.warehouse, "daily_sales"), [])
+        self.assertEqual(mine.check(shop.run_week(["refunds"]).warehouse, "daily_sales"), [])
+        [p] = mine.check(shop.run_week(["column"]).warehouse, "daily_sales")
+        self.assertEqual(p["column"], "order_count")
+
+    def test_the_model_finds_missing_things_and_unknown_attributes(self):
+        model = shop.model("dataset responsible: person or team\nperson name: text\nteam name: text")
+        records = shop.typed_records(
+            "dataset daily_sales responsible: Jo Marsh\ndataset daily_sales responsible: j.marsh\n"
+            "dataset daily_sales drops: x\nperson j.marsh name: Jo Marsh\nshop bikes name: x"
+        )
+        problems = [(p["line"], p["problem"]) for p in model.check(records)]
+        self.assertEqual([line for line, _ in problems], [1, 3, 5])
+        self.assertEqual(shop.model("person team: team").check(shop.typed_records(""))[0]["line"], 1)
+
+    def test_the_owners_by_three_readings(self):
+        records = shop.typed_records(
+            "dataset daily_sales responsible: j.marsh\nperson j.marsh team: finance\nteam finance name: Finance\n"
+            "dataset clean_orders responsible: data_engineering\nteam data_engineering name: Data engineering\n"
+            "dataset s3://shop-raw/products.csv responsible: s.lund\nperson s.lund name: Sam Lund\n"
+            "dataset clean_customers responsible: a\ndataset clean_customers responsible: b"
+        )
+        got = {o["asset"]: (o["one_owner"], o["one_person"], o["one_team"]) for o in shop.owners(self.week, records)}
+        self.assertEqual(len(got), 7)
+        self.assertEqual(got["daily_sales"], ("yes", "yes", "yes"))
+        self.assertEqual(got["clean_orders"], ("yes", "no", "yes"))
+        self.assertEqual(got["s3://shop-raw/products.csv"], ("yes", "yes", "no"))
+        self.assertEqual(got["clean_customers"], ("no", "no", "no"))
+        self.assertEqual(got["s3://shop-raw/orders.jsonl"], ("no", "no", "no"))
 
 
 if __name__ == "__main__":

@@ -12,7 +12,9 @@ A change is applied before the week runs, so a changed week is as deterministic 
 - `copy`: an analyst copies `clean_orders` to a scratch bucket every night;
 - `refunds`: the program that writes `daily_sales` is edited, from Saturday's row on, to keep every
   order that has not been refunded, where it kept completed orders (the shop has no refunds);
-- `failed`: the program that writes `daily_sales` fails on the last night and writes nothing.
+- `failed`: the program that writes `daily_sales` fails on the last night and writes nothing;
+- `column` (Chapter 3): from Saturday's row on, the program that writes `daily_sales` also writes
+  the number of completed orders, into a new column `order_count`; the rows before have none.
 
 The programs' SQL lives here, and the platform does not record it: storage holds what the programs
 wrote, not what they did.
@@ -38,7 +40,7 @@ from .data import (
 )
 from .platform import ObjectStorage, Reporting, Warehouse, epoch, iso, stage
 
-CHANGES = ("copy", "refunds", "failed")
+CHANGES = ("copy", "refunds", "failed", "column")
 
 # The nights of the week: the date each night's work starts on, Tuesday 8 to Monday 14.
 NIGHTS = DAYS[1:] + ("2026-09-14",)
@@ -87,6 +89,12 @@ GROUP BY date(ordered_at)"""
 DAILY_SALES_FOR_REFUNDS = """SELECT date(ordered_at), SUM(price_pence * quantity)
 FROM clean_orders
 WHERE status <> 'refunded' AND date(ordered_at) = :day
+GROUP BY date(ordered_at)"""
+
+# The edited program of the `column` change: the same revenue, and the number of orders it counts.
+DAILY_SALES_WITH_COUNT = """SELECT date(ordered_at), SUM(price_pence * quantity), COUNT(*)
+FROM clean_orders
+WHERE status = 'completed' AND date(ordered_at) = :day
 GROUP BY date(ordered_at)"""
 
 DASHBOARD = "SELECT day, revenue_pence FROM daily_sales ORDER BY day"
@@ -196,6 +204,10 @@ def run_week(changes=()) -> Week:
             done("daily_sales", status="failed")
         else:
             sql = DAILY_SALES_FOR_REFUNDS if "refunds" in changes and day >= "2026-09-12" else DAILY_SALES
+            if "column" in changes and day >= "2026-09-12":
+                if day == "2026-09-12":
+                    warehouse.add_column("daily_sales", "order_count", "INTEGER")
+                sql = DAILY_SALES_WITH_COUNT
             n = warehouse.write("daily_sales", sql, timestamp(night, "02:30", 21), append=True, day=day)
             done("daily_sales", wrote="daily_sales", rows=n)
 
