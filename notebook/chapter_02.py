@@ -45,7 +45,7 @@ def _(mo):
     mo.md(r"""
     ## Monday morning
 
-    It is Monday 14 September 2026, your first morning as the shop's data engineer. You have looked round the shop's platform in [Chapter 1](chapter_01.ipynb). The head of the shop has sent you one line: "Thursday's revenue looks wrong."
+    It is Monday 14 September 2026, your first morning as the shop's data engineer. You have looked round the shop's platform in [Chapter 1](chapter_01.ipynb). The head of the shop has sent you a message: "Thursday's revenue looks wrong."
     """)
     return
 

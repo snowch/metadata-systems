@@ -83,10 +83,11 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         # holds the investigation (brief AQ).
         first = CELLS[1][1]
         self.assertTrue(first.startswith("You start work on Monday 14 September 2026 at 09:00"))
-        self.assertIn("the head of the shop sends you one line: \"Thursday's revenue looks wrong.\"", first)
+        self.assertIn("the head of the shop sends you a message: \"Thursday's revenue looks wrong.\"", first)
         self.assertIn("you first need to know what the platform holds and what happens on it each night", first)
         self.assertEqual(CELLS[1][-2], "[Chapter 2](chapter_02.ipynb) goes back to the head of the shop's message and starts with Thursday's revenue.")
-        self.says("The head of the shop has sent you one line", 2)
+        self.says("The head of the shop has sent you a message", 2)
+        self.says("You cannot see the export, the jobs, when they are due to run, or any note anybody kept.", 1)
 
     def test_the_three_systems(self):
         systems = figures.platform_assets(self.week)
