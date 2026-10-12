@@ -337,11 +337,25 @@ def _(mo):
     mo.md(r"""
     ## Reconstruction
 
-    When the platform records no history, the usual move is to infer it from the data. For `daily_sales`, that means finding a query over another asset that gives the same rows. One does: read `clean_orders`, keep the completed orders, add up price times quantity per day. It reproduces `daily_sales` exactly, all seven rows. It also explains Thursday.
+    The platform records nothing about how `daily_sales` was made. The usual move is to infer it from the data: find a query over another asset that gives the same rows.
 
-    Compare the guess you wrote for `daily_sales` in Chapter 1's last cell with the query in the cell below, which the data supports.
+    In Chapter 1's last cell you wrote a guess at what `daily_sales` is made from. The cell below has the same line. Write your guess in it again, or a new one: which table, which orders, and what is added up.
+    """)
+    return
 
-    The cell below runs a query over `clean_orders` that adds up price times quantity, in pence, for each day, counting only completed orders. It compares the query's rows with the rows of `daily_sales`; `True` means every row is the same.
+
+@app.cell
+def _():
+    guess = """
+daily_sales:     made from ........ because ........
+"""
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The cell below tests one guess. It takes `clean_orders`, keeps the completed orders, and adds up price times quantity, in pence, for each day. It compares the result with the rows of `daily_sales`: `True` means every row is the same, and `False` means at least one row is not.
     """)
     return
 
@@ -362,6 +376,14 @@ def _(warehouse):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    It prints `True`: the query gives all 7 rows of `daily_sales`, Thursday's 5150 pence included.
+
+    Thursday matches because `clean_orders` does not hold Thursday's three orders with no customer id: orders 7021, 7023 and 7025, which you found above.
+
+    The query keeps only completed orders. `clean_orders` also holds 2 cancelled orders. `daily_sales` does not count them, and neither does the query.
+
+    Compare the query with your guess. Did you name the same table and the same orders?
+
     The query is evidence of how the table could have been made, not a record of how it was made, and three small changes to the shop show the difference.
 
     An analyst copies `clean_orders` to a CSV file, `clean_orders_copy.csv`, in the bucket `shop-scratch`, every night. Now the same query over the copy reproduces `daily_sales` too. None of the platform's records says which of the two the job reads. A query that fits is evidence for every source it fits.

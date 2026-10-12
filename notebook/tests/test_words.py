@@ -333,10 +333,12 @@ class TheWordsMatchTheEngine(unittest.TestCase):
     def test_the_reconstruction_and_thursday(self):
         self.assertEqual(len(shop.queries_that_rebuild(self.week)), 1)
         self.assertEqual(len(self.w.sql("SELECT * FROM daily_sales")), 7)
-        self.says("It reproduces `daily_sales` exactly, all seven rows.")
+        self.says("It prints `True`: the query gives all 7 rows of `daily_sales`, Thursday's 5150 pence included.")
         gap = shop.day_gap(self.week, "2026-09-10")
         self.assertEqual((gap["left"], gap["left_pence"]), (3, 15400))
-        self.says("It also explains Thursday.")
+        # The reader writes a guess before the query runs; the page says why Thursday matches.
+        self.says("Thursday matches because `clean_orders` does not hold Thursday's three orders with no customer id")
+        self.says("`clean_orders` also holds 2 cancelled orders.")
 
     def test_the_three_changes(self):
         # Chapter 2's three; Chapter 3 adds a fourth, `column`.

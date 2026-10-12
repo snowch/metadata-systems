@@ -127,7 +127,16 @@ pointed at rows by number ("the first or the second reading", "the fourth readin
 your requirement as written" beside "on the fourth reading only". Round 14 names each reading by
 what it needs and says what is met and what is not (`chapter-02/briefs/round-14/`,
 `chapter-02/drafts/round-14/`; every fact landed, nothing added). The readings' header now says
-"the rule", as the box and the paragraph do.
+"the rule", as the box and the paragraph do. The author then could not follow the start of "Reconstruction": it asked
+the reader to compare "the guess you wrote in Chapter 1's last cell" without showing it, described
+the query and its result before the cell ran, and never said how the query "also explains
+Thursday". Chapter 1 asked for a guess in words, not a query, so the section now shows Chapter 1's
+line again in a cell of its own (`guess`), for the reader to write a guess before the query runs;
+says what the query tests and what `True` means; and after it, why Thursday matches (`clean_orders`
+lacks orders 7021, 7023 and 7025) and that the query leaves out `clean_orders`' 2 cancelled orders,
+then asks the reader to compare (round 15: `chapter-02/briefs/round-15/`,
+`chapter-02/drafts/round-15/`; every fact landed, nothing added). Read after Run all on a 412-pixel
+phone.
 
 ## Originality
 
