@@ -148,8 +148,8 @@
 }
 
 /* The chapters' boxes (notebook/jupyterlite/build_ipynb.py writes them as a div in a Markdown
-   cell): the warning about the download and the memory a phone has, and the steps for running and
-   saving the page. Each keeps the page's own text colour and tints its background with a theme
+   cell): the warning about the download and the memory a phone has, the steps for running and
+   saving the page, and the requirement a chapter questions. Each keeps the page's own text colour and tints its background with a theme
    colour, so it reads in the light and the dark theme alike. */
 
 .jp-RenderedMarkdown .ms-box {
@@ -174,6 +174,13 @@
 
 .jp-RenderedMarkdown .ms-box-steps {
   --ms-box-colour: var(--jp-brand-color1);
+}
+
+/* The requirement a chapter questions, in a colour of its own, the same in every chapter, so that
+   a reader knows one when they meet it. JupyterLab's themes have no purple; this one reads on the
+   light and the dark theme alike. */
+.jp-RenderedMarkdown .ms-box-requirement {
+  --ms-box-colour: #8a63d2;
 }
 
 /* What a cell prints keeps its own lines: a JSON Lines file shows one record per line, as it is

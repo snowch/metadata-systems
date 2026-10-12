@@ -76,9 +76,21 @@ def _(mo):
     Chapter 9's graph connects datasets: `build_daily_sales` reads `clean_orders` and writes `daily_sales`. It does not say which columns of `clean_orders` are behind which column of `daily_sales`.
 
     Jo Marsh is checking the checkout's data and asks which fields of `orders.jsonl` matter to the revenue the dashboard shows.
+    """)
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
     The head of the shop's requirement: "Show which columns `revenue_pence` depends on."
+    """), kind="neutral")
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     Lineage between columns, which columns each column is made from or depends on, is **column lineage**.
 
     Before you read on, write in the next cell which columns of `orders.jsonl` you expect `revenue_pence` to depend on, and why.

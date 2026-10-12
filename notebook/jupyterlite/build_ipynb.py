@@ -103,8 +103,9 @@ def find(stmts: list[ast.stmt], attr: str) -> ast.Call:
 
 
 # A callout's kind, and the class the course's stylesheet (notebook/buttons/style/index.css) gives
-# its box. A kind not listed here stops the build.
-BOXES = {"warn": "ms-box-warning", "info": "ms-box-steps"}
+# its box: the warning, the steps for running the page, and the requirement a chapter questions. A
+# kind not listed here stops the build.
+BOXES = {"warn": "ms-box-warning", "info": "ms-box-steps", "neutral": "ms-box-requirement"}
 
 
 def box(name: str, text: str) -> str:
@@ -158,8 +159,9 @@ def build(chapter: int) -> nbformat.NotebookNode:
         if not hidden:
             out.append(nbformat.v4.new_code_cell(code))
         elif "mo.callout(" in code:
-            # A box: the warning, or the steps for running and saving the page. The setup, hidden,
-            # follows the warning and any box straight after it, so the boxes stay together.
+            # A box: the warning, the steps for running and saving the page, or a requirement. The
+            # setup, hidden, follows the warning and any box straight after it, so the boxes stay
+            # together.
             kind = keyword(find(stmts, "callout"), "kind").value
             text = textwrap.dedent(ast.literal_eval(find(stmts, "md").args[0])).strip()
             out.append(nbformat.v4.new_markdown_cell(box(BOXES[kind], text)))

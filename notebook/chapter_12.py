@@ -197,10 +197,22 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## "The same table must have one identity."
+    ## Four meanings of "the same table"
+    """)
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
     The head of the shop's requirement is: "The same table must have one identity."
+    """), kind="neutral")
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     Before you read on, write in the next cell what "the same table" means to you.
     """)
     return

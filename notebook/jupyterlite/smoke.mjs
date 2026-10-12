@@ -1,19 +1,21 @@
 // Copyright © 2026 Christopher Snow
 
 // Opens the built JupyterLite site in Chromium as a phone, with touch, and presses the row of
-// buttons (notebook/buttons/) as the chapters' texts tell a reader to. For each chapter: the menu bar
-// and the notebook's toolbar are hidden; the row shows the labels buttons.json gives, each button
-// at least 44 pixels tall, and arrows to the chapters either side, which open in a new tab, the row
-// fitting 360 pixels, with a link to the contents between them from 600 pixels wide; a press
-// disables the row and marks the pressed button busy until the run ends; Run all runs every visible code cell, with no error in any output, and leaves the
-// notebook where it was scrolled; the warning and the steps for running the page are boxes; in
-// Chapter 1 a printed file keeps one record per line, scrolling inside its box, and the page never
-// scrolls sideways. In Chapter 2, Run below from a selected cell does the same. In Chapter 3 the
-// reader's record, typed in, passes its check, and in Chapter 4 the merge, typed in, leaves the
-// model's check 3 problems; in Chapters 10 to 17 each chapter's change to a cell gives its result. A browser set to dark gets the dark theme, and one set to light the
-// light. The page
-// logs no error, and the notebooks' earlier names lead to their chapters. The notebook workflow
-// runs it after the build, with Playwright from the course's dependencies.
+// buttons (notebook/buttons/) as the chapters' texts tell a reader to. For each chapter: the menu
+// bar and the notebook's toolbar are hidden; the row shows the labels buttons.json gives, each
+// button at least 44 pixels tall, and arrows to the chapters either side, which open in a new tab,
+// the row fitting 360 pixels, with a link to the contents between them from 600 pixels wide; a
+// press disables the row and marks the pressed button busy until the run ends; Run all runs every
+// visible code cell, with no error in any output, and leaves the notebook where it was scrolled;
+// the warning and the steps for running the page are boxes, and from Chapter 2 the requirement the
+// chapter questions is one too, in a colour of its own; in Chapter 1 a printed file keeps one
+// record per line, scrolling inside its box, and the page never scrolls sideways. In Chapter 2, Run
+// below from a selected cell does the same. In Chapter 3 the reader's record, typed in, passes its
+// check, and in Chapter 4 the merge, typed in, leaves the model's check 3 problems; in Chapters 10
+// to 17 each chapter's change to a cell gives its result. A browser set to dark gets the dark
+// theme, and one set to light the light. The page logs no error, and the notebooks' earlier names
+// lead to their chapters. The notebook workflow runs it after the build, with Playwright from the
+// course's dependencies.
 //
 //   node notebook/jupyterlite/smoke.mjs SITE_DIR
 
@@ -285,16 +287,40 @@ try {
       )
       .count();
     check(failed === 0, `Chapter ${chapter}: no output is an error`);
-    // The warning and the steps are boxes, drawn by the course's stylesheet.
-    const boxes = await page.evaluate(() =>
-      [...document.querySelectorAll(".jp-RenderedMarkdown .ms-box")].map((b) => ({
-        name: b.className,
-        tinted: getComputedStyle(b).backgroundColor !== "rgba(0, 0, 0, 0)",
-      })),
-    );
+    // The warning and the steps are boxes, drawn by the course's stylesheet; from Chapter 2, so is
+    // the requirement the chapter questions, in a colour of its own. The notebook draws only the
+    // cells near the view, so the page is scrolled through to find every box.
+    const boxes = await page.evaluate(async () => {
+      const outer = document.querySelector(".jp-WindowedPanel-outer");
+      const kept = outer.scrollTop;
+      const found = new Map();
+      for (let y = 0; y <= outer.scrollHeight; y += 400) {
+        outer.scrollTop = y;
+        await new Promise((r) => setTimeout(r, 60));
+        for (const b of document.querySelectorAll(".jp-RenderedMarkdown .ms-box")) {
+          const style = getComputedStyle(b);
+          found.set(b.textContent.trim().slice(0, 60), {
+            name: b.className.replace("ms-box ", ""),
+            tinted: style.backgroundColor !== "rgba(0, 0, 0, 0)",
+            edge: style.borderLeftColor,
+          });
+        }
+      }
+      outer.scrollTop = kept;
+      return [...found.values()];
+    });
+    const named = (name) => boxes.filter((b) => b.name === name);
     check(
-      boxes.length === 2 && boxes.every((b) => b.tinted),
+      named("ms-box-warning").length === 1 &&
+        named("ms-box-steps").length === 1 &&
+        boxes.every((b) => b.tinted),
       `Chapter ${chapter}: the warning and the steps are boxes (${boxes.map((b) => b.name).join("; ")})`,
+    );
+    const requirement = named("ms-box-requirement");
+    check(
+      requirement.length === (chapter > 1 ? 1 : 0) &&
+        requirement.every((r) => boxes.filter((b) => b.edge === r.edge).length === 1),
+      `Chapter ${chapter}: ${chapter > 1 ? "the requirement is a box in a colour of its own" : "no requirement box"}`,
     );
     if (chapter === 1) {
       // A printed file keeps one record per line: the line scrolls inside its box, and the page

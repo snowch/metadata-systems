@@ -349,9 +349,23 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## "Every column must have a description."
+    ## What a column description must say
+    """)
+    return
 
-    Suppose the shop sets the requirement: "Every column must have a description." Before you read on, write in the next cell whether the line `daily_sales revenue_pence means: the revenue in pence` describes the column `revenue_pence` as the requirement asks, and why.
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Suppose the shop sets the requirement: "Every column must have a description."
+    """), kind="neutral")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Before you read on, write in the next cell whether the line `daily_sales revenue_pence means: the revenue in pence` describes the column `revenue_pence` as the requirement asks, and why.
     """)
     return
 

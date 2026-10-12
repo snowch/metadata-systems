@@ -36,8 +36,22 @@ def _(mo):
     Chapter 7's events use field names the shop chose. A tool written elsewhere would have to learn them, and the field names of every other shop it reads from.
 
     **OpenLineage** is an open specification for events about data processing. It sets their form, so that a program written by one team can send them and a program written by another can read them. It defines three kinds of event. This chapter uses one, the run event, which describes a run of a job. The other two describe a job, or a dataset, on its own.
+    """)
+    return
 
-    The head's requirement reads "Our programs must emit OpenLineage." To emit an event is to send it.
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    The head's requirement reads "Our programs must emit OpenLineage."
+    """), kind="neutral")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    To emit an event is to send it.
     """)
     return
 
@@ -402,6 +416,8 @@ def _(mo):
     - which names: met within the shop's own producers; the analyst's hand-written events used another name until you changed it.
 
     As written, "Our programs" covers every program, so the shop does not meet the requirement until the export and the analyst's copy send events too.
+
+    One of the standard facets, `ownership`, holds a dataset's owners. Each owner is an identifier, which can name a user, a team or an application. So the facet records an owner without saying which of Chapter 2's readings of "owner" it answers. The shop does not send it.
     """)
     return
 

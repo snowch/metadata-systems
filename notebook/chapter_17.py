@@ -217,10 +217,16 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## "Find the cause of the wrong total."
-
-    The head of the shop's requirement: "Find the cause of the wrong total."
+    ## Three meanings of "the cause"
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    The head of the shop's requirement: "Find the cause of the wrong total."
+    """), kind="neutral")
     return
 
 

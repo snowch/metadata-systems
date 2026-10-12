@@ -74,9 +74,21 @@ def _(mo):
     ## A column to rename
 
     The shop's developer wants to rename the column `customer_id` of `clean_orders` to `customer`. The change would take effect from the night's work early on Sunday 13. `build_clean_orders` would write the column as `customer`, and the warehouse would rename it.
+    """)
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
     The head of the shop asks: "Tell us what breaks if `customer_id` is renamed."
+    """), kind="neutral")
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     Three readers of `clean_orders` are known from earlier chapters:
 
     - `build_daily_sales`, which writes `daily_sales`, which the dashboard shows;

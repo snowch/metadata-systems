@@ -32,11 +32,21 @@ def _(mo):
     ## Jo Marsh's question
 
     Jo Marsh, in finance, wants daily revenue to count orders that have no customer id. Jo's meaning of a day's revenue says so (Chapter 3). Chapter 2 found that `clean_orders` leaves out orders with no customer id.
+    """)
+    return
 
-    Jo asks you, before asking for any change:
 
-    > Show me everything related to `daily_sales`.
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Jo asks you, before asking for any change: "Show me everything related to `daily_sales`."
+    """), kind="neutral")
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     Jo wants two things from the answer: where those orders are lost, and what a change would touch.
     """)
     return

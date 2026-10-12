@@ -289,6 +289,25 @@ account with rights over the table, an answer to a question about control, not a
 responsible. The note says "some real databases": not every database gives a table an owner, and
 the course claims nothing about the others.
 
+## An owner for every dataset as practice (Chapter 2's requirement; Chapter 8)
+
+Read 12 October 2026, for checking and not copied. No standard states "every table must have an
+owner"; the course says only that data teams often adopt the rule, and these show the practice
+built into tools that are widely used:
+
+- dbt's documentation, "Add groups to your DAG" (`website/docs/docs/build/groups.md` in
+  `dbt-labs/docs.getdbt.com`, branch `current`): every group has an owner, and `owner` is required;
+  it identifies who is responsible for the group, by a name or an email.
+- OpenLineage's `spec/facets/1-0-0/OwnershipDatasetFacet.json`, from openlineage.io: a dataset facet
+  whose `owners` each have a required `name` and an optional `type`. The schema recommends a URN for
+  the name and gives as examples an application, a user and a team (`application:foo`, `user:jdoe`,
+  `team:data`); its example `type` is `MAINTAINER`. So the standard records an owner and leaves open
+  whether it is a person, a team or a program, the readings Chapter 2 sets apart. Chapter 8 says so;
+  the shop does not send this facet.
+
+A search for the rule in data-mesh writing found practitioner articles that put a named owner per
+dataset first, and none that is a standard; they are not cited on the page.
+
 ## A description inside the database (Chapter 3's closing note)
 
 PostgreSQL's reference page for `COMMENT` (`doc/src/sgml/ref/comment.sgml` in `postgres/postgres`

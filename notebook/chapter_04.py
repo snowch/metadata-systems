@@ -31,10 +31,16 @@ def _(mo):
     mo.md(r"""
     ## Who owns what
 
-    It is still Monday 14 September 2026, late in the afternoon. The head of the shop sends you a requirement:
-
-    > Each asset has one owner. Send me the list.
+    It is still Monday 14 September 2026, late in the afternoon.
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    The head of the shop sends you a requirement: "Each asset has one owner. Send me the list."
+    """), kind="neutral")
     return
 
 

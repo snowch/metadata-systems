@@ -269,10 +269,22 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## "Warn us of breaking changes."
+    ## Which readers a change breaks
+    """)
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
     The head of the shop's requirement: "Warn us of breaking changes."
+    """), kind="neutral")
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     Before you read on, write in the next cell what the shop would have to record to warn each kind of reader.
     """)
     return

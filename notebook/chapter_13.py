@@ -73,9 +73,23 @@ def _(mo):
     mo.md(r"""
     ## Monday after a failed night
 
-    - The week is Chapter 2's, with its failed night: on the last night, early on Monday 14, `build_daily_sales` fails and writes nothing. `refresh_dashboard` runs after it, as every night, and redraws the dashboard from `daily_sales`.
-    - The head of the shop's requirement: "The dashboard must be fresh."
-    - Before you read on, write in the next cell which of `orders.jsonl`, `clean_orders`, `daily_sales` and `sales_dashboard` you think are not up to date at 09:00 on Monday, and how you would tell.
+    The week is Chapter 2's, with its failed night: on the last night, early on Monday 14, `build_daily_sales` fails and writes nothing. `refresh_dashboard` runs after it, as every night, and redraws the dashboard from `daily_sales`.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    The head of the shop's requirement: "The dashboard must be fresh."
+    """), kind="neutral")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Before you read on, write in the next cell which of `orders.jsonl`, `clean_orders`, `daily_sales` and `sales_dashboard` you think are not up to date at 09:00 on Monday, and how you would tell.
     """)
     return
 

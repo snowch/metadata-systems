@@ -113,10 +113,22 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## "No order without a customer."
+    ## Orders without a customer id
+    """)
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
     The head of the shop's requirement is: "No order without a customer."
+    """), kind="neutral")
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     Before you read on, write in the next cell what you take it to mean: where must there be no order without a customer, and what should happen to one?
     """)
     return

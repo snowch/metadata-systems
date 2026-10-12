@@ -333,10 +333,22 @@ def _(found):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## "The graph must show the current lineage."
+    ## Three meanings of "current"
+    """)
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
     The head of the shop's requirement: "The graph must show the current lineage."
+    """), kind="neutral")
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     Before you read on, write in the next cell what "current" means to you.
     """)
     return

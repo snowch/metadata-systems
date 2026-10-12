@@ -116,7 +116,13 @@ which makes the gap between a requirement's words and its purpose the learner's,
 else's. Brief and draft: `chapter-02/briefs/round-12/whose-rule.md`,
 `chapter-02/drafts/round-12/whose-rule.md`; every fact landed, nothing added. Chapter 4's "Each
 asset has one owner." stays the head's: there the head asks for a list of whom to ask, a request a
-shop's head makes.
+shop's head makes. Later the same day the author asked whether the rule is not simply good
+practice. It now reads as one data teams often adopt, which the learner adopts for the shop, in the
+chapter's requirement box (`docs/plan.md`, "the requirement in a box"; sources in
+`docs/sources.md`); brief and draft in `docs/notes/requirement-boxes/`. The section's heading
+became "What each system records about assets, and why", and its first sentence no longer says
+"what it does" (round 13: `chapter-02/briefs/round-13/`, `chapter-02/drafts/round-13/`; the draft's
+"because that work needs them" was cut as a repeat).
 
 ## Originality
 

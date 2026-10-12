@@ -148,7 +148,12 @@ A prediction is an experiment, built around what the learner should learn (`CLAU
 Some exercises question a requirement instead of predicting a result (`CLAUDE.md`, "Question the
 requirement"). Look for one in every chapter: `docs/plan.md` lists a candidate for each.
 
-- **State the requirement in words**, as somebody at the shop would write it.
+- **State the requirement in words**, as somebody at the shop would write it, in one sentence that
+  quotes it, in a box of its own: a callout of the kind `"neutral"`, which the build draws as the
+  requirement's box, in a colour no other box uses. One per chapter, where the requirement arrives;
+  a heading straight above it names the section's subject and does not repeat the requirement's
+  words. `notebook/tests/test_jupyterlite.py` and `smoke.mjs` check that each chapter from 2 has
+  one.
 - **List what it could be asking**, each as a question, and what each question needs recorded.
   Every reading must be one a reasonable engineer could hold.
 - **Let the learner commit first**, then show the readings, then what the platform records.

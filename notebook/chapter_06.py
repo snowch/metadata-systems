@@ -455,10 +455,22 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## "Record the lineage of `daily_sales`."
+    ## Four meanings of lineage
+    """)
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
     After the stale lines, the head of the shop sets a requirement: "Record the lineage of `daily_sales`."
+    """), kind="neutral")
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     Before you read on, write in the next cell what you would record, and from what.
     """)
     return

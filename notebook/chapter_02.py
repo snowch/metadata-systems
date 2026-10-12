@@ -281,11 +281,27 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## Why each system records what it does about an asset
+    ## What each system records about assets, and why
 
-    Each system records what it does about an asset because its own work needs it. The warehouse keeps column names and types so that it can run a query. Object storage keeps a file's key so that it can serve the file. The reporting tool keeps the values so that it can draw the chart. In the shop's platform, a system records what its own work needs and nothing more. The questions you want answered are not its work.
+    Each of the shop's systems records the things about an asset that its own work needs. The warehouse keeps column names and types so that it can run a query. Object storage keeps a file's key so that it can serve the file. The reporting tool keeps the values so that it can draw the chart. In the shop's platform, a system records what its own work needs and nothing more. The questions you want answered are not its work.
 
-    The owner the warehouse records shows how far that goes. "Who should I ask about `daily_sales`?" wants a person or a team. As the shop's data engineer, you want that question to have an answer for every table. So you might write a requirement for the platform: "Every table must have an owner." The cell below lists the owner the warehouse records for each table.
+    The owner the warehouse records shows how far that goes. "Who should I ask about `daily_sales`?" wants a person or a team.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Data teams often adopt a rule so that every table has someone to ask about it: "Every table must have an owner."
+    """), kind="neutral")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    You adopt the rule for the shop's platform. The cell below lists the owner the warehouse records for each table.
     """)
     return
 

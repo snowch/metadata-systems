@@ -385,10 +385,22 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## "Record every run."
+    ## Fields a run record must hold
+    """)
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
     The head of the shop sets a requirement: "Record every run."
+    """), kind="neutral")
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     Before you read on, change the list `yours` in the next cell to the fields you would record, write what you take the requirement to mean where the cell shows `........`, select the cell and press **Run below**.
 
     The cell sets your design against four readings of the requirement, and says which it meets.

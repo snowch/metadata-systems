@@ -262,6 +262,23 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 12 October 2026: the requirement in a box; the owner rule as practice
+
+The author asked whether the requirement a chapter questions deserved a callout. Each chapter from
+2 to 17 now states its requirement in one sentence in a box of its own, the same colour in every
+chapter, where the requirement arrives (in the opening of Chapters 4, 5 and 8). The sentences were
+moved into the boxes as they stood. Where a heading quoted the requirement just above its box, the
+heading now names the section's subject instead (Chapters 3, 6, 7, 9, 11, 12, 14, 15 and 17); the
+quoted headings of later sections stay.
+
+The author also asked why the head of the shop would care that every table has an owner. Chapter
+2's rule is now one data teams often adopt, which the learner adopts for the shop: no standard
+states it, and two widely used tools build it in (`docs/sources.md`, "An owner for every dataset as
+practice"). Chapter 8 returns to it: OpenLineage's `ownership` facet names an owner as a user, a
+team or an application, and so does not say which of Chapter 2's readings it answers. Chapter 2's
+section heading and its first sentence no longer say a system records "what it does", which read as
+its activity.
+
 ### 12 October 2026: Chapters 5 and 6 written
 
 The author asked for Chapters 5 and 6. Both keep their rows. Chapter 5's reader turns Chapter 4's

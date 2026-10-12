@@ -41,13 +41,21 @@ SOURCE = {chapter: path.read_text(encoding="utf-8") for chapter, path in CHAPTER
 
 
 def markdown_cells(chapter: int) -> list[str]:
-    """The text of every `mo.md(...)` cell of a chapter, in the notebook's order."""
+    """The text of every `mo.md(...)` cell of a chapter, in the notebook's order, with the text of
+    each requirement's box (a callout of the kind "neutral"), which reads as part of the chapter."""
     out = []
     for node in ast.parse(SOURCE[chapter]).body:
         if not isinstance(node, ast.FunctionDef):
             continue
         for stmt in node.body:
             call = stmt.value if isinstance(stmt, ast.Expr) else None
+            if (
+                isinstance(call, ast.Call)
+                and isinstance(call.func, ast.Attribute)
+                and call.func.attr == "callout"
+                and any(k.arg == "kind" and getattr(k.value, "value", None) == "neutral" for k in call.keywords)
+            ):
+                call = call.args[0]
             if (
                 isinstance(call, ast.Call)
                 and isinstance(call.func, ast.Attribute)
@@ -304,9 +312,10 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertEqual((owners, len(programs)), ({"etl_service"}, 4))
         tables = self.w.sql("SELECT table_name FROM information_schema.tables")
         self.assertEqual(len(tables), 3)
-        # The rule is the data engineer's own, written so that "Who should I ask?" has an answer; the
-        # warehouse meets it as written before anyone acts.
-        self.says('So you might write a requirement for the platform: "Every table must have an owner."')
+        # The rule is one data teams often adopt (docs/sources.md), which the data engineer adopts so
+        # that "Who should I ask?" has an answer; the warehouse meets it as written before anyone acts.
+        self.says('Data teams often adopt a rule so that every table has someone to ask about it: "Every table must have an owner."')
+        self.says("You adopt the rule for the shop's platform.")
         self.says("So the requirement is met before you do anything")
         self.assertNotIn("head of the shop's requirement is: \"Every table", self.text[2])
         self.says("The warehouse records `etl_service` as the owner of all three tables, in the column `table_owner` of `information_schema.tables`.")
@@ -317,7 +326,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("| which job writes it | a program | no: it names an account, not a program |")
         self.assertEqual(flat(TEXT[2]).count("| yes |"), 1)
         # "field" is kept for a file's record (Chapter 1); what a system keeps is not called one here.
-        self.says("## Why each system records what it does about an asset")
+        self.says("## What each system records about assets, and why")
         self.assertNotIn("These fields", self.text[2])
 
     def test_the_reconstruction_and_thursday(self):
@@ -1350,7 +1359,7 @@ class TheWordsKeepTheRules(unittest.TestCase):
             (8, "The first event's `eventType`", ("namespace", "producer", "facet")),
             (9, "## From events to a graph", ("ingestion",)),
             (9, "## Normalise", ("normalise",)),
-            (10, "## Which columns", ("column lineage",)),
+            (10, "Lineage between columns", ("column lineage",)),
             (11, "## The schema over time", ("schema evolution",)),
             (11, "Compare the counts with what you wrote.", ("breaking change",)),
             (12, "## A run in development", ("environment",)),

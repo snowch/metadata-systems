@@ -134,8 +134,14 @@ class TheBoxes(unittest.TestCase):
             self.assertIn(f".jp-RenderedMarkdown .{name} {{", css)
 
     def test_each_chapter_opens_with_a_warning_and_the_steps(self):
+        # From Chapter 2, one box more, for the requirement the chapter questions, its words quoted;
+        # it comes where the requirement arrives, in the opening of Chapters 4, 5 and 8.
         for chapter, source in SOURCE.items():
-            self.assertEqual(re.findall(r'\bkind="(\w+)"\)', source), ["warn", "info"], chapter)
+            kinds = re.findall(r'\bkind="(\w+)"\)', source)
+            self.assertEqual([k for k in kinds if k != "neutral"], ["warn", "info"], chapter)
+            self.assertEqual(kinds.count("neutral"), 1 if chapter > 1 else 0, chapter)
+            for text in re.findall(r'mo\.callout\(mo\.md\(r"""((?:(?!""").)*)"""\), kind="neutral"\)', source, re.S):
+                self.assertRegex(text.strip(), r'^[^\n]* "[^"]+"$', chapter)
             [steps] = re.findall(r'mo\.callout\(mo\.md\(r"""(.*?)"""\), kind="info"\)', source, re.S)
             self.assertIn("press **Run all**, at the top of the page", steps, chapter)
 
