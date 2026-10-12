@@ -132,6 +132,12 @@ Part IV adds three:
 The returns desk's changes of a day reach `returns` before that night's work, and Monday morning's
 after the last night's and before you start. Chapters 7 to 13 state nothing this order changes.
 
+Part V adds one:
+
+- **`twice`** (Chapter 19). Object storage delivers its notice of the desk's correction of `r-202`
+  (Thursday 09:30) twice, so `record_return` starts twice for it, 25 seconds apart. Each run deletes
+  the return's row and writes it again, so `returns` ends the same; the events hold two runs.
+
 ### The returns desk (Chapter 7 on)
 
 Built with Chapter 7 (`docs/plan.md`, "12 October 2026: processing started by objects"). The change
@@ -236,6 +242,29 @@ evidence:
 - **A backwards search** (`notebook/shop/cause.py`, Chapter 17). `search` measures one day's revenue,
   as the dashboard's program defines it, at each step back to the export, with whether each step
   differs from its input and whether its program's code changed since the night before.
+- **Delivery** (`notebook/shop/delivery.py`, Chapters 18 to 20). `send` sends the week's events down
+  a path to the collector, each a second after its event time and received two seconds later,
+  with faults picked by job, type and day: an event lost, held up, or received with its
+  acknowledgement lost; with `at_least_once`, a program sends an event again every 30 seconds until
+  it is acknowledged, and with `restamp` builds it again with the new time. `open_runs` lists runs
+  started and not ended, with how long the job's ended runs usually took; `repeated_work` finds a
+  function started more than once for one change of one object; `object_states` gives each
+  return's object its last change, by event time or by arrival. Ingestion gains `dedupe` (by
+  content, or by run and type) and an arrival order for `objects`, which also keeps the run that
+  last wrote each dataset (`written`).
+- **Claims** (`notebook/shop/claims.py`, Chapter 21). Three sources' claims about `daily_sales`'s
+  owner and columns (the warehouse's catalogue, read nightly; your records; the previous engineer's
+  team sheet, imported nightly), each with when it was sent and when its source last changed, and
+  `resolve` by `newest`, `as of`, `ranked` or `all`.
+- **References across systems** (`notebook/shop/aliases.py`, Chapter 22). Six references to
+  `daily_sales` or a thing named like it, and `merge` by `exact`, `qualified`, `last part` or
+  `aliases`.
+- **Scale** (`notebook/shop/scale.py`, Chapter 23). `measure` counts the week's metadata; `reach`
+  measures how much of the job graph a traversal from each dataset follows; `project` scales the
+  week's rates to ten million assets and counts the records four questions read, with and without
+  an index, partitions or a depth limit; `first_over` gives the size at which each passes a budget
+  of a million records. `retain` deletes events older than a number of days; `compact` folds runs'
+  edges into job edges with their first and last times.
 - **The records as a graph** (`notebook/shop/graph.py`, Chapters 5 and 6). `graph(records, model)`
   makes each entity a node and each line whose value names another entity an edge; `traverse`
   walks the edges it is given, each way it is given; `downstream` and `upstream` walk `reads` and

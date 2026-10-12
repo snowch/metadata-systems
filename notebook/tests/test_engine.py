@@ -644,5 +644,211 @@ class TheCause(unittest.TestCase):
         self.assertIn("status <> 'refunded'", C.code_change(shop.run_week(["refunds"]), "build_daily_sales", "2026-09-13"))
 
 
+
+def _graph(events, order="event"):
+    from shop import ingest as I
+
+    objs = I.objects(I.normalise(events), order=order)
+    return objs, I.edges(objs)
+
+
+class TheDeliveryPath(unittest.TestCase):
+    """Chapter 18: an event the path loses, and sending again until acknowledged."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.week = shop.run_week(["returns"])
+
+    def test_a_lost_complete_leaves_the_job_graph_and_an_open_run(self):
+        from shop import delivery as D
+
+        whole = D.send(self.week)
+        self.assertEqual((len(whole.log), len(whole.events), len(whole.lost)), (68, 68, 0))
+        lossy = D.send(self.week, lose=["build_daily_sales COMPLETE 2026-09-10"])
+        self.assertEqual((len(lossy.events), len(lossy.lost)), (67, 1))
+        _, e = _graph(lossy.events)
+        _, e0 = _graph(whole.events)
+        runs = lambda edges: [(r["edge"], r["runs"]) for r in edges.of("shop/build_daily_sales")]
+        self.assertEqual(runs(e0), [("reads", 7), ("writes", 7)])
+        self.assertEqual(runs(e), [("reads", 7), ("writes", 6)])
+        [open_] = D.open_runs(lossy.events, "2026-09-14T09:00:00Z")
+        self.assertEqual(open_, {"job": "build_daily_sales", "started": "2026-09-10T02:30:00Z", "seconds since": 369000, "usual seconds": 21})
+
+    def test_a_lost_complete_of_the_only_run_leaves_no_edge(self):
+        from shop import delivery as D
+
+        lossy = D.send(self.week, lose=["remove_return COMPLETE"])
+        _, e = _graph(lossy.events)
+        _, e0 = _graph(D.send(self.week).events)
+        self.assertEqual(list(e.of("shop/remove_return")), [])
+        self.assertEqual([(r["edge"], r["dataset"]) for r in e0.of("shop/remove_return")], [("writes", "warehouse://shop-warehouse/shop.analytics.returns")])
+        [open_] = D.open_runs(lossy.events, "2026-09-14T09:00:00Z")
+        self.assertEqual((open_["started"], open_["usual seconds"]), ("2026-09-12T16:50:02Z", None))
+
+    def test_at_least_once(self):
+        from shop import delivery as D
+
+        again = D.send(self.week, lose=["remove_return COMPLETE"], at_least_once=True)
+        self.assertEqual((len(again.events), len(again.lost)), (68, 0))
+        [row] = [r for r in again.log if r["sendings"] > 1]
+        self.assertEqual((row["sendings"], row["received"], row["first arrival"]), (2, 1, "2026-09-12T16:50:37Z"))
+        twice = D.send(self.week, lose_ack=["remove_return COMPLETE"], at_least_once=True)
+        self.assertEqual(len(twice.events), 69)
+        self.assertEqual([r["received"] for r in twice.log if r["received"] > 1], [2])
+
+
+class TheDuplicates(unittest.TestCase):
+    """Chapter 19: an event received twice, a retry with a new time, and a trigger delivered twice."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.week = shop.run_week(["returns"])
+
+    def test_a_repeat_changes_no_edge(self):
+        from shop import delivery as D
+
+        d = D.send(self.week, lose_ack=["build_daily_sales COMPLETE 2026-09-10"], at_least_once=True)
+        self.assertEqual(len(d.events), 69)
+        _, e = _graph(d.events)
+        _, e0 = _graph(D.send(self.week).events)
+        self.assertEqual(list(e.by_job), list(e0.by_job))
+
+    def test_a_retry_with_a_new_time(self):
+        from shop import delivery as D, ingest as I
+
+        d = D.send(self.week, lose_ack=["build_daily_sales COMPLETE 2026-09-10"], at_least_once=True, restamp=True)
+        objs, _ = _graph(d.events)
+        [run] = [r for r in objs.runs.values() if r["job"] == "shop/build_daily_sales" and r["started"].startswith("2026-09-10")]
+        self.assertEqual((run["started"], run["ended"]), ("2026-09-10T02:30:00Z", "2026-09-10T02:30:52Z"))
+        self.assertEqual(len(I.dedupe(d.events, "content").dropped), 0)
+        [dropped] = I.dedupe(d.events, "run").dropped
+        self.assertEqual((dropped["event time"], dropped["kept event time"]), ("2026-09-10T02:30:52Z", "2026-09-10T02:30:21Z"))
+        objs, _ = _graph(I.dedupe(d.events, "run"))
+        [run] = [r for r in objs.runs.values() if r["job"] == "shop/build_daily_sales" and r["started"].startswith("2026-09-10")]
+        self.assertEqual(run["ended"], "2026-09-10T02:30:21Z")
+        exact = D.send(self.week, lose_ack=["build_daily_sales COMPLETE 2026-09-10"], at_least_once=True)
+        self.assertEqual(len(I.dedupe(exact.events, "content").dropped), 1)
+
+    def test_a_trigger_delivered_twice(self):
+        from shop import delivery as D, ingest as I
+
+        twice = shop.run_week(["returns", "twice"])
+        events = D.week_events(twice)
+        self.assertEqual(len(events), 70)
+        self.assertEqual(
+            list(D.repeated_work(events)),
+            [{"object": "s3://shop-returns/r-202.json", "version": "68d7454802de", "change": "overwritten", "runs": 2}],
+        )
+        self.assertEqual(len(I.dedupe(events, "run").dropped), 0)
+        self.assertEqual(
+            twice.warehouse.sql("SELECT * FROM returns ORDER BY return_id"),
+            self.week.warehouse.sql("SELECT * FROM returns ORDER BY return_id"),
+        )
+        _, e = _graph(events)
+        _, e0 = _graph(D.week_events(self.week))
+        runs = lambda edges: {(r["edge"], r["dataset"]): r["runs"] for r in edges.of("shop/record_return")}
+        self.assertEqual(runs(e0)[("writes", "warehouse://shop-warehouse/shop.analytics.returns")], 5)
+        self.assertEqual(runs(e)[("writes", "warehouse://shop-warehouse/shop.analytics.returns")], 6)
+
+
+class TheOrder(unittest.TestCase):
+    """Chapter 20: event time against arrival time."""
+
+    def test_a_late_complete(self):
+        from shop import delivery as D, ingest as I
+
+        w = shop.run_week(["returns"])
+        d = D.send(w, delay={"build_daily_sales COMPLETE 2026-09-09": 26 * 3600})
+        seen = d.until("2026-09-10T09:00:00Z")
+        last = lambda order: [r["run ended"] for r in I.objects(I.normalise(seen), order=order).written if r["dataset"].endswith("daily_sales")]
+        self.assertEqual(last("event"), ["2026-09-10T02:30:21Z"])
+        self.assertEqual(last("arrival"), ["2026-09-09T02:30:21Z"])
+
+    def test_a_start_after_its_complete(self):
+        from shop import delivery as D, ingest as I
+
+        w = shop.run_week(["returns"])
+        d = D.send(w, delay={"build_daily_sales START 2026-09-09": 60})
+        state = lambda order: [r["state"] for r in I.objects(I.normalise(d.events), order=order).runs.values() if r["job"].endswith("build_daily_sales") and r["started"].startswith("2026-09-09")]
+        self.assertEqual(state("event"), ["COMPLETE"])
+        self.assertEqual(state("arrival"), ["START"])
+
+    def test_a_delete_before_its_create(self):
+        from shop import delivery as D
+
+        w = shop.run_week(["returns", "withdrawn"])
+        d = D.send(w, delay={"record_return START 2026-09-13": 12 * 3600, "record_return COMPLETE 2026-09-13": 12 * 3600})
+        exists = lambda order: [r["exists"] for r in D.object_states(d.events, order) if r["object"].endswith("r-206.json")]
+        self.assertEqual(exists("event"), ["no"])
+        self.assertEqual(exists("arrival"), ["yes"])
+
+
+class TheClaims(unittest.TestCase):
+    """Chapter 21: three sources, and the rule that chooses."""
+
+    def test_newest_wins_changes_overnight(self):
+        from shop import claims as C
+
+        pick = lambda at, rule: {r["attribute"]: (r["value"], r["source"]) for r in C.resolve(C.claims(at), rule)}
+        self.assertEqual(pick("2026-09-14T18:00:00Z", "newest"), {"columns": ("day, revenue", "team sheet"), "owner": ("j.marsh", "records")})
+        self.assertEqual(pick("2026-09-15T09:00:00Z", "newest"), {"columns": ("day, revenue", "team sheet"), "owner": ("data team", "team sheet")})
+        self.assertEqual(pick("2026-09-15T09:00:00Z", "as of"), {"columns": ("day, revenue_pence", "warehouse"), "owner": ("etl_service", "warehouse")})
+        self.assertEqual(pick("2026-09-15T09:00:00Z", "ranked"), {"columns": ("day, revenue_pence", "warehouse"), "owner": ("j.marsh", "records")})
+        self.assertEqual(len(C.resolve(C.claims("2026-09-15T09:00:00Z"), "all")), 5)
+
+
+class TheAliases(unittest.TestCase):
+    """Chapter 22: which references merge, rule by rule."""
+
+    def test_the_rules(self):
+        from shop import aliases as A
+
+        sizes = lambda rule: [r["references"] for r in A.merge(rule)]
+        self.assertEqual(sizes("exact"), [1, 1, 1, 1, 1, 1])
+        self.assertEqual(sizes("qualified"), [2, 1, 1, 1, 1])
+        self.assertEqual(sizes("last part"), [6])
+        self.assertEqual(sizes("aliases"), [4, 1, 1])
+        self.assertEqual(A.merge("aliases")[0]["systems"], "warehouse, events, transformation tool, reporting tool")
+
+
+class TheScale(unittest.TestCase):
+    """Chapter 23: the week's rates, projected, and retention."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.week = shop.run_week(["returns"])
+
+    def test_the_week_measured(self):
+        from shop import scale as S
+
+        [m] = S.measure(self.week)
+        self.assertEqual(m, {"assets": 11, "jobs": 6, "runs": 34, "events": 68, "run edges": 67, "job edges": 14, "days": 7, "bytes per event": 1492})
+        self.assertEqual((S.reach(self.week)[0]["dataset"], S.reach(self.week)[0]["share"]), ("s3://shop-raw/orders.jsonl", 0.43))
+
+    def test_which_question_passes_the_budget_first(self):
+        from shop import scale as S
+
+        first = {r["question"]: r["first over budget at"] for r in S.first_over(self.week)}
+        self.assertEqual(first, {
+            "latest run, scan": 100000, "latest run, index": None, "one day, scan": 100000,
+            "one day, partitions": 10000000, "downstream, to the end": 10000000, "downstream, 4 steps": None,
+        })
+        top = S.project(self.week)[-1]
+        self.assertEqual((top["events stored"], top["latest run, index"]), (794805210, 31))
+
+    def test_retention_and_compaction(self):
+        from shop import delivery as D, scale as S
+
+        events = D.week_events(self.week)
+        kept = S.retain(events, 3, "2026-09-14T09:00:00Z")
+        self.assertEqual(len(kept), 28)
+        _, all_ = _graph(events)
+        _, some = _graph(kept)
+        self.assertEqual(len(S.lineage_of(all_.by_run, "r-201.json")), 1)
+        self.assertEqual(len(S.lineage_of(some.by_run, "r-201.json")), 0)
+        self.assertEqual(len(S.lineage_of(S.compact(events), "r-201.json")), 1)
+        self.assertEqual(len(self.week.warehouse.sql("SELECT * FROM returns WHERE return_id = 'r-201'")), 1)
+
+
 if __name__ == "__main__":
     unittest.main()

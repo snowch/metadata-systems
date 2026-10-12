@@ -47,6 +47,7 @@ MESSAGES = {
     'no_changes': 'Normalising changed nothing.',
     'no_unknown': 'The stage knows every facet in the events.',
     'no_runs': 'No run matches.',
+    'no_dropped': 'No event was dropped.',
 }
 
 
@@ -164,13 +165,16 @@ class Objects:
         return ("text/html", self._repr_html_())
 
 
-def objects(events: list[dict], known: dict | None = None) -> Objects:
-    """Jobs, runs and datasets from the events. A run's state is its latest event's type, by event
-    time. Of each facet, only the fields `known` names are read; any other facet is listed."""
+def objects(events: list[dict], known: dict | None = None, order: str = "event") -> Objects:
+    """Jobs, runs and datasets from the events. A run's state is its latest event's type: latest by
+    event time, or with `order="arrival"`, the last to arrive. Of each facet, only the fields `known`
+    names are read; any other facet is listed. Each dataset keeps the run that last wrote it, in the
+    same order."""
     known = KNOWN if known is None else known
     runs: dict[str, dict] = {}
     unknown: list[dict] = []
-    for e in sorted(events, key=lambda ev: ev["eventTime"]):
+    written: dict[str, dict] = {}
+    for e in (sorted(events, key=lambda ev: ev["eventTime"]) if order == "event" else events):
         job = f"{e['job']['namespace']}/{e['job']['name']}"
         r = runs.setdefault(
             e["run"]["runId"],
@@ -186,6 +190,9 @@ def objects(events: list[dict], known: dict | None = None) -> Objects:
             for d in e.get(side) or []:
                 if _key(d) not in r[edge]:
                     r[edge].append(_key(d))
+                if side == "outputs":
+                    rows = ((d.get("outputFacets") or {}).get("outputStatistics") or {}).get("rowCount")
+                    written[_key(d)] = {"dataset": _key(d), "job": job, "run ended": e["eventTime"], "rows": rows}
                 for g in ("facets", "inputFacets", "outputFacets"):
                     groups.append((f"{d['name']}", d.get(g)))
         for where, group in groups:
@@ -203,7 +210,39 @@ def objects(events: list[dict], known: dict | None = None) -> Objects:
         j["runs"] += 1
         for key in r["reads"] + r["writes"]:
             datasets.setdefault(key, {"dataset": key})
-    return Objects(jobs, runs, datasets, unknown)
+    objs = Objects(jobs, runs, datasets, unknown)
+    objs.written = Rows(written.values(), null="")
+    return objs
+
+
+class Deduped(list):
+    """The events kept, and those dropped as repeats of an event already kept."""
+
+    def __init__(self, events, dropped) -> None:
+        super().__init__(events)
+        self.dropped = Rows(dropped, empty=MESSAGES["no_dropped"])
+
+    def _repr_html_(self) -> str:
+        return Rows([{"events kept": len(self), "dropped": len(self.dropped)}])._repr_html_()
+
+    def _mime_(self):
+        return ("text/html", self._repr_html_())
+
+
+def dedupe(events: list[dict], key: str = "content") -> Deduped:
+    """The events with repeats dropped, keeping the first of each in the order given. A repeat is an
+    event with the same content as one kept (`key="content"`), or with the same run and the same type
+    (`key="run"`)."""
+    kept, dropped, seen = [], [], {}
+    for e in events:
+        k = json.dumps(e, sort_keys=True) if key == "content" else (e["run"]["runId"], e.get("eventType"))
+        if k in seen:
+            first = seen[k]
+            dropped.append({"job": e["job"]["name"], "type": e.get("eventType"), "event time": e["eventTime"], "kept event time": first["eventTime"]})
+            continue
+        seen[k] = e
+        kept.append(e)
+    return Deduped(kept, dropped)
 
 
 class Edges:
@@ -267,4 +306,4 @@ def edges(objs: Objects) -> Edges:
     return Edges(by_run, list(by_job.values()))
 
 
-__all__ = ["event_lines", "parse", "normalise", "objects", "edges", "KNOWN"]
+__all__ = ["event_lines", "parse", "normalise", "objects", "edges", "dedupe", "KNOWN"]

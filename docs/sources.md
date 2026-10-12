@@ -196,6 +196,17 @@ for checking and not copied:
 Chapter 14's facets, and each inside a whole run event, were validated against these schemas with
 `jsonschema` 4.26 outside the repository (`docs/notes/chapter-14.md`).
 
+### Read for Part V (12 October 2026)
+
+From `OpenLineage/OpenLineage`, branch `main`, `spec/OpenLineage.json` (`$id` version 2-0-2), read
+for checking and not copied: `eventTime` is described as "the time the event occurred at", a
+date-time the producer sets; `eventType` says a run must issue one `START` and one of `COMPLETE`,
+`ABORT` or `FAIL`, and may add `OTHER` events, for example after the run is complete. Nothing in it
+says how an event travels, whether it may arrive twice or late, or what a consumer does then; the
+pages read on 6 October say nothing either (above, "The documentation pages"). So Part V's
+delivery path, its acknowledgements and retries, and ingestion's rules for repeats and order are
+the shop's own, and the pages say so.
+
 ## W3C PROV (Chapter 15)
 
 *PROV-DM: The PROV Data Model*, W3C Recommendation, 30 April 2013

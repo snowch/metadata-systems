@@ -35,6 +35,8 @@ A change is applied before the week runs, so a changed week is as deterministic 
   any hour of the day. Each create, overwrite or delete starts a function at once: `record_return`
   writes the return's row into the table `returns`, `remove_return` removes it. Object storage
   keeps every version of each object.
+- `twice` (Chapter 19): object storage delivers its notice of the desk's correction of `r-202` twice,
+  so `record_return` starts twice for it.
 
 The programs' SQL lives here, and the platform does not record it: storage holds what the programs
 wrote, not what they did.
@@ -64,7 +66,7 @@ from .platform import ObjectStorage, Reporting, Rows, Warehouse, epoch, file_sch
 
 CHANGES = (
     "copy", "refunds", "failed", "column", "source", "returns", "net", "added", "renamed", "retyped", "dev", "view", "clock",
-    "corrected", "withdrawn", "customer",
+    "corrected", "withdrawn", "customer", "twice",
 )
 
 # The nights of the week: the date each night's work starts on, Tuesday 8 to Monday 14.
@@ -125,6 +127,10 @@ WITHDRAWN = (
     ("2026-09-13T21:15:00Z", "created", "r-206", (7047, 2, 1)),
     ("2026-09-14T08:50:00Z", "deleted", "r-206", None),
 )
+# The `twice` change (Chapter 19): object storage delivers its notice of one change twice, so the
+# function starts twice for it: the desk's correction of r-202, the second start this long after.
+TWICE = ("2026-09-10T09:30:00Z", "r-202")
+TWICE_GAP = 25
 # The `customer` change: from Sunday's night on, `build_clean_orders` names the column `customer`.
 RENAMED_ON = "2026-09-13"
 # The error the warehouse gave the failed night's program (`failed`).
@@ -328,27 +334,31 @@ def run_week(changes=()) -> Week:
                 first = next(a for a, c, r, _ in desk if r == return_id)
                 text = json.dumps(dict(zip(RETURN_FIELDS, (return_id, order_id, product_id, quantity, first)))) + "\n"
                 version = storage.put(uri, text, at)
-            started = iso(epoch(at) + FUNCTION_DELAY)
             writer = "remove_return" if change == "deleted" else "record_return"
-            finished = iso(epoch(started) + DURATION[writer])
-            if writer == "remove_return":
-                statements = [("DELETE FROM main.returns WHERE return_id = :r", {"r": return_id})]
-                reads: tuple[str, ...] = ()
-            else:
-                row = storage.records(uri)[0]
-                statements = [
-                    ("DELETE FROM main.returns WHERE return_id = :return_id", row),
-                    ("INSERT INTO main.returns VALUES (:return_id, :order_id, :product_id, :quantity, :returned_at)", row),
-                ]
-                reads = (uri,)
-            changed = warehouse.change("returns", statements, finished)
-            n = 1 if writer == "record_return" else changed
-            week.executions.append(
-                Execution(
-                    writer, None, started, finished, "succeeded", "returns", n, JOBS[writer], reads,
-                    len(reads), job_code(writer, changes, on), uri, version, change,
+            notices = [FUNCTION_DELAY]
+            if "twice" in changes and (at, return_id) == TWICE:
+                notices.append(FUNCTION_DELAY + TWICE_GAP)
+            for delay in notices:
+                started = iso(epoch(at) + delay)
+                finished = iso(epoch(started) + DURATION[writer])
+                if writer == "remove_return":
+                    statements = [("DELETE FROM main.returns WHERE return_id = :r", {"r": return_id})]
+                    reads: tuple[str, ...] = ()
+                else:
+                    row = storage.records(uri)[0]
+                    statements = [
+                        ("DELETE FROM main.returns WHERE return_id = :return_id", row),
+                        ("INSERT INTO main.returns VALUES (:return_id, :order_id, :product_id, :quantity, :returned_at)", row),
+                    ]
+                    reads = (uri,)
+                changed = warehouse.change("returns", statements, finished)
+                n = 1 if writer == "record_return" else changed
+                week.executions.append(
+                    Execution(
+                        writer, None, started, finished, "succeeded", "returns", n, JOBS[writer], reads,
+                        len(reads), job_code(writer, changes, on), uri, version, change,
+                    )
                 )
-            )
 
     for night in NIGHTS:
         day = DAYS[NIGHTS.index(night)]
