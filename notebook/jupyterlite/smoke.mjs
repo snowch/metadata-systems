@@ -84,7 +84,7 @@ try {
       return !!e && e.getBoundingClientRect().height > 0;
     }, selector);
 
-  for (const chapter of [1, 2, 3, 4]) {
+  for (const chapter of [1, 2, 3, 4, 5, 6]) {
     await page.goto(`http://127.0.0.1:${port}/notebooks/index.html?path=chapter_0${chapter}.ipynb`);
     await page.waitForFunction(() => document.querySelector(".jp-MarkdownOutput h1"), null, {
       timeout: 120_000,
@@ -316,6 +316,19 @@ try {
       );
       const who = await output("field = 'responsible'");
       check(who.includes("Jo Marsh"), "Chapter 3: the record names Jo Marsh");
+    }
+    if (chapter === 6) {
+      await rewrite(
+        "job build_daily_sales reads: ........",
+        ["job build_daily_sales reads: ........", "job build_daily_sales writes: ........"],
+        ["job build_daily_sales reads: clean_orders", "job build_daily_sales writes: daily_sales"],
+      );
+      await run("Run below", "Chapter 6, Run below from the records");
+      const walk = await output('lineage.downstream("s3://shop-raw/orders.jsonl")');
+      check(
+        walk.includes("sales_dashboard"),
+        "Chapter 6: with its lines filled in, the walk reaches the dashboard",
+      );
     }
     if (chapter === 4) {
       await rewrite(

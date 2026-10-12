@@ -207,5 +207,4 @@ the messages and the first cell's notes of brief CF. What changed:
   published page was measured (11.4 to 11.8 s): a number changed to the measurement, not a sentence
   rewritten.
 
-- Chapter 4's notebook ends the course's written chapters for now: its links offer no next chapter.
 - The reader's choice of reading is free text, kept by **Save**.

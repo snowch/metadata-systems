@@ -125,6 +125,16 @@ Not built yet; built with Chapter 7, the first chapter that uses it (`docs/plan.
   so that provenance, deletion and a return of an order the warehouse does not hold each have a
   case.
 
+### The repository (Chapter 6)
+
+`repository(week)` gives the jobs' code as the shop's repository holds it on Monday morning: one
+file per job, written in the course's own small notation (`read("...")`, `write("...", sql)`,
+`refresh("...", sql)`) around the same SQL constants the week runs, so the code shown is the code
+that ran. The export and the analyst's copy are not in it. `reads_and_writes` reads a job's code
+with a small rule, and `compare_with_code` sets a reader's lineage lines against it. The `source`
+change (with `copy`) makes `build_daily_sales` read the analyst's copy from Saturday's row on; the
+rows it writes are the same, and only the code differs.
+
 ## What a notebook can ask of the engine
 
 `notebook/shop` answers three kinds of question, and the notebooks show each answer with its
@@ -150,6 +160,10 @@ evidence:
   another type) checks them: unknown types and attributes, and values that name nothing the
   records describe. `owners` lists every asset with its `responsible` values under three readings
   of "one owner". Both notations are the course's own.
+- **The records as a graph** (`notebook/shop/graph.py`, Chapters 5 and 6). `graph(records, model)`
+  makes each entity a node and each line whose value names another entity an edge; `traverse`
+  walks the edges it is given, each way it is given; `downstream` and `upstream` walk `reads` and
+  `writes`; `drawing` draws the graph as an image a phone can read, each connected part on its own.
 
 Two more things the notebooks draw from it (`notebook/shop/figures.py`), when the site is built,
 into Markdown cells (`docs/authoring.md`, "How a figure is drawn"):

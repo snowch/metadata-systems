@@ -228,5 +228,84 @@ class TheRecords(unittest.TestCase):
         self.assertEqual(got["s3://shop-raw/orders.jsonl"], ("no", "no", "no"))
 
 
+class TheGraph(unittest.TestCase):
+    """Chapter 5's graph and its walks; Chapter 6's lineage over jobs."""
+
+    MODEL = "dataset responsible: person or team\ncolumn of: dataset\nperson team: team\nteam name: text\njob reads: dataset\njob writes: dataset or dashboard\ndashboard responsible: person or team\ndataset means: text\nperson name: text\n"
+    RECORDS = (
+        "dataset a responsible: p\ndataset b responsible: p\ncolumn a.x of: a\nperson p team: t\nteam t name: T\n"
+        "dataset f means: a file\njob j reads: f\njob j writes: a\njob k reads: a\njob k writes: d\ndashboard d responsible: nobody\n"
+    )
+
+    def setUp(self):
+        self.g = shop.graph(shop.typed_records(self.RECORDS), shop.model(self.MODEL))
+
+    def test_nodes_and_edges(self):
+        self.assertEqual(len(self.g.nodes()), 9)
+        # A value that names nothing the records describe makes no edge.
+        self.assertNotIn("nobody", {e["to"] for e in self.g.edges()})
+        self.assertEqual(len(self.g.edges()), 8)
+
+    def test_a_walk_follows_only_the_edges_it_is_given(self):
+        self.assertEqual([r["node"] for r in self.g.traverse("a", {"responsible": "out", "team": "out"})], ["p", "t"])
+        both = [r["node"] for r in self.g.traverse("a", {"responsible": "both"})]
+        self.assertEqual(both, ["p", "b"])
+        self.assertEqual(self.g.traverse("a", {"responsible": "both"})[1]["path"], "a -responsible-> p <-responsible- b")
+        with self.assertRaises(ValueError):
+            self.g.traverse("a", {"responsible": "sideways"})
+        with self.assertRaises(KeyError):
+            self.g.traverse("zzz")
+
+    def test_downstream_and_upstream(self):
+        self.assertEqual([r["node"] for r in self.g.downstream("f")], ["j", "a", "k", "d"])
+        self.assertEqual([r["node"] for r in self.g.upstream("d")], ["k", "a", "j", "f"])
+        self.assertEqual(list(self.g.downstream("b")), [])
+
+    def test_the_drawing_is_an_image_with_its_own_dark_colours(self):
+        html = self.g.only(["reads", "writes"], ["dataset", "dashboard", "job"]).drawing(label="the map")._repr_html_()
+        self.assertTrue(html.startswith('<img class="ms-svg" alt="the map" src="data:image/svg+xml;base64,'))
+        import base64
+
+        svg = base64.b64decode(html.split("base64,")[1].rstrip('">')).decode()
+        self.assertIn("prefers-color-scheme:dark", svg)
+        self.assertIn('viewBox="0 0 340 ', svg)
+
+
+class TheRepository(unittest.TestCase):
+    """Chapter 6's jobs' code, and the change that makes it read the analyst's copy."""
+
+    def test_the_code_is_the_code_that_runs(self):
+        repo = shop.repository(shop.run_week())
+        self.assertEqual([r["job"] for r in repo], ["build_clean_customers", "build_clean_orders", "build_daily_sales", "refresh_dashboard"])
+        found = {r["job"]: shop.reads_and_writes(r["code"]) for r in repo}
+        self.assertEqual(found["build_clean_orders"], {"reads": ["s3://shop-raw/orders.jsonl"], "writes": ["clean_orders"]})
+        self.assertEqual(found["build_daily_sales"], {"reads": ["clean_orders"], "writes": ["daily_sales"]})
+        self.assertEqual(found["refresh_dashboard"], {"reads": ["daily_sales"], "writes": ["sales_dashboard"]})
+        from shop import week
+
+        self.assertIn(week.CLEAN_ORDERS, repo[1]["code"])
+        self.assertIn(week.DAILY_SALES, repo[2]["code"])
+
+    def test_the_source_change(self):
+        plain, source = shop.run_week(), shop.run_week(["source"])
+        self.assertEqual(source.changes, ("copy", "source"))
+        rows = lambda w: w.warehouse.sql("SELECT * FROM daily_sales ORDER BY day")
+        self.assertEqual(rows(plain), rows(source))
+        code = shop.repository(source)[2]["code"]
+        self.assertEqual(shop.reads_and_writes(code)["reads"], [shop.COPY])
+
+    def test_compare_with_code(self):
+        lines = "job build_daily_sales reads: clean_orders\njob build_daily_sales writes: daily_sales\n"
+        self.assertEqual(shop.compare_with_code(shop.typed_records(lines), shop.repository(shop.run_week()))[0]["job"], "build_clean_customers")
+        only = lambda rows: [r for r in rows if r["job"] == "build_daily_sales"]
+        self.assertEqual(only(shop.compare_with_code(shop.typed_records(lines), shop.repository(shop.run_week()))), [])
+        wrong = shop.typed_records(lines + "job build_daily_sales reads: clean_customers\njob nightly_backup reads: clean_orders\n")
+        found = shop.compare_with_code(wrong, shop.repository(shop.run_week()))
+        self.assertEqual([(r["job"], r["says"]) for r in found if r["line"]], [("build_daily_sales", "reads: clean_customers")])
+        self.assertIn("nightly_backup", {r["job"] for r in found})
+        stale = only(shop.compare_with_code(shop.typed_records(lines), shop.repository(shop.run_week(["source"]))))
+        self.assertEqual([(r["says"], r["code"]) for r in stale], [("reads: clean_orders", ""), ("", f"reads: {shop.COPY}")])
+
+
 if __name__ == "__main__":
     unittest.main()

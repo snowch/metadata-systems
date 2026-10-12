@@ -281,6 +281,23 @@ after the deploy of `2690b76` from `snowch.github.io`, opened alone on a compute
 11.8 s (Chapter 3) and 11.4 s (Chapter 4), with memory peaking at 421 MB and 408 MB. The warnings
 said "9 to 11 seconds" until then, from the local build alone; they now say "9 to 12 seconds".
 
+## Chapters 5 and 6
+
+Measured 12 October 2026 as Chapters 3 and 4 were, on the built site served locally.
+
+| | Chapter 5 | Chapter 6 |
+| --- | --- | --- |
+| Opened from the chapter before's link, after it ran | 11 files, 0.32 MB, in a new tab | 11 files, 0.32 MB, in a new tab |
+| Run all, from the press until no cell waits (desktop, phone, from the link) | 8.3 to 8.7 s | 8.0 to 9.3 s |
+| Peak memory of a renderer process, opened alone | 397 to 403 MB | 398 to 418 MB |
+| Peak memory, with the chapter before open in its own tab | 615 MB | 625 MB |
+| Cells with an error output; console errors | none | none |
+
+Opened alone, each downloads the files Chapter 2 does (about 12.5 MB compressed). Each warning
+(brief GA) states: about 13 MB on its own; less than 1 MB from the chapter before's link; 9 to 12
+seconds to run every cell, the published Chapters 3 and 4 having taken up to 11.8 s; about 400 MB
+(Chapter 5) and about 420 MB (Chapter 6).
+
 ## Phones
 
 Nothing here measured a real phone, so the page says only what was measured and what one report

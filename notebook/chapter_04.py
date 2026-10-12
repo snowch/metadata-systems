@@ -12,7 +12,7 @@ app = marimo.App(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 3](chapter_03.ipynb)
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 3](chapter_03.ipynb) · [Next: Chapter 5](chapter_05.ipynb)
 
     # Chapter 4: Metadata as a model
 
@@ -429,7 +429,7 @@ def _(mo):
 
     The shop uses staff logins as identifiers for people. A login can change, or be given to someone else after a person leaves. The shop's staff list does not record when.
 
-    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 3](chapter_03.ipynb)
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 3](chapter_03.ipynb) · [Next: Chapter 5](chapter_05.ipynb)
 
     ---
 

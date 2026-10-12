@@ -17,7 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = {
-    chapter: (ROOT / "notebook" / f"chapter_0{chapter}.py").read_text(encoding="utf-8") for chapter in (1, 2, 3, 4)
+    chapter: (ROOT / "notebook" / f"chapter_0{chapter}.py").read_text(encoding="utf-8") for chapter in (1, 2, 3, 4, 5, 6)
 }
 BUTTONS = ROOT / "notebook" / "buttons"
 LABELS = json.loads((BUTTONS / "buttons.json").read_text(encoding="utf-8"))
@@ -91,7 +91,9 @@ class TheWarnings(unittest.TestCase):
         }
         runs = "| Run all, from the press until no cell waits (desktop, phone, from the link) | 8.9 to 9.6 s | 8.9 to 10.5 s |"
         live = "Run all took 11.8 s (Chapter 3) and 11.4 s (Chapter 4)"
-        for chapter, memory in ((3, "about 420 MB"), (4, "about 410 MB")):
+        table[5] = ("| Opened from the chapter before's link, after it ran | 11 files, 0.32 MB, in a new tab | 11 files, 0.32 MB, in a new tab |", "| Peak memory of a renderer process, opened alone | 397 to 403 MB |")
+        table[6] = (table[5][0], "| Peak memory of a renderer process, opened alone | 397 to 403 MB | 398 to 418 MB |")
+        for chapter, memory in ((3, "about 420 MB"), (4, "about 410 MB"), (5, "about 400 MB"), (6, "about 420 MB")):
             link, peak = table[chapter]
             expected[chapter] = [
                 ("downloads about 13 MB", gzip),
