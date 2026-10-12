@@ -285,9 +285,7 @@ def _(mo):
 
     Each system records what it does about an asset because its own work needs it. The warehouse keeps column names and types so that it can run a query. Object storage keeps a file's key so that it can serve the file. The reporting tool keeps the values so that it can draw the chart. In the shop's platform, a system records what its own work needs and nothing more. The questions you want answered are not its work.
 
-    The owner the warehouse records shows how far that goes. "Who should I ask about `daily_sales`?" wants a person or a team. The requirement is: "Every table must have an owner." The warehouse records `etl_service` as the owner of all three tables, in the column `table_owner` of `information_schema.tables`. The name looks like an account a program logs in as, and the warehouse records nothing more about it. The column is called `table_owner`, but the question it answers is which account controls the table. The requirement is met as written, and your question is not.
-
-    The cell below lists the owner of every table in the warehouse.
+    The owner the warehouse records shows how far that goes. "Who should I ask about `daily_sales`?" wants a person or a team. The head of the shop's requirement is: "Every table must have an owner." The cell below lists the owner of every table in the warehouse.
     """)
     return
 
@@ -297,6 +295,23 @@ def _(warehouse):
     warehouse.sql("""
         SELECT table_name, table_owner
         FROM information_schema.tables
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The warehouse records `etl_service` as the owner of all three tables, in the column `table_owner` of `information_schema.tables`. The name looks like an account a program logs in as, and the warehouse records nothing more about it.
+
+    | What the requirement could mean | What it needs | Does `etl_service` answer it? |
+    | --- | --- | --- |
+    | who is responsible for the table | a person | no |
+    | which team is responsible for it | a team | no |
+    | which job writes it | a program | no: it names an account, not a program |
+    | which account controls it in the warehouse | an account | yes |
+
+    "Who should I ask about `daily_sales`?" needs the first or the second reading. The requirement as written is met only by the fourth: every table has an owner, and the owner is an account.
     """)
     return
 

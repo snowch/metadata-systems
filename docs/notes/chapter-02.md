@@ -834,6 +834,19 @@ owner is named as the column `table_owner` of `information_schema.tables`, and t
 it says "Everything the three systems showed" for "Everything here". Chapter 4's reflective question
 about "its owner field" is left: by then Chapter 3 has made a field a line of a record.
 
+## The owner as evidence, then its readings, 12 October 2026
+
+The author asked how to make the owner paragraph's key points stand out. The paragraph had done five
+things in a row: the question, the requirement, what the warehouse records, which question that
+answers, and the verdict. Now the cell that lists each table's owner comes first, after the question
+and the requirement; then what it shows; then the requirement's four readings (the ones `CLAUDE.md`
+names for this standing example) against whether `etl_service` answers each, as a Markdown table;
+then two sentences. Brief `chapter-02/briefs/round-11/owner-table.md`, draft under `drafts/round-11/`.
+One fact was wrong: "The shop's requirement begins with the words…" dropped the head of the shop and
+pointed "how far that goes" at the requirement; the brief's sentences were restored in its order. The
+table's single "yes" and its two rows that carry the verdict are pinned by `test_words`. A callout was
+not used: on these pages a box means the page's instructions or its warning.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,
