@@ -148,6 +148,8 @@ def send(week_or_events, lose=(), delay=None, lose_ack=(), restamp=False, at_lea
     losses = {pick(events, s): n for s, n in _specs(lose).items()}
     holds = {pick(events, s): secs for s, secs in (delay or {}).items()}
     acks = {pick(events, s) for s in lose_ack}
+    # `restamp` is True for every event sent again, or the specs of the events it applies to.
+    restamped = set(range(len(events))) if restamp is True else {pick(events, s) for s in (restamp or ())}
     arrivals: list[Arrival] = []
     log: list[dict] = []
     lost: list[dict] = []
@@ -157,7 +159,7 @@ def send(week_or_events, lose=(), delay=None, lose_ack=(), restamp=False, at_lea
         while True:
             attempt += 1
             body = copy.deepcopy(ev)
-            if attempt > 1 and restamp:
+            if attempt > 1 and i in restamped:
                 body["eventTime"] = iso(sent_at)
             if losses.get(i, 0) >= attempt:
                 outcome = "lost"

@@ -850,5 +850,87 @@ class TheScale(unittest.TestCase):
         self.assertEqual(len(self.week.warehouse.sql("SELECT * FROM returns WHERE return_id = 'r-201'")), 1)
 
 
+def _pieces(module, which, names) -> dict:
+    """The named pieces of a Part VI chapter, stubs or references, run as a learner's cells would be."""
+    ns: dict = {"shop": shop}
+    for name in names:
+        exec((module.STUBS if which == "stub" else module.REFERENCE)[name], ns)
+    return ns
+
+
+class ThePartVIPieces(unittest.TestCase):
+    """Every piece the learner writes in Part VI: the stub fails its check and the reference passes,
+    so the check proves something."""
+
+    def test_the_store(self):
+        from shop import store as S
+
+        week = shop.run_week(["returns"])
+        for shape, make in (("documents", S.documents), ("graph", S.graph)):
+            stub = S.check(week, make(week), _pieces(S, "stub", [shape])["readers_of"])
+            ref = S.check(week, make(week), _pieces(S, "reference", [shape])["readers_of"])
+            self.assertFalse(stub.passed, shape)
+            self.assertTrue(ref.passed, shape)
+        self.assertEqual(S.check(week, S.documents(week), _pieces(S, "reference", ["documents"])["readers_of"]).read, 187)
+        self.assertEqual(S.check(week, S.graph(week), _pieces(S, "reference", ["graph"])["readers_of"]).read, 14)
+        query = _pieces(S, "reference", ["tables"])["query"]
+        self.assertFalse(S.check(week, S.tables(week), _pieces(S, "stub", ["tables"])["query"]).passed)
+        plain = S.check(week, S.tables(week), query)
+        self.assertEqual((plain.passed, plain.read), (True, 154))
+        for which, read in (("stub", 154), ("reference", 14)):
+            tables = S.tables(week)
+            exec((S.STUBS if which == "stub" else S.REFERENCE)["index"], {"tables": tables})
+            self.assertEqual(S.check(week, tables, query).read, read, which)
+        self.assertEqual(
+            [(r["documents"], r["table with the index"], r["graph"]) for r in S.compare(week, "warehouse://shop-warehouse/shop.analytics.clean_orders", "shop/build_daily_sales")],
+            [(17, 2, 2), (1, 14, 2)],
+        )
+
+    def test_the_collector(self):
+        import itertools
+
+        from shop import collector as C
+
+        week = shop.run_week(["returns"])
+        names = ("key", "newer", "start")
+        for combo in itertools.product(("stub", "reference"), repeat=3):
+            ns: dict = {"shop": shop}
+            for name, which in zip(names, combo):
+                exec((C.STUBS if which == "stub" else C.REFERENCE)[name], ns)
+            checked = C.check(week, ns["key"], ns["newer"], ns["start"])
+            self.assertEqual(checked.passed == len(checked), combo == ("reference",) * 3, combo)
+        ns = _pieces(C, "reference", names)
+        c = C.run(week, ns["key"], ns["newer"], ns["start"])
+        self.assertEqual((len(c.file), len(c.refused), len(c.dropped)), (68, 1, 2))
+
+    def test_the_lineage_graph(self):
+        from shop import lineage_graph as L
+
+        week = shop.run_week(["returns", "source"])
+        self.assertEqual(L.check(week, _pieces(L, "stub", ["add"])["add"]).passed, 2)
+        self.assertEqual(L.check(week, _pieces(L, "reference", ["add"])["add"]).passed, 3)
+        graph = L.build(week, _pieces(L, "reference", ["add"])["add"])
+        now = {r["dataset"]: (r["in the latest run"], r["ever"], r["in the last 2 days"]) for r in L.now(graph, L.MONDAY) if r["edge"] == "reads"}
+        self.assertEqual(now, {"clean_orders_copy.csv": ("yes", "yes", "yes"), "shop.analytics.clean_orders": ("no", "yes", "no")})
+
+    def test_the_query_layer(self):
+        from shop import query as Q
+
+        week = shop.run_week(list(Q.WEEK))
+        self.assertFalse(Q.check_downstream(week, _pieces(Q, "stub", ["downstream"])["downstream"]).passed == 3)
+        self.assertEqual(Q.check_downstream(week, _pieces(Q, "reference", ["downstream"])["downstream"]).passed, 3)
+        self.assertEqual(Q.check_owner(_pieces(Q, "stub", ["owner"])["owner"]).passed, 0)
+        self.assertEqual(Q.check_owner(_pieces(Q, "reference", ["owner"])["owner"]).passed, 1)
+        answers = {r["question"]: r["answer"] for r in Q.answers(week)}
+        self.assertEqual(answers["which runs failed?"], "shop/build_daily_sales at 2026-09-14T02:30:21Z")
+
+    def test_the_interface(self):
+        from shop import interface as I
+
+        self.assertEqual(I.check(["runs"], _pieces(I, "stub", ["run_history"])["run_history"]).passed, 1)
+        self.assertEqual(I.check(["runs"], _pieces(I, "reference", ["run_history"])["run_history"]).passed, 2)
+        self.assertEqual(I.check(["runs", "lineage"], _pieces(I, "reference", ["run_history"])["run_history"]).passed, 1)
+
+
 if __name__ == "__main__":
     unittest.main()

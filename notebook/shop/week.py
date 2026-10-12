@@ -423,7 +423,9 @@ def run_week(changes=()) -> Week:
             done("analyst_copy", wrote=COPY, rows=len(rows))
 
         if "failed" in changes and night == NIGHTS[-1]:
-            done("daily_sales", status="failed", reads=["clean_orders"], error=FAILED_ERROR)
+            # The night's program reads what it reads on any other night of the week.
+            failed_read = COPY if "source" in changes and day >= "2026-09-12" else "clean_orders"
+            done("daily_sales", status="failed", reads=[failed_read], error=FAILED_ERROR)
         else:
             sql = DAILY_SALES_FOR_REFUNDS if "refunds" in changes and day >= "2026-09-12" else DAILY_SALES
             if "column" in changes and day >= "2026-09-12":

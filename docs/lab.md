@@ -268,6 +268,24 @@ evidence:
   a traversal to the end or 4 steps of at most 3 edges); `first_over` gives the first of those sizes
   at which each way reads more than a million records, or "not within 10,000,000". `retain` deletes events older than a number of days; `compact` folds runs'
   edges into job edges with their first and last times.
+- **Part VI's pieces** (Chapters 24 to 28). Each module holds the shop's side of one chapter, a stub
+  and a reference for every piece the learner writes (`STUBS`, `REFERENCE`), and a `check` that
+  runs the chapter's tests against the learner's piece. `notebook/tests/test_engine.py` holds each
+  stub failing and each reference passing (`ThePartVIPieces`). A later chapter uses an earlier
+  chapter's references, as "the shop's", since a notebook cannot read another's cells.
+  - `store.py` (24): the week's edges and descriptions as documents, SQLite tables (what a query
+    reads, from SQLite's plan), the tables with an index, and a graph; `check` asks what reads each
+    dataset and counts the records read.
+  - `collector.py` (25): the week's arrivals with Part V's faults together, a broken event and a
+    restart; the learner's `key`, `newer` and `start`.
+  - `lineage_graph.py` (26): edges with their runs and first and last times, built one stored event
+    at a time by the learner's `add`, saved and loaded across the restart; `now` gives three
+    readings of "the platform now".
+  - `query.py` (27): the learner's `downstream` and `owner`, with each meaning of "owner" from its
+    own source; the shop's answers to the other questions.
+  - `interface.py` (28): an asset page from named sections; the learner's `run_history`.
+  `delivery.send`'s `restamp` takes the events it applies to, so one week can carry an exact repeat
+  and a retimed one.
 - **The records as a graph** (`notebook/shop/graph.py`, Chapters 5 and 6). `graph(records, model)`
   makes each entity a node and each line whose value names another entity an edge; `traverse`
   walks the edges it is given, each way it is given; `downstream` and `upstream` walk `reads` and

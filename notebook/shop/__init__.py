@@ -14,14 +14,14 @@ holds Chapter 8's run events, check and consumer; `ingest` is Chapter 9's pipeli
 and what runs recorded with how recent each asset is. `quality`, `provenance`, `impact` and `cause`
 are Part IV's. `delivery`, `claims`, `aliases` and `scale` are Part V's: the path events travel and
 what goes wrong on it, claims from several sources, references across systems, and cost as the
-platform grows.
+platform grows. `store` is Part VI's first piece: the week's metadata in four shapes.
 """
 
 from .data import ARRIVAL, DAYS
 from .infer import cleaning_rules_that_fit, day_gap, queries_that_rebuild
 from .platform import pounds
 from .graph import compare_with_code, graph
-from . import aliases, cause, claims, columns, delivery, identity, impact, ingest, observe, openlineage, provenance, quality, scale, schemas
+from . import aliases, cause, claims, collector, columns, delivery, identity, impact, ingest, interface, lineage_graph, observe, openlineage, provenance, quality, query, scale, schemas, store
 from .records import model, owners, records, typed_records
 from .runs import event_fields, events, lineage, readings, runs
 from .week import CHANGES, COPY, FILES, NIGHTS, Week, reads_and_writes, repository, run_week, timeline
@@ -56,6 +56,7 @@ __all__ = [
     "runs",
     "scale",
     "schemas",
+    "store",
     "graph",
     "model",
     "owners",
