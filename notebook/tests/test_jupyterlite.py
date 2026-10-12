@@ -17,7 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = {
-    chapter: (ROOT / "notebook" / f"chapter_{chapter:02d}.py").read_text(encoding="utf-8") for chapter in range(1, 18)
+    chapter: (ROOT / "notebook" / f"chapter_{chapter:02d}.py").read_text(encoding="utf-8") for chapter in range(1, 24)
 }
 BUTTONS = ROOT / "notebook" / "buttons"
 LABELS = json.loads((BUTTONS / "buttons.json").read_text(encoding="utf-8"))

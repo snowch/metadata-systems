@@ -12,7 +12,7 @@ app = marimo.App(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 16](chapter_16.ipynb)
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 16](chapter_16.ipynb) · [Next: Chapter 18](chapter_18.ipynb)
 
     # Chapter 17: Root-cause analysis
 
@@ -288,7 +288,7 @@ def _(mo):
     - The search reads files in the version current when each run started, and tables as they are now (Chapter 15).
     - The shop's repository keeps each program's code. It records no reason for a change.
 
-    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 16](chapter_16.ipynb)
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 16](chapter_16.ipynb) · [Next: Chapter 18](chapter_18.ipynb)
 
     ---
 

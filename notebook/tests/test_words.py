@@ -2,7 +2,7 @@
 
 """Every sentence of the notebooks that states a fact, pinned against the engine, and the prose rules.
 
-Chapters 1 to 17 are a notebook each. Their words are their markdown cells and the labels in their
+Chapters 1 to 23 are a notebook each. Their words are their markdown cells and the labels in their
 code cells. A number in them is a number the engine produced; if the shop changes, this fails
 until the words change with it.
 """
@@ -36,6 +36,12 @@ CHAPTERS = {
     15: ROOT / "notebook" / "chapter_15.py",
     16: ROOT / "notebook" / "chapter_16.py",
     17: ROOT / "notebook" / "chapter_17.py",
+    18: ROOT / "notebook" / "chapter_18.py",
+    19: ROOT / "notebook" / "chapter_19.py",
+    20: ROOT / "notebook" / "chapter_20.py",
+    21: ROOT / "notebook" / "chapter_21.py",
+    22: ROOT / "notebook" / "chapter_22.py",
+    23: ROOT / "notebook" / "chapter_23.py",
 }
 SOURCE = {chapter: path.read_text(encoding="utf-8") for chapter, path in CHAPTERS.items()}
 
@@ -212,6 +218,12 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("## Before Chapter 16", 15)
         self.says("## Before Chapter 17", 16)
         self.says("## Before Chapter 18", 17)
+        self.says("## Before Chapter 19", 18)
+        self.says("## Before Chapter 20", 19)
+        self.says("## Before Chapter 21", 20)
+        self.says("## Before Chapter 22", 21)
+        self.says("## Before Chapter 23", 22)
+        self.says("## Before Chapter 24", 23)
         self.says("Chapter 10 reads the jobs' SQL", 9)
 
     def test_each_chapter_has_its_own_title_in_its_tab(self):
@@ -238,7 +250,13 @@ class TheWordsMatchTheEngine(unittest.TestCase):
             14: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 13](chapter_13.ipynb) · [Next: Chapter 15](chapter_15.ipynb)",
             15: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 14](chapter_14.ipynb) · [Next: Chapter 16](chapter_16.ipynb)",
             16: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 15](chapter_15.ipynb) · [Next: Chapter 17](chapter_17.ipynb)",
-            17: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 16](chapter_16.ipynb)",
+            17: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 16](chapter_16.ipynb) · [Next: Chapter 18](chapter_18.ipynb)",
+            18: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 17](chapter_17.ipynb) · [Next: Chapter 19](chapter_19.ipynb)",
+            19: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 18](chapter_18.ipynb) · [Next: Chapter 20](chapter_20.ipynb)",
+            20: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 19](chapter_19.ipynb) · [Next: Chapter 21](chapter_21.ipynb)",
+            21: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 20](chapter_20.ipynb) · [Next: Chapter 22](chapter_22.ipynb)",
+            22: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 21](chapter_21.ipynb) · [Next: Chapter 23](chapter_23.ipynb)",
+            23: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 22](chapter_22.ipynb)",
         }
         for chapter, line in nav.items():
             self.assertTrue(CELLS[chapter][0].startswith(line + "\n"), chapter)
@@ -1103,6 +1121,117 @@ class TheWordsOfChapter12(unittest.TestCase):
         self.says("Pair 6 is one object, but not the same rows or version.")
 
 
+class TheWordsOfPartV(unittest.TestCase):
+    """Chapters 18 to 23: every number and time the prose states, computed again."""
+
+    @classmethod
+    def setUpClass(cls):
+        from shop import aliases, claims, delivery, ingest, scale
+
+        cls.D, cls.I, cls.C, cls.A, cls.S = delivery, ingest, claims, aliases, scale
+        cls.week = shop.run_week(["returns"])
+
+    def says(self, phrase: str, chapter: int) -> None:
+        self.assertIn(flat(phrase), flat(TEXT[chapter]))
+
+    def graph(self, events):
+        return self.I.edges(self.I.objects(self.I.normalise(events)))
+
+    def test_chapter_18(self):
+        D = self.D
+        whole = D.send(self.week)
+        self.assertEqual((len(whole.log), len(whole.events)), (68, 68))
+        self.says("The cell sent 68 events, and the collector received 68. None was lost.", 18)
+        runs = lambda d: [(r["edge"], r["runs"]) for r in self.graph(d.events).of("shop/build_daily_sales")]
+        self.assertEqual(runs(whole), [("reads", 7), ("writes", 7)])
+        lost = D.send(self.week, lose=["build_daily_sales COMPLETE 2026-09-10"])
+        self.assertEqual(runs(lost), [("reads", 7), ("writes", 6)])
+        self.says("Both edges are still there. `writes` now has 6 runs, not 7. `reads` still has 7.", 18)
+        [open_] = D.open_runs(lost.events, "2026-09-14T09:00:00Z")
+        self.assertEqual((open_["seconds since"], open_["usual seconds"]), (369000, 21))
+        self.says("That is 369000 seconds before Monday 09:00, more than four days. The job's runs that ended took 21 seconds.", 18)
+        self.assertEqual(self.week.warehouse.sql("SELECT revenue_pence FROM daily_sales WHERE day = '2026-09-09'"), [{"revenue_pence": 15375}])
+        self.says("The row is there: 15375 pence for Wednesday 9.", 18)
+        self.assertEqual((D.SEND_LAG, D.LATENCY, D.ACK_WAIT), (1, 2, 30))
+        self.says("a program sends an event 1 second after the time the event records, and the collector receives it 2 seconds later", 18)
+        self.says("It sends the event again if no acknowledgement comes within 30 seconds.", 18)
+        [r] = D.send(self.week, lose=["remove_return COMPLETE"], at_least_once=True).retried()
+        self.assertEqual((r["sendings"], r["received"], r["first arrival"]), (2, 1, "2026-09-12T16:50:37Z"))
+        self.says("The receipt was at 16:50:37 on Saturday 12, 30 seconds after the first sending.", 18)
+        [r] = D.send(self.week, lose_ack=["remove_return COMPLETE"], at_least_once=True).retried()
+        self.assertEqual((r["first arrival"], r["last arrival"]), ("2026-09-12T16:50:07Z", "2026-09-12T16:50:37Z"))
+        self.says("the `COMPLETE` is sent twice and received twice: at 16:50:07 and at 16:50:37", 18)
+
+    def test_chapter_19(self):
+        D, I = self.D, self.I
+        twice = D.send(self.week, lose_ack=["build_daily_sales COMPLETE 2026-09-10"], at_least_once=True)
+        self.assertEqual(len(twice.events), 69)
+        self.says("The cell shows `69` and `True`. The collector received 69 events, 1 more than the 68 sent.", 19)
+        retimed = D.send(self.week, lose_ack=["build_daily_sales COMPLETE 2026-09-10"], at_least_once=True, restamp=True)
+        [run] = [r for r in I.objects(I.normalise(retimed.events)).runs.values() if r["job"].endswith("build_daily_sales") and r["started"].startswith("2026-09-10")]
+        self.assertEqual(run["ended"], "2026-09-10T02:30:52Z")
+        self.says("The run early on Thursday 10 started at 02:30:00 and now ends at 02:30:52. Runs of `build_daily_sales` take 21 seconds. This one seems to take 52 seconds.", 19)
+        [d] = I.dedupe(retimed.events, "run").dropped
+        self.assertEqual((d["event time"][11:19], d["kept event time"][11:19]), ("02:30:52", "02:30:21"))
+        self.says("By run, one event is dropped: the `COMPLETE` with the time 02:30:52. The event kept has the time 02:30:21.", 19)
+        self.says("So `record_return` starts twice for the one change, 25 seconds apart.", 19)
+        self.says("In the lineage, `record_return` now writes `returns` in 6 runs, not 5.", 19)
+
+    def test_chapter_20(self):
+        D, I = self.D, self.I
+        late = D.send(self.week, delay={"build_daily_sales COMPLETE 2026-09-09": 26 * 3600})
+        times = {(r["type"], r["event time"]): r["arrived"] for r in late.received() if r["job"] == "build_daily_sales"}
+        self.assertEqual(times[("COMPLETE", "2026-09-09T02:30:21Z")], "2026-09-10T04:30:24Z")
+        self.assertEqual(times[("COMPLETE", "2026-09-10T02:30:21Z")], "2026-09-10T02:30:24Z")
+        self.says("It arrives at 04:30:24 on Thursday 10, after the `COMPLETE` of the run early on Thursday 10, which arrived at 02:30:24.", 20)
+        self.says("By event time, the run that last wrote `daily_sales` ended at 02:30:21 on Thursday 10.", 20)
+        self.says("By arrival, it ended at 02:30:21 on Wednesday 9: a day earlier.", 20)
+        early = D.send(self.week, delay={"build_daily_sales START 2026-09-09": 60})
+        times = {(r["type"], r["event time"]): r["arrived"] for r in early.received() if r["job"] == "build_daily_sales"}
+        self.assertEqual((times[("START", "2026-09-09T02:30:00Z")], times[("COMPLETE", "2026-09-09T02:30:21Z")]), ("2026-09-09T02:31:03Z", "2026-09-09T02:30:24Z"))
+        self.says("It arrives at 02:31:03, after its own `COMPLETE`, which arrived at 02:30:24.", 20)
+        held = D.send(shop.run_week(["returns", "withdrawn"]), delay={"record_return START 2026-09-13": 12 * 3600, "record_return COMPLETE 2026-09-13": 12 * 3600})
+        self.assertIn("2026-09-14T09:15:05Z", [r["arrived"] for r in held.received() if r["job"] == "record_return"])
+        self.says("They arrive at 09:15 on Monday 14, after the events of the `remove_return` run at 08:50.", 20)
+        self.says("By event time, its last change is `deleted`, at 08:50:02 on Monday 14", 20)
+
+    def test_chapter_21(self):
+        C = self.C
+        held = C.claims("2026-09-14T18:00:00Z")
+        self.assertEqual(len(held), 5)
+        self.says("There are five claims.", 21)
+        self.assertEqual((C.CATALOGUE_SYNC, C.SHEET_IMPORT, C.RECORDS_CHANGED[11:16], C.SHEET_EDITED[:10]), ("03:30", "04:00", "16:40", "2026-08-28"))
+        self.says("Nobody has edited it since 28 August. It is imported every night at 04:00", 21)
+        self.says("its catalogue, read every night at 03:30", 21)
+        self.assertEqual(C.TABLE_ALTERED[11:], "02:30:21Z")
+        self.says("The warehouse's content changes every night, at 02:30:21", 21)
+        self.says("Every claim is kept, with its source and its two times: five rows.", 21)
+
+    def test_chapter_22(self):
+        A = self.A
+        self.assertEqual([len(A.merge(r)) for r in A.RULES], [6, 5, 1, 3])
+        self.says("Under that rule, all six become one entity.", 22)
+        self.says("The result has five entities.", 22)
+        self.says("The result has three entities. One of them holds four references", 22)
+
+    def test_chapter_23(self):
+        S = self.S
+        [m] = S.measure(self.week)
+        self.says("The week holds 11 assets, 6 jobs, 34 runs, 68 events, 67 run edges and 14 job edges, over 7 days. An event takes 1492 bytes on average.", 23)
+        self.assertEqual((m["assets"], m["events"], m["bytes per event"]), (11, 68, 1492))
+        self.assertEqual(round(m["events"] / m["days"] / m["assets"], 1), 0.9)
+        self.says("about 0.9 events per asset per day", 23)
+        top = S.reach(self.week)
+        self.assertEqual([(r["edges followed"], r["share"]) for r in top[:2]], [(6, 0.43), (4, 0.29)])
+        self.says("From `orders.jsonl`, a search downstream follows 6 of the 14 job edges: 0.43, the widest share. From `clean_orders`, it follows 4: 0.29.", 23)
+        self.assertEqual((S.BUDGET, S.RETENTION_DAYS, S.DEPTH, S.SIZES[-1]), (1_000_000, 90, 4, 10_000_000))
+        self.says("pass the limit first, at 100,000 assets", 23)
+        self.says("the latest run reads 31 records at 10,000,000 assets", 23)
+        self.says("At 10,000,000 assets, the projection holds 794,805,210 events.", 23)
+        self.says("The output shows 68 events, of which 28 are kept.", 23)
+        self.says("`record_return` reads it, in 1 run, first and last at 14:20:05 on Tuesday 8", 23)
+
+
 class TheWordsOfPartIV(unittest.TestCase):
     """Chapters 14 to 17: every number and run the prose states, computed again."""
 
@@ -1375,6 +1504,17 @@ class TheWordsKeepTheRules(unittest.TestCase):
             (15, "Thursday's total goes back through four steps", ("provenance",)),
             (16, "Step 1 is the programs", ("impact analysis",)),
             (17, "## Two causes", ("root cause",)),
+            (18, "## From the programs to the collector", ("collector", "delivery")),
+            (18, "The open run of `remove_return`", ("at least once",)),
+            (19, "The run early on Thursday 10 started at 02:30:00", ("deduplication",)),
+            (19, "By content, no event was dropped.", ("idempotent",)),
+            (20, "## Two times", ("event time", "arrival time")),
+            (21, "At 09:00 on Tuesday 15", ("precedence",)),
+            (22, "Under that rule, all six become one entity.", ("entity resolution",)),
+            (22, "## What each system states", ("alias",)),
+            (23, "The two questions that read every stored event", ("index", "partition")),
+            (23, "## Keeping less", ("retention",)),
+            (23, "The output shows 68 events", ("compaction",)),
         ):
             # The chapter's title is the plan's, and may name its term ("Metadata as a graph").
             cells = [re.sub(r"^# Chapter \d+: .*$", "", re.sub(r"\]\([^)]*\)", "]", c), flags=re.M) for c in CELLS[number]]

@@ -12,7 +12,7 @@
 // record per line, scrolling inside its box, and the page never scrolls sideways. In Chapter 2, Run
 // below from a selected cell does the same. In Chapter 3 the reader's record, typed in, passes its
 // check, and in Chapter 4 the merge, typed in, leaves the model's check 3 problems; in Chapters 10
-// to 17 each chapter's change to a cell gives its result. A browser set to dark gets the dark
+// to 22 each chapter's change to a cell gives its result. A browser set to dark gets the dark
 // theme, and one set to light the light. The page logs no error, and the notebooks' earlier names
 // lead to their chapters. The notebook workflow runs it after the build, with Playwright from the
 // course's dependencies.
@@ -87,7 +87,9 @@ try {
       return !!e && e.getBoundingClientRect().height > 0;
     }, selector);
 
-  const chapters = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+  const chapters = [
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+  ];
   for (const chapter of chapters) {
     const stem = `chapter_${String(chapter).padStart(2, "0")}`;
     await page.goto(`http://127.0.0.1:${port}/notebooks/index.html?path=${stem}.ipynb`);
@@ -596,6 +598,56 @@ try {
       check(
         tuesday.includes("16225") && !tuesday.includes("21549"),
         "Chapter 17: Tuesday's figure is the same at every step",
+      );
+    }
+    // Part V: each chapter's change to a cell, and the result its text states.
+    if (chapter === 18) {
+      await rewrite("again = shop.delivery.send", ["lose=["], ["lose_ack=["]);
+      await run("Run below", "Chapter 18, Run below with the acknowledgement lost");
+      const again = await output("again.retried()");
+      check(
+        again.includes("2026-09-12T16:50:07Z") && again.includes("2026-09-12T16:50:37Z"),
+        "Chapter 18: with the acknowledgement lost, the COMPLETE arrives twice",
+      );
+    }
+    if (chapter === 19) {
+      await rewrite("shop.ingest.dedupe(retimed.events", ['"content"'], ['"run"']);
+      await run("Run below", "Chapter 19, Run below by run");
+      const dropped = await output("shop.ingest.dedupe(retimed.events");
+      check(
+        dropped.includes("02:30:52"),
+        "Chapter 19: by run, the retry with a new time is dropped",
+      );
+    }
+    if (chapter === 20) {
+      await rewrite("late.until(", ['order="event"'], ['order="arrival"']);
+      await run("Run below", "Chapter 20, Run below by arrival");
+      const last = await output("late.until(");
+      check(
+        last.includes("2026-09-09T02:30:21Z"),
+        "Chapter 20: by arrival, daily_sales was last written a day earlier",
+      );
+      await rewrite("shop.delivery.object_states(held.events", ['"arrival"'], ['"event"']);
+      await run("Run below", "Chapter 20, Run below by event time");
+      const states = await output("shop.delivery.object_states(held.events");
+      check(/r-206\.json\tdeleted/.test(states), "Chapter 20: by event time, r-206 is deleted");
+    }
+    if (chapter === 21) {
+      await rewrite("tuesday = shop.claims.claims", ['"newest"'], ['"ranked"']);
+      await run("Run below", "Chapter 21, Run below ranked");
+      const ranked = await output("tuesday = shop.claims.claims");
+      check(
+        ranked.includes("j.marsh") && ranked.includes("day, revenue_pence"),
+        "Chapter 21: ranked, the owner is j.marsh and the columns the warehouse's",
+      );
+    }
+    if (chapter === 22) {
+      await rewrite("shop.aliases.merge(", ['"last part"'], ['"aliases"']);
+      await run("Run below", "Chapter 22, Run below by aliases");
+      const merged = await output("shop.aliases.merge(");
+      check(
+        merged.includes("warehouse, events, transformation tool, reporting tool"),
+        "Chapter 22: by aliases, four references are one entity",
       );
     }
     if (chapter === 4) {

@@ -44,6 +44,7 @@ TERMINAL = ("COMPLETE", "ABORT", "FAIL")
 MESSAGES = {
     "no_open": "Every run the collector has a START for also has its end.",
     "no_repeats": "No change of an object started its function more than once.",
+    "no_retries": "Every event was sent once and received once.",
 }
 
 
@@ -104,6 +105,10 @@ class Delivery:
     def lines(self) -> list[str]:
         """The collector's lines: one line of JSON per event received, in the order received."""
         return [json.dumps(e, separators=(",", ":")) for e in self.events]
+
+    def retried(self) -> Rows:
+        """The events sent more than once or received more than once."""
+        return Rows((r for r in self.log if r["sendings"] > 1 or r["received"] > 1), null="", empty=MESSAGES["no_retries"])
 
     def until(self, at: str) -> list[dict]:
         """The events the collector had received by `at`, in the order received."""

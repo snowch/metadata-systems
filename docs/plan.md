@@ -146,7 +146,7 @@ contradicts them, and makes their metadata system survive it.
 
 | Ch | Title | The learner builds | Central experiment | What breaks | Introduces |
 | --- | --- | --- | --- | --- | --- |
-| 18 | Missing events | a delivery path between producers and the collector, with loss | predict the graph when one COMPLETE never arrives | a run that is running for ever; a dependency nobody can prove | delivery, at least once |
+| 18 | Missing events | a delivery path between producers and the collector, with loss | predict the graph when one COMPLETE never arrives | a run that is running for ever; a dependency nobody can prove | collector, delivery, at least once |
 | 19 | Duplicate events | idempotent ingestion | replay an event: predict whether the lineage doubles | a retry whose event differs in time only; an object's trigger delivered twice, which runs the returns function twice | idempotent, deduplication |
 | 20 | Out-of-order events | event time against arrival time, and an ordering rule | deliver Tuesday's run after Wednesday's | last-writer-wins by arrival overwrites newer state; a return's delete delivered before its create | event time, arrival time |
 | 21 | Conflicting metadata | precedence rules that keep where each claim came from | two systems disagree about an owner and a schema: predict which the figure shows | "newest wins" chooses a stale claim | precedence |
@@ -166,8 +166,8 @@ through them.
 | 27 | Build the query layer | what depends on X, where did X come from, who owns X, which assets are stale, which jobs failed, what a schema change affects |
 | 28 | Build the metadata interface | an asset browser, a graph explorer, a lineage view, run history, schema history, quality observations and impact analysis, as views of the learner's own store |
 
-Chapter 25 introduces *collector*. Part VI introduces no other new terms, because it builds what
-Parts I to V named.
+Part VI introduces no new terms, because it builds what Parts I to V named. (*Collector* was Chapter
+25's until 12 October 2026, when Part V needed it from Chapter 18: the delivery path ends there.)
 
 ### Part VII: Real systems
 
@@ -261,6 +261,13 @@ The author reviews the course at five checkpoints:
 5. Before Chapter 33.
 
 ## Decisions since the brief
+
+### 12 October 2026: Chapters 18 to 23 written; *collector* moves to Chapter 18
+
+Part V is written: Chapters 18 to 23, each with the shop's own faults, built on an engine module
+per concern (`docs/lab.md`, "Delivery", "Claims", "References across systems", "Scale"). The path
+an event takes ends at the program that receives it, so *collector*, planned for Chapter 25, is
+introduced in Chapter 18 instead, where the reader first needs the word; Chapter 25 builds one.
 
 ### 12 October 2026: the requirement in a box; the owner rule as practice
 
