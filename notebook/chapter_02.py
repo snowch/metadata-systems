@@ -386,11 +386,9 @@ def _(mo):
 
     The query is evidence of how the table could have been made, not a record of how it was made, and three small changes to the shop show the difference.
 
-    An analyst copies `clean_orders` to a CSV file, `clean_orders_copy.csv`, in the bucket `shop-scratch`, every night. Now the same query over the copy reproduces `daily_sales` too. None of the platform's records says which of the two the job reads. A query that fits is evidence for every source it fits.
-
-    The job that writes `daily_sales` is edited, from Saturday's row on, to keep every order that has not been refunded. The shop has no refunds, so from Saturday every order counts, cancelled ones included. Saturday's row in `daily_sales` becomes 21549 instead of 19149, in pence. The dashboard shows £215.49 instead of £191.49. The table still has 7 rows and the same last-altered time, and no simple query over the week's assets reproduces it any more. The evidence has gone, and the platform records nothing about the edit.
-
-    On the last night the job that writes `daily_sales` fails and writes nothing. The table has 6 rows, none for Sunday, and was last altered on Sunday at 02:30, a day earlier than `clean_orders` and the dashboard. The dashboard refreshed at 03:00 on Monday as usual and shows the 6 values it found. Each record is normal on its own. The gap shows only when you compare the last-altered times. Only a record of the failure would say that a write was due and did not happen.
+    - An analyst copies `clean_orders` to a CSV file, `clean_orders_copy.csv`, in the bucket `shop-scratch`, every night.
+    - The job that writes `daily_sales` is edited, from Saturday's row on, to keep every order that has not been refunded.
+    - On the last night the job that writes `daily_sales` fails and writes nothing.
     """)
     return
 
@@ -475,6 +473,18 @@ def _(mo):
 @app.cell
 def _(changed, shop):
     shop.queries_that_rebuild(changed, "daily_sales", fit="covers")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    **An analyst copies `clean_orders` every night.** Now the same query over the copy reproduces `daily_sales` too. None of the platform's records says which of the two the job reads. A query that fits is evidence for every source it fits.
+
+    **From Saturday, the `daily_sales` job keeps unrefunded orders.** The shop has no refunds, so from Saturday every order counts, cancelled ones included. Saturday's row in `daily_sales` becomes 21549 instead of 19149, in pence. The dashboard shows £215.49 instead of £191.49. The table still has 7 rows and the same last-altered time, and no simple query over the week's assets reproduces it any more. The evidence has gone, and the platform records nothing about the edit.
+
+    **The `daily_sales` job fails on the last night.** The table has 6 rows, none for Sunday, and was last altered on Sunday at 02:30, a day earlier than `clean_orders` and the dashboard. The dashboard refreshed at 03:00 on Monday as usual and shows the 6 values it found. Each record is normal on its own. The gap shows only when you compare the last-altered times. Only a record of the failure would say that a write was due and did not happen.
+    """)
     return
 
 

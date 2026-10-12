@@ -136,7 +136,9 @@ says what the query tests and what `True` means; and after it, why Thursday matc
 lacks orders 7021, 7023 and 7025) and that the query leaves out `clean_orders`' 2 cancelled orders,
 then asks the reader to compare (round 15: `chapter-02/briefs/round-15/`,
 `chapter-02/drafts/round-15/`; every fact landed, nothing added). Read after Run all on a 412-pixel
-phone.
+phone. The three changes' results, which the page gave before the menu that shows them,
+now come after the menu's cells, each under its menu option's own words; before the menu, each
+change has one line, the first sentence of its paragraph as it stood. No sentence was rewritten.
 
 ## Originality
 
