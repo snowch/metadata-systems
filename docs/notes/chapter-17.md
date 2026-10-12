@@ -104,7 +104,26 @@ wrong subject; it is the search. Two nights named by a day became the date the w
 
 ## The review
 
-To be done with the review of Part IV.
+A reviewer on another model read the chapter as built (`review/findings.md`); an independent
+sceptic attacked each of the 17 findings (`review/verdicts.md`). Every number was right. Acted on,
+through brief WB and draft `drafts/WB.md`:
+
+- the search was said to measure every step the same way; steps 1 and 2 are the values held, and
+  steps 3 and 4 add up revenue as `build_daily_sales` counted it before the `refunds` change, which the
+  page and the module's docstring now say;
+- Saturday's cancelled order is no longer an explanation Tuesday "ruled out": both causes are needed,
+  and Tuesday shows the order alone does not raise the total; "cause" throughout;
+- no record shows that the checkout "changed"; the page says what the records hold;
+- root cause is the course's working definition, said so;
+- the reader is asked for the cause before "Two causes" names both, and the search is compared with
+  where they said they would look; the heading no longer calls Saturday "too high";
+- the requirement section says which readings the records meet; "2 pairs of brake pads"; full
+  timestamps; the checkout's row has no step.
+
+Two facts of the redraft were mine to correct: a sentence copied from my note to Haiku, and "no
+figures" for "no totals". Rejected, with the sceptic: the map, "the next week", and the repeated "no
+reason recorded", each occurrence with its own job. Read whole again after the fixes
+(`review/chapter_17-after-review.md`).
 
 ## Measured
 

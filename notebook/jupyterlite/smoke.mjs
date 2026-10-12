@@ -491,7 +491,10 @@ try {
       await rewrite("as_read=False", ["as_read=False"], ["as_read=True"]);
       await run("Run below", "Chapter 15, Run below with returns as it was");
       const read = await output("as_read=True");
-      check(read.includes("as it was at 02:30:00"), "Chapter 15: returns is rebuilt as it was");
+      check(
+        read.includes("rebuilt as at 2026-09-14T02:30:00Z"),
+        "Chapter 15: returns is rebuilt as it was",
+      );
     }
     if (chapter === 16) {
       await rewrite("downstream_columns", ['"customer_id"'], ['"status"']);

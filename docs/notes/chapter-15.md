@@ -55,12 +55,12 @@ Chapter 2's question returns: where did Thursday's £51.50 come from? The reader
 - **Objective:** the reader discovers that a record of what made a total omits what was left out,
   which was the question about Thursday.
 - **Known before:** the four steps; Chapter 2's three orders.
-- **Driving question:** will the steps list orders 7021, 7023 and 7025?
+- **Driving question:** what reason will the steps give for each of orders 7021, 7023 and 7025?
 - **The action:** change `dropped=False` to `dropped=True`, press **Run below**.
 - **Why the action:** the same trace, with what the run read and did not use.
 - **Evidence:** lines 22, 24 and 26, `customer_id IS NOT NULL is false`, 15400 pence.
 - **Consequence:** answering "why is it low" needs the rows each run read and the condition.
-- **Predictable:** partly; the default leaves them out, which the prose says before the change.
+- **Predictable:** partly; the reader knows from Chapter 2 why they were left out, and must say it as the program's condition.
 - **Gives nothing away:** the question is asked before the change.
 - **Not knowing:** not the right answer.
 - **Next question:** do the inputs the total came from still hold what they held?
@@ -120,7 +120,24 @@ W3C PROV-DM (W3C Recommendation, 30 April 2013), read 12 October 2026 (`docs/sou
 
 ## The review
 
-To be done with the review of Part IV.
+A reviewer on another model read the chapter as built (`review/findings.md`); an independent
+sceptic attacked each of the 19 findings (`review/verdicts.md`). Every number was right. Acted on,
+through brief UB and draft `drafts/UB.md`:
+
+- the trace credited the rows of `clean_orders` to `run-014`, though the table as it is now was
+  written by `run-026`: the engine now names the run that wrote the table as it is now, and the page
+  says `run-015` read the table after `run-014` wrote it, and that those rows are not kept;
+- the file's version is said to be chosen by time, since `run-014` recorded no version;
+- the rebuilt `returns` is called rebuilt, and its giving 6925 the evidence, not an observation;
+- provenance is defined plainly, without the four readings the requirement section separates;
+- the objective no longer states the Sunday result; the Thursday prediction asks for the reason the
+  steps will give, which a reader can get wrong;
+- "the shop's object storage" and "the shop's warehouse"; "the SQL function"; PROV-DM's "with some
+  fixed aspects" quoted and attributed; full timestamps; one row per left-out line.
+
+Rejected, with the sceptic: "the next week" (the course's idiom), the map, saying which of 6925 and
+8350 to believe (left open, as Chapters 16 and 17 take it up), and the closing's bridge to Chapter
+16. Read whole again after the fixes (`review/chapter_15-after-review.md`).
 
 ## Measured
 

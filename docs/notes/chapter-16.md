@@ -93,8 +93,8 @@ The chapter questions "Tell us what breaks if `customer_id` is renamed.", the pl
    copy only, with two readers listed that did not change. The requirement does not say which.
 
 The plan's second candidate, "When a return is deleted, remove everything made from it", is not
-questioned as a requirement; the withdrawn return is its evidence, and the closing of the
-requirement section names it.
+questioned on the page: the withdrawn return is evidence for the closing, and a second requirement
+would widen the chapter.
 
 ## Originality
 
@@ -112,7 +112,23 @@ of lineage". "Figure" for a number became "total".
 
 ## The review
 
-To be done with the review of Part IV.
+A reviewer on another model read the chapter as built (`review/findings.md`); an independent
+sceptic attacked each of the 20 findings (`review/verdicts.md`). Every number was right. Acted on,
+through brief VB and draft `drafts/VB.md`:
+
+- the requirement section no longer ends on the withdrawn return, a different change;
+- "reader" is kept for programs and queries; the table compares what each produced (its column is
+  now `output`, with `changed` second so a phone shows it);
+- the cell is said to run the week again, not twice; the slogan "An impact analysis can list only
+  what the lineage it follows holds" and the closing's untested claim are gone;
+- "lineage by datasets" and "column lineage" throughout; "step" is defined;
+- the last reality bullet says that `daily_sales` being appended to is the shop's design.
+
+The notes' claim that the requirement section names the plan's second candidate was wrong, and is
+corrected below. Rejected, with the sceptic: asking for the meaning of "breaks" earlier (the first
+prediction commits the reader), moving "sends no events" (a Chapter 11 fact), a cell for the
+withdrawn-return prediction (the course's decide-then-run pattern), and the map. Read whole again
+after the fixes (`review/chapter_16-after-review.md`).
 
 ## Measured
 

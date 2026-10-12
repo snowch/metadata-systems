@@ -19,7 +19,7 @@ def _(mo):
     **Objectives**
 
     - Ask the shop's lineage what renaming a column would affect, by dataset and by column.
-    - Compare its answers with what each reader got after the rename.
+    - Compare its answers with what each reader produced after the rename.
     - Find what the shop made from a return that was withdrawn.
     - Question the requirement "Tell us what breaks if `customer_id` is renamed."
     """)
@@ -102,7 +102,7 @@ def _(mo):
     mo.md(r"""
     ## What the lineage lists
 
-    The next cell follows the graph that the week's events make (Chapter 9) downstream from `clean_orders`, in a week with the analyst's script.
+    The next cell follows lineage by datasets, the graph that the week's events make (Chapter 9), downstream from `clean_orders`, in a week with the analyst's script.
     """)
     return
 
@@ -117,7 +117,7 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Step 1: `copy_clean_orders` writes `clean_orders_copy.csv`, and `build_daily_sales` writes `daily_sales`. Step 2: `refresh_dashboard` writes `sales_dashboard`.
+    Step 1 is the programs that read `clean_orders`: `copy_clean_orders` writes `clean_orders_copy.csv`, and `build_daily_sales` writes `daily_sales`. Step 2 is the programs that read what step 1 wrote: `refresh_dashboard` writes `sales_dashboard`.
 
     Following lineage from a change to find what the change may affect is **impact analysis**. By datasets, everything downstream of `clean_orders` may be affected.
 
@@ -157,7 +157,7 @@ def _(mo):
     mo.md(r"""
     ## After the rename
 
-    The next cell runs the week twice, without the rename and with it, and puts what each reader got on Monday morning side by side.
+    The next cell runs the week again with the rename, and sets what each reader produced on Monday morning beside the week above.
     """)
     return
 
@@ -172,14 +172,12 @@ def _(shop, week16):
 def _(mo):
     mo.md(r"""
     - `daily_sales` and the dashboard are unchanged: 7 rows, 100798 pence, and the same seven values.
-    - The analyst's copy: its first line now names the column `customer`. The script ran and succeeded.
+    - The analyst's copy: its first line, the names of its columns, now names the column `customer`. The script ran and succeeded.
     - Jo Marsh's query: before, 7 rows, one for each country, 41 orders; after, the error `no such column: o.customer_id`.
 
     Compare these with what you wrote.
 
-    By datasets, the lineage listed `daily_sales` and the dashboard. Neither changed. By columns, the lineage listed the copy's column. That column now has another name, and the copy runs with no error. Neither kind of lineage listed Jo Marsh's query, which failed. The query sends no events, and the shop does not have its code.
-
-    An impact analysis can list only what the lineage it follows holds.
+    By datasets, the lineage listed `daily_sales` and the dashboard, which did not change. Column lineage listed the copy's column, which now has another name, with no error. Neither listed Jo Marsh's query, which failed: it sends no events, and the shop does not have its code.
     """)
     return
 
@@ -206,9 +204,9 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The graph lists one step: `record_return` writes `returns`.
+    Lineage by datasets lists one step: `record_return` writes `returns`.
 
-    According to the events, no program reads `returns`. `build_daily_sales` reads it only through the function `returned_quantity`, and its events do not name the table (Chapter 10).
+    According to the events, no program reads `returns`. `build_daily_sales` reads it only through the SQL function `returned_quantity`, and its events do not name the table (Chapter 10).
 
     The next cell checks every run of `build_daily_sales` whose code calls `returned_quantity` against what `returns` held when that run started (Chapter 15).
     """)
@@ -261,15 +259,15 @@ def _(mo):
     mo.md(r"""
     "Breaks" could mean two things, each needing something different:
 
-    - fails: a program or a query stops with an error. This needs every reader, whether or not it is in the shop's records.
-    - keeps running and gives a different answer: a reader gets other rows, other values or another column name, with no error. This needs the readers of each column, and what each does with it.
+    - fails: a program or a query stops with an error. This needs every reader that names the column, whether or not it is in the shop's records.
+    - keeps running and gives a different answer: a reader gets other rows, other values or another column name, with no error. This needs the readers of the column, and what each does with it.
 
     By reading, for the rename:
 
     - fails: not met. Jo Marsh's query failed, and no record names it.
-    - keeps running with a different answer: met for the copy, whose column lineage the shop has. The lineage by datasets also listed `daily_sales` and the dashboard, which did not change.
+    - keeps running with a different answer: met for the copy, whose column lineage the shop has. Lineage by datasets also listed `daily_sales` and the dashboard, which did not change.
 
-    The withdrawn return gave a different answer in `daily_sales` and on the dashboard, and the graph of events did not list either. The requirement does not say which meaning of "breaks" it wants.
+    The requirement does not say which meaning of "breaks" it wants.
     """)
     return
 
@@ -279,11 +277,9 @@ def _(mo):
     mo.md(r"""
     ## Before Chapter 17
 
-    Lineage by datasets listed everything downstream of `clean_orders`, and two of the readers it listed did not change. Column lineage listed the copy's column. Neither kind of lineage listed Jo Marsh's query, which failed.
+    Lineage by datasets listed everything downstream of `clean_orders`, and two of the datasets it listed did not change. Column lineage listed the copy's column. Neither kind of lineage listed Jo Marsh's query, which failed.
 
-    A withdrawn return left Sunday's row of `daily_sales` and the dashboard 1200 pence low, and the graph of events followed it no further than `returns`.
-
-    Neither kind of lineage shows where a wrong total went wrong.
+    A withdrawn return left Sunday's row of `daily_sales` and the dashboard 1200 pence low, and lineage by datasets followed it no further than `returns`.
 
     Chapter 17 starts from a wrong total and follows it back to where it went wrong.
 
@@ -300,9 +296,9 @@ def _(mo):
     ### How this differs from a real platform
 
     - The rename, the withdrawn return, the analyst's script and Jo Marsh's query are invented for the course.
-    - The shop's graph holds only what its producers send, and its column lineage only what its parser reads in the code the shop has (Chapters 9 and 10).
-    - OpenLineage's column lineage facet (Chapter 10) is what would carry, in events, the lineage by column that the shop follows here.
-    - In the shop's warehouse, a query that names a column the table does not have fails with an error.
+    - The shop's lineage by datasets holds only what its producers send, and its column lineage only what its parser reads in the code the shop has (Chapters 9 and 10).
+    - OpenLineage's column lineage facet (Chapter 10) is what would carry, in events, the column lineage that the shop follows here.
+    - That `daily_sales` is appended to, not rebuilt, is the shop's own design.
 
     [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 15](chapter_15.ipynb) · [Next: Chapter 17](chapter_17.ipynb)
 

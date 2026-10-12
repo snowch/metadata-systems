@@ -304,7 +304,14 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertEqual((owners, len(programs)), ({"etl_service"}, 4))
         tables = self.w.sql("SELECT table_name FROM information_schema.tables")
         self.assertEqual(len(tables), 3)
-        self.says('The requirement is: "Every table must have an owner." The warehouse records `etl_service` as the owner of all three tables, in the column `table_owner` of `information_schema.tables`.')
+        self.says('The head of the shop\'s requirement is: "Every table must have an owner."')
+        self.says("The warehouse records `etl_service` as the owner of all three tables, in the column `table_owner` of `information_schema.tables`.")
+        # The readings of the requirement, each against what the warehouse records: the account it
+        # names answers only which account controls the table. Its owner is one account for every
+        # table, which four programs share, so it names no person, team or job.
+        self.says("| which account controls it in the warehouse | an account | yes |")
+        self.says("| which job writes it | a program | no: it names an account, not a program |")
+        self.assertEqual(flat(TEXT[2]).count("| yes |"), 1)
         # "field" is kept for a file's record (Chapter 1); what a system keeps is not called one here.
         self.says("## Why each system records what it does about an asset")
         self.assertNotIn("These fields", self.text[2])
@@ -1100,8 +1107,8 @@ class TheWordsOfPartIV(unittest.TestCase):
         self.assertEqual([r["night"] for r in m if r["order_id twice"] == 1][0], "2026-09-10")
         self.assertEqual([r["night"] for r in m if r["no customer_id"] == 3][0], "2026-09-11")
         self.assertEqual({r["quantity 0 or less"] for r in m}, {0})
-        self.says("From Thursday 10, `order_id twice` is 1.", 14)
-        self.says("From Friday 11, `no customer_id` is 3.", 14)
+        self.says("From Thursday 10, `order_id twice` is 1: one order appears twice in the file", 14)
+        self.says("From Friday 11, `no customer_id` is 3: Thursday's three orders with no customer id", 14)
 
     def test_chapter_14_the_assertions(self):
         table = self.Q.check(self.week, "clean_orders", "no customer_id")
@@ -1121,18 +1128,19 @@ class TheWordsOfPartIV(unittest.TestCase):
         f = self.Q.facets(self.week, "run-014")
         self.assertEqual((f["facets"]["dataQualityMetrics"]["rowCount"], f["facets"]["dataQualityMetrics"]["columnMetrics"]["order_id"]["distinctCount"]), (27, 26))
         self.says("`rowCount` is 27.", 14)
-        self.says("For `order_id`, `distinctCount` is 26.", 14)
+        self.says("For `order_id`, `distinctCount` is 26: the 27 rows less the 1 repeat.", 14)
 
     def test_chapter_15_thursday(self):
         steps = self.P.trace(self.week, "2026-09-10")
         self.assertEqual([r["made by"] for r in steps[:3]], ["run-028, refresh_dashboard", "run-015, build_daily_sales", "run-026, build_clean_orders"])
         self.assertEqual((steps[2]["rows"], steps[3]["rows"], {r["pence"] for r in steps}), ("7020, 7022, 7024, 7026", "lines 21, 23, 25, 27", {5150}))
-        self.says("Lines 21, 23, 25 and 27 of `orders.jsonl`, in the version the export wrote at 01:00 on Friday 11", 15)
+        self.says("Lines 21, 23, 25 and 27 of `orders.jsonl`, in the version the export wrote at 01:00:41 on Friday 11.", 15)
+        self.says("The table was last written by `run-026` early on Monday 14.", 15)
         self.says("Each step adds up to 5150 pence.", 15)
         left = [r for r in self.P.trace(self.week, "2026-09-10", dropped=True) if r["asset"].startswith("left out")]
         self.assertEqual([r["rows"][:19] for r in left], ["line 22, order 7021", "line 24, order 7023", "line 26, order 7025"])
         self.assertEqual(sum(r["pence"] for r in left), 15400)
-        self.says("The last row lists lines 22, 24 and 26 of the same version of `orders.jsonl`", 15)
+        self.says("With `dropped=True`, three more rows list lines 22, 24 and 26 of the same version of `orders.jsonl`", 15)
 
     def test_chapter_15_sunday(self):
         week = shop.run_week(["corrected"])
@@ -1185,10 +1193,10 @@ class TheWordsOfPartIV(unittest.TestCase):
         self.says("21549 pence, where `clean_orders` holds 19149 for Saturday", 17)
         [o] = week.warehouse.sql("SELECT quantity, price_pence, status FROM clean_orders WHERE order_id = 7037")
         self.assertEqual((o["quantity"], o["quantity"] * o["price_pence"], o["status"]), (2, 2400, "cancelled"))
-        self.says("Saturday's cancelled order 7037, 2 sets of brake pads, 2400 pence", 17)
+        self.says("Saturday's cancelled order 7037, 2 pairs of brake pads, 2400 pence", 17)
         tue = self.C.search(week, "2026-09-08")
         self.assertEqual({r["pence"] for r in tue[:4]}, {16225})
-        self.says("Every step holds 16225 pence", 17)
+        self.says("16225 pence at every step", 17)
         [c] = week.warehouse.sql("SELECT status FROM clean_orders WHERE order_id = 7009")
         self.assertEqual(c["status"], "cancelled")
 
@@ -1347,9 +1355,9 @@ class TheWordsKeepTheRules(unittest.TestCase):
             (13, "## What each run recorded", ("observation",)),
             (13, "## How recent each asset is", ("freshness",)),
             (14, "The file grows each night", ("data quality",)),
-            (14, "## A rule tested on every run", ("assertion",)),
+            (14, "## A test on every run", ("assertion",)),
             (15, "Thursday's total goes back through four steps", ("provenance",)),
-            (16, "Step 1:", ("impact analysis",)),
+            (16, "Step 1 is the programs", ("impact analysis",)),
             (17, "## Two causes", ("root cause",)),
         ):
             # The chapter's title is the plan's, and may name its term ("Metadata as a graph").

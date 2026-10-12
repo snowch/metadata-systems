@@ -19,7 +19,7 @@ def _(mo):
     **Objectives**
 
     - Read what each run of `build_clean_orders` counted in the file it read.
-    - Test a rule against every run, and find why it passed on every night.
+    - Test one expectation about the orders on every run, against the table and against the file.
     - Set the rows each run read against the rows it wrote.
     - Question the requirement "No order without a customer."
     """)
@@ -99,13 +99,13 @@ def _(mo):
     mo.md(r"""
     The file grows each night, because each export holds every order so far: 6 rows on Tuesday 8, 48 on Monday 14.
 
-    From Thursday 10, `order_id twice` is 1. One order appears twice in the file, and it stays twice.
+    From Thursday 10, `order_id twice` is 1: one order appears twice in the file, and stays twice.
 
-    From Friday 11, `no customer_id` is 3. These are Thursday's three orders with no customer id (Chapter 2). They stay in every later file.
+    From Friday 11, `no customer_id` is 3: Thursday's three orders with no customer id (Chapter 2). They stay in every later file.
 
-    `quantity 0 or less` is 0 on every run.
+    `quantity 0 or less` is 0 on every run: no order in the week has one (Chapter 2).
 
-    Whether data is fit for the use made of it is its **data quality**. Counts like these, recorded by each run, are measurements of it.
+    Whether data is fit for the use made of it is its **data quality**. These counts are observations (Chapter 13) of the data each run read and wrote, and they measure its data quality.
     """)
     return
 
@@ -113,13 +113,33 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## A rule tested on every run
+    ## "No order without a customer."
 
     The head of the shop's requirement is: "No order without a customer."
 
-    The shop's developer writes it as a rule tested on every run of `build_clean_orders`: in `clean_orders`, `no customer_id` must be at most 0.
+    Before you read on, write in the next cell what you take it to mean: where must there be no order without a customer, and what should happen to one?
+    """)
+    return
 
-    A rule that a measurement must meet on every run, with whether it held recorded, is an **assertion**.
+
+@app.cell
+def _():
+    what_it_means = """
+Where must there be no order without a customer,
+and what should happen to one?
+........
+"""
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## A test on every run
+
+    The shop's developer writes the requirement as a test on every run of `build_clean_orders`: in `clean_orders`, `no customer_id` must be at most 0.
+
+    A stated expectation about data, with a record of whether it held in each run, is an **assertion**.
 
     Before you read on, write in the next cell which runs you expect to fail the assertion, and why.
     """)
@@ -147,9 +167,9 @@ def _(mo):
     mo.md(r"""
     It passed on all 7 runs.
 
-    `build_clean_orders` drops every order with no customer id before it writes the table. Its rule is `customer_id IS NOT NULL` (Chapter 2). The assertion tests the table after that rule, so it finds no such order on any night. While the rule stays, this assertion cannot fail.
+    `build_clean_orders` drops every order with no customer id before it writes the table. Its rule is `customer_id IS NOT NULL` (Chapter 6, where you read its code). The assertion tests the table after that rule, so it finds no such order on any night. While the rule stays, this assertion cannot fail.
 
-    Change `dataset = "clean_orders"` to `dataset = "orders.jsonl"`. Before you press **Run below**, decide which runs will fail. Then select the cell and press **Run below**.
+    Change `dataset = "clean_orders"` to `dataset = "orders.jsonl"`, select the cell and press **Run below**.
     """)
     return
 
@@ -158,8 +178,6 @@ def _(mo):
 def _(mo):
     mo.md(r"""
     On `orders.jsonl`, 4 runs fail: Friday 11, Saturday 12, Sunday 13 and Monday 14, each with a count of 3. Tuesday 8 to Thursday 10 pass: their files hold no order of Thursday's.
-
-    Each of the four runs counts 3. The count does not show whether they are the same 3 orders.
     """)
     return
 
@@ -169,9 +187,9 @@ def _(mo):
     mo.md(r"""
     ## Rows read and rows written
 
-    A third test sets what each run read against what it wrote.
+    Could a run's own counts show that it left rows out, whatever left them out?
 
-    The next cell lists, for each run, the rows it read and wrote, the rows that repeat an order, and the rows it left out beyond those. The assertion here: `left out` is 0.
+    The next cell lists, for each run, the rows it read and wrote, the rows that repeat an order, and the rows it left out beyond those. Another assertion: `left out` is 0.
     """)
     return
 
@@ -197,31 +215,13 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## "No order without a customer."
+    ## Three readings
 
-    Before you read on, write in the next cell what you take the requirement to mean: where must there be no order without a customer, and what should happen to one?
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_it_means = """
-Where must there be no order without a customer,
-and what should happen to one?
-........
-"""
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
     "No order without a customer" could mean three things, each needing a different measurement:
 
     - In the file the checkout sends: `no customer_id` in `orders.jsonl`, on every run.
     - In `clean_orders`: `no customer_id` in the table, on every run.
-    - On the dashboard: every completed order the shop took is counted in a day's revenue, against its customer. This needs the file's orders set against the dashboard's totals.
+    - On the dashboard: every completed order the shop took is counted in a day's revenue. This needs the file's orders set against the dashboard's totals. No run records it, so the next cell leaves its `runs failed` empty.
 
     The next cell tests each reading.
     """)
@@ -241,7 +241,7 @@ def _(mo):
     - In `clean_orders`: met on every run, because the rule removes the orders before the table is written.
     - On the dashboard: not met. Thursday's total leaves out 3 completed orders, worth 15400 pence (Chapter 2).
 
-    Compare these with what you wrote. The requirement does not say which reading it means. Nor does it say what should happen to an order without a customer: dropped, kept without a customer, or the night's work stopped.
+    Compare these with what you wrote at the start. The requirement does not say which reading it means. Nor does it say what should happen to an order without a customer: dropped, kept without a customer, or the night's work stopped.
     """)
     return
 
@@ -249,11 +249,11 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## The counts in the shop's events
+    ## The counts as OpenLineage facets
 
-    OpenLineage defines two facets for this. `dataQualityMetrics` holds counts for a dataset and for each of its columns. `dataQualityAssertions` holds each assertion and whether it succeeded.
+    OpenLineage defines two facets for this: `dataQualityMetrics`, counts for a dataset and for each of its columns; and `dataQualityAssertions`, each assertion and whether it succeeded.
 
-    The next cell prints the input `orders.jsonl` of `run-014`, the run on Friday 11, as the shop's producer would send it with both facets.
+    The shop's events do not carry them. The next cell builds them for the input `orders.jsonl` of `run-014`, the run on Friday 11, as the shop's producer would send it.
     """)
     return
 
@@ -269,7 +269,7 @@ def _(shop, week14):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    `rowCount` is 27. For the column `customer_id`, `nullCount` is 3: rows where it is empty. For `order_id`, `distinctCount` is 26.
+    `rowCount` is 27. For the column `customer_id`, `nullCount` is 3: the rows with no customer id. For `order_id`, `distinctCount` is 26: the 27 rows less the 1 repeat. No field holds `quantity 0 or less`.
 
     The assertion is `not_null` on `customer_id`, with `success` false, `expected` 0 and `actual` 3.
 
@@ -284,6 +284,8 @@ def _(mo):
     ## Before Chapter 15
 
     Each run of `build_clean_orders` counted four things in the file it read and the table it wrote. The assertion on `clean_orders` passed on every run, because the rule had removed the orders it was meant to find. On the file, it failed from Friday 11. Comparing the rows each run read with the rows it wrote showed 3 rows left out on every run from Friday 11.
+
+    "No order without a customer" was met in `clean_orders`, not in the file and not on the dashboard, and the requirement does not say which it means.
 
     The counts could not show which orders were left out, or where a total on the dashboard came from.
 

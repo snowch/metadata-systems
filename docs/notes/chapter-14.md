@@ -121,7 +121,29 @@ repository: 12 checked, 0 problems; an assertion with `success` removed was refu
 
 ## The review
 
-To be done with the review of Part IV.
+A reviewer on another model read the chapter as built, as a learner who had done Chapters 1 to 13
+(`review/findings.md`); an independent sceptic, also on another model, attacked each of the 20
+findings (`review/verdicts.md`): 4 upheld, 10 partly upheld, 6 rejected. Every number was right.
+Acted on, through brief TB and draft `drafts/TB.md`, each fact checked:
+
+- the rule's cross-reference now points to Chapter 6, where the reader read `customer_id IS NOT
+  NULL` in the code; Chapter 2 gives the rule only in prose;
+- the objective no longer states the result; "rule" is kept for the job's filter, and the developer's
+  check is "a test" until it is named; the definition of **assertion** is now a stated expectation
+  about data with a record of whether it held in each run;
+- the requirement and the reader's meaning of it now come first, before the developer's test, in a
+  section of their own, and the readings later in "Three readings";
+- the second "decide which runs will fail", whose answer the first table already showed, and a
+  sentence that repeated the page, are gone; "Rows read and rows written" opens with its question;
+- the facets' section says the shop's events do not carry them, and ties 26 to the 27 rows less the
+  1 repeat; the dashboard reading says no run records it, which is why its cell is empty;
+- the closing gives the three verdicts.
+
+Rejected, with the sceptic: the map (every chapter opens with it), the wide tables (the phone smoke
+test passes), the course's idiom "the head of the shop's requirement", and an unused count that is
+the control for Chapter 2's rule. Read whole again after the fixes, from the rebuilt site
+(`review/chapter_14-after-review.md`): the regeneration had restored "From this chapter…", which was
+corrected again.
 
 ## Measured
 

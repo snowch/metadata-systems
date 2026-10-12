@@ -20,7 +20,7 @@ def _(mo):
 
     - Follow Thursday's total on the dashboard back to the lines of the file it came from.
     - Find what a record of a total's sources leaves out.
-    - Find why Sunday's total no longer adds up from the shop's tables.
+    - Check whether Sunday's total adds up from the shop's tables, and find what it adds up from.
     - Question the requirement "Show where Thursday's total came from."
     """)
     return
@@ -111,16 +111,14 @@ def _(mo):
 
     1. The dashboard's value for Thursday, £51.50, drawn by `run-028`, `refresh_dashboard`, early on Monday 14.
     2. The row of `daily_sales` for Thursday, written by `run-015`, `build_daily_sales`, early on Friday 11.
-    3. The rows of `clean_orders` for orders 7020, 7022, 7024 and 7026, written by `run-014`, `build_clean_orders`, early on Friday 11.
-    4. Lines 21, 23, 25 and 27 of `orders.jsonl`, in the version the export wrote at 01:00 on Friday 11, the last before `run-014` started.
+    3. The rows of `clean_orders` for orders 7020, 7022, 7024 and 7026, as the table holds them now. The table was last written by `run-026` early on Monday 14. `run-015` read the table after `run-014` wrote it early on Friday 11. The shop's warehouse keeps no earlier state of a table, so the rows `run-015` read are not kept. The rows now add up to the same total.
+    4. Lines 21, 23, 25 and 27 of `orders.jsonl`, in the version the export wrote at 01:00:41 on Friday 11. The shop's object storage keeps every version of a file, with the time it was written. This version is the last one before `run-014` started. `run-014` did not record which version it read. The time is how the version is chosen.
 
     Each step adds up to 5150 pence.
 
-    The record of where a piece of data came from (the rows it was made from, the programs and runs that made it, and the inputs as they were when each run read them) is its **provenance**.
+    Information about where a piece of data came from and how it was made is its **provenance**.
 
-    The total is the sum of four orders. No one of them is its source: change any of the four and the total changes.
-
-    `orders.jsonl` is read in the version that was current when `run-014` started. Object storage keeps every version of a file, with the time it was written. `clean_orders` is read as it is now: the warehouse keeps no earlier state of a table.
+    The total is made from four orders together; none of them alone is where it came from.
     """)
     return
 
@@ -132,7 +130,7 @@ def _(mo):
 
     Thursday's total is low because three orders were left out (Chapter 2). The four steps list only the rows the total was made from.
 
-    The next cell follows the total back again with `dropped=False`. Change it to `dropped=True`. Before you press **Run below**, decide whether the steps will then list orders 7021, 7023 and 7025. Then select the cell and press **Run below**.
+    The next cell follows the total back again with `dropped=False`. Change it to `dropped=True`. Before you press **Run below**, decide what reason the steps will give for each of orders 7021, 7023 and 7025. Then select the cell and press **Run below**.
     """)
     return
 
@@ -146,11 +144,11 @@ def _(shop, week15):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The last row lists lines 22, 24 and 26 of the same version of `orders.jsonl`: orders 7021, 7023 and 7025, each with `customer_id IS NOT NULL is false`, together 15400 pence. `run-014` read them and left them out.
+    With `dropped=True`, three more rows list lines 22, 24 and 26 of the same version of `orders.jsonl`: orders 7021, 7023 and 7025, each with `customer_id IS NOT NULL is false`, together 15400 pence. `run-014` read them and left them out.
 
     They are found by applying `build_clean_orders`'s conditions again to each line of that version.
 
-    A record of what a total was made from lists what was used. Why Thursday's total is low is in what was not used. Finding that needs the rows each run read and the condition that left each out.
+    A record of what a total was made from lists what was used. Why Thursday's total is low is in what was not used, and that needs the rows each run read and the condition that left each out.
     """)
     return
 
@@ -160,7 +158,7 @@ def _(mo):
     mo.md(r"""
     ## Sunday's total
 
-    The next week has the change `corrected`. From Saturday's row on, `build_daily_sales` takes away what was returned, through the function `returned_quantity`, which reads the table `returns` (Chapter 10).
+    The next week has the change `corrected`. From Saturday's row on, `build_daily_sales` takes away what was returned, through the SQL function `returned_quantity`, which reads the table `returns` (Chapter 10).
 
     On Sunday 13 at 18:10 the returns desk records `r-205`: 2 rolls of bar tape back from order 7044. Early on Monday 14, at 02:30, `build_daily_sales` writes Sunday's row. At 08:40 on Monday the desk corrects `r-205` to 1 roll.
 
@@ -190,7 +188,7 @@ def _(mo):
     mo.md(r"""
     The dashboard and `daily_sales` show 6925 pence for Sunday.
 
-    The five Sunday orders in `clean_orders`, 7043 to 7047, add up to 9775 pence. `returns`, as it is now, holds `r-205` with 1 roll of order 7044: 1425 pence less. Together, these come to 8350 pence.
+    The five Sunday orders in `clean_orders`, 7043 to 7047, add up to 9775 pence. `returns`, as it is now, holds `r-205` with 1 roll of order 7044, written by `run-036`, `record_return`, after the correction: 1425 pence less. Together, these come to 8350 pence.
 
     8350 is not 6925. Sunday's total does not add up from the tables as they are now.
 
@@ -226,11 +224,11 @@ def _(shop, week15c):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    At 02:30:00, `returns` held `r-205` with 2 rolls, from the first version, read by `run-031`: 2850 pence less. 9775 less 2850 is 6925, Sunday's total.
+    The rebuilt `returns`, as at 02:30:00 on Monday, holds `r-205` with 2 rolls, from the first version, which `run-031` read: 2850 pence less. 9775 less 2850 is 6925, Sunday's total.
 
-    Each version of the object was a different input. `run-034` used what the first version held.
+    The shop does not record that `run-034` read `returns`: the function's read is in no record (Chapter 10). That the rebuilt table gives 6925 is the evidence that `run-034` used what the first version held.
 
-    The warehouse keeps no earlier state of `returns`. It could be rebuilt only because each run of `record_return` recorded which version it read, and object storage kept that version.
+    The shop's warehouse keeps no earlier state of `returns`. It could be rebuilt only because each run of `record_return` recorded which version it read, and the shop's object storage kept that version.
     """)
     return
 
@@ -272,11 +270,11 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    For Thursday, the first three were met. The fourth was met for the file, read in the version current when `run-014` started. The tables were read as they are now, and every step still added up.
+    For Thursday, the first three were met. For the fourth: the file's version was kept by the shop's object storage and chosen by the time `run-014` started, but `run-014` did not record it; the tables were read as they are now, and every step still added up.
 
-    For Sunday, with the correction, the first three were met. The fourth was not met by `returns` as it is now. It was met only by rebuilding the table from the object versions the runs recorded.
+    For Sunday, with the correction, the first three were met. The fourth was not met by `returns` as it is now. It was met only by rebuilding the table from the object versions the runs of `record_return` recorded.
 
-    A record of what was used does not show what was left out, which was the question about Thursday.
+    None of the four readings asks for the rows each run read and left out.
 
     The requirement does not say which reading it means.
 
@@ -312,7 +310,7 @@ def _(mo):
 
     - The returns, the correction and the runs are invented for the course.
     - The W3C's PROV data model (a W3C Recommendation of 30 April 2013) describes provenance with entities (things), activities (which happen over a period of time and use or generate entities) and agents (which bear responsibility). Its relations include an activity using an entity, an entity generated by an activity, and one entity derived from another.
-    - In PROV an entity has fixed aspects, so the two versions of `r-205`'s object would be two entities.
+    - PROV calls an entity a thing "with some fixed aspects" (PROV-DM's words). By that, the two versions of `r-205`'s object would be two entities.
     - The shop's way of following a total back is its own: it applies the programs' conditions again to the rows.
     - Some table formats keep a table's earlier states as snapshots (Chapter 2). With them, a table could be read as a run read it.
 
