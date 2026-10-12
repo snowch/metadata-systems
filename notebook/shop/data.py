@@ -138,3 +138,21 @@ ORDERS = tuple(
 def day_of(timestamp: str) -> str:
     """The UTC date of an ISO timestamp."""
     return timestamp[:10]
+
+
+# The returns desk (Chapter 7 on, with the `returns` change): what it did to its bucket, and when.
+# Each line is a time (UTC), what happened to the return's object, the return, and for a create or
+# an overwrite what the object then says: the order, the product and the quantity returned. A
+# return is kept as one small object, `s3://shop-returns/<return>.json`.
+RETURN_FIELDS = ("return_id", "order_id", "product_id", "quantity", "returned_at")
+RETURNS_DESK = (
+    ("2026-09-08T14:20:00Z", "created", "r-201", (7004, 2, 1)),
+    ("2026-09-09T10:05:00Z", "created", "r-202", (7008, 1, 2)),
+    ("2026-09-09T15:40:00Z", "created", "r-203", (7011, 8, 2)),
+    # The desk corrects r-202 the next morning: one tube came back, not two.
+    ("2026-09-10T09:30:00Z", "overwritten", "r-202", (7008, 1, 1)),
+    # A return of one of Thursday's orders with no customer id, which clean orders leaves out.
+    ("2026-09-11T13:15:00Z", "created", "r-204", (7021, 4, 1)),
+    # The customer keeps the bar tape after all: the desk withdraws r-203.
+    ("2026-09-12T16:50:00Z", "deleted", "r-203", None),
+)

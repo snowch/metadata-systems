@@ -30,7 +30,7 @@ def build(out_dir: Path) -> Path:
     files = {f"shop/{p.name}": p.read_bytes() for p in sorted(SHOP.glob("*.py"))}
     files[f"{DIST}/METADATA"] = (
         f"Metadata-Version: 2.1\nName: {NAME}\nVersion: {VERSION}\n"
-        "Summary: The shop's data platform for Metadata Systems, Chapters 1 to 6\n"
+        "Summary: The shop's data platform for Metadata Systems, Chapters 1 to 9\n"
     ).encode()
     files[f"{DIST}/WHEEL"] = b"Wheel-Version: 1.0\nGenerator: make_wheel.py\nRoot-Is-Purelib: true\nTag: py3-none-any\n"
     record = [record_line(path, data) for path, data in files.items()] + [f"{DIST}/RECORD,,"]

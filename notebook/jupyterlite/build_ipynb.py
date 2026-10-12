@@ -49,6 +49,9 @@ CHAPTERS = {
     4: (HERE.parent / "chapter_04.py", "chapter_04.ipynb"),
     5: (HERE.parent / "chapter_05.py", "chapter_05.ipynb"),
     6: (HERE.parent / "chapter_06.py", "chapter_06.ipynb"),
+    7: (HERE.parent / "chapter_07.py", "chapter_07.ipynb"),
+    8: (HERE.parent / "chapter_08.py", "chapter_08.ipynb"),
+    9: (HERE.parent / "chapter_09.py", "chapter_09.ipynb"),
 }
 
 # Jupyter runs from the top: these come first. In the browser the three packages the page bundles
@@ -161,7 +164,7 @@ def build(chapter: int) -> nbformat.NotebookNode:
         elif len(stmts) == 1 and isinstance(first, ast.Expr) and is_call(first.value, "Html"):
             # A figure: drawn here from the shop's week and written into a Markdown cell, so it
             # shows before anything runs.
-            drawn = eval(compile(ast.Expression(first.value.args[0]), "figure", "eval"), {"figures": figures, "week": WEEK})
+            drawn = eval(compile(ast.Expression(first.value.args[0]), "figure", "eval"), {"figures": figures, "week": WEEK, "shop": shop})
             out.append(nbformat.v4.new_markdown_cell(drawn))
         elif len(stmts) == 1 and isinstance(first, ast.Expr) and is_call(first.value, "vstack"):
             parts = ",\n    ".join(ast.unparse(e) for e in first.value.args[0].elts)

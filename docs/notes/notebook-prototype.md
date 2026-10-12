@@ -298,6 +298,23 @@ Opened alone, each downloads the files Chapter 2 does (about 12.5 MB compressed)
 seconds to run every cell, the published Chapters 3 and 4 having taken up to 11.8 s; about 400 MB
 (Chapter 5) and about 420 MB (Chapter 6).
 
+## Chapters 7, 8 and 9
+
+Measured 12 October 2026 as Chapters 5 and 6 were, on the built site served locally. Each segment of
+the server's log from a chapter's link was cut where the next measurement began.
+
+| | Chapter 7 | Chapter 8 | Chapter 9 |
+| --- | --- | --- | --- |
+| Opened from the chapter before's link, after it ran | 19 files, 0.29 MB, in a new tab | 17 files, 0.29 MB, in a new tab | 11 files, 0.29 MB, in a new tab |
+| Run all, from the press until no cell waits (desktop, phone, from the link) | 8.0 to 9.3 s | 8.9 to 9.3 s | 8.3 to 9.0 s |
+| Peak memory of a renderer process, opened alone | 397 to 421 MB | 396 to 405 MB | 403 to 411 MB |
+| Peak memory, with the chapter before open in its own tab | 630 MB | 622 MB | 618 MB |
+| Cells with an error output; console errors | none | none | none |
+
+Each warning states: about 13 MB on its own; less than 1 MB from the chapter before's link; 9 to 12
+seconds to run every cell, as the published Chapters 3 to 6 took up to 12 s; about 420 MB (Chapter
+7), about 400 MB (Chapter 8) and about 410 MB (Chapter 9).
+
 ## Phones
 
 Nothing here measured a real phone, so the page says only what was measured and what one report

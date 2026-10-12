@@ -12,7 +12,7 @@ app = marimo.App(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 5](chapter_05.ipynb)
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 5](chapter_05.ipynb) · [Next: Chapter 7](chapter_07.ipynb)
 
     # Chapter 6: What is lineage?
 
@@ -518,7 +518,7 @@ def _(mo):
 
     Real code can hide what it reads in functions, variables or SQL built while the job executes. No small rule finds all of it.
 
-    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 5](chapter_05.ipynb)
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 5](chapter_05.ipynb) · [Next: Chapter 7](chapter_07.ipynb)
 
     ---
 

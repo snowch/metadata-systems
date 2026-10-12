@@ -166,7 +166,6 @@ COMPARE = {
 # Drawn as the week is: 340 units wide, 14-unit text, its own colours for each theme.
 _WIDTH = 340
 _TEXT = 14
-_CHAR = 7.2
 _STYLE = (
     f"text{{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:{_TEXT}px;fill:#1f2328}}"
     ".box{fill:#ffffff;stroke:#1f2328;stroke-opacity:.55}.job{fill:#1f2328;fill-opacity:.08;stroke:#1f2328;stroke-opacity:.55;stroke-dasharray:4 3}"
@@ -178,7 +177,21 @@ _STYLE = (
 
 
 def _short(identifier: str) -> str:
-    return identifier.rsplit("/", 1)[1] if identifier.startswith("s3://") else identifier
+    return identifier.rsplit("/", 1)[1] if "/" in identifier else identifier
+
+
+# Rough widths of characters in a sans-serif face at 14 units, a little generous, so a label's box
+# fits its text on any phone: narrow letters, wide letters and the rest.
+_NARROW = set("fijlrt.,:;'!|()[]-")
+_WIDE = set("mwMW@%")
+
+
+def _text_width(text: str) -> float:
+    return sum(4.6 if c in _NARROW else 11.5 if c in _WIDE else 8.0 if c.isupper() or c.isdigit() else 7.3 for c in text)
+
+
+def _box_width(node, pad: float = 18) -> float:
+    return 12.0 if node[0] == "bend" else _text_width(_short(node[1])) + pad
 
 
 class Drawing:
@@ -215,49 +228,74 @@ class Drawing:
                         seen.add(o)
                         stack.append(o)
             parts.append(group)
+        self.chains: dict[int, list[tuple[str, str]]] = {}
         if self.layers is not None:
             layered = [[[n for n in g._nodes if n in part and n[0] in types] for types in self.layers] for part in parts]
         else:
+            # The order data flows: a `reads` edge from the asset to the job, a `writes` edge from
+            # the job to the asset. Each node one layer below the deepest node flowing into it; a
+            # node nothing flows into, one layer above the first node it flows into.
+            flows = [((b, a) if e == "reads" else (a, b)) for a, e, b in g._edges]
             depth = {n: 0 for n in g._nodes}
             for _ in g._nodes:
-                for a, e, b in g._edges:
-                    src, dst = (b, a) if e == "reads" else (a, b)
+                for src, dst in flows:
                     depth[dst] = max(depth[dst], depth[src] + 1)
+            for n in g._nodes:
+                if not any(dst == n for _, dst in flows):
+                    after = [depth[dst] for src, dst in flows if src == n]
+                    if after:
+                        depth[n] = min(after) - 1
+            # An edge that skips a layer bends through a point in each layer it crosses.
+            for k, (src, dst) in enumerate(flows):
+                points = [("bend", f"{k}:{d}") for d in range(depth[src] + 1, depth[dst])]
+                for d, pnt in zip(range(depth[src] + 1, depth[dst]), points):
+                    depth[pnt] = d
+                if points:
+                    self.chains[k] = points
             layered = []
             for part in parts:
-                top = max(depth[n] for n in part)
-                layered.append([[n for n in g._nodes if n in part and depth[n] == d] for d in range(top + 1)])
+                members = list(part) + [p for k, pts in self.chains.items() for p in pts if flows[k][0] in part]
+                top = max(depth[n] for n in members)
+                layered.append([[n for n in members if depth[n] == d] for d in range(top + 1)])
         # The biggest part first; within it, layers without nodes dropped.
         layered = [[row for row in part if row] for part in layered]
-        return sorted(layered, key=lambda part: -sum(len(r) for r in part))
+        return sorted(layered, key=lambda part: -sum(len(r) for r in part if r[0][0] != "bend"))
 
     def _place(self):
         g = self.graph
-        near = {n: set() for n in g._nodes}
-        for a, _e, b in g._edges:
-            near[a].add(b)
-            near[b].add(a)
+        parts_ = self._parts()
+        near: dict = {n: set() for n in g._nodes}
+        for k, (a, e, b) in enumerate(g._edges):
+            src, dst = (b, a) if e == "reads" else (a, b)
+            chain = [src] + self.chains.get(k, []) + [dst]
+            for u, v in zip(chain, chain[1:]):
+                near.setdefault(u, set()).add(v)
+                near.setdefault(v, set()).add(u)
         pos, y, h = {}, 8.0, 28
-        for part in self._parts():
+        for part in parts_:
             for row in part:
                 # Order a layer by where its neighbours already stand, so edges cross less.
                 placed = [n for n in row if any(o in pos for o in near[n])]
                 key = lambda n: sum(pos[o][0] + pos[o][2] / 2 for o in near[n] if o in pos) / max(1, sum(1 for o in near[n] if o in pos))
-                row = sorted(placed, key=key) + [n for n in row if n not in placed]
+                row = sorted(placed, key=key) + sorted((n for n in row if n not in placed), key=lambda n: n[1])
+                # A wide layer is drawn tighter before it is split over two lines.
+                pad, gap = 18, 8
+                if sum(_box_width(n) for n in row) + gap * (len(row) - 1) > _WIDTH - 8:
+                    pad, gap = 8, 4
                 lines, line, width = [], [], 0.0
                 for n in row:
-                    w = len(_short(n[1])) * _CHAR + 16
-                    if line and width + 8 + w > _WIDTH - 8:
+                    w = _box_width(n, pad)
+                    if line and width + gap + w > _WIDTH - 4:
                         lines.append((line, width))
                         line, width = [], 0.0
-                    width += (8 if line else 0) + w
+                    width += (gap if line else 0) + w
                     line.append((n, w))
                 lines.append((line, width))
                 for line, width in lines:
                     x = (_WIDTH - width) / 2
                     for n, w in line:
                         pos[n] = (x, y, w, h)
-                        x += w + 8
+                        x += w + gap
                     y += h + 10
                 y += 22
             y += 18
@@ -267,17 +305,25 @@ class Drawing:
         pos, height = self._place()
         kinds = list(dict.fromkeys(e for _, e, _ in self.graph._edges))
         parts = []
-        for a, e, b in self.graph._edges:
+        for i, (a, e, b) in enumerate(self.graph._edges):
             k = kinds.index(e) % 4
             src, dst = (b, a) if e == "reads" else (a, b)
             (x0, y0, w0, h0), (x1, y1, w1, h1) = pos[src], pos[dst]
             down = y1 > y0
             sx, sy = x0 + w0 / 2, (y0 + h0 if down else y0)
             ex, ey = x1 + w1 / 2, (y1 if down else y1 + h1)
-            parts.append(f'<line class="edge e{k}" x1="{sx:.1f}" y1="{sy:.1f}" x2="{ex:.1f}" y2="{ey:.1f}"/>')
+            points = [(sx, sy)]
+            for bend in self.chains.get(i, []):
+                bx, by, bw, bh = pos[bend]
+                points += [(bx + bw / 2, by), (bx + bw / 2, by + bh)]
+            points.append((ex, ey))
+            line = " ".join(f"{px:.1f},{py:.1f}" for px, py in points)
+            parts.append(f'<polyline class="edge e{k}" points="{line}"/>')
             d = 1 if down else -1
             parts.append(f'<path class="head f{k}" d="M{ex:.1f},{ey:.1f} l-4.5,{-8 * d} l9,0 z"/>')
         for n, (x, y, w, h) in pos.items():
+            if n[0] == "bend":
+                continue
             cls = "job" if n[0] == "job" else "box"
             parts.append(f'<rect class="{cls}" x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h}" rx="6"/>')
             parts.append(f'<text x="{x + w / 2:.1f}" y="{y + 19:.1f}" text-anchor="middle">{escape(_short(n[1]))}</text>')

@@ -3,7 +3,9 @@
 """The shop's data platform: three systems, each recording what its own work needs.
 
 - Object storage holds files in buckets and records each file's key, size and last-modified
-  time. The files are real: JSON Lines and CSV, readable with Python's standard library.
+  time. The files are real: JSON Lines and CSV, readable with Python's standard library. It also
+  keeps every version of each object, and a marker where one was deleted, which it lists only
+  when asked (`versions`).
 - The warehouse holds tables in SQLite and keeps a catalogue the learner can query as
   `information_schema`: each table's columns and types, row count, size, created and
   last-altered times, and the account that owns it.
@@ -17,6 +19,7 @@ shows a platform's state cannot tell.
 from __future__ import annotations
 
 import csv
+import hashlib
 import html
 import io
 import json
@@ -100,7 +103,7 @@ def rows_of(cursor: sqlite3.Cursor) -> Rows:
 
 
 def parse(uri: str, text: str) -> "Rows":
-    """A file's records: one object per line of JSON Lines, or one row per line of CSV.
+    """A file's records: one object per line of JSON Lines, one row per line of CSV, or one JSON object.
 
     A CSV file has no types, so every value is text, and an empty field is an empty string.
     """
@@ -108,6 +111,8 @@ def parse(uri: str, text: str) -> "Rows":
         return Rows((json.loads(line) for line in text.splitlines() if line.strip()), null="null")
     if uri.endswith(".csv"):
         return Rows(csv.DictReader(io.StringIO(text)), null="")
+    if uri.endswith(".json"):
+        return Rows([json.loads(text)], null="null")
     raise ValueError(f"no reader for {uri}")
 
 
@@ -127,18 +132,40 @@ class ObjectStorage:
     def __init__(self) -> None:
         self._root = Path(tempfile.mkdtemp(prefix="shop-storage-"))
         weakref.finalize(self, shutil.rmtree, self._root, ignore_errors=True)
+        self._versions: dict[str, list[dict]] = {}
 
     def _path(self, uri: str) -> Path:
         if not uri.startswith("s3://"):
             raise ValueError(f"not an object storage address: {uri}")
         return self._root / uri[len("s3://") :]
 
-    def put(self, uri: str, text: str, at: str) -> None:
-        """Writes a file and records `at` as its last-modified time."""
+    def _version(self, uri: str, at: str, text: str | None) -> str:
+        """A new version of an object: an opaque identifier, the same on every machine."""
+        made = hashlib.sha1(f"{uri}|{at}|{text}".encode()).hexdigest()[:12]
+        self._versions.setdefault(uri, []).append(
+            {"key": uri, "version": made, "at": at, "deleted": text is None, "size_bytes": len(text.encode()) if text is not None else None}
+        )
+        return made
+
+    def put(self, uri: str, text: str, at: str) -> str:
+        """Writes a file, records `at` as its last-modified time, and returns the new version's id."""
         path = self._path(uri)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8")
         os.utime(path, (epoch(at), epoch(at)))
+        return self._version(uri, at, text)
+
+    def delete(self, uri: str, at: str) -> str:
+        """Deletes a file. Its earlier versions stay, under a delete marker, whose id it returns."""
+        self._path(uri).unlink()
+        return self._version(uri, at, None)
+
+    def versions(self, prefix: str = "s3://") -> Rows:
+        """Every version of every object under a prefix, oldest first, delete markers included."""
+        return Rows(
+            ({k: v for k, v in version.items()} for uri in sorted(self._versions) if uri.startswith(prefix) for version in self._versions[uri]),
+            null="",
+        )
 
     def ls(self, prefix: str = "s3://") -> Rows:
         """Every file under a prefix, as object storage lists it."""
@@ -279,12 +306,38 @@ class Warehouse:
         self.db.execute("INSERT INTO information_schema.columns VALUES (?, ?, ?, ?)", (table, column, n + 1, kind))
         self.db.commit()
 
+    def create_table(self, table: str, columns: tuple[tuple[str, str], ...], created: str) -> None:
+        """A new table, which the catalogue records at once."""
+        spec = ", ".join(f"{c} {t}" for c, t in columns)
+        self.db.execute(f"CREATE TABLE main.{table} ({spec})")
+        self.db.executemany(
+            "INSERT INTO information_schema.columns VALUES (?, ?, ?, ?)",
+            [(table, c, i + 1, t) for i, (c, t) in enumerate(columns)],
+        )
+        self.db.execute(
+            "INSERT INTO information_schema.tables VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            ("shop", "analytics", table, "BASE TABLE", PROGRAM_ACCOUNT, 0, 0, created, created),
+        )
+        self.db.commit()
+
+    def change(self, table: str, statements: list[tuple[str, dict]], at: str) -> int:
+        """A program's change to some rows of a table: the statements in order, then the catalogue."""
+        changed = 0
+        for sql, params in statements:
+            changed += self.db.execute(sql, params).rowcount
+        self._catalogue(table, at)
+        return changed
+
     def write(self, table: str, select: str, at: str, *, append: bool = False, **params) -> int:
         """A program's write: replaces the table's rows, or appends to them, and updates the catalogue."""
         if not append:
             self.db.execute(f"DELETE FROM main.{table}")
         cursor = self.db.execute(f"INSERT INTO main.{table} {select}", params)
         added = cursor.rowcount
+        self._catalogue(table, at)
+        return added
+
+    def _catalogue(self, table: str, at: str) -> None:
         rows = self.db.execute(f"SELECT * FROM main.{table}").fetchall()
         types = tuple(
             t
@@ -299,7 +352,6 @@ class Warehouse:
             (len(rows), estimated_bytes(rows, types), at, table),
         )
         self.db.commit()
-        return added
 
 
 # The member of staff who built the dashboard, and its title, which the reporting tool records.

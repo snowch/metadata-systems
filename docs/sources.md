@@ -98,6 +98,41 @@ The schema files in `spec/facets/` of `OpenLineage/OpenLineage`, branch `main`, 
 `JobTypeJobFacet`. A chapter that describes a facet's fields reads that facet's schema file first
 and records it here.
 
+### Read again for Chapter 8 (12 October 2026)
+
+The specification and the facet schemas Chapter 8 uses, read from `OpenLineage/OpenLineage` at
+commit `07864a6b5f5d30b878e157eba8409dda84d68d4f` (branch `main`, 12 October 2026), for checking and
+not copied. They support these claims, beyond those above:
+
+- The run event schema (`$id` `https://openlineage.io/spec/2-0-2/OpenLineage.json`): a run event
+  requires `run` and `job` beside the base event's `eventTime`, `producer` and `schemaURL`; its
+  `eventType` is optional and, where present, one of the six; `run.runId` has the format `uuid`;
+  a job and a dataset require `namespace` and `name`; input and output datasets add `inputFacets` and
+  `outputFacets`; a job or dataset facet may carry `_deleted`.
+- `spec/OpenLineage.md`: "All metadata is additive"; a facet sent again with the same name for the
+  same entity "replaces the previous facet instance for that entity entirely"; a custom facet uses a
+  prefix named after the project that defines it, its key `{prefix}_{name}` in camelCase, and its
+  `_schemaURL` should be an immutable, versioned pointer.
+- The facet schemas, by `$id`: `InputStatisticsInputDatasetFacet` 1-0-0 (`rowCount`, `size`,
+  `fileCount`, none required); `OutputStatisticsOutputDatasetFacet` 1-0-2 (the same three);
+  `DatasetVersionDatasetFacet` 1-0-1 (`datasetVersion`, required); `JobTypeJobFacet` 2-0-4
+  (`processingType` and `integration` required, `jobType` optional); `SourceCodeLocationJobFacet`
+  1-1-0 (`type` and `url` required, `version` among the optional fields); `NominalTimeRunFacet`
+  1-0-1 (`nominalStartTime` required); `ErrorMessageRunFacet` 1-0-1, `SQLJobFacet` 1-1-0,
+  `SchemaDatasetFacet` 1-2-0, `LifecycleStateChangeDatasetFacet` 1-0-1 and `ParentRunFacet` 1-2-0,
+  read and not used.
+- `website/docs/spec/object-model.md`: the client generates a run's `runId` as a UUID, and "It is
+  recommended to use UUIDv7".
+- `website/docs/spec/naming.md`: the table of data stores (S3: `s3://{bucket name}` and the object
+  key) lists no form for SQLite, the store the shop's warehouse runs on, so the shop's warehouse
+  namespace is its own; the page notes that Snowflake account names in the older locator form make
+  dataset identifiers that "won't match" those in the newer form, so "existing lineage nodes won't
+  connect to new ones".
+
+The shop's events were validated against these schemas with `jsonschema` 4.26 outside the
+repository (`docs/notes/chapter-08.md`); the course's own check (`notebook/shop/openlineage.py`) holds
+the rules above in its own code.
+
 ## Marquez
 
 Marquez's site (marquezproject.ai) and the OpenLineage documentation's front page

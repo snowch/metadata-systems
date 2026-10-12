@@ -43,6 +43,8 @@ def show_time(iso: str) -> str:
 def platform_assets(week: Week) -> list[tuple[str, list[tuple[str, str]]]]:
     """The systems, in the order data moves through them, and the assets each holds by kind."""
     files = [(r["key"].rsplit("/", 1)[1], "file") for r in week.storage.ls("s3://shop-raw/")]
+    # From Chapter 7, the returns desk's bucket: one small file per return.
+    files += [(r["key"].rsplit("/", 1)[1], "file") for r in week.storage.ls("s3://shop-returns/")]
     tables = [
         (r["table_name"], "table")
         for r in week.warehouse.sql("SELECT table_name FROM information_schema.tables ORDER BY rowid")
@@ -158,4 +160,6 @@ def dashboard_chart(week: Week) -> str:
 
 def figure(body: str, caption: str) -> str:
     """A figure with its caption above it, as the chapter captions its figures."""
-    return f'<figure class="ms-figure"><figcaption>{escape(caption)}</figcaption>{body}</figure>'
+    parts = escape(caption).split("`")
+    shown = "".join(f"<code>{p}</code>" if i % 2 else p for i, p in enumerate(parts))
+    return f'<figure class="ms-figure"><figcaption>{shown}</figcaption>{body}</figure>'

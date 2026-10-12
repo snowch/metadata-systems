@@ -84,7 +84,7 @@ try {
       return !!e && e.getBoundingClientRect().height > 0;
     }, selector);
 
-  for (const chapter of [1, 2, 3, 4, 5, 6]) {
+  for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8, 9]) {
     await page.goto(`http://127.0.0.1:${port}/notebooks/index.html?path=chapter_0${chapter}.ipynb`);
     await page.waitForFunction(() => document.querySelector(".jp-MarkdownOutput h1"), null, {
       timeout: 120_000,
@@ -133,7 +133,7 @@ try {
       return { figures: [...found.values()], stubs };
     });
     check(
-      figures.figures.length === ({ 1: 3, 2: 2 }[chapter] ?? 1) &&
+      figures.figures.length === ({ 1: 3, 2: 2, 7: 2 }[chapter] ?? 1) &&
         figures.figures.every((f) => f.shown && f.image !== false) &&
         figures.stubs === 0,
       `Chapter ${chapter}: its ${figures.figures.length} figures show before anything runs, with no code cell`,
@@ -276,7 +276,9 @@ try {
         .elementHandle();
       await cell.scrollIntoViewIfNeeded();
       const editor = await cell.$(".cm-content");
-      await editor.tap();
+      // Near its first character: a long line makes the editor wider than the phone's screen, and
+      // its centre can fall outside it.
+      await editor.tap({ position: { x: 8, y: 8 } });
       await page.keyboard.press("ControlOrMeta+a");
       const text = (await editor.innerText()).replace(/\u00a0/g, " ");
       await page.keyboard.insertText(from.reduce((t, f, i) => t.replaceAll(f, to[i]), text));
@@ -336,6 +338,41 @@ try {
       check(
         walk.includes("sales_dashboard"),
         "Chapter 6: downstream of orders.jsonl reaches the dashboard",
+      );
+    }
+    if (chapter === 7) {
+      await rewrite("lineage = shop.lineage", ['"reads", "writes"'], ['"writes"']);
+      await run("Run below", "Chapter 7, Run below without reads");
+      const up = await output("lineage = shop.lineage");
+      check(
+        up.includes("refresh_dashboard") && !up.includes("orders.jsonl"),
+        "Chapter 7: without reads, the traversal stops at refresh_dashboard",
+      );
+    }
+    if (chapter === 8) {
+      await rewrite(
+        '"eventType": "START"',
+        ['"name": "analytics.clean_orders"'],
+        ['"name": "shop.analytics.clean_orders"'],
+      );
+      await run("Run below", "Chapter 8, Run below with the jobs' name");
+      const up = await output("joined = shop.openlineage");
+      check(
+        up.includes("orders.jsonl"),
+        "Chapter 8: with one name for the table, the traversal reaches orders.jsonl",
+      );
+    }
+    if (chapter === 9) {
+      await rewrite(
+        "known = dict(",
+        ['# known["shop_objectChange"]'],
+        ['known["shop_objectChange"]'],
+      );
+      await run("Run below", "Chapter 9, Run below with the facet known");
+      const unknown = await output("objs.unknown");
+      check(
+        unknown.includes("The stage knows every facet in the events."),
+        "Chapter 9: with the facet known, no facet is unknown",
       );
     }
     if (chapter === 4) {

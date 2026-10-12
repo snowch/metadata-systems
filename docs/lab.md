@@ -98,32 +98,30 @@ Chapter 3 adds a fourth:
   orders into a new column, `order_count`; the rows before have none. The warehouse's catalogue
   records the column at once, so a check of a person's records against it sees the change.
 
-Later chapters add their own: a renamed column, a late file, a duplicated event, a second
-environment.
+Chapter 6 adds `source`, and Chapter 7 `returns` (below). Later chapters add their own: a renamed
+column, a late file, a duplicated event, a second environment.
 
-### Planned: the returns desk
+### The returns desk (Chapter 7 on)
 
-Not built yet; built with Chapter 7, the first chapter that uses it (`docs/plan.md`, "12 October
-2026: processing started by objects"). A change, `returns`, adds to the week:
+Built with Chapter 7 (`docs/plan.md`, "12 October 2026: processing started by objects"). The change
+`returns` adds to the week:
 
-- **A bucket and a table.** `s3://shop-returns/`, holding one small JSON object per return (the
-  order, the item, the quantity returned, when), and a warehouse table, `returns`, one row per
-  return.
+- **A bucket and a table.** `s3://shop-returns/`, one small JSON object per return (the return, the
+  order, the product, the quantity returned, when it was first returned), and a warehouse table,
+  `returns`, one row per return.
 - **Writes at any hour.** The returns desk creates, overwrites and deletes objects during the day,
-  at fixed times written in `notebook/shop/data.py` as the orders are, so the week stays
-  deterministic. Object storage keeps each object's versions, with the time of each.
-- **Notifications and functions.** Each create, overwrite or delete produces a notification, which
-  the platform keeps and does not show, and which starts a function: `record_return` for a create
-  or an overwrite (it replaces the return's row), `remove_return` for a delete. Each start is a run
-  the platform does not record (`Week.executions`, like the jobs').
-- **A delivery the chapters can break.** By default each notification is delivered once, in order.
-  A chapter can make the delivery lose, repeat or reorder notifications, so that a function runs
-  twice for one return, or a delete arrives before its create; the deterministic choice of which
-  is the chapter's, written in the change.
-- **Data that tests it.** At least one return corrected after its function ran, one return
-  withdrawn, and one return of a Thursday order with no customer id, which `clean_orders` left out,
-  so that provenance, deletion and a return of an order the warehouse does not hold each have a
-  case.
+  at the fixed times in `RETURNS_DESK` (`notebook/shop/data.py`), so the week stays deterministic.
+  Object storage keeps every version of every object, with a delete marker where one was deleted
+  (`storage.versions`); a version's identifier is a hash of the object's key, time and text.
+- **Functions.** Each change starts a function 2 seconds later: `record_return` for a create or an
+  overwrite (it replaces the return's row), `remove_return` for a delete (it reads nothing; the
+  object is gone). Each start is an execution like the jobs', with the object, its version and the
+  change. The repository holds both functions' code with the change.
+- **Delivery.** Each change starts its function exactly once, in order. Chapters 19 and 20 will make
+  the delivery repeat or reorder; that is not built yet.
+- **The data.** Three creates, one correction (`r-202`, overwritten the next morning), one return of
+  Thursday's order 7021 (no customer id, so `clean_orders` does not hold it), and one withdrawal
+  (`r-203`, deleted).
 
 ### The repository (Chapter 6)
 
@@ -160,6 +158,20 @@ evidence:
   another type) checks them: unknown types and attributes, and values that name nothing the
   records describe. `owners` lists every asset with its `responsible` values under three readings
   of "one owner". Both notations are the course's own.
+- **Runs and events** (`notebook/shop/runs.py`, Chapter 7). Every execution of a program in the
+  repository records its program, what it read and how many rows, its code as it was that day, and
+  for a function the object change that started it (`Week.executions`). `events(week, fields)` gives
+  the events a reader's design would have sent: a start and a finish per run, each carrying the
+  chosen fields where their value is known. `runs` groups them by any fields; `readings` sets a
+  design against four readings of "Record every run."; `lineage` makes a graph from what runs read
+  and wrote.
+- **OpenLineage** (`notebook/shop/openlineage.py`, Chapter 8). `run_events` gives each run as a
+  START and a COMPLETE or FAIL, in the specification's form, with standard facets and one of the
+  shop's own; `check` holds an event to the specification's rules (`docs/sources.md`); `Consumer`
+  accumulates events as the shop's own consumer. Every event was validated against the published
+  schema outside the repository (`docs/notes/chapter-08.md`).
+- **Ingestion** (`notebook/shop/ingest.py`, Chapter 9). `event_lines`, then `parse`, `normalise`,
+  `objects` and `edges`, each a stage a notebook shows, every rule the shop's own.
 - **The records as a graph** (`notebook/shop/graph.py`, Chapters 5 and 6). `graph(records, model)`
   makes each entity a node and each line whose value names another entity an edge; `traverse`
   walks the edges it is given, each way it is given; `downstream` and `upstream` walk `reads` and
@@ -188,8 +200,9 @@ it.
 A notebook runs the shop's week from its definition each time its cells run, so what a figure shows
 is a function of the shop's definition and the cells the learner has run or changed. JupyterLite
 keeps the learner's edited copy of a notebook in the browser's storage, on that device; nothing is
-sent anywhere. When a later chapter needs what the learner built earlier (their records, their
-event design), it will say how it gets it; no chapter does yet.
+sent anywhere. When a later chapter needs what the learner built earlier, it restates it in a cell
+of its own (Chapter 5 Chapter 4's records, Chapter 6 Chapter 5's, Chapter 8 Chapter 7's design as a
+mapping), so each chapter runs on its own.
 
 ## Determinism
 

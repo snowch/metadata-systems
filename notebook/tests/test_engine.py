@@ -307,5 +307,81 @@ class TheRepository(unittest.TestCase):
         self.assertEqual([(r["says"], r["code"]) for r in stale], [("reads: clean_orders", ""), ("", f"reads: {shop.COPY}")])
 
 
+
+class TheReturnsDesk(unittest.TestCase):
+    """Chapter 7's change: returns as objects with versions, and two functions."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.week = shop.run_week(["returns"])
+
+    def test_the_default_week_is_unchanged(self):
+        plain = shop.run_week()
+        self.assertEqual(plain.storage.ls("s3://shop-returns/"), [])
+        self.assertEqual(len(plain.warehouse.sql("SELECT * FROM information_schema.tables")), 3)
+        self.assertEqual({e.writer for e in plain.executions} - {"export"}, {"clean_customers", "clean_orders", "daily_sales", "dashboard_refresh"})
+
+    def test_versions_and_the_table(self):
+        versions = self.week.storage.versions("s3://shop-returns/")
+        self.assertEqual(len(versions), 6)
+        self.assertEqual([v["deleted"] for v in versions if v["key"].endswith("r-203.json")], [False, True])
+        self.assertEqual(len([v for v in versions if v["key"].endswith("r-202.json")]), 2)
+        rows = {r["return_id"]: r["quantity"] for r in self.week.warehouse.sql("SELECT * FROM returns")}
+        self.assertEqual(rows, {"r-201": 1, "r-202": 1, "r-204": 1})
+
+    def test_the_functions_run_once_per_change_and_are_in_the_repository(self):
+        functions = [e for e in self.week.executions if e.night is None]
+        self.assertEqual([e.change for e in functions], ["created", "created", "created", "overwritten", "created", "deleted"])
+        self.assertEqual([e.reads for e in functions][-1], ())
+        files = [r["file"] for r in shop.repository(self.week)]
+        self.assertEqual(files[-2:], ["functions/record_return.py", "functions/remove_return.py"])
+
+    def test_the_week_is_deterministic(self):
+        again = shop.run_week(["returns"])
+        self.assertEqual(again.storage.versions("s3://"), self.week.storage.versions("s3://"))
+
+
+class TheEventsAndTheirStandard(unittest.TestCase):
+    """Chapters 7 to 9: the reader's events, OpenLineage's, and the ingestion stages."""
+
+    def test_every_run_sends_a_start_and_a_finish(self):
+        week = shop.run_week(["returns", "failed"])
+        events = shop.events(week)
+        self.assertEqual(len(events), 2 * 34)
+        runs = shop.runs(events)
+        self.assertEqual([r["status"] for r in runs].count("failed"), 1)
+
+    def test_every_openlineage_event_keeps_the_rules(self):
+        # docs/sources.md: the rules; the published schema itself was checked outside the repository
+        # (docs/notes/chapter-08.md, "What was built for it").
+        for changes in ([], ["returns", "failed", "source"], ["returns", "copy", "column", "refunds"]):
+            week = shop.run_week(changes)
+            for event in shop.openlineage.run_events(week) + shop.openlineage.analyst_events(week):
+                self.assertEqual(shop.openlineage.problems(event), [], event["job"]["name"])
+                for facet in [*event["run"].get("facets", {}).values(), *event["job"].get("facets", {}).values()]:
+                    self.assertTrue({"_producer", "_schemaURL"} <= set(facet))
+
+    def test_run_ids_are_version_7_uuids_in_time_order(self):
+        events = shop.openlineage.run_events(shop.run_week(["returns"]))
+        ids = [e["run"]["runId"] for e in events if e["eventType"] == "START"]
+        self.assertTrue(all(i[14] == "7" and i[19] in "89ab" for i in ids))
+        self.assertEqual(ids, sorted(ids))
+        self.assertEqual(len(set(ids)), 34)
+
+    def test_a_broken_event_is_refused(self):
+        bad = {"eventType": "DONE", "eventTime": "yesterday", "run": {"runId": "x"}, "job": {"name": "j"}, "producer": "nowhere", "schemaURL": "x:y"}
+        kinds = {k for _, k in shop.openlineage.problems(bad)}
+        self.assertEqual(kinds, {"event_type", "time", "run_id", "missing", "uri"})
+        self.assertEqual(len(shop.openlineage.Consumer().send(bad).refused), 1)
+
+    def test_ingesting_the_whole_week(self):
+        I = shop.ingest
+        lines = I.event_lines(shop.run_week(["returns", "copy"]))
+        objs = I.objects(I.normalise(I.parse(lines)))
+        edges = I.edges(objs)
+        self.assertEqual((len(objs.runs), len(edges.by_job)), (41, 16))
+        self.assertTrue(all(r["state"] == "COMPLETE" for r in objs.runs.values()))
+
+
 if __name__ == "__main__":
     unittest.main()

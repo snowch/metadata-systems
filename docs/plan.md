@@ -117,7 +117,7 @@ observed one, and designs the event a computation should emit before meeting Ope
 | Ch | Title | The learner builds | Central experiment | What breaks | Introduces |
 | --- | --- | --- | --- | --- | --- |
 | 6 | What is lineage? | "made from" edges through jobs: A to job to B, then a chain of two jobs; dependency and impact queries | predict everything affected if `orders.jsonl` changes | a hand-written dependency that the job does not have; a declared edge that went stale when the job changed | lineage, upstream, downstream |
-| 7 | Jobs, runs and events | a run per execution, with its times, status, inputs, outputs and code version, and for a run started by an object, the object, its version and what happened to it (created, overwritten, deleted); the learner designs the event a run emits | predict what the job's record alone cannot say about Thursday, then read the runs | an event with no run identifier merges two nights; an event with no inputs proves nothing | run, event |
+| 7 | Jobs, runs and events | a run per execution, with its times, status, inputs, outputs and code version, and for a run started by an object, the object, its version and what happened to it (created, overwritten, deleted); the learner designs the event a run emits | predict what the job's record alone cannot say about Thursday, then read the runs | grouping events without a run identifier merges two runs of a function on one day; an event with no inputs proves nothing | run, event |
 | 8 | OpenLineage | the learner's events as OpenLineage run events: START, COMPLETE and FAIL, a run's UUID, a job's namespace and name, inputs, outputs, facets; create, edit and replay | predict what a consumer knows after a START with no outputs and a COMPLETE with outputs | two producers name the same table differently and the lineage does not join | OpenLineage, facet, namespace, producer |
 | 9 | From events to graphs | the ingestion pipeline: parse, normalise, metadata objects, graph edges, each stage built and run over the week's events | predict how many nodes and edges the week produces | a malformed event; a facet the parser does not know | ingestion, normalise |
 
@@ -799,3 +799,30 @@ of how a learner gets a changed chapter.
 6. **The lab has its own SQL subset.** One notation for the programs the learner reads in Chapter
    1, the column lineage of Chapter 9 and the queries of Part VI, as the digital-design course has
    one hardware description subset.
+
+### 12 October 2026: Chapters 7, 8 and 9 written; Part II complete
+
+The author asked to "complete part 2". The three chapters keep their rows, with one change of
+wording in Chapter 7's (below), and checkpoint 2 falls after them. Chapter 7's reader designs the
+fields of the events each program sends, groups them into runs to answer Jo Marsh (3 orders left
+out, from the run on Friday 11), finds that a program and a day do not identify a run of a function,
+answers Chapter 6's question about the analyst's copy from what each run read, and questions "Record
+every run."; Chapter 8's reader meets OpenLineage as a mapping from their own fields, sees a
+consumer's knowledge grow event by event, writes an event by hand, and finds two names for one
+table do not join; Chapter 9's reader runs four stages of ingestion over the week's events, a line
+cut short and a facet not known included, and questions "The graph must show the current lineage."
+Decisions the plan did not make:
+
+- **The returns desk is built**, as `docs/lab.md` describes, and enters at Chapter 7. Chapters 1 to
+  6 run without it; Chapters 7 to 9 run with it.
+- **Chapter 7's failure is a function, not a night.** Grouping a nightly job's events by job and day
+  works; it merges two runs of `record_return` on one day. The row's wording follows.
+- **The reader's state is restated, not carried.** Chapter 8 starts from a mapping of Chapter 7's
+  fields, not from the reader's own design (`docs/lab.md`, "The learner's state").
+- **What Chapter 8 states about the specification was read again** at a recorded commit, and the
+  shop's events were validated against the published schemas outside the repository
+  (`docs/sources.md`). The specification's naming page has no form for the shop's warehouse, so its
+  namespace is the shop's own, and the page says so.
+- **The analyst's script sends events from Chapter 9**, as a third producer, so that normalising has
+  two producers' names for one table to join.
+

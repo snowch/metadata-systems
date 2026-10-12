@@ -2,7 +2,7 @@
 
 """Every sentence of the notebooks that states a fact, pinned against the engine, and the prose rules.
 
-Chapters 1 to 6 are a notebook each. Their words are their markdown cells and the labels in their
+Chapters 1 to 9 are a notebook each. Their words are their markdown cells and the labels in their
 code cells. A number in them is a number the engine produced; if the shop changes, this fails
 until the words change with it.
 """
@@ -25,6 +25,9 @@ CHAPTERS = {
     4: ROOT / "notebook" / "chapter_04.py",
     5: ROOT / "notebook" / "chapter_05.py",
     6: ROOT / "notebook" / "chapter_06.py",
+    7: ROOT / "notebook" / "chapter_07.py",
+    8: ROOT / "notebook" / "chapter_08.py",
+    9: ROOT / "notebook" / "chapter_09.py",
 }
 SOURCE = {chapter: path.read_text(encoding="utf-8") for chapter, path in CHAPTERS.items()}
 
@@ -180,6 +183,12 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("In Chapter 6 you read the jobs' code", 5)
         self.says("## Before Chapter 7", 6)
         self.says("Chapter 7 records each time a job does its work", 6)
+        self.says("## Before Chapter 8", 7)
+        self.says("Chapter 8 writes the same runs in the form an open standard sets", 7)
+        self.says("## Before Chapter 9", 8)
+        self.says("Chapter 9 builds that, one stage at a time", 8)
+        self.says("## Before Chapter 10", 9)
+        self.says("Chapter 10 reads the jobs' SQL", 9)
 
     def test_each_chapter_has_its_own_title_in_its_tab(self):
         for chapter, source in SOURCE.items():
@@ -194,7 +203,10 @@ class TheWordsMatchTheEngine(unittest.TestCase):
             3: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 2](chapter_02.ipynb) · [Next: Chapter 4](chapter_04.ipynb)",
             4: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 3](chapter_03.ipynb) · [Next: Chapter 5](chapter_05.ipynb)",
             5: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 4](chapter_04.ipynb) · [Next: Chapter 6](chapter_06.ipynb)",
-            6: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 5](chapter_05.ipynb)",
+            6: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 5](chapter_05.ipynb) · [Next: Chapter 7](chapter_07.ipynb)",
+            7: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 6](chapter_06.ipynb) · [Next: Chapter 8](chapter_08.ipynb)",
+            8: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 7](chapter_07.ipynb) · [Next: Chapter 9](chapter_09.ipynb)",
+            9: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 8](chapter_08.ipynb)",
         }
         for chapter, line in nav.items():
             self.assertTrue(CELLS[chapter][0].startswith(line + "\n"), chapter)
@@ -667,6 +679,202 @@ class TheWordsOfChapter6(unittest.TestCase):
         self.says("`revenue_pence` is made from `price_pence` and `quantity` of `clean_orders`")
 
 
+class TheWordsOfChapter7(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.week = shop.run_week()
+        cls.returns = shop.run_week(["returns"])
+        cls.text = flat(TEXT[7])
+
+    def says(self, phrase: str) -> None:
+        self.assertIn(flat(phrase), self.text)
+
+    def test_what_the_shop_held(self):
+        [row] = self.week.warehouse.sql("SELECT row_count, last_altered FROM information_schema.tables WHERE table_name = 'clean_orders'")
+        self.assertEqual((row["row_count"], row["last_altered"]), (44, "2026-09-14T02:05:52Z"))
+        self.says("The warehouse records that `clean_orders` has 44 rows and was last written at `2026-09-14T02:05:52Z`")
+
+    def test_the_rows_left_out(self):
+        events = shop.events(self.week, ["job", "type", "time", "rows_read", "rows_written"]).where(job="build_clean_orders")
+        self.assertEqual(len(events), 14)
+        self.says("`build_clean_orders` sent 14 events: a start and a finish on each of the 7 nights.")
+        runs = shop.runs(events, by=["job", "day"])
+        left = [r["rows_read"] - r["rows_written"] for r in runs]
+        self.assertEqual(left, [0, 0, 1, 4, 4, 4, 4])
+        self.says("Rows read minus rows written gives the rows left out: 0, 0, 1, 4, 4, 4 and 4.")
+        self.assertEqual(shop.data.DUPLICATED, 7015)
+        self.says("The run on Thursday 10 left out 1 row: the export's second copy of order 7015")
+        thursday = [o for o in shop.data.ORDERS if o[6].startswith("2026-09-10") and o[1] is None]
+        self.assertEqual(len(thursday), 3)
+        self.says("The answer to Jo's question: 3 orders, all placed on Thursday, left out from the run on Friday 11 onwards.")
+
+    def test_two_runs_on_one_day(self):
+        design = ["job", "type", "time", "rows_read", "rows_written", "object", "object_change"]
+        by_day = shop.runs(shop.events(self.returns, design).where(job="record_return"), by=["job", "day"])
+        [wednesday] = [r for r in by_day if r["day"] == "2026-09-09"]
+        self.assertEqual((wednesday["events"], wednesday["started"], wednesday["finished"]), (4, "2026-09-09T10:05:02Z", "2026-09-09T15:40:05Z"))
+        self.says("Wednesday 9 shows one row with 4 events and two objects, `r-202.json` and `r-203.json`. It starts at 10:05:02 and finishes at 15:40:05")
+        runs = shop.runs(shop.events(self.returns, design + ["run", "object_version"])).where(job=["record_return", "remove_return"])
+        self.assertEqual(len(runs), 6)
+        self.says("There are 6 runs of the two functions, one for each change to a return's file.")
+        [removed] = [r for r in runs if r["job"] == "remove_return"]
+        self.assertEqual((removed["rows_read"], removed["object_change"]), (0, "deleted"))
+        self.says("It read 0 rows: the file was gone when it started.")
+        self.assertEqual(len(self.returns.storage.ls("s3://shop-returns/")), 3)
+        self.says("three return files in object storage")
+
+    def test_what_each_run_read(self):
+        changed = shop.run_week(["returns", "source"])
+        runs = shop.runs(shop.events(changed, ["run", "job", "type", "reads", "code_version"])).where(job="build_daily_sales")
+        self.assertEqual([(r["reads"], r["code_version"]) for r in runs], [("clean_orders", "256e271")] * 5 + [(shop.COPY, "c715bde")] * 2)
+        self.says("The runs on Tuesday 8 to Saturday 12 read `clean_orders`, with code version `256e271`.")
+        self.says("The runs on Sunday 13 and Monday 14 read `s3://shop-scratch/clean_orders_copy.csv`, with code version `c715bde`.")
+
+    def test_without_reads(self):
+        with_reads = shop.lineage(shop.runs(shop.events(self.week, ["run", "job", "type", "reads", "writes"])))
+        self.assertEqual(len(with_reads.upstream("sales_dashboard")), 6)
+        without = shop.lineage(shop.runs(shop.events(self.week, ["run", "job", "type", "writes"])))
+        self.assertEqual([r["node"] for r in without.upstream("sales_dashboard")], ["refresh_dashboard"])
+        self.says("With `reads`, the traversal reaches 6 nodes, back to `orders.jsonl`.")
+        self.says("Without `reads`, it reaches only `refresh_dashboard`")
+
+    def test_the_readings(self):
+        rows = shop.readings(["run", "job", "type", "time", "status"])
+        self.assertIn('yours = ["run", "job", "type", "time", "status"]', SOURCE[7])
+        self.assertEqual([r["met"] for r in rows], ["yes", "no", "no", "no"])
+        self.says("and meets the first reading only")
+
+
+class TheWordsOfChapter8(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.week = shop.run_week(["returns", "failed"])
+        cls.events = shop.openlineage.run_events(cls.week)
+        cls.text = flat(TEXT[8])
+
+    def says(self, phrase: str) -> None:
+        self.assertIn(flat(phrase), self.text)
+
+    def test_one_run(self):
+        friday = [e for e in self.events if e["job"]["name"] == "build_clean_orders" and e["eventTime"].startswith("2026-09-11")]
+        start, complete = friday
+        self.assertEqual((start["eventType"], complete["eventType"]), ("START", "COMPLETE"))
+        self.assertEqual(complete["inputs"][0]["inputFacets"]["inputStatistics"]["rowCount"], 27)
+        self.assertEqual(complete["outputs"][0]["outputFacets"]["outputStatistics"]["rowCount"], 23)
+        self.assertEqual(complete["job"]["facets"]["sourceCodeLocation"]["version"], "b178023")
+        self.says("In these events, `inputStatistics` holds the rows read, 27. `outputStatistics` holds the rows written, 23. `sourceCodeLocation` holds the code version, `b178023`.")
+        self.assertEqual(start["run"]["runId"][14], "7")
+        self.assertEqual(start["producer"], shop.openlineage.PRODUCER)
+        self.says("Here it is `https://example.org/shop/jobs/tree/v1`.")
+        self.assertEqual((complete["outputs"][0]["namespace"], complete["outputs"][0]["name"]), ("warehouse://shop-warehouse", "shop.analytics.clean_orders"))
+
+    def test_the_consumer(self):
+        friday = [e for e in self.events if e["job"]["name"] == "build_clean_orders" and e["eventTime"].startswith("2026-09-11")]
+        c = shop.openlineage.Consumer().send(friday[0])
+        [row] = c.runs()
+        self.assertEqual((row["state"], row["outputs"], row["ended"]), ("START", "", None))
+        c.send(friday[1])
+        [row] = c.runs()
+        self.assertEqual((row["state"], row["ended"], row["events"]), ("COMPLETE", "2026-09-11T02:05:52Z", 2))
+        self.says("The row now has the state `COMPLETE`, the end time `2026-09-11T02:05:52Z`")
+        everything = shop.openlineage.Consumer().send(*self.events)
+        self.assertEqual((len(everything.runs()), len(everything.runs(state="FAIL"))), (34, 1))
+        self.says("The consumer holds 34 runs. One of them has the state `FAIL`: `build_daily_sales` on Monday 14.")
+
+    def test_two_names(self):
+        OL = shop.openlineage
+        start = {
+            "eventType": "START", "eventTime": "2026-09-11T02:15:00Z",
+            "run": {"runId": OL.uuid7("2026-09-11T02:15:00Z", "copy")},
+            "job": {"namespace": "analyst", "name": "copy_clean_orders"},
+            "inputs": [{"namespace": "warehouse://shop-warehouse", "name": "analytics.clean_orders"}],
+            "outputs": [], "producer": "https://example.org/analyst/copy-script/v1", "schemaURL": OL.SCHEMA_URL,
+        }
+        self.assertIn('"name": "analytics.clean_orders"', SOURCE[8])
+        complete = {**start, "eventType": "COMPLETE", "eventTime": "2026-09-11T02:15:17Z", "outputs": [{"namespace": "s3://shop-scratch", "name": "clean_orders_copy.csv"}]}
+        self.assertEqual(OL.problems(start), [])
+        up = OL.Consumer().send(*self.events, start, complete).lineage().upstream("s3://shop-scratch/clean_orders_copy.csv")
+        self.assertEqual(len(up), 2)
+        self.says("The traversal reaches 2 nodes, `copy_clean_orders` and `analytics.clean_orders`, and stops.")
+        start["inputs"] = [{"namespace": "warehouse://shop-warehouse", "name": "shop.analytics.clean_orders"}]
+        complete["inputs"] = start["inputs"]
+        up = OL.Consumer().send(*self.events, start, complete).lineage().upstream("s3://shop-scratch/clean_orders_copy.csv")
+        self.assertEqual([r["node"] for r in up][-1], "s3://shop-raw/orders.jsonl")
+        self.assertEqual(len(up), 4)
+        self.says("The traversal then reaches 4 nodes, through `build_clean_orders`, to `orders.jsonl`.")
+        broken = {**start, "run": {"runId": "copy-friday"}}
+        del broken["producer"]
+        self.assertEqual(OL.problems(broken), [("producer", "missing"), ("run.runId", "run_id")])
+        self.says("The check lists 2 problems: `producer` is missing, and `run.runId` is not a UUID.")
+
+    def test_the_summary(self):
+        rows = shop.openlineage.summary(self.events)
+        self.assertEqual(len(rows), 6)
+        self.assertEqual(sum(r["FAIL"] for r in rows), 1)
+        self.says("The counts show 6 programs that sent events: the four jobs and the two functions.")
+
+
+class TheWordsOfChapter9(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        I = shop.ingest
+        cls.text = flat(TEXT[9])
+        lines = I.event_lines(shop.run_week(["returns", "source"]))
+        cls.lines = lines
+        damaged = list(lines)
+        k = next(i for i, line in enumerate(damaged) if '"build_daily_sales"' in line and '"COMPLETE"' in line and "2026-09-09" in line)
+        damaged[k] = damaged[k][:150]
+        cls.parsed = I.parse(damaged)
+        cls.normal = I.normalise(cls.parsed)
+        cls.objs = I.objects(cls.normal)
+        cls.edges = I.edges(cls.objs)
+
+    def says(self, phrase: str) -> None:
+        self.assertIn(flat(phrase), self.text)
+
+    def test_parse_and_normalise(self):
+        self.assertEqual((len(self.lines), len(self.parsed), [r["line"] for r in self.parsed.refused]), (82, 81, [20]))
+        self.says("The week has 82 lines. One is refused: line 20, which is not JSON. 81 events pass.")
+        kinds = [c["where"].split("[")[0] for c in self.normal.changes]
+        self.assertEqual((len(kinds), kinds.count("eventTime"), kinds.count("inputs")), (26, 12, 14))
+        self.says("The stage made 26 changes: 12 times, in the functions' events (6 runs, 2 events each), and 14 names, in the analyst's events (7 nights, 2 events each).")
+
+    def test_objects(self):
+        o = self.objs
+        self.assertEqual((len(o.jobs), len(o.runs), len(o.datasets), len(o.unknown)), (7, 41, 12, 6))
+        self.says("The stage made 7 jobs (the four jobs, the two functions and the analyst's copy), 41 runs and 12 datasets. It also found 6 facets it does not know.")
+        [still] = o.runs_of(state="START")
+        self.assertEqual((still["job"], still["started"]), ("shop/build_daily_sales", "2026-09-09T02:30:00Z"))
+        self.assertEqual({u["facet"] for u in o.unknown}, {"shop_objectChange"})
+        self.assertEqual(list(shop.ingest.KNOWN), ["nominalTime", "jobType", "sourceCodeLocation", "inputStatistics", "outputStatistics", "version"])
+        self.says("It reads fields only from the facets it knows: `nominalTime`, `jobType`, `sourceCodeLocation`, `inputStatistics`, `outputStatistics` and `version`.")
+        known = {**shop.ingest.KNOWN, "shop_objectChange": ["object", "version", "change"]}
+        self.assertIn('# known["shop_objectChange"] = ["object", "version", "change"]', SOURCE[9])
+        taught = shop.ingest.objects(self.normal, known)
+        self.assertEqual(len(taught.unknown), 0)
+
+    def test_edges_and_current(self):
+        e = self.edges
+        self.assertEqual((len(e.by_run), len(e.by_job)), (80, 17))
+        self.says("There are 80 edges by run and 17 by job.")
+        daily = {(r["edge"], r["dataset"].rsplit("/", 1)[-1]): r for r in e.of("shop/build_daily_sales")}
+        self.assertEqual(daily[("reads", "shop.analytics.clean_orders")]["runs"], 5)
+        self.assertEqual((daily[("reads", "shop.analytics.clean_orders")]["first"], daily[("reads", "shop.analytics.clean_orders")]["last"]), ("2026-09-08T02:30:21Z", "2026-09-12T02:30:21Z"))
+        self.assertEqual(daily[("reads", "clean_orders_copy.csv")]["runs"], 2)
+        self.assertEqual(daily[("writes", "shop.analytics.daily_sales")]["runs"], 6)
+        self.says("It reads `clean_orders` in 5 runs, the first at `2026-09-08T02:30:21Z` and the last at `2026-09-12T02:30:21Z`. It reads the analyst's copy in 2 runs, on Sunday 13 and Monday 14. It writes `daily_sales` in 6 runs.")
+        latest = e.latest()
+        self.assertEqual(len(latest), 13)
+        self.says("Counting each job's latest run only, 13 of the 17 edges by job remain.")
+        dropped = {(r["job"], r["dataset"].rsplit("/", 1)[-1]) for r in e.by_job} - {(r["job"], r["dataset"].rsplit("/", 1)[-1]) for r in latest}
+        self.assertEqual(dropped, {("shop/build_daily_sales", "shop.analytics.clean_orders"), ("shop/record_return", "r-201.json"), ("shop/record_return", "r-202.json"), ("shop/record_return", "r-203.json")})
+        held = {r["return_id"] for r in shop.run_week(["returns"]).warehouse.sql("SELECT return_id FROM returns")}
+        self.assertEqual(held, {"r-201", "r-202", "r-204"})
+        self.says("For `record_return` it also drops `r-201.json` and `r-202.json`, whose rows are still in the table `returns`")
+        g = e.graph()
+        self.assertEqual((len(g.nodes()), len(g.edges())), (19, 17))
+
+
 class TheWordsAboutThePage(unittest.TestCase):
     """The menu of changes offers the engine's changes. Each page's warning states what was measured
     on the pages; test_jupyterlite.py checks it against docs/notes/notebook-prototype.md."""
@@ -755,6 +963,11 @@ class TheWordsKeepTheRules(unittest.TestCase):
             (5, "## Following edges", ("traversal",)),
             (6, "## Lineage", ("lineage",)),
             (6, "The cell above follows edges from `orders.jsonl`", ("downstream", "upstream")),
+            (7, "## Events", ("event",)),
+            (8, "## A form other programs can read", ("OpenLineage",)),
+            (8, "The first event's `eventType`", ("namespace", "producer", "facet")),
+            (9, "## From events to a graph", ("ingestion",)),
+            (9, "## Normalise", ("normalise",)),
         ):
             # The chapter's title is the plan's, and may name its term ("Metadata as a graph").
             cells = [re.sub(r"^# Chapter \d+: .*$", "", re.sub(r"\]\([^)]*\)", "]", c), flags=re.M) for c in CELLS[number]]
