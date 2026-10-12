@@ -141,7 +141,7 @@ Rejected, with the sceptic: "the next week" (the course's idiom), the map, sayin
 
 ## Measured
 
-Locally, 12 October 2026 (`docs/notes/notebook-prototype.md`, "Chapters 14 to 17"): from Chapter 14's link, 12 files, 0.32 MB, in a new tab; Run all 8.4 to 9.0 s; peak memory 394 to 400 MB alone, 614 MB with Chapter 14 open; no error output. Live: to be measured once published.
+Locally, 12 October 2026 (`docs/notes/notebook-prototype.md`, "Chapters 14 to 17"): from Chapter 14's link, 12 files, 0.32 MB, in a new tab; Run all 8.4 to 9.0 s; peak memory 394 to 400 MB alone, 614 MB with Chapter 14 open; no error output. Live, 12 October 2026, published at `32be44b`, opened alone at desktop and phone widths: Run all 10.6 to 11.2 s; peak memory 402 to 403 MB; no error output, no console error. The warning's 9 to 12 seconds and about 400 MB hold.
 
 ## Known gaps
 

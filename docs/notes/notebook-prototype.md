@@ -351,6 +351,13 @@ Each warning states what Chapters 10 to 13 state: about 13 MB on its own; less t
 chapter before's link; 9 to 12 seconds to run every cell, as the published Chapters 10 to 13 took
 9.8 to 11.6 s; about 400 MB.
 
+Published at `32be44b` and measured live the same day, each opened alone at desktop and phone
+widths: ready to run in 5.4 to 7.1 s; Run all 10.0 to 11.2 s (Chapter 14), 10.6 to 11.2 s (15),
+10.2 to 10.6 s (16), 10.2 to 11.0 s (17); peak memory 397 to 404 MB; no error output and no console
+error. One desktop run of Chapter 15 stopped its clock at 0.6 s with 346 MB, before Run all had
+started its cells; two more runs took 11.0 and 11.2 s, and the 0.6 s is left out. The warning's 9
+to 12 seconds and about 400 MB hold.
+
 ## Phones
 
 Nothing here measured a real phone, so the page says only what was measured and what one report

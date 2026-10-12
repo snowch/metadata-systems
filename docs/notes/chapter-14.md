@@ -147,7 +147,7 @@ corrected again.
 
 ## Measured
 
-Locally, 12 October 2026 (`docs/notes/notebook-prototype.md`, "Chapters 14 to 17"): from Chapter 13's link, 11 files, 0.32 MB, in a new tab; Run all 8.3 to 8.9 s; peak memory 395 to 402 MB alone, 619 MB with Chapter 13 open; no error output. Live: to be measured once published.
+Locally, 12 October 2026 (`docs/notes/notebook-prototype.md`, "Chapters 14 to 17"): from Chapter 13's link, 11 files, 0.32 MB, in a new tab; Run all 8.3 to 8.9 s; peak memory 395 to 402 MB alone, 619 MB with Chapter 13 open; no error output. Live, 12 October 2026, published at `32be44b`, opened alone at desktop and phone widths: Run all 10.0 to 11.2 s; peak memory 399 to 402 MB; no error output, no console error. The warning's 9 to 12 seconds and about 400 MB hold.
 
 ## Known gaps
 
