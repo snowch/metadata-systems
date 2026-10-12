@@ -474,7 +474,8 @@ try {
         ['dataset = "orders.jsonl"'],
       );
       await run("Run below", "Chapter 14, Run below on the file");
-      const failed = await output('dataset = "orders.jsonl"');
+      // Found by code the edit leaves as it was: text just typed in may not be drawn yet.
+      const failed = await output("shop.quality.check(week14, dataset");
       check(
         (failed.match(/\tno$/gm) ?? []).length === 4,
         "Chapter 14: on the file, the assertion fails on 4 runs",
@@ -483,14 +484,14 @@ try {
     if (chapter === 15) {
       await rewrite("dropped=False", ["dropped=False"], ["dropped=True"]);
       await run("Run below", "Chapter 15, Run below with the rows left out");
-      const left = await output("dropped=True");
+      const left = await output("dropped=");
       check(
         left.includes("customer_id IS NOT NULL is false"),
         "Chapter 15: the trace lists the rows left out",
       );
       await rewrite("as_read=False", ["as_read=False"], ["as_read=True"]);
       await run("Run below", "Chapter 15, Run below with returns as it was");
-      const read = await output("as_read=True");
+      const read = await output("as_read=");
       check(
         read.includes("rebuilt as at 2026-09-14T02:30:00Z"),
         "Chapter 15: returns is rebuilt as it was",
@@ -508,7 +509,7 @@ try {
     if (chapter === 17) {
       await rewrite('day = "2026-09-12"', ['day = "2026-09-12"'], ['day = "2026-09-08"']);
       await run("Run below", "Chapter 17, Run below for Tuesday");
-      const tuesday = await output('day = "2026-09-08"');
+      const tuesday = await output("shop.cause.search(week17r, day)");
       check(
         tuesday.includes("16225") && !tuesday.includes("21549"),
         "Chapter 17: Tuesday's figure is the same at every step",
