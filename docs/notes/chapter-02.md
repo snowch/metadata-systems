@@ -122,7 +122,12 @@ chapter's requirement box (`docs/plan.md`, "the requirement in a box"; sources i
 `docs/sources.md`); brief and draft in `docs/notes/requirement-boxes/`. The section's heading
 became "What each system records about assets, and why", and its first sentence no longer says
 "what it does" (round 13: `chapter-02/briefs/round-13/`, `chapter-02/drafts/round-13/`; the draft's
-"because that work needs them" was cut as a repeat).
+"because that work needs them" was cut as a repeat). The author then found the paragraph after the readings very unclear: it
+pointed at rows by number ("the first or the second reading", "the fourth reading") and set "meets
+your requirement as written" beside "on the fourth reading only". Round 14 names each reading by
+what it needs and says what is met and what is not (`chapter-02/briefs/round-14/`,
+`chapter-02/drafts/round-14/`; every fact landed, nothing added). The readings' header now says
+"the rule", as the box and the paragraph do.
 
 ## Originality
 

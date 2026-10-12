@@ -320,14 +320,14 @@ def _(mo):
     mo.md(r"""
     The warehouse records `etl_service` as the owner of all three tables, in the column `table_owner` of `information_schema.tables`. The name looks like an account a program logs in as, and the warehouse records nothing more about it.
 
-    | What the requirement could mean | What it needs | Does `etl_service` answer it? |
+    | What the rule could mean | What it needs | Does `etl_service` answer it? |
     | --- | --- | --- |
     | who is responsible for the table | a person | no |
     | which team is responsible for it | a team | no |
     | which job writes it | a program | no: it names an account, not a program |
     | which account controls it in the warehouse | an account | yes |
 
-    "Who should I ask about `daily_sales`?" needs the first or the second reading. The warehouse meets your requirement as written. It does so on the fourth reading only: every table has an owner, and the owner is an account. So the requirement is met before you do anything, and the question the requirement was written for still has no answer.
+    Answering "Who should I ask about `daily_sales`?" needs a person or a team responsible for the table. The warehouse already records an owner for every table, so the rule is met, and you did nothing to make it so. That owner is an account, `etl_service`: it says which account controls the table in the warehouse. It does not say who is responsible for `daily_sales`, so you still do not know whom to ask.
     """)
     return
 
