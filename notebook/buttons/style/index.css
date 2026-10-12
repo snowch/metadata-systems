@@ -88,18 +88,20 @@
 }
 
 /* On a phone, the arrows without their numbers, and the row closer together: so it fits 360
-   pixels, with the five controls 44 pixels tall. */
+   pixels, with the five controls 44 pixels tall, with room to spare in a wider typeface than the
+   one a phone uses (DejaVu Sans, on the notebook workflow's runner, takes 333 pixels). */
 @media (max-width: 429px) {
   .ms-Buttons {
-    gap: 6px;
+    gap: 4px;
   }
 
   .ms-Buttons-button {
-    padding: 0 12px;
+    padding: 0 10px;
   }
 
   .ms-Buttons-link {
-    width: 44px;
+    width: 40px;
+    min-width: 40px;
     padding: 0;
   }
 

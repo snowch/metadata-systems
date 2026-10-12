@@ -433,9 +433,12 @@ long.
   tab, and the memory measured with that chapter open, still hold. Each arrow's accessible name and
   tooltip are the text's links' own words, "Previous: Chapter 12" and "Next: Chapter 14".
 - Width. With the three buttons as they were, at 360 pixels the row was 24 pixels too wide for two
-  arrows with their chapters' numbers. Below 430 pixels the arrows show without their numbers, 44
-  pixels square, and the buttons' side padding is 12 pixels and the gaps 6: the row is 352 pixels
-  wide at 360 with both arrows. Above it, each arrow shows its chapter's number.
+  arrows with their chapters' numbers. Below 430 pixels the arrows show without their numbers, 40
+  pixels wide and 44 tall, the buttons' side padding is 10 pixels and the gaps 4. A first try, with
+  12 and 6 and arrows 44 wide, fitted in Inter, this machine's interface typeface, with 8 pixels to
+  spare, and failed in CI, whose runner draws the interface in a wider one: in DejaVu Sans the row
+  took 361 pixels. Now it takes 333 in DejaVu Sans and 323 in Inter. Above 430 pixels each arrow
+  shows its chapter's number.
 - Checked on the built site, by touch at 360 and 390 pixels, in the light and dark themes, and by
   mouse at 1280: Chapters 1, 7, 12 and 13 show the arrows they should; the row did not scroll;
   every arrow was 44 pixels tall; Chapter 13's Previous arrow opened Chapter 12 in a new tab, and
