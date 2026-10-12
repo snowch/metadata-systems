@@ -2,7 +2,7 @@
 
 """Every sentence of the notebooks that states a fact, pinned against the engine, and the prose rules.
 
-Chapters 1 to 9 are a notebook each. Their words are their markdown cells and the labels in their
+Chapters 1 to 13 are a notebook each. Their words are their markdown cells and the labels in their
 code cells. A number in them is a number the engine produced; if the shop changes, this fails
 until the words change with it.
 """
@@ -28,6 +28,10 @@ CHAPTERS = {
     7: ROOT / "notebook" / "chapter_07.py",
     8: ROOT / "notebook" / "chapter_08.py",
     9: ROOT / "notebook" / "chapter_09.py",
+    10: ROOT / "notebook" / "chapter_10.py",
+    11: ROOT / "notebook" / "chapter_11.py",
+    12: ROOT / "notebook" / "chapter_12.py",
+    13: ROOT / "notebook" / "chapter_13.py",
 }
 SOURCE = {chapter: path.read_text(encoding="utf-8") for chapter, path in CHAPTERS.items()}
 
@@ -188,6 +192,10 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("## Before Chapter 9", 8)
         self.says("Chapter 9 builds that consumer, one stage at a time", 8)
         self.says("## Before Chapter 10", 9)
+        self.says("## Before Chapter 11", 10)
+        self.says("## Before Chapter 12", 11)
+        self.says("## Before Chapter 13", 12)
+        self.says("## Before Chapter 14", 13)
         self.says("Chapter 10 reads the jobs' SQL", 9)
 
     def test_each_chapter_has_its_own_title_in_its_tab(self):
@@ -206,7 +214,11 @@ class TheWordsMatchTheEngine(unittest.TestCase):
             6: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 5](chapter_05.ipynb) · [Next: Chapter 7](chapter_07.ipynb)",
             7: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 6](chapter_06.ipynb) · [Next: Chapter 8](chapter_08.ipynb)",
             8: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 7](chapter_07.ipynb) · [Next: Chapter 9](chapter_09.ipynb)",
-            9: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 8](chapter_08.ipynb)",
+            9: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 8](chapter_08.ipynb) · [Next: Chapter 10](chapter_10.ipynb)",
+            10: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 9](chapter_09.ipynb) · [Next: Chapter 11](chapter_11.ipynb)",
+            11: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 10](chapter_10.ipynb) · [Next: Chapter 12](chapter_12.ipynb)",
+            12: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 11](chapter_11.ipynb) · [Next: Chapter 13](chapter_13.ipynb)",
+            13: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 12](chapter_12.ipynb)",
         }
         for chapter, line in nav.items():
             self.assertTrue(CELLS[chapter][0].startswith(line + "\n"), chapter)
@@ -888,6 +900,223 @@ class TheWordsOfChapter9(unittest.TestCase):
         self.assertEqual((len(g.nodes()), len(g.edges())), (19, 17))
 
 
+class TheWordsOfChapter10(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from shop import columns
+
+        cls.C = columns
+        cls.text = flat(TEXT[10])
+        cls.week = shop.run_week()
+        [cls.code] = [p["code"] for p in columns.programs(cls.week) if p["job"] == "build_daily_sales"]
+
+    def says(self, phrase: str) -> None:
+        self.assertIn(flat(phrase), self.text)
+
+    def test_what_the_sql_names(self):
+        self.assertEqual(sorted({r["column"] for r in self.C.lineage(self.code)}), ["daily_sales.column 1", "daily_sales.column 2"])
+        self.says("The parser lists `column 1` and `column 2`. The SELECT names no column of `daily_sales`.")
+        self.assertIn("catalogue = None\n# catalogue = warehouse\n", SOURCE[10].replace("    ", ""))
+        named = self.C.lineage(self.code, self.week.warehouse)
+        revenue = {(r["from"].split(".")[1], r["kind"], r["how"]) for r in named if r["column"] == "daily_sales.revenue_pence"}
+        self.assertEqual(revenue, {("price_pence", "value", "aggregated"), ("quantity", "value", "aggregated"), ("status", "rows", "filter"), ("ordered_at", "rows", "filter"), ("ordered_at", "rows", "grouping")})
+        self.assertNotIn("Then the parser names them", TEXT[10])
+
+    def test_back_to_the_raw_orders(self):
+        up = self.C.upstream(self.week, "daily_sales", "revenue_pence", self.week.warehouse)
+        by = lambda d: [r for r in up if r["dataset"] == d]
+        self.assertEqual((len(up), len(by("clean_orders")), len(by("orders.jsonl"))), (11, 4, 7))
+        self.says("11 columns: 4 of `clean_orders` and 7 of `orders.jsonl`.")
+        self.assertEqual({r["column"] for r in by("orders.jsonl") if r["value"] == "yes"}, {"price_pence", "quantity"})
+        self.says("The value of `revenue_pence` is made from 2 columns of `orders.jsonl`: `price_pence` and `quantity`.")
+        self.assertTrue(all(r["rows"] for r in by("orders.jsonl")))
+        self.says("All 7 decide which rows count: `build_clean_orders` keeps one row of each set of equal rows (`distinct`)")
+        # The week's three oddities, each through a column that decides which rows count.
+        from shop.data import DUPLICATED, ORDERS
+
+        self.assertEqual(DUPLICATED, 7015)
+        self.assertEqual(len([o for o in ORDERS if o[6][:10] == "2026-09-10" and o[1] is None]), 3)
+        self.assertEqual({o[6][:10] for o in ORDERS if o[5] == "cancelled"}, {"2026-09-08", "2026-09-12"})
+        self.says("`distinct` removed Wednesday's second copy of order 7015; the filter of `build_clean_orders` removed Thursday's 3 orders with no `customer_id`")
+
+    def test_select_star(self):
+        week = shop.run_week(["source"])
+        self.assertEqual([r["from"] for r in self.C.lineage(self.C.ANALYST_COPY)], ["clean_orders.*"])
+        self.assertEqual(len(self.C.lineage(self.C.ANALYST_COPY, week.warehouse)), 7)
+        self.says("With the catalogue, it gives 7 rows, one for each column of `clean_orders`, each `copied`.")
+        up = self.C.upstream(week, "daily_sales", "revenue_pence", week.warehouse)
+        count = lambda d: len([r for r in up if r["dataset"] == d])
+        self.assertEqual((len(up), count("clean_orders_copy.csv"), count("clean_orders"), count("orders.jsonl")), (15, 4, 4, 7))
+        self.says("15 columns in all, through the copy (4), then `clean_orders` (4), to `orders.jsonl` (7).")
+
+    def test_a_function(self):
+        week = shop.run_week(["net"])
+        self.assertEqual(week.warehouse.sql("SELECT * FROM daily_sales"), self.week.warehouse.sql("SELECT * FROM daily_sales"))
+        self.says("No order of Saturday or Sunday was returned, so the rows of `daily_sales` are the same.")
+        self.assertEqual(week.warehouse.sql("SELECT returned_quantity(7004, 2) AS a, returned_quantity(7008, 1) AS b, returned_quantity(7001, 1) AS c"), [{"a": 1, "b": 1, "c": 0}])
+        self.says("`returned_quantity(7004, 2)` and `returned_quantity(7008, 1)` give 1: one of each came back (`r-201` and `r-202`). `returned_quantity(7001, 1)` gives 0.")
+        up = self.C.upstream(week, "daily_sales", "revenue_pence", week.warehouse)
+        self.assertEqual(len(up), 13)
+        self.assertNotIn("returns", {r["dataset"] for r in up})
+        self.says("13 columns. None is in `returns`.")
+        inputs = {d["name"] for e in shop.openlineage.run_events(week) if e["job"]["name"] == "build_daily_sales" for d in e["inputs"]}
+        self.assertEqual(inputs, {"shop.analytics.clean_orders"})
+        self.says("The run's events also name `clean_orders` as the only input.")
+
+    def test_the_facet(self):
+        f = self.C.facet(self.week, "daily_sales")
+        got = {name: {(i["field"], i["transformations"][0]["subtype"]) for i in v["inputFields"]} for name, v in f["fields"].items()}
+        self.assertEqual(got, {"day": {("ordered_at", "TRANSFORMATION")}, "revenue_pence": {("price_pence", "AGGREGATION"), ("quantity", "AGGREGATION")}})
+        self.assertEqual({(i["field"], i["transformations"][0]["subtype"]) for i in f["dataset"]}, {("ordered_at", "FILTER"), ("ordered_at", "GROUP_BY"), ("status", "FILTER")})
+        self.says("Under `dataset`: `ordered_at` (`FILTER` and `GROUP_BY`) and `status` (`FILTER`).")
+
+
+class TheWordsOfChapter11(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from shop import schemas
+
+        cls.S = schemas
+        cls.text = flat(TEXT[11])
+
+    def says(self, phrase: str) -> None:
+        self.assertIn(flat(phrase), self.text)
+
+    def test_versions_and_comparisons(self):
+        week = shop.run_week(["renamed"])
+        v = self.S.versions(week, "orders.jsonl")
+        self.assertEqual([(r["writes"], r["first written"][:10], r["last written"][:10]) for r in v], [(5, "2026-09-08", "2026-09-12"), (2, "2026-09-13", "2026-09-14")])
+        self.says("The changed export first appears on Sunday 13, and its schema version is the second.")
+        self.assertEqual([(r["column"], r["change"]) for r in self.S.diff(week, "orders.jsonl")], [("quantity", "removed"), ("qty", "added")])
+        self.says("The shop's records match columns by name: `quantity` is removed and `qty` added.")
+        rows = self.S.diffs()
+        self.assertEqual({r["schema versions of clean_orders"] for r in rows}, {1})
+        self.says("Under every change, `clean_orders` has 1 schema version")
+        types = shop.run_week(["retyped"]).warehouse.sql("SELECT typeof(customer_id) AS type, COUNT(*) AS n FROM clean_orders GROUP BY 1")
+        self.assertEqual(types, [{"type": "text", "n": 44}])
+        self.says("All 44 values are `text`, in a column the catalogue declares `INTEGER`.")
+
+    def test_what_each_reader_gets(self):
+        got = {r["reader"]: (r["added"], r["renamed"], r["retyped"]) for r in self.S.compare_all()}
+        self.assertEqual(list(got.values()), [(7, 5, 7), (7, 5, 7), (7, 0, 0)])
+        self.says("The new name broke all three readers. The new ids broke Jo Marsh's query only. The new field broke none.")
+        week = shop.run_week(["renamed"])
+        self.assertEqual([e.rows for e in week.executions if e.writer == "clean_orders"][-2:], [0, 0])
+        self.assertEqual({e.status for e in week.executions if e.writer == "clean_orders"}, {"succeeded"})
+
+    def test_who_reads_the_column(self):
+        week = shop.run_week(["renamed"])
+        for column in ("quantity", "customer_id"):
+            [r] = self.S.readers(week, "orders.jsonl", column)
+            self.assertEqual((r["program"], r["reads it for"]), ("build_clean_orders", "rows: distinct; rows: filter; value: copied"))
+        self.assertIn('column = "quantity"', SOURCE[11])
+
+
+class TheWordsOfChapter12(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.text = flat(TEXT[12])
+        I = shop.ingest
+        cls.week = shop.run_week(["returns", "dev", "view"])
+        cls.parsed = I.parse(I.event_lines(cls.week))
+
+    def says(self, phrase: str) -> None:
+        self.assertIn(flat(phrase), self.text)
+
+    def writers(self, databases=None):
+        I = shop.ingest
+        edges = I.edges(I.objects(I.normalise(self.parsed, databases)))
+        return {(r["job"], r["dataset"].rsplit("/", 1)[-1], r["runs"], r["last"]) for r in edges.by_job if r["edge"] == "writes" and r["dataset"].endswith(".daily_sales")}
+
+    def test_the_development_run(self):
+        self.assertEqual(
+            self.writers(),
+            {("shop/build_daily_sales", "shop.analytics.daily_sales", 7, "2026-09-14T02:30:21Z"), ("dev/build_daily_sales", "shop.analytics.daily_sales", 1, "2026-09-14T10:20:04Z")},
+        )
+        self.says("`shop/build_daily_sales`, in 7 runs, the last at `2026-09-14T02:30:21Z`;")
+        self.says("`dev/build_daily_sales`, in 1 run, at `2026-09-14T10:20:04Z`.")
+        after = self.writers({shop.openlineage.DEV_PRODUCER: "shop_dev"})
+        self.assertIn(("dev/build_daily_sales", "shop_dev.analytics.daily_sales", 1, "2026-09-14T10:20:04Z"), after)
+        self.says("After the change, `dev/build_daily_sales` writes `shop_dev.analytics.daily_sales`, and `shop/build_daily_sales` is the only program that writes `shop.analytics.daily_sales`.")
+
+    def test_the_six_pairs(self):
+        from shop import identity
+
+        v1, v2 = [v["version"] for v in self.week.storage.versions("s3://shop-returns/r-202.json")]
+        self.assertEqual([v["at"][:10] for v in self.week.storage.versions("s3://shop-returns/r-202.json")], ["2026-09-09", "2026-09-10"])
+        self.assertEqual(self.week.storage.versions("s3://shop-raw/Orders.jsonl")[0]["at"][:10], "2026-09-11")
+        pairs = [
+            ("shop.analytics.daily_sales", "SHOP.ANALYTICS.DAILY_SALES"),
+            ("daily_sales", "shop.analytics.daily_sales"),
+            ("shop.analytics.daily_sales", "shop_dev.analytics.daily_sales"),
+            ("shop.analytics.daily_sales", "shop.analytics.sales_by_day"),
+            ("s3://shop-raw/orders.jsonl", "s3://shop-raw/Orders.jsonl"),
+            (f"s3://shop-returns/r-202.json@{v1}", f"s3://shop-returns/r-202.json@{v2}"),
+        ]
+        for a, b in pairs:
+            self.assertIn(a.split("@")[0], SOURCE[12])
+        got = [(r["same object"], r["same rows"], r["same environment"], r["same version"]) for r in identity.compare(self.week, pairs)]
+        self.assertEqual(
+            got,
+            [("yes", "yes", "yes", ""), ("yes", "yes", "yes", ""), ("no", "no", "no", ""), ("no", "yes", "yes", ""), ("no", "no", "yes", ""), ("yes", "no", "yes", "no")],
+        )
+        self.says("No pair has the same text, yet pairs 1 and 2 are the same object, with the same rows and environment.")
+        self.says("Pair 4 has the same rows and environment, but is another object.")
+        self.says("Pair 6 is one object, but not the same rows or version.")
+
+
+class TheWordsOfChapter13(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from shop import observe
+
+        cls.O = observe
+        cls.text = flat(TEXT[13])
+
+    def says(self, phrase: str) -> None:
+        self.assertIn(flat(phrase), self.text)
+
+    def test_the_failed_night(self):
+        week = shop.run_week(["failed"])
+        obs = self.O.observations(week)
+        self.assertEqual(len(obs), 28)
+        [failed] = [r for r in obs if r["status"] == "failed"]
+        self.assertEqual((failed["run"], failed["program"], failed["started"], failed["seconds"], failed["error"], failed["rows written"]), ("run-027", "build_daily_sales", "2026-09-14T02:30:00Z", 21, "database is locked", None))
+        self.says("One failed: `run-027`, `build_daily_sales`, at 02:30 on Monday 14, after 21 seconds, with the error `database is locked`.")
+        [after] = [r for r in obs if r["run"] == "run-028"]
+        self.assertEqual((after["program"], after["status"], after["rows read"], after["rows written"]), ("refresh_dashboard", "succeeded", 6, 6))
+        f = {r["asset"]: (r["hours before"], r["latest day"]) for r in self.O.freshness(week)}
+        self.assertEqual(f, {"orders.jsonl": (8.0, "2026-09-13"), "clean_orders": (6.9, "2026-09-13"), "daily_sales": (30.5, "2026-09-12"), "sales_dashboard": (6.0, "2026-09-12")})
+        self.says("By the time it was last written, the dashboard is the most recent of the four: 6.0 hours before 09:00 on Monday.")
+        self.assertEqual([r["met"] for r in self.O.readings(week)], ["yes", "no", "no"])
+        self.says("The second and third readings are not met.")
+        self.says("`daily_sales` was last written at 02:30:21 on Sunday 13, before `clean_orders` was, at 02:05:52 on Monday 14.")
+
+    def test_a_night_that_wrote_nothing(self):
+        week = shop.run_week(["renamed"])
+        empty = [r for r in self.O.observations(week) if r["rows written"] == 0]
+        self.assertEqual(len(empty), 4)
+        self.assertEqual([r["met"] for r in self.O.readings(week)], ["yes", "yes", "no"])
+        self.assertEqual(self.O.latest_day(week, "sales_dashboard"), "2026-09-11")
+        self.says("The dashboard's latest day is Friday 11, two days before Sunday 13.")
+        rows = {r["started"][:10]: (r["rows read"], r["rows written"]) for r in self.O.observations(week) if r["program"] == "build_clean_orders"}
+        self.assertEqual((rows["2026-09-12"][1], rows["2026-09-13"], rows["2026-09-14"]), (31, (43, 0), (48, 0)))
+        self.says("`build_clean_orders` read 43 rows and then 48, and wrote 0 each time. On Saturday 12 it had written 31.")
+
+    def test_two_clocks_and_a_table_written_at_any_hour(self):
+        week = shop.run_week(["clock"])
+        self.assertEqual(self.O.last_written(week, "sales_dashboard"), "2026-09-14T02:20:09Z")
+        self.assertEqual(self.O.last_run(week, "sales_dashboard"), "2026-09-14T03:00:09Z")
+        self.assertIn('by="stores"', SOURCE[13])
+        self.says("The reporting tool records the dashboard's last refresh at 02:20:09 on Monday. `daily_sales` was last written at 02:30:21.")
+        week = shop.run_week(["returns"])
+        [r] = [r for r in self.O.freshness(week) if r["asset"] == "returns"]
+        self.assertEqual((r["last written"], r["hours before"]), ("2026-09-12T16:50:04Z", 40.2))
+        self.assertEqual(self.O.source_changed(week), "2026-09-12T16:50:00Z")
+        self.says("`returns` was last written at 16:50:04 on Saturday 12, 40.2 hours before 09:00 on Monday.")
+        self.says("The table was written 4 seconds later.")
+
+
 class TheWordsAboutThePage(unittest.TestCase):
     """The menu of changes offers the engine's changes. Each page's warning states what was measured
     on the pages; test_jupyterlite.py checks it against docs/notes/notebook-prototype.md."""
@@ -981,6 +1210,14 @@ class TheWordsKeepTheRules(unittest.TestCase):
             (8, "The first event's `eventType`", ("namespace", "producer", "facet")),
             (9, "## From events to a graph", ("ingestion",)),
             (9, "## Normalise", ("normalise",)),
+            (10, "## Which columns", ("column lineage",)),
+            (11, "## The schema over time", ("schema evolution",)),
+            (11, "Compare the counts with what you wrote.", ("breaking change",)),
+            (12, "## A run in development", ("environment",)),
+            (12, "## The same asset?", ("identity",)),
+            (12, "In pair 1, both names refer", ("qualified name",)),
+            (13, "## What each run recorded", ("observation",)),
+            (13, "## How recent each asset is", ("freshness",)),
         ):
             # The chapter's title is the plan's, and may name its term ("Metadata as a graph").
             cells = [re.sub(r"^# Chapter \d+: .*$", "", re.sub(r"\]\([^)]*\)", "]", c), flags=re.M) for c in CELLS[number]]

@@ -457,6 +457,13 @@ class TheSchemaHistory(unittest.TestCase):
             # The catalogue's record of clean_orders does not change.
             self.assertEqual(len(S.versions(week, "clean_orders")), 1)
 
+    def test_the_warehouse_keeps_only_text_that_is_not_a_number(self):
+        # Chapter 11 states it: "101" stored in a column declared INTEGER becomes 101; C101 stays text.
+        w = shop.run_week().warehouse
+        w.db.execute("CREATE TEMP TABLE probe (n INTEGER)")
+        w.db.executemany("INSERT INTO temp.probe VALUES (?)", [("101",), ("C101",)])
+        self.assertEqual(w.db.execute("SELECT typeof(n) FROM temp.probe").fetchall(), [("integer",), ("text",)])
+
     def test_what_each_reader_gets(self):
         from shop import schemas as S
 

@@ -12,7 +12,7 @@ app = marimo.App(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 8](chapter_08.ipynb)
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 8](chapter_08.ipynb) · [Next: Chapter 10](chapter_10.ipynb)
 
     # Chapter 9: From events to graphs
 
@@ -418,7 +418,7 @@ def _(mo):
 
     Chapter 29 compares how real consumers store events.
 
-    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 8](chapter_08.ipynb)
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 8](chapter_08.ipynb) · [Next: Chapter 10](chapter_10.ipynb)
 
     ---
 

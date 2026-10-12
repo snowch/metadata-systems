@@ -424,4 +424,24 @@ def facet(week: Week, table: str, catalogue: Warehouse | None = None) -> dict:
     return make("columnLineage", fields=fields, dataset=rows)
 
 
-__all__ = ["ANALYST_COPY", "SUBTYPES", "deps", "facet", "lineage", "programs", "upstream"]
+def show(facet_: dict) -> str:
+    """A column lineage facet as JSON, each input on one line, so that a phone shows it whole."""
+    import json
+
+    one = lambda x: json.dumps(x, separators=(", ", ": "))
+    lines = ["{", f'  "_producer": {one(facet_["_producer"])},', f'  "_schemaURL": {one(facet_["_schemaURL"])},', '  "fields": {']
+    names = list(facet_["fields"])
+    for k, name in enumerate(names):
+        inputs = facet_["fields"][name]["inputFields"]
+        lines.append(f'    {one(name)}: {{"inputFields": [')
+        lines += [f"      {one(i)}" + ("," if j < len(inputs) - 1 else "") for j, i in enumerate(inputs)]
+        lines.append("    ]}" + ("," if k < len(names) - 1 else ""))
+    lines.append("  },")
+    lines.append('  "dataset": [')
+    rows = facet_["dataset"]
+    lines += [f"    {one(i)}" + ("," if j < len(rows) - 1 else "") for j, i in enumerate(rows)]
+    lines += ["  ]", "}"]
+    return "\n".join(lines)
+
+
+__all__ = ["ANALYST_COPY", "SUBTYPES", "deps", "facet", "lineage", "programs", "show", "upstream"]

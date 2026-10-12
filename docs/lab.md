@@ -98,7 +98,7 @@ Chapter 3 adds a fourth:
   orders into a new column, `order_count`; the rows before have none. The warehouse's catalogue
   records the column at once, so a check of a person's records against it sees the change.
 
-Chapter 6 adds `source`, and Chapter 7 `returns` (below). Part III adds six:
+Chapter 6 adds `source`, and Chapter 7 `returns` (below). Part III adds seven:
 
 - **`net`** (Chapter 10). From Saturday's row on, daily sales takes away what was returned, through a
   function the shop's developer added to the warehouse, `returned_quantity(order_id, product_id)`,
@@ -108,7 +108,7 @@ Chapter 6 adds `source`, and Chapter 7 `returns` (below). Part III adds six:
   checkout's supplier changes `orders.jsonl`: a new field `coupon_code`; `quantity` renamed `qty`;
   or every customer id written as text (`C101`). Clean orders reads the fields it names: after the
   rename `quantity` is empty, its filter keeps no order, and the program still succeeds with no
-  rows. After the retype the warehouse keeps the text in a column declared INTEGER.
+  rows. After the retype the warehouse keeps `C101` as text in a column declared INTEGER: it turns text that looks like a number into a number, and `C101` is not one.
 - **`dev`** (Chapter 12). A development database, `shop_dev`, beside production's, where a developer
   runs the daily sales program on Monday at 10:20 over Sunday's orders; the developer's runner sends
   events that name tables without their database. It also writes the supplier's test export,

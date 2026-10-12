@@ -125,9 +125,9 @@ observed one, and designs the event a computation should emit before meeting Ope
 
 | Ch | Title | The learner builds | Central experiment | What breaks | Introduces |
 | --- | --- | --- | --- | --- | --- |
-| 10 | Column-level lineage | the course's SQL parsed into column derivations; `revenue` from `price` and `quantity` | predict which source columns `revenue` depends on, including through the filter on `status` | `SELECT *`; an alias chain; a function the parser cannot see into | column lineage |
-| 11 | Schema evolution | schema versions; added, removed, renamed and retyped columns, followed downstream | predict which changes break `daily_sales` | a rename that looks like a drop and an add; a type change that truncates | schema evolution, breaking change |
-| 12 | Identity | the identity laboratory: rules over namespace, name, environment and version | predict whether two references are the same asset | case, a path through a link, production and development collapsing into one | identity, qualified name, environment |
+| 10 | Column-level lineage | the course's SQL parsed into column derivations; `revenue` from `price` and `quantity` | predict which source columns `revenue` depends on, including through the filter on `status` | `SELECT *`; a SELECT that names no column of the table it fills; a name made inside the query (`WITH`) and a function the parser cannot see into | column lineage |
+| 11 | Schema evolution | schema versions; added, removed, renamed and retyped columns, followed downstream | predict which changes break `daily_sales` | a rename that looks like a drop and an add; a type change that breaks one reader and not another | schema evolution, breaking change |
+| 12 | Identity | six pairs of references tested five ways (text, object, rows, environment, version), and ingestion's rule for names made per producer | predict whether two references are the same asset | case, a name through a view, production and development collapsing into one | identity, qualified name, environment |
 | 13 | Runtime metadata | observations from execution: duration, status, rows, bytes, errors, freshness | predict which asset is stale on Monday morning after a failed night | a run that succeeded and wrote no rows; two clocks that disagree; a table the returns function writes at any hour, which no nightly time describes | observation, freshness |
 
 ### Part IV: Metadata becomes operational
@@ -799,6 +799,38 @@ of how a learner gets a changed chapter.
 6. **The lab has its own SQL subset.** One notation for the programs the learner reads in Chapter
    1, the column lineage of Chapter 9 and the queries of Part VI, as the digital-design course has
    one hardware description subset.
+
+### 12 October 2026: Chapters 10 to 13 written; Part III complete
+
+The author asked for Part III after checkpoint 2's report, with no change asked of Part II. The four
+chapters keep their rows, with the three changes of wording above, and each questions its row's
+candidate requirement. Chapter 10's reader finds that `revenue_pence` is computed from 2 columns of
+`orders.jsonl` and that all 7 decide which rows count, the week's three oddities among them;
+Chapter 11's reader sets three changes to the supplier's file against three readers; Chapter 12's
+reader sees a development run join production's graph, then tests six pairs of names five ways;
+Chapter 13's reader measures the dashboard after the failed night three ways, with a night that
+wrote nothing, a slow clock and a table written at any hour. Decisions the plan did not make:
+
+- **The shop's own SQL parser.** Chapter 10's parser reads the course's small SQL, one source per
+  SELECT, and records two kinds of dependency in the shop's own words, `value` and `rows`, which the
+  chapter maps to OpenLineage's `DIRECT` and `INDIRECT`. An INSERT fills a table's columns by
+  position, so naming them needs the catalogue: a further case of what the SQL does not name.
+- **"An alias chain" became a `WITH` clause beside a function**, in the `net` change. *Alias* is
+  Chapter 22's term, and the course does not use it before then; the chain the plan meant, a name
+  made inside a query and read again, is the `WITH` clause, which the parser follows.
+- **"A type change that truncates" became a change of format that breaks one reader and not
+  another.** The shop's warehouse does not truncate: it turns text that looks like a number into a
+  number, and keeps other text, such as `C101`, as text in a column declared `INTEGER`. Writing
+  customer ids in a new format, as text, leaves `daily_sales` the same and empties Jo Marsh's own
+  query, which no record names; that serves the chapter's requirement ("breaking for which reader")
+  better. The page says the break comes from the new ids, not from the type alone.
+- **"A path through a link" became a name through a view.** The shop's object storage has no links;
+  a view, a name for a query with its table's rows, raises the same question of whether two names
+  are one asset.
+- **Chapter 12's failure is Chapter 9's rule.** The rule that gives `shop` to a name without a
+  database joins a development table to production's; ingestion now takes a database per producer.
+- **Seven changes for Part III**: `net`, `added`, `renamed`, `retyped`, `dev`, `view` and `clock`
+  (`docs/lab.md`). Chapters 1 to 9 run without them.
 
 ### 12 October 2026: Chapters 7, 8 and 9 written; Part II complete
 

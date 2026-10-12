@@ -10,7 +10,7 @@ The course is published at <https://snowch.github.io/metadata-systems/>.
 
 **Status.** Each chapter is a Jupyter notebook that runs in your browser (JupyterLite, with a
 Python kernel compiled to WebAssembly); the course's front page lists the chapters by part and
-opens each written one. Chapters 1 to 9 are written; the others are planned (`docs/plan.md`).
+opens each written one. Chapters 1 to 13 are written; the others are planned (`docs/plan.md`).
 Every push to `main` deploys the site (`.github/workflows/deploy.yml`).
 
 ## Read first

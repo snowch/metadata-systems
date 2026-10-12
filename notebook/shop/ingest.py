@@ -219,9 +219,13 @@ class Edges:
     def _mime_(self):
         return ("text/html", self._repr_html_())
 
-    def of(self, job: str) -> Rows:
-        """The job's edges, one per dataset it read or wrote."""
-        return Rows(r for r in self.by_job if r["job"] == job)
+    def of(self, name: str) -> Rows:
+        """A job's edges, one per dataset it read or wrote; or, for a dataset's name, every job's edge
+        to each dataset whose name ends with it (`analytics.daily_sales` finds the table in any
+        database)."""
+        if any(r["job"] == name for r in self.by_job):
+            return Rows(r for r in self.by_job if r["job"] == name)
+        return Rows(r for r in self.by_job if r["dataset"] == name or r["dataset"].endswith(("/" + name, "." + name)))
 
     def latest(self) -> Rows:
         """Each job's edges that its latest run had."""

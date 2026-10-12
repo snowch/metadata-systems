@@ -52,6 +52,10 @@ CHAPTERS = {
     7: (HERE.parent / "chapter_07.py", "chapter_07.ipynb"),
     8: (HERE.parent / "chapter_08.py", "chapter_08.ipynb"),
     9: (HERE.parent / "chapter_09.py", "chapter_09.ipynb"),
+    10: (HERE.parent / "chapter_10.py", "chapter_10.ipynb"),
+    11: (HERE.parent / "chapter_11.py", "chapter_11.ipynb"),
+    12: (HERE.parent / "chapter_12.py", "chapter_12.ipynb"),
+    13: (HERE.parent / "chapter_13.py", "chapter_13.ipynb"),
 }
 
 # Jupyter runs from the top: these come first. In the browser the three packages the page bundles

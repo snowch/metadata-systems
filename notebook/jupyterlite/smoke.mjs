@@ -84,8 +84,9 @@ try {
       return !!e && e.getBoundingClientRect().height > 0;
     }, selector);
 
-  for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8, 9]) {
-    await page.goto(`http://127.0.0.1:${port}/notebooks/index.html?path=chapter_0${chapter}.ipynb`);
+  for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]) {
+    const stem = `chapter_${String(chapter).padStart(2, "0")}`;
+    await page.goto(`http://127.0.0.1:${port}/notebooks/index.html?path=${stem}.ipynb`);
     await page.waitForFunction(() => document.querySelector(".jp-MarkdownOutput h1"), null, {
       timeout: 120_000,
     });
@@ -373,6 +374,46 @@ try {
       check(
         unknown.includes("The stage knows every facet in the events."),
         "Chapter 9: with the facet known, no facet is unknown",
+      );
+    }
+    if (chapter === 10) {
+      await rewrite("catalogue = None", ["# catalogue = warehouse"], ["catalogue = warehouse"]);
+      await run("Run below", "Chapter 10, Run below with the catalogue");
+      const named = await output("catalogue = None");
+      check(
+        named.includes("daily_sales.revenue_pence") && !named.includes("column 1"),
+        "Chapter 10: with the catalogue, the parser names daily_sales's columns",
+      );
+    }
+    if (chapter === 11) {
+      await rewrite('column = "quantity"', ['column = "quantity"'], ['column = "customer_id"']);
+      await run("Run below", "Chapter 11, Run below for customer_id");
+      const readers = await output("shop.schemas.readers");
+      check(
+        readers.includes("customer_id") && readers.includes("build_clean_orders"),
+        "Chapter 11: build_clean_orders reads customer_id",
+      );
+    }
+    if (chapter === 12) {
+      await rewrite(
+        "databases = {}",
+        ["# databases[shop.openlineage.DEV_PRODUCER]"],
+        ["databases[shop.openlineage.DEV_PRODUCER]"],
+      );
+      await run("Run below", "Chapter 12, Run below with a database for each producer");
+      const parted = await output("databases = {}");
+      check(
+        parted.includes("shop_dev.analytics.daily_sales"),
+        "Chapter 12: the development run writes shop_dev's daily_sales",
+      );
+    }
+    if (chapter === 13) {
+      await rewrite('by="stores"', ['by="stores"'], ['by="runs"']);
+      await run("Run below", "Chapter 13, Run below by the runs' clock");
+      const chain = await output('by="runs"');
+      check(
+        chain.includes("03:00:09"),
+        "Chapter 13: by the runs' clock, the refresh finished at 03:00:09",
       );
     }
     if (chapter === 4) {

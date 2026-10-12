@@ -3,8 +3,9 @@
 """What each run recorded as it ran, and how recent each asset's data is (Chapter 13).
 
 `observations` lists, for every run of a program in the repository, what was recorded while it ran:
-when it started, how long it took, its status, the rows it read and wrote, the size of what it
-wrote, and the error a failed run reported. `freshness` sets each asset's own record of its last
+when it started, how long it took, its status, the rows it read and wrote, the size of the table or
+file it wrote as it stood after the run (for a table, the catalogue's estimate), and the error a
+failed run reported. A failed run records no counts: its cells are empty, not 0. `freshness` sets each asset's own record of its last
 write (the time its store keeps, by the store's own clock) beside the latest day its data holds.
 `readings` tests the dashboard against three readings of "fresh":
 
@@ -32,9 +33,10 @@ CHAIN = (
 )
 
 
-def observations(week: Week) -> Rows:
-    """Every run of a program in the repository, with what was recorded as it ran."""
-    return Rows(
+def observations(week: Week, rows_written: int | None = None) -> Rows:
+    """Every run of a program in the repository, with what was recorded as it ran; with
+    `rows_written`, only the runs that wrote that many rows."""
+    found = Rows(
         (
             {
                 "run": run,
@@ -44,13 +46,16 @@ def observations(week: Week) -> Rows:
                 "status": e.status,
                 "rows read": e.rows_read,
                 "rows written": e.rows if e.status == "succeeded" else None,
-                "bytes": e.bytes,
+                "size after (bytes)": e.bytes,
                 "error": e.error,
             }
             for run, e in executions(week)
         ),
         null="",
     )
+    if rows_written is None:
+        return found
+    return Rows((r for r in found if r["rows written"] == rows_written), null="")
 
 
 def last_written(week: Week, asset: str) -> str:

@@ -92,7 +92,8 @@ def compare(week: Week, pairs: list[tuple[str, str]]) -> Rows:
                 "same object": "yes" if named and x["object"] == y["object"] else "no",
                 "same rows": _same(x["rows"], y["rows"]) if named else "no",
                 "same environment": _same(x["environment"], y["environment"]) if named else "",
-                "same version": _same(x["version"], y["version"]) if named else "",
+                # Versions are compared only within one object: two objects' versions say nothing.
+                "same version": _same(x["version"], y["version"]) if named and x["object"] == y["object"] else "",
             }
         )
     return Rows(out)

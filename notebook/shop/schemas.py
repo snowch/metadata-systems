@@ -94,7 +94,7 @@ def readers(week: Week, dataset: str, column: str) -> Rows:
         target, found = deps(p["code"], week.warehouse)
         hows = sorted({f"{d.kind}: {d.how}" for d in found if d.dataset in (uri, dataset) and d.column == column})
         if hows:
-            out.append({"program": p["job"], "writes": target.rsplit("/", 1)[-1], "reads it for": "; ".join(hows)})
+            out.append({"column": column, "program": p["job"], "writes": target.rsplit("/", 1)[-1], "reads it for": "; ".join(hows)})
     return Rows(out, empty=MESSAGES["no_readers"])
 
 
@@ -115,4 +115,28 @@ def compare(change: str) -> Rows:
     return Rows({"reader": n, "plain week": x, f"with {change}": y} for n, x, y in zip(names, a, b))
 
 
-__all__ = ["JO_QUERY", "compare", "diff", "readers", "schema", "versions"]
+SUPPLIER = ("added", "renamed", "retyped")
+
+
+def diffs(changes=SUPPLIER) -> Rows:
+    """The diff of `orders.jsonl` under each of the supplier's changes, and how many versions of the
+    schema of `clean_orders` the catalogue's records give under it."""
+    out = []
+    for change in changes:
+        week = run_week([change])
+        tables = len(versions(week, "clean_orders"))
+        for r in diff(week, "orders.jsonl"):
+            out.append({"supplier's change": change, **r, "schema versions of clean_orders": tables})
+    return Rows(out, null="")
+
+
+def compare_all(changes=SUPPLIER) -> Rows:
+    """What three readers get on Monday, in the plain week and with each of the supplier's changes."""
+    tables = [compare(c) for c in changes]
+    return Rows(
+        {"reader": row["reader"], "plain week": row["plain week"], **{c: t[k][f"with {c}"] for c, t in zip(changes, tables)}}
+        for k, row in enumerate(tables[0])
+    )
+
+
+__all__ = ["JO_QUERY", "SUPPLIER", "compare", "compare_all", "diff", "diffs", "readers", "schema", "versions"]

@@ -140,6 +140,50 @@ The shop's events were validated against these schemas with `jsonschema` 4.26 ou
 repository (`docs/notes/chapter-08.md`); the course's own check (`notebook/shop/openlineage.py`) holds
 the rules above in its own code.
 
+### Read for Part III (12 October 2026)
+
+From `OpenLineage/OpenLineage` at the same commit, `07864a6b5f5d30b878e157eba8409dda84d68d4f`, read
+for checking and not copied:
+
+- `spec/facets/ColumnLineageDatasetFacet.json` (`$id` version 1-2-0): `fields` is required and maps
+  each output field to its `inputFields`, each with a `namespace`, a `name` and a `field` (all three
+  required) and optional `transformations`, each with a required `type`; the optional `dataset`
+  lists input fields that affect the whole dataset. The schema's own words for `dataset`: "Column
+  level lineage that affects the whole dataset. This includes filtering, sorting, grouping
+  (aggregates), joining, window functions, etc." The shop's facets were validated against it with
+  `jsonschema` 4.26 outside the repository (`docs/notes/chapter-10.md`).
+- `website/docs/spec/facets/dataset-facets/column_lineage_facet.md`: `DIRECT` means the output
+  value was derived from the input field; `INDIRECT`, that the input affects the output without
+  the value being derived from it. The subtypes it lists are `IDENTITY`, `TRANSFORMATION` and
+  `AGGREGATION` for direct, and `JOIN`, `GROUP_BY`, `FILTER`, `SORT`, `WINDOW` and `CONDITIONAL`
+  for indirect. It lists none for `DISTINCT` (Chapter 10's reality note).
+- `integration/sql/README.md`: the project's SQL parser is a library written in Rust with Python
+  and Java interfaces, and its list of dialects includes `sqlite`.
+- `spec/facets/SchemaDatasetFacet.json` (1-2-0): `fields`, each with a required `name` and optional
+  `type`, `description`, `ordinal_position` and nested `fields`.
+- `spec/facets/SymlinksDatasetFacet.json` (1-0-1) and `website/docs/spec/facets/dataset-facets/symlinks.md`:
+  `identifiers`, each a `namespace`, a `name` and a `type`, all required; the page describes them as
+  alternative identifiers for one dataset, such as a physical location and a logical table name.
+- `website/docs/spec/naming.md`: for several warehouses (among them Microsoft Fabric Warehouse,
+  CrateDB and DB2, beside PostgreSQL above) the dataset name is `{database}.{schema}.{table}`.
+- `spec/facets/ErrorMessageRunFacet.json` (1-0-1): `message` and `programmingLanguage` are
+  required, `stackTrace` optional. `spec/facets/OutputStatisticsOutputDatasetFacet.json` (1-0-2):
+  `rowCount`, `size` ("The size in bytes written to the dataset") and `fileCount`.
+
+For Chapter 13, from the same files: the run facet is keyed `errorMessage` in an event (the
+example in `website/docs/spec/facets/run-facets/error_message.md`), and `outputStatistics` is an
+output dataset facet. The shop's own record of a run's error and of a table's size after a run are
+the shop's fields, not these facets; its events carry neither.
+
+## Apache Iceberg's schema evolution (Chapter 11)
+
+`format/spec.md` in `apache/iceberg`, branch `main`, read 12 October 2026. It supports: a schema can
+evolve by adding, deleting, renaming and reordering fields; "Adding a new field assigns a new ID for
+that field"; "Renaming an existing field must change the name, but not the field ID"; and columns in
+data files are selected by field id, not by name. Chapter 11 states that a column's id survives a
+rename, so Iceberg's schemas can tell a rename from a removal and an addition. The specification is
+under the Apache License, Version 2.0; nothing from it is copied.
+
 ## Marquez
 
 Marquez's site (marquezproject.ai) and the OpenLineage documentation's front page
@@ -336,7 +380,6 @@ Each chapter that relies on one of these reads it first and adds an entry above:
 
 - OpenMetadata, DataHub and Apache Atlas: their documentation and source, for Chapter 31.
 - W3C PROV (PROV-DM and PROV-O), for Chapter 15.
-- Apache Iceberg's schema evolution by column id, for Chapter 11.
 - MLflow and similar experiment trackers, for Chapter 32.
 
 ## Licences of what the course ships

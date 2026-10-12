@@ -17,7 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = {
-    chapter: (ROOT / "notebook" / f"chapter_0{chapter}.py").read_text(encoding="utf-8") for chapter in (1, 2, 3, 4, 5, 6, 7, 8, 9)
+    chapter: (ROOT / "notebook" / f"chapter_{chapter:02d}.py").read_text(encoding="utf-8") for chapter in range(1, 14)
 }
 BUTTONS = ROOT / "notebook" / "buttons"
 LABELS = json.loads((BUTTONS / "buttons.json").read_text(encoding="utf-8"))
@@ -95,7 +95,9 @@ class TheWarnings(unittest.TestCase):
         table[6] = (table[5][0], "| Peak memory of a renderer process, opened alone | 397 to 403 MB | 398 to 418 MB |")
         table[7] = ("| Opened from the chapter before's link, after it ran | 19 files, 0.29 MB, in a new tab | 17 files, 0.29 MB, in a new tab | 11 files, 0.29 MB, in a new tab |", "| Peak memory of a renderer process, opened alone | 397 to 421 MB | 396 to 405 MB | 403 to 411 MB |")
         table[8] = table[9] = table[7]
-        for chapter, memory in ((3, "about 420 MB"), (4, "about 410 MB"), (5, "about 400 MB"), (6, "about 420 MB"), (7, "about 420 MB"), (8, "about 400 MB"), (9, "about 410 MB")):
+        table[10] = ("| Opened from the chapter before's link, after it ran | 14 files, 0.32 MB, in a new tab | 15 files, 0.32 MB, in a new tab | 14 files, 0.32 MB, in a new tab | 15 files, 0.32 MB, in a new tab |", "| Peak memory of a renderer process, opened alone | 395 to 403 MB | 395 to 402 MB | 395 to 402 MB | 397 to 403 MB |")
+        table[11] = table[12] = table[13] = table[10]
+        for chapter, memory in ((3, "about 420 MB"), (4, "about 410 MB"), (5, "about 400 MB"), (6, "about 420 MB"), (7, "about 420 MB"), (8, "about 400 MB"), (9, "about 410 MB"), (10, "about 400 MB"), (11, "about 400 MB"), (12, "about 400 MB"), (13, "about 400 MB")):
             link, peak = table[chapter]
             expected[chapter] = [
                 ("downloads about 13 MB", gzip),
