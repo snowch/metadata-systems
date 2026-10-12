@@ -113,7 +113,7 @@ observed one, and designs the event a computation should emit before meeting Ope
 | Ch | Title | The learner builds | Central experiment | What breaks | Introduces |
 | --- | --- | --- | --- | --- | --- |
 | 6 | What is lineage? | "made from" edges through jobs: A to job to B, then a chain of two jobs; dependency and impact queries | predict everything affected if `orders.jsonl` changes | a hand-written dependency that the job does not have; a declared edge that went stale when the job changed | lineage, upstream, downstream |
-| 7 | Jobs, runs and events | a run per execution, with its times, status, inputs, outputs and code version; the learner designs the event a run emits | predict what the job's record alone cannot say about Thursday, then read the runs | an event with no run identifier merges two nights; an event with no inputs proves nothing | run, event |
+| 7 | Jobs, runs and events | a run per execution, with its times, status, inputs, outputs and code version, and for a run started by an object, the object, its version and what happened to it (created, overwritten, deleted); the learner designs the event a run emits | predict what the job's record alone cannot say about Thursday, then read the runs | an event with no run identifier merges two nights; an event with no inputs proves nothing | run, event |
 | 8 | OpenLineage | the learner's events as OpenLineage run events: START, COMPLETE and FAIL, a run's UUID, a job's namespace and name, inputs, outputs, facets; create, edit and replay | predict what a consumer knows after a START with no outputs and a COMPLETE with outputs | two producers name the same table differently and the lineage does not join | OpenLineage, facet, namespace, producer |
 | 9 | From events to graphs | the ingestion pipeline: parse, normalise, metadata objects, graph edges, each stage built and run over the week's events | predict how many nodes and edges the week produces | a malformed event; a facet the parser does not know | ingestion, normalise |
 
@@ -124,15 +124,15 @@ observed one, and designs the event a computation should emit before meeting Ope
 | 10 | Column-level lineage | the course's SQL parsed into column derivations; `revenue` from `price` and `quantity` | predict which source columns `revenue` depends on, including through the filter on `status` | `SELECT *`; an alias chain; a function the parser cannot see into | column lineage |
 | 11 | Schema evolution | schema versions; added, removed, renamed and retyped columns, followed downstream | predict which changes break `daily_sales` | a rename that looks like a drop and an add; a type change that truncates | schema evolution, breaking change |
 | 12 | Identity | the identity laboratory: rules over namespace, name, environment and version | predict whether two references are the same asset | case, a path through a link, production and development collapsing into one | identity, qualified name, environment |
-| 13 | Runtime metadata | observations from execution: duration, status, rows, bytes, errors, freshness | predict which asset is stale on Monday morning after a failed night | a run that succeeded and wrote no rows; two clocks that disagree | observation, freshness |
+| 13 | Runtime metadata | observations from execution: duration, status, rows, bytes, errors, freshness | predict which asset is stale on Monday morning after a failed night | a run that succeeded and wrote no rows; two clocks that disagree; a table the returns function writes at any hour, which no nightly time describes | observation, freshness |
 
 ### Part IV: Metadata becomes operational
 
 | Ch | Title | The learner builds | Central experiment | What breaks | Introduces |
 | --- | --- | --- | --- | --- | --- |
 | 14 | Data quality as metadata | quality observations per run (rows, missing customer ids, duplicate orders) and assertions over them | predict which night fails "no order without a customer" | an assertion that passes because the rows it should catch were filtered first | data quality, assertion |
-| 15 | Provenance | a query from a figure on the dashboard back to the rows, the program and the run behind it | predict which orders make up Thursday's revenue | provenance through a sum is a set; a source overwritten since the run | provenance |
-| 16 | Impact analysis | impact queries over dataset and column lineage | rename `orders.customer_id`: predict what breaks, then ask the graph | a reader the graph never heard of: the analysis is only as complete as the lineage | impact analysis |
+| 15 | Provenance | a query from a figure on the dashboard back to the rows, the program and the run behind it | predict which orders make up Thursday's revenue | provenance through a sum is a set; a source overwritten since the run, as a return corrected after the function read it | provenance |
+| 16 | Impact analysis | impact queries over dataset and column lineage | rename `orders.customer_id`: predict what breaks, then ask the graph | a reader the graph never heard of: the analysis is only as complete as the lineage; a deleted return, and what was made from it | impact analysis |
 | 17 | Root-cause analysis | a backwards search over lineage, runs, observations and changes | start from "the dashboard is wrong" and find where Thursday's fault entered | two plausible causes; a cause outside the recorded system | root cause |
 
 ### Part V: When the simple model breaks
@@ -143,11 +143,11 @@ contradicts them, and makes their metadata system survive it.
 | Ch | Title | The learner builds | Central experiment | What breaks | Introduces |
 | --- | --- | --- | --- | --- | --- |
 | 18 | Missing events | a delivery path between producers and the collector, with loss | predict the graph when one COMPLETE never arrives | a run that is running for ever; a dependency nobody can prove | delivery, at least once |
-| 19 | Duplicate events | idempotent ingestion | replay an event: predict whether the lineage doubles | a retry whose event differs in time only | idempotent, deduplication |
-| 20 | Out-of-order events | event time against arrival time, and an ordering rule | deliver Tuesday's run after Wednesday's | last-writer-wins by arrival overwrites newer state | event time, arrival time |
+| 19 | Duplicate events | idempotent ingestion | replay an event: predict whether the lineage doubles | a retry whose event differs in time only; an object's trigger delivered twice, which runs the returns function twice | idempotent, deduplication |
+| 20 | Out-of-order events | event time against arrival time, and an ordering rule | deliver Tuesday's run after Wednesday's | last-writer-wins by arrival overwrites newer state; a return's delete delivered before its create | event time, arrival time |
 | 21 | Conflicting metadata | precedence rules that keep where each claim came from | two systems disagree about an owner and a schema: predict which the figure shows | "newest wins" chooses a stale claim | precedence |
 | 22 | Identity across systems | aliases and resolution rules across the warehouse, a file path, a transformation tool's model name and the dashboard's dataset | predict which references merge | over-merging two environments' tables of one name | alias, entity resolution |
-| 23 | Metadata at scale | a cost model from ten assets to ten million and billions of events: indexes, partitions, retention, compaction, ingestion rate, traversal depth | predict which query fails first as the platform grows | an unbounded traversal; retention that deletes the lineage of an asset still in use | index, partition, retention, compaction |
+| 23 | Metadata at scale | a cost model from ten assets to ten million and billions of events, one run per object among them: indexes, partitions, retention, compaction, ingestion rate, traversal depth | predict which query fails first as the platform grows | an unbounded traversal; retention that deletes the lineage of an asset still in use | index, partition, retention, compaction |
 
 ### Part VI: Building a metadata platform
 
@@ -194,7 +194,7 @@ and its notes say which (`CLAUDE.md`, "Question the requirement").
 | 4 | "Each asset has one owner." | one person, one team, or one identifier for an owner two records spell differently |
 | 5 | "Show everything related to `daily_sales`." | what it is made from; what reads it; who is responsible for it; where it is kept. Each is a different kind of edge |
 | 6 | "Record the lineage of `daily_sales`." | what its job declares it reads, what it was seen to read, or both; between tables or between columns |
-| 7 | "Record every run." | to find failures; to know when an asset was last written; to audit who changed what. Each needs a different event |
+| 7 | "Record every run." | to find failures; to know when an asset was last written; to audit who changed what; to know which object started it. Each needs a different event |
 | 8 | "Our programs must emit OpenLineage." | which events, with which facets, under which namespace and name |
 | 9 | "The graph must show the current lineage." | current as of the last event received, the last run, or the last change to a program |
 | 10 | "Show which columns `revenue` depends on." | the columns its value is computed from, or also those that decide which rows count, such as `status` |
@@ -203,7 +203,7 @@ and its notes say which (`CLAUDE.md`, "Question the requirement").
 | 13 | "The dashboard must be fresh." | refreshed lately; built from the latest data; showing the latest day. Chapter 2's failed night met the first and neither of the others |
 | 14 | "No order without a customer." | in the raw file, in `clean_orders`, or on the dashboard. An assertion on `clean_orders` passes because the rows were filtered first |
 | 15 | "Show where Thursday's figure came from." | the rows; the program; the run; the rows as they were when the run read them |
-| 16 | "Tell us what breaks if `customer_id` is renamed." | what fails, or also what keeps running and gives a wrong answer |
+| 16 | "Tell us what breaks if `customer_id` is renamed." | what fails, or also what keeps running and gives a wrong answer. A second candidate, from the returns: "When a return is deleted, remove everything made from it": its row, the totals that counted it, copies, or also what was already reported |
 | 17 | "Find the cause of the wrong figure." | where the data first went wrong; the change that did it; the decision behind that change |
 | 18 | "Lineage must be complete." | complete for the programs that send events, or for every program that touches the data |
 | 19 | "Ingestion must ignore duplicates." | the same event twice; the same run reported twice; the same content at another time |
@@ -257,6 +257,36 @@ The author reviews the course at five checkpoints:
 5. Before Chapter 33.
 
 ## Decisions since the brief
+
+### 12 October 2026: processing started by objects, as a use case of the shop's
+
+The author asked whether the course covers metadata for processing that reacts to object storage:
+a function that runs when an object is created, overwritten or deleted, and the lineage and
+metadata such processing needs. It did not: every job in the shop runs on the nightly schedule.
+The author asked for it as a use case, not as a product, so no product is named; the shop gains it.
+
+- **The use case.** The shop's returns desk records each return as one small object in a bucket of
+  its own, `shop-returns`, at the time of the return, any hour of the day. Creating an object starts
+  a function that writes the return into a warehouse table, `returns`; overwriting it (a corrected
+  return) starts the function again; deleting it (a return withdrawn) starts a function that removes
+  the row. Nothing about these runs is on a schedule. It is a change to the shop (`returns`, in
+  `docs/lab.md`), run by the chapters that need it, so Chapters 1 to 4 are unchanged.
+- **What it gives the planned chapters**, each in its row above: Chapter 7's run started by an
+  object, which must record the object, its version and what happened to it; Chapter 13's
+  freshness when writes happen at any hour; Chapter 15's provenance through a return corrected
+  after the function read it; Chapter 16's impact of a deletion, with a second candidate
+  requirement ("When a return is deleted, remove everything made from it"); Chapters 19 and 20's
+  duplicated and reordered delivery one layer down, where a trigger delivered twice runs the
+  function twice and a delete can arrive before its create; Chapter 23's one run per object.
+- **What the engine must gain first** (`docs/lab.md`, "Planned: the returns desk"): writes at any
+  time, not only at night; an object's versions; the platform's own notifications of object
+  changes, which start the functions and which the platform does not show; and a delivery of
+  those notifications that the chapters can make lose, repeat or reorder. It is built with
+  Chapter 7, the first chapter that uses it, with tests, not before.
+- **Accuracy.** How real object stores deliver such notifications (whether at least once, whether
+  in order, what they carry) is a claim about a system, checked in its own documentation and
+  recorded in `docs/sources.md` by the chapter that states it. Until then the shop's delivery is
+  the shop's own choice, and the chapters' model-versus-reality notes say so.
 
 ### 12 October 2026: Chapters 3 and 4 written
 

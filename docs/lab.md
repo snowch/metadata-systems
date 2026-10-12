@@ -101,6 +101,30 @@ Chapter 3 adds a fourth:
 Later chapters add their own: a renamed column, a late file, a duplicated event, a second
 environment.
 
+### Planned: the returns desk
+
+Not built yet; built with Chapter 7, the first chapter that uses it (`docs/plan.md`, "12 October
+2026: processing started by objects"). A change, `returns`, adds to the week:
+
+- **A bucket and a table.** `s3://shop-returns/`, holding one small JSON object per return (the
+  order, the item, the quantity returned, when), and a warehouse table, `returns`, one row per
+  return.
+- **Writes at any hour.** The returns desk creates, overwrites and deletes objects during the day,
+  at fixed times written in `notebook/shop/data.py` as the orders are, so the week stays
+  deterministic. Object storage keeps each object's versions, with the time of each.
+- **Notifications and functions.** Each create, overwrite or delete produces a notification, which
+  the platform keeps and does not show, and which starts a function: `record_return` for a create
+  or an overwrite (it replaces the return's row), `remove_return` for a delete. Each start is a run
+  the platform does not record (`Week.executions`, like the jobs').
+- **A delivery the chapters can break.** By default each notification is delivered once, in order.
+  A chapter can make the delivery lose, repeat or reorder notifications, so that a function runs
+  twice for one return, or a delete arrives before its create; the deterministic choice of which
+  is the chapter's, written in the change.
+- **Data that tests it.** At least one return corrected after its function ran, one return
+  withdrawn, and one return of a Thursday order with no customer id, which `clean_orders` left out,
+  so that provenance, deletion and a return of an order the warehouse does not hold each have a
+  case.
+
 ## What a notebook can ask of the engine
 
 `notebook/shop` answers three kinds of question, and the notebooks show each answer with its
