@@ -52,6 +52,8 @@ FACETS = {
     "nominalTime": ("1-0-1", "NominalTimeRunFacet"),
     "columnLineage": ("1-2-0", "ColumnLineageDatasetFacet"),
     "schema": ("1-2-0", "SchemaDatasetFacet"),
+    "dataQualityMetrics": ("1-0-1", "DataQualityMetricsDatasetFacet"),
+    "dataQualityAssertions": ("1-1-0", "DataQualityAssertionsDatasetFacet"),
 }
 # The shop's custom facet, named as the specification asks: a prefix, then the name.
 OBJECT_CHANGE = "shop_objectChange"

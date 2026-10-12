@@ -526,5 +526,120 @@ class TheObservations(unittest.TestCase):
         self.assertEqual(failed["error"], "database is locked")
 
 
+class TheReturnsDeskInOrder(unittest.TestCase):
+    """The desk's changes of a day reach `returns` before the night's work, and Monday's before you start."""
+
+    def test_monday_morning_and_the_plain_desk(self):
+        w = shop.run_week(["returns"])
+        self.assertEqual([r["return_id"] for r in w.warehouse.sql("SELECT return_id FROM returns ORDER BY 1")], ["r-201", "r-202", "r-204"])
+        late = shop.run_week(["corrected", "withdrawn"])
+        self.assertIn("net", late.changes)
+        from shop.provenance import returns_as_of
+
+        before = {r["return_id"]: r["quantity"] for r in returns_as_of(late, "2026-09-14T02:30:00Z")}
+        self.assertEqual((before["r-205"], before["r-206"]), (2, 1))
+        now = {r["return_id"]: r["quantity"] for r in late.warehouse.sql("SELECT * FROM returns")}
+        self.assertEqual((now["r-205"], "r-206" in now), (1, False))
+
+
+class TheQuality(unittest.TestCase):
+    """Chapter 14: what a run measures, and assertions over it."""
+
+    def test_an_assertion_after_the_rule_cannot_fail(self):
+        from shop import quality as Q
+
+        w = shop.run_week()
+        self.assertEqual({r["passed"] for r in Q.check(w, "clean_orders", "no customer_id")}, {"yes"})
+        failed = [r["night"] for r in Q.check(w, "orders.jsonl", "no customer_id") if r["passed"] == "no"]
+        self.assertEqual(failed, ["2026-09-11", "2026-09-12", "2026-09-13", "2026-09-14"])
+        # The rows the rule removes are the rows the assertion on the table is meant to find.
+        self.assertIn("customer_id IS NOT NULL", shop.week.CLEAN_ORDERS)
+
+    def test_the_counts_each_run_recorded(self):
+        from shop import quality as Q
+
+        [fri] = [r for r in Q.reconcile(shop.run_week()) if r["night"] == "2026-09-11"]
+        self.assertEqual((fri["rows read"], fri["rows written"], fri["repeats"], fri["left out"]), (27, 23, 1, 3))
+        self.assertEqual(list(Q.left_out(shop.run_week())), [{"day": "2026-09-10", "orders": 3, "pence": 15400}])
+        self.assertEqual([r["met"] for r in Q.readings(shop.run_week())], ["no", "yes", "no"])
+
+    def test_the_facets_name_their_schemas(self):
+        from shop import quality as Q
+
+        f = Q.facets(shop.run_week(), "run-014")
+        self.assertTrue(f["facets"]["dataQualityMetrics"]["_schemaURL"].startswith("https://openlineage.io/spec/facets/1-0-1/DataQualityMetricsDatasetFacet.json"))
+        self.assertEqual(f["facets"]["dataQualityMetrics"]["columnMetrics"]["customer_id"], {"nullCount": 3})
+        [a] = f["inputFacets"]["dataQualityAssertions"]["assertions"]
+        self.assertEqual((a["assertion"], a["column"], a["success"]), ("not_null", "customer_id", False))
+
+
+class TheProvenance(unittest.TestCase):
+    """Chapter 15: where one figure came from."""
+
+    def test_thursday_back_to_the_file(self):
+        from shop import provenance as P
+
+        steps = P.trace(shop.run_week(), "2026-09-10")
+        self.assertEqual([r["pence"] for r in steps], [5150, 5150, 5150, 5150])
+        self.assertEqual(steps[2]["rows"], "7020, 7022, 7024, 7026")
+        left = P.trace(shop.run_week(), "2026-09-10", dropped=True)[-1]
+        self.assertEqual((left["pence"], left["rows"].count("customer_id IS NOT NULL is false")), (15400, 3))
+
+    def test_every_plain_day_adds_up(self):
+        from shop import provenance as P
+
+        w = shop.run_week()
+        self.assertTrue(all(P.figure_adds_up(w, d) for d in shop.DAYS))
+
+    def test_a_corrected_return_adds_up_only_as_read(self):
+        from shop import provenance as P
+
+        w = shop.run_week(["corrected"])
+        self.assertEqual(P.trace(w, "2026-09-13")[1]["pence"], 6925)
+        self.assertFalse(P.figure_adds_up(w, "2026-09-13"))
+        self.assertTrue(P.figure_adds_up(w, "2026-09-13", as_read=True))
+        self.assertEqual([r["quantity"] for r in P.object_versions(w, "r-205")], [2, 1])
+
+
+class TheImpact(unittest.TestCase):
+    """Chapter 16: what a change affects, by the graph and in fact."""
+
+    def test_a_renamed_column(self):
+        from shop import impact as I
+
+        w0, w1 = shop.run_week(["copy"]), shop.run_week(["copy", "customer"])
+        self.assertEqual({r["writes"] for r in I.downstream(w0, "clean_orders")}, {"daily_sales", "sales_dashboard", "s3://shop-scratch/clean_orders_copy.csv"})
+        self.assertEqual([r["column"] for r in I.downstream_columns(w0, "clean_orders", "customer_id")], ["s3://shop-scratch/clean_orders_copy.csv.customer_id"])
+        changed = {r["reader"]: r["changed"] for r in I.readers(w0, w1)}
+        self.assertEqual(changed, {"daily_sales": "no", "sales_dashboard": "no", "clean_orders_copy.csv": "yes", "Jo Marsh's query": "yes"})
+        self.assertIn("no such column", I.readers(w0, w1)[-1]["after"])
+
+    def test_a_withdrawn_return(self):
+        from shop import impact as I
+
+        w = shop.run_week(["withdrawn"])
+        self.assertEqual([r["writes"] for r in I.downstream(w, "s3://shop-returns/r-206.json")], ["returns"])
+        self.assertEqual(list(I.downstream(w, "returns")), [])
+        self.assertEqual([r["still there"] for r in I.made_from(w, "r-206")], ["no", "yes", "yes"])
+        self.assertEqual(w.warehouse.sql("SELECT revenue_pence FROM daily_sales WHERE day = '2026-09-13'"), [{"revenue_pence": 8575}])
+
+
+class TheCause(unittest.TestCase):
+    """Chapter 17: a backwards search."""
+
+    def test_where_each_fault_entered(self):
+        from shop import cause as C
+
+        thu = C.search(shop.run_week(), "2026-09-10")
+        self.assertEqual([r["differs from its input"] for r in thu[:3]], ["no", "no", "yes"])
+        self.assertEqual([r["code changed since the night before"] for r in thu[:3]], ["no", "no", "no"])
+        sat = C.search(shop.run_week(["refunds"]), "2026-09-12")
+        self.assertEqual([r["differs from its input"] for r in sat[:3]], ["no", "yes", "no"])
+        self.assertEqual(sat[1]["code changed since the night before"], "yes")
+        tue = C.search(shop.run_week(["refunds"]), "2026-09-08")
+        self.assertEqual({r["differs from its input"] for r in tue[:3]}, {"no"})
+        self.assertIn("status <> 'refunded'", C.code_change(shop.run_week(["refunds"]), "build_daily_sales", "2026-09-13"))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -62,7 +62,10 @@ from .data import (
 )
 from .platform import ObjectStorage, Reporting, Rows, Warehouse, epoch, file_schema, iso, stage
 
-CHANGES = ("copy", "refunds", "failed", "column", "source", "returns", "net", "added", "renamed", "retyped", "dev", "view", "clock")
+CHANGES = (
+    "copy", "refunds", "failed", "column", "source", "returns", "net", "added", "renamed", "retyped", "dev", "view", "clock",
+    "corrected", "withdrawn", "customer",
+)
 
 # The nights of the week: the date each night's work starts on, Tuesday 8 to Monday 14.
 NIGHTS = DAYS[1:] + ("2026-09-14",)
@@ -110,6 +113,20 @@ TEST_ORDERS = (
 VIEW = "sales_by_day"
 VIEW_SQL = "SELECT day, revenue_pence FROM daily_sales"
 VIEW_CREATED = "2026-09-04T11:02:00Z"
+# Part IV's returns of Sunday's orders, in the form of RETURNS_DESK: made on Sunday evening, after
+# Saturday's row and before Sunday's, and changed on Monday morning, after the night's work.
+# `corrected`: the desk records two rolls of bar tape back from order 7044, and corrects it to one.
+CORRECTED = (
+    ("2026-09-13T18:10:00Z", "created", "r-205", (7044, 8, 2)),
+    ("2026-09-14T08:40:00Z", "overwritten", "r-205", (7044, 8, 1)),
+)
+# `withdrawn`: the desk records the brake pads of order 7047 back, and withdraws the return.
+WITHDRAWN = (
+    ("2026-09-13T21:15:00Z", "created", "r-206", (7047, 2, 1)),
+    ("2026-09-14T08:50:00Z", "deleted", "r-206", None),
+)
+# The `customer` change: from Sunday's night on, `build_clean_orders` names the column `customer`.
+RENAMED_ON = "2026-09-13"
 # The error the warehouse gave the failed night's program (`failed`).
 FAILED_ERROR = "database is locked"
 
@@ -253,6 +270,7 @@ class Execution:
     bytes: int | None = None
     error: str | None = None
     environment: str = "production"
+    quality: tuple[tuple[str, str, int], ...] = ()
 
 
 @dataclass
@@ -271,6 +289,8 @@ def run_week(changes=()) -> Week:
     changes = tuple(changes)
     if "source" in changes and "copy" not in changes:
         changes = ("copy",) + changes
+    if any(c in changes for c in ("corrected", "withdrawn")) and "net" not in changes:
+        changes = changes + ("net",)
     if "net" in changes and "returns" not in changes:
         changes = changes + ("returns",)
     for c in changes:
@@ -290,9 +310,14 @@ def run_week(changes=()) -> Week:
     if "dev" in changes:
         warehouse.create_database(DEV_DATABASE, ("clean_orders", "daily_sales"))
 
+    desk = sorted(
+        RETURNS_DESK + (CORRECTED if "corrected" in changes else ()) + (WITHDRAWN if "withdrawn" in changes else ()),
+        key=lambda d: d[0],
+    )
+
     def returns_desk(on: str) -> None:
         """What the returns desk did on one day, and the function each change started."""
-        for at, change, return_id, what in RETURNS_DESK:
+        for at, change, return_id, what in desk:
             if at[:10] != on:
                 continue
             uri = f"{RETURNS_BUCKET}/{return_id}.json"
@@ -300,7 +325,7 @@ def run_week(changes=()) -> Week:
                 version = storage.delete(uri, at)
             else:
                 order_id, product_id, quantity = what
-                first = next(a for a, c, r, _ in RETURNS_DESK if r == return_id)
+                first = next(a for a, c, r, _ in desk if r == return_id)
                 text = json.dumps(dict(zip(RETURN_FIELDS, (return_id, order_id, product_id, quantity, first)))) + "\n"
                 version = storage.put(uri, text, at)
             started = iso(epoch(at) + FUNCTION_DELAY)
@@ -327,8 +352,11 @@ def run_week(changes=()) -> Week:
 
     for night in NIGHTS:
         day = DAYS[NIGHTS.index(night)]
+        # The returns desk works during the day, before the night's work.
+        if "returns" in changes:
+            returns_desk(day)
 
-        def done(writer: str, status: str = "succeeded", wrote=None, rows=None, after=0, reads=(), rows_read=None, error=None) -> str:
+        def done(writer: str, status: str = "succeeded", wrote=None, rows=None, after=0, reads=(), rows_read=None, error=None, quality=()) -> str:
             started = timestamp(night, STARTS[writer], after)
             finished = timestamp(night, STARTS[writer], after + DURATION[writer])
             job = JOBS.get(writer)
@@ -341,7 +369,7 @@ def run_week(changes=()) -> Week:
             week.executions.append(
                 Execution(
                     writer, night, started, finished, status, wrote, rows, job, tuple(reads), rows_read, code,
-                    schema=schema, bytes=size, error=error,
+                    schema=schema, bytes=size, error=error, quality=tuple(quality),
                 )
             )
             return finished
@@ -370,8 +398,13 @@ def run_week(changes=()) -> Week:
 
         raw = storage.records(FILES["orders"])
         stage(db, "raw_orders", raw, ORDER_FIELDS)
-        n = warehouse.write("clean_orders", CLEAN_ORDERS, timestamp(night, "02:05", 52))
-        done("clean_orders", wrote="clean_orders", rows=n, reads=[FILES["orders"]], rows_read=len(raw))
+        if "customer" in changes and night == RENAMED_ON:
+            warehouse.rename_column("clean_orders", "customer_id", "customer")
+        n = warehouse.write("clean_orders", clean_orders_sql(changes, night), timestamp(night, "02:05", 52))
+        measured = measure(db, "orders.jsonl", "temp.raw_orders", "customer_id") + measure(
+            db, "clean_orders", "main.clean_orders", "customer" if "customer" in changes and night >= RENAMED_ON else "customer_id"
+        )
+        done("clean_orders", wrote="clean_orders", rows=n, reads=[FILES["orders"]], rows_read=len(raw), quality=measured)
 
         if "copy" in changes:
             cursor = db.execute(ANALYST_SQL)
@@ -405,14 +438,40 @@ def run_week(changes=()) -> Week:
 
         db.execute("DROP TABLE temp.raw_customers")
         db.execute("DROP TABLE temp.raw_orders")
-        if "returns" in changes:
-            returns_desk(day)
         if "dev" in changes and day == "2026-09-11":
             storage.put(TEST_EXPORT, jsonl(ORDER_FIELDS, TEST_ORDERS), TEST_EXPORT_AT)
+    # Monday morning, after the last night's work and before you start.
+    if "returns" in changes:
+        returns_desk(NIGHTS[-1])
     if "dev" in changes:
         development_run(week)
     week.executions.sort(key=lambda e: e.started)
     return week
+
+
+# What a run of `build_clean_orders` measures, as it runs, of the file it read and the table it wrote
+# (Chapter 14). Each is a count of rows.
+METRICS = ("rows", "no customer_id", "order_id twice", "quantity 0 or less")
+
+
+def measure(db, name: str, table: str, customer: str) -> list[tuple[str, str, int]]:
+    """The four counts for one dataset, by SQL over the rows as the program saw them. A column the
+    file does not have reads as empty, as the program reads it."""
+    have = {c for (_, c, *_ ) in db.execute(f"PRAGMA {table.split('.')[0]}.table_info({table.split('.')[1]})")}
+    nulls = f"SUM({customer} IS NULL)" if customer in have else "COUNT(*)"
+    quantity = "SUM(quantity <= 0)" if "quantity" in have else "0"
+    [(rows, missing, twice, low)] = db.execute(
+        f"SELECT COUNT(*), COALESCE({nulls}, 0), COUNT(*) - COUNT(DISTINCT order_id), COALESCE({quantity}, 0) FROM {table}"
+    )
+    return [(name, m, v) for m, v in zip(METRICS, (rows, missing, twice, low))]
+
+
+def clean_orders_sql(changes, night: str) -> str:
+    """The SQL of `build_clean_orders` on a night: with the `customer` change, from Sunday's night on,
+    it names the customer's column `customer`."""
+    if "customer" in changes and night >= RENAMED_ON:
+        return CLEAN_ORDERS.replace("customer_id, product_id", "customer_id AS customer, product_id", 1)
+    return CLEAN_ORDERS
 
 
 def supplier_changes(changes, fields: tuple[str, ...], orders: list[tuple]) -> tuple[tuple[str, ...], list[tuple]]:
@@ -491,7 +550,8 @@ def job_code(writer: str, changes, day: str) -> str:
     if writer == "clean_customers":
         return _job({"raw_customers": FILES["customers"]}, "clean_customers", CLEAN_CUSTOMERS)
     if writer == "clean_orders":
-        return _job({"raw_orders": FILES["orders"]}, "clean_orders", CLEAN_ORDERS)
+        night = NIGHTS[DAYS.index(day)]
+        return _job({"raw_orders": FILES["orders"]}, "clean_orders", clean_orders_sql(changes, night))
     if writer == "dashboard_refresh":
         return _job({}, "sales_dashboard", DASHBOARD, verb="refresh")
     if writer != "daily_sales":

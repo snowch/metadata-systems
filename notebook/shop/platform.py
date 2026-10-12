@@ -361,6 +361,12 @@ class Warehouse:
         self.db.execute("INSERT INTO information_schema.columns VALUES (?, ?, ?, ?)", (table, column, n + 1, kind))
         self.db.commit()
 
+    def rename_column(self, table: str, old: str, new: str) -> None:
+        """A column renamed, which the warehouse's catalogue records at once (the `customer` change)."""
+        self.db.execute(f"ALTER TABLE main.{table} RENAME COLUMN {old} TO {new}")
+        self.db.execute("UPDATE information_schema.columns SET column_name = ? WHERE table_name = ? AND column_name = ?", (new, table, old))
+        self.db.commit()
+
     def create_table(self, table: str, columns: tuple[tuple[str, str], ...], created: str) -> None:
         """A new table, which the catalogue records at once."""
         spec = ", ".join(f"{c} {t}" for c, t in columns)

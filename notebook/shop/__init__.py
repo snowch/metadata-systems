@@ -18,7 +18,7 @@ from .data import ARRIVAL, DAYS
 from .infer import cleaning_rules_that_fit, day_gap, queries_that_rebuild
 from .platform import pounds
 from .graph import compare_with_code, graph
-from . import columns, identity, ingest, observe, openlineage, schemas
+from . import cause, columns, identity, impact, ingest, observe, openlineage, provenance, quality, schemas
 from .records import model, owners, records, typed_records
 from .runs import event_fields, events, lineage, readings, runs
 from .week import CHANGES, COPY, FILES, NIGHTS, Week, reads_and_writes, repository, run_week, timeline
@@ -31,6 +31,7 @@ __all__ = [
     "FILES",
     "NIGHTS",
     "Week",
+    "cause",
     "cleaning_rules_that_fit",
     "columns",
     "compare_with_code",
@@ -38,10 +39,13 @@ __all__ = [
     "event_fields",
     "events",
     "identity",
+    "impact",
     "ingest",
     "lineage",
     "observe",
     "openlineage",
+    "provenance",
+    "quality",
     "readings",
     "runs",
     "schemas",

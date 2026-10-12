@@ -119,6 +119,19 @@ Chapter 6 adds `source`, and Chapter 7 `returns` (below). Part III adds seven:
 The failed night (`failed`) also records the error the warehouse gave, `database is locked`. The
 analyst's copy (`copy`) runs `SELECT * FROM clean_orders` and writes the result's columns.
 
+Part IV adds three:
+
+- **`corrected`** (Chapter 15). On Sunday at 18:10 the returns desk records two rolls of bar tape back
+  from order 7044 (`r-205`), and on Monday at 08:40, after the night's work, corrects it to one. With
+  `net`, which it brings, Sunday's row of `daily_sales` subtracted two.
+- **`withdrawn`** (Chapter 16). On Sunday at 21:15 the desk records the brake pads of order 7047 back
+  (`r-206`), and on Monday at 08:50 withdraws the return, deleting its object. Sunday's row counted it.
+- **`customer`** (Chapter 16). From Sunday's night on, `build_clean_orders` names the customer's
+  column `customer`: the warehouse renames the column, and the program's code says so.
+
+The returns desk's changes of a day reach `returns` before that night's work, and Monday morning's
+after the last night's and before you start. Chapters 7 to 13 state nothing this order changes.
+
 ### The returns desk (Chapter 7 on)
 
 Built with Chapter 7 (`docs/plan.md`, "12 October 2026: processing started by objects"). The change
@@ -208,6 +221,21 @@ evidence:
   it ran (`Execution.bytes`, `Execution.error`), each asset's last write by its store's clock and the
   latest day its data holds, and the dashboard against three readings of "fresh", by the stores'
   clocks or by the runs'.
+- **Quality** (`notebook/shop/quality.py`, Chapter 14). Each run of `build_clean_orders` counts, as it
+  runs, the rows, the rows with no customer id, the rows that repeat an order and the rows with a
+  quantity of 0 or less, in the file it read and the table it wrote (`Execution.quality`); `check`
+  holds one count to a limit on every run, `reconcile` sets rows read against rows written, and
+  `facets` writes OpenLineage's `dataQualityMetrics` and `dataQualityAssertions`.
+- **Provenance** (`notebook/shop/provenance.py`, Chapter 15). `trace` follows one day's figure back
+  to the lines of the version of `orders.jsonl` the run read, summing each step; files by the version
+  read, tables as they are now, or `returns` as it was, rebuilt from the object versions the desk's
+  functions read (`returns_as_of`). With `dropped`, the rows each run left out and why.
+- **Impact** (`notebook/shop/impact.py`, Chapter 16). `downstream` walks the graph the week's events
+  make; `downstream_columns` walks column lineage forward; `readers` sets what four readers got in
+  two weeks side by side; `made_from` lists what the shop made from one return.
+- **A backwards search** (`notebook/shop/cause.py`, Chapter 17). `search` measures one day's revenue,
+  as the dashboard's program defines it, at each step back to the export, with whether each step
+  differs from its input and whether its program's code changed since the night before.
 - **The records as a graph** (`notebook/shop/graph.py`, Chapters 5 and 6). `graph(records, model)`
   makes each entity a node and each line whose value names another entity an edge; `traverse`
   walks the edges it is given, each way it is given; `downstream` and `upstream` walk `reads` and
