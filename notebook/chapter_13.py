@@ -12,7 +12,7 @@ app = marimo.App(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 12](chapter_12.ipynb)
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 12](chapter_12.ipynb) · [Next: Chapter 14](chapter_14.ipynb)
 
     # Chapter 13: Runtime metadata
 
@@ -370,7 +370,7 @@ def _(mo):
     - The three readings, and the rule of a day for "refreshed lately", are the shop's own choices.
     - The shop's reporting tool keeps its own clock, and in the `clock` change it runs slow. Every machine on a real platform keeps its own clock too.
 
-    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 12](chapter_12.ipynb)
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 12](chapter_12.ipynb) · [Next: Chapter 14](chapter_14.ipynb)
 
     ---
 

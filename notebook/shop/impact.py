@@ -112,14 +112,15 @@ def _got(week: Week) -> dict[str, str]:
     }
     if "copy" in week.changes:
         got["clean_orders_copy.csv"] = week.storage.read_text(COPY).splitlines()[0]
-    got["Jo Marsh's query"] = _jo(week)
+    got["Jo Marsh's query result"] = _jo(week)
     return got
 
 
 def readers(before: Week, after: Week) -> Rows:
-    """What each reader got on Monday morning in two weeks, and whether it changed."""
+    """What each reader of `clean_orders` produced on Monday morning in two weeks, and whether it
+    changed."""
     a, b = _got(before), _got(after)
-    return Rows({"reader": k, "before": a[k], "after": b[k], "changed": "yes" if a[k] != b[k] else "no"} for k in a)
+    return Rows({"output": k, "changed": "yes" if a[k] != b[k] else "no", "before": a[k], "after": b[k]} for k in a)
 
 
 def made_from(week: Week, return_id: str) -> Rows:

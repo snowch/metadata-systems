@@ -136,7 +136,7 @@ observed one, and designs the event a computation should emit before meeting Ope
 | --- | --- | --- | --- | --- | --- |
 | 14 | Data quality as metadata | quality observations per run (rows, missing customer ids, duplicate orders) and assertions over them | predict which night fails "no order without a customer" | an assertion that passes because the rows it should catch were filtered first | data quality, assertion |
 | 15 | Provenance | a query from a figure on the dashboard back to the rows, the program and the run behind it | predict which orders make up Thursday's revenue | provenance through a sum is a set; a source overwritten since the run, as a return corrected after the function read it | provenance |
-| 16 | Impact analysis | impact queries over dataset and column lineage | rename `orders.customer_id`: predict what breaks, then ask the graph | a reader the graph never heard of: the analysis is only as complete as the lineage; a deleted return, and what was made from it | impact analysis |
+| 16 | Impact analysis | impact queries over dataset and column lineage | rename `customer_id` in `clean_orders`: predict what breaks, then ask the graph | a reader the graph never heard of: the analysis is only as complete as the lineage; a deleted return, and what was made from it | impact analysis |
 | 17 | Root-cause analysis | a backwards search over lineage, runs, observations and changes | start from "the dashboard is wrong" and find where Thursday's fault entered | two plausible causes; a cause outside the recorded system | root cause |
 
 ### Part V: When the simple model breaks
@@ -206,9 +206,9 @@ and its notes say which (`CLAUDE.md`, "Question the requirement").
 | 12 | "The same table must have one identity." | the same name, the same rows, the same environment, or the same version |
 | 13 | "The dashboard must be fresh." | refreshed lately; built from the latest data; showing the latest day. Chapter 2's failed night met the first and neither of the others |
 | 14 | "No order without a customer." | in the raw file, in `clean_orders`, or on the dashboard. An assertion on `clean_orders` passes because the rows were filtered first |
-| 15 | "Show where Thursday's figure came from." | the rows; the program; the run; the rows as they were when the run read them |
+| 15 | "Show where Thursday's total came from." | the rows; the program; the run; the rows as they were when the run read them |
 | 16 | "Tell us what breaks if `customer_id` is renamed." | what fails, or also what keeps running and gives a wrong answer. A second candidate, from the returns: "When a return is deleted, remove everything made from it": its row, the totals that counted it, copies, or also what was already reported |
-| 17 | "Find the cause of the wrong figure." | where the data first went wrong; the change that did it; the decision behind that change |
+| 17 | "Find the cause of the wrong total." | where the data first went wrong; the change that did it; the decision behind that change |
 | 18 | "Lineage must be complete." | complete for the programs that send events, or for every program that touches the data |
 | 19 | "Ingestion must ignore duplicates." | the same event twice; the same run reported twice; the same content at another time |
 | 20 | "Show the latest state of each run." | latest by when it happened, or by when it arrived |
@@ -799,6 +799,37 @@ of how a learner gets a changed chapter.
 6. **The lab has its own SQL subset.** One notation for the programs the learner reads in Chapter
    1, the column lineage of Chapter 9 and the queries of Part VI, as the digital-design course has
    one hardware description subset.
+
+### 12 October 2026: Chapters 14 to 17 written; Part IV complete
+
+The author asked for Part IV with the row of buttons' arrows. The four chapters keep their rows,
+with the changes below, and each questions its row's candidate requirement. Chapter 14's reader
+finds an assertion on `clean_orders` that cannot fail, because the rule removed its rows first, and
+the same assertion failing on the file; Chapter 15's reader follows Thursday's £51.50 back to four
+lines of one version of the file, finds the three orders that made it low only among the rows left
+out, and finds Sunday's total adds up only from a return as it was when the run read it; Chapter 16's
+reader sets two lineages' answers to a rename beside what four readers got, and follows a withdrawn
+return no further than the events go; Chapter 17's reader searches back from two wrong totals, one
+whose cause is outside the records and one with a code change, told apart by a day with the same
+kind of order. Decisions the plan did not make:
+
+- **"Figure" became "total" in two requirements.** The course keeps *figure* for an interactive box
+  (`CLAUDE.md`); a number on the dashboard is a total. Chapters 15 and 17 quote "Show where
+  Thursday's total came from." and "Find the cause of the wrong total."
+- **Chapter 16 renames the column in `clean_orders`, not the file's field.** Renaming the file's
+  field is Chapter 11's `renamed` change over again. A renamed table column leaves the shop's
+  programs as they were, renames the copy's column silently and makes Jo Marsh's query fail, so the
+  lineage by datasets lists too much, by columns the copy, and neither the reader that failed.
+- **Each run of `build_clean_orders` counts, as it runs** (`Execution.quality`), four things in its
+  file and its table. A count of the input needs the input as the run saw it, which only the run has.
+- **A trace reads files by version and tables as they are now.** The warehouse keeps no versions
+  (Chapter 12); `returns` can be rebuilt as it was from the object versions the desk's functions
+  recorded reading, and Chapter 15 does so.
+- **Three changes for Part IV**: `corrected`, `withdrawn` and `customer` (`docs/lab.md`). The returns
+  desk's changes of a day now reach `returns` before that night's work, as their times say, where
+  they had been applied after it; nothing Chapters 7 to 13 state changes.
+- **Chapter 17's second case is Chapter 2's `refunds` change**, so the code change it finds is one the
+  reader has seen made.
 
 ### 12 October 2026: Chapters 10 to 13 written; Part III complete
 

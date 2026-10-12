@@ -582,22 +582,25 @@ class TheProvenance(unittest.TestCase):
         steps = P.trace(shop.run_week(), "2026-09-10")
         self.assertEqual([r["pence"] for r in steps], [5150, 5150, 5150, 5150])
         self.assertEqual(steps[2]["rows"], "7020, 7022, 7024, 7026")
-        left = P.trace(shop.run_week(), "2026-09-10", dropped=True)[-1]
-        self.assertEqual((left["pence"], left["rows"].count("customer_id IS NOT NULL is false")), (15400, 3))
+        left = [r for r in P.trace(shop.run_week(), "2026-09-10", dropped=True) if r["asset"].startswith("left out")]
+        self.assertEqual((sum(r["pence"] for r in left), [r["rows"].endswith("customer_id IS NOT NULL is false") for r in left]), (15400, [True] * 3))
+        # The table is read as it is now, written by the last run; the file in the version that was
+        # current when the run whose output was read started.
+        self.assertEqual(steps[2]["made by"], "run-026, build_clean_orders")
 
     def test_every_plain_day_adds_up(self):
         from shop import provenance as P
 
         w = shop.run_week()
-        self.assertTrue(all(P.figure_adds_up(w, d) for d in shop.DAYS))
+        self.assertTrue(all(P.adds_up(w, d) for d in shop.DAYS))
 
     def test_a_corrected_return_adds_up_only_as_read(self):
         from shop import provenance as P
 
         w = shop.run_week(["corrected"])
         self.assertEqual(P.trace(w, "2026-09-13")[1]["pence"], 6925)
-        self.assertFalse(P.figure_adds_up(w, "2026-09-13"))
-        self.assertTrue(P.figure_adds_up(w, "2026-09-13", as_read=True))
+        self.assertFalse(P.adds_up(w, "2026-09-13"))
+        self.assertTrue(P.adds_up(w, "2026-09-13", as_read=True))
         self.assertEqual([r["quantity"] for r in P.object_versions(w, "r-205")], [2, 1])
 
 
@@ -610,8 +613,8 @@ class TheImpact(unittest.TestCase):
         w0, w1 = shop.run_week(["copy"]), shop.run_week(["copy", "customer"])
         self.assertEqual({r["writes"] for r in I.downstream(w0, "clean_orders")}, {"daily_sales", "sales_dashboard", "s3://shop-scratch/clean_orders_copy.csv"})
         self.assertEqual([r["column"] for r in I.downstream_columns(w0, "clean_orders", "customer_id")], ["s3://shop-scratch/clean_orders_copy.csv.customer_id"])
-        changed = {r["reader"]: r["changed"] for r in I.readers(w0, w1)}
-        self.assertEqual(changed, {"daily_sales": "no", "sales_dashboard": "no", "clean_orders_copy.csv": "yes", "Jo Marsh's query": "yes"})
+        changed = {r["output"]: r["changed"] for r in I.readers(w0, w1)}
+        self.assertEqual(changed, {"daily_sales": "no", "sales_dashboard": "no", "clean_orders_copy.csv": "yes", "Jo Marsh's query result": "yes"})
         self.assertIn("no such column", I.readers(w0, w1)[-1]["after"])
 
     def test_a_withdrawn_return(self):

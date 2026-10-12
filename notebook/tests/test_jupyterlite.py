@@ -17,7 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = {
-    chapter: (ROOT / "notebook" / f"chapter_{chapter:02d}.py").read_text(encoding="utf-8") for chapter in range(1, 14)
+    chapter: (ROOT / "notebook" / f"chapter_{chapter:02d}.py").read_text(encoding="utf-8") for chapter in range(1, 18)
 }
 BUTTONS = ROOT / "notebook" / "buttons"
 LABELS = json.loads((BUTTONS / "buttons.json").read_text(encoding="utf-8"))
@@ -97,7 +97,9 @@ class TheWarnings(unittest.TestCase):
         table[8] = table[9] = table[7]
         table[10] = ("| Opened from the chapter before's link, after it ran | 14 files, 0.32 MB, in a new tab | 15 files, 0.32 MB, in a new tab | 14 files, 0.32 MB, in a new tab | 15 files, 0.32 MB, in a new tab |", "| Peak memory of a renderer process, opened alone | 395 to 403 MB | 395 to 402 MB | 395 to 402 MB | 397 to 403 MB |")
         table[11] = table[12] = table[13] = table[10]
-        for chapter, memory in ((3, "about 420 MB"), (4, "about 410 MB"), (5, "about 400 MB"), (6, "about 420 MB"), (7, "about 420 MB"), (8, "about 400 MB"), (9, "about 410 MB"), (10, "about 400 MB"), (11, "about 400 MB"), (12, "about 400 MB"), (13, "about 400 MB")):
+        table[14] = ("| Opened from the chapter before's link, after it ran | 11 files, 0.32 MB, in a new tab | 12 files, 0.32 MB, in a new tab | 11 files, 0.32 MB, in a new tab | 11 files, 0.32 MB, in a new tab |", "| Peak memory of a renderer process, opened alone | 395 to 402 MB | 394 to 400 MB | 394 to 402 MB | 392 to 397 MB |")
+        table[15] = table[16] = table[17] = table[14]
+        for chapter, memory in ((3, "about 420 MB"), (4, "about 410 MB"), (5, "about 400 MB"), (6, "about 420 MB"), (7, "about 420 MB"), (8, "about 400 MB"), (9, "about 410 MB"), (10, "about 400 MB"), (11, "about 400 MB"), (12, "about 400 MB"), (13, "about 400 MB"), (14, "about 400 MB"), (15, "about 400 MB"), (16, "about 400 MB"), (17, "about 400 MB")):
             link, peak = table[chapter]
             expected[chapter] = [
                 ("downloads about 13 MB", gzip),

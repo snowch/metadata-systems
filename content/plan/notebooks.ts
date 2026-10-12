@@ -1,6 +1,6 @@
 // Copyright © 2026 Christopher Snow
 
-// The written chapters, each a notebook: Chapters 1 to 13. Each is built from notebook/chapter_NN.py
+// The written chapters, each a notebook: Chapters 1 to 17. Each is built from notebook/chapter_NN.py
 // into the site under jupyterlite/ (notebook/jupyterlite/build.sh), and the front page's title of
 // the chapter opens it; notebooks.test.ts checks each notebook's heading against the plan's title.
 
@@ -19,6 +19,10 @@ export const NOTEBOOKS: ReadonlyMap<number, string> = new Map([
   [11, "chapter_11.ipynb"],
   [12, "chapter_12.ipynb"],
   [13, "chapter_13.ipynb"],
+  [14, "chapter_14.ipynb"],
+  [15, "chapter_15.ipynb"],
+  [16, "chapter_16.ipynb"],
+  [17, "chapter_17.ipynb"],
 ]);
 
 /** A notebook's address, under the site's base path. */

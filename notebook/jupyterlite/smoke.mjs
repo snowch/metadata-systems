@@ -10,7 +10,7 @@
 // Chapter 1 a printed file keeps one record per line, scrolling inside its box, and the page never
 // scrolls sideways. In Chapter 2, Run below from a selected cell does the same. In Chapter 3 the
 // reader's record, typed in, passes its check, and in Chapter 4 the merge, typed in, leaves the
-// model's check 3 problems. A browser set to dark gets the dark theme, and one set to light the
+// model's check 3 problems; in Chapters 10 to 17 each chapter's change to a cell gives its result. A browser set to dark gets the dark theme, and one set to light the
 // light. The page
 // logs no error, and the notebooks' earlier names lead to their chapters. The notebook workflow
 // runs it after the build, with Playwright from the course's dependencies.
@@ -85,7 +85,7 @@ try {
       return !!e && e.getBoundingClientRect().height > 0;
     }, selector);
 
-  const chapters = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+  const chapters = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
   for (const chapter of chapters) {
     const stem = `chapter_${String(chapter).padStart(2, "0")}`;
     await page.goto(`http://127.0.0.1:${port}/notebooks/index.html?path=${stem}.ipynb`);
@@ -465,6 +465,50 @@ try {
       check(
         chain.includes("03:00:09"),
         "Chapter 13: by the runs' clock, the refresh finished at 03:00:09",
+      );
+    }
+    if (chapter === 14) {
+      await rewrite(
+        'dataset = "clean_orders"',
+        ['dataset = "clean_orders"'],
+        ['dataset = "orders.jsonl"'],
+      );
+      await run("Run below", "Chapter 14, Run below on the file");
+      const failed = await output('dataset = "orders.jsonl"');
+      check(
+        (failed.match(/\tno$/gm) ?? []).length === 4,
+        "Chapter 14: on the file, the assertion fails on 4 runs",
+      );
+    }
+    if (chapter === 15) {
+      await rewrite("dropped=False", ["dropped=False"], ["dropped=True"]);
+      await run("Run below", "Chapter 15, Run below with the rows left out");
+      const left = await output("dropped=True");
+      check(
+        left.includes("customer_id IS NOT NULL is false"),
+        "Chapter 15: the trace lists the rows left out",
+      );
+      await rewrite("as_read=False", ["as_read=False"], ["as_read=True"]);
+      await run("Run below", "Chapter 15, Run below with returns as it was");
+      const read = await output("as_read=True");
+      check(read.includes("as it was at 02:30:00"), "Chapter 15: returns is rebuilt as it was");
+    }
+    if (chapter === 16) {
+      await rewrite("downstream_columns", ['"customer_id"'], ['"status"']);
+      await run("Run below", "Chapter 16, Run below for status");
+      const down = await output("downstream_columns");
+      check(
+        down.includes("filter in build_daily_sales"),
+        "Chapter 16: status decides the rows of daily_sales",
+      );
+    }
+    if (chapter === 17) {
+      await rewrite('day = "2026-09-12"', ['day = "2026-09-12"'], ['day = "2026-09-08"']);
+      await run("Run below", "Chapter 17, Run below for Tuesday");
+      const tuesday = await output('day = "2026-09-08"');
+      check(
+        tuesday.includes("16225") && !tuesday.includes("21549"),
+        "Chapter 17: Tuesday's figure is the same at every step",
       );
     }
     if (chapter === 4) {

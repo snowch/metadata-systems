@@ -332,6 +332,25 @@ measurement began.
 Each warning states: about 13 MB on its own; less than 1 MB from the chapter before's link; 9 to 12
 seconds to run every cell, as the published Chapters 7 to 9 took up to 11 s; about 400 MB.
 
+## Chapters 14 to 17
+
+Measured 12 October 2026 as Chapters 10 to 13 were, on the built site served locally, before the
+outside review. The row of buttons now carries the arrows, so the link followed is the chapter text's
+own "Next" link, as before. The one console error in each link measurement is the measuring script's
+own request that marks the server's log, which the server answers with 404.
+
+| | Chapter 14 | Chapter 15 | Chapter 16 | Chapter 17 |
+| --- | --- | --- | --- | --- |
+| Opened from the chapter before's link, after it ran | 11 files, 0.32 MB, in a new tab | 12 files, 0.32 MB, in a new tab | 11 files, 0.32 MB, in a new tab | 11 files, 0.32 MB, in a new tab |
+| Run all, from the press until no cell waits (desktop, phone, from the link) | 8.3 to 8.9 s | 8.4 to 9.0 s | 8.2 to 9.5 s | 7.9 to 8.9 s |
+| Peak memory of a renderer process, opened alone | 395 to 402 MB | 394 to 400 MB | 394 to 402 MB | 392 to 397 MB |
+| Peak memory, with the chapter before open in its own tab | 619 MB | 614 MB | 612 MB | 605 MB |
+| Cells with an error output; console errors from the page | none | none | none | none |
+
+Each warning states what Chapters 10 to 13 state: about 13 MB on its own; less than 1 MB from the
+chapter before's link; 9 to 12 seconds to run every cell, as the published Chapters 10 to 13 took
+9.8 to 11.6 s; about 400 MB.
+
 ## Phones
 
 Nothing here measured a real phone, so the page says only what was measured and what one report

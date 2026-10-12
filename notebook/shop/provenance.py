@@ -9,7 +9,8 @@ of `orders.jsonl`, in the version the run of `build_clean_orders` read, that bec
 each step it sums what it found, so a step that does not add up to the step above shows.
 
 It reads each file in the version the run read, since object storage keeps every version. It reads
-each table as it is now, since the warehouse keeps none, unless `as_read` is set: then `returns` is
+each table as it is now, since the warehouse keeps none, and names the run that wrote it as it is now,
+unless `as_read` is set: then `returns` is
 rebuilt as it was when the run started, from the versions of the objects that the returns desk's
 functions recorded reading (`returns_as_of`). With `dropped`, it also lists the lines and rows each
 run read and did not use, and the condition that left each out.
@@ -88,20 +89,27 @@ def trace(week: Week, day: str, dropped: bool = False, as_read: bool = False) ->
             key = (r["order_id"], r["product_id"])
             returned[key] = returned.get(key, 0) + r["quantity"]
     run_c, cleaned = _run(week, "build_clean_orders", night)
+    # The table as it is now was written by the last run of build_clean_orders, not by the run whose
+    # output build_daily_sales read: the warehouse keeps no earlier state.
+    run_now, now = [(r, e) for r, e in executions(week) if e.job == "build_clean_orders" and e.status == "succeeded"][-1]
     total = sum(o["price_pence"] * o["quantity"] for o in used)
-    out.append({"step": 3, "asset": "clean_orders", "made by": f"{run_c}, {cleaned.job}", "rows": ", ".join(str(o["order_id"]) for o in used), "pence": total})
+    out.append({"step": 3, "asset": "clean_orders, as it is now", "made by": f"{run_now}, {now.job}", "rows": ", ".join(str(o["order_id"]) for o in used), "pence": total})
     if returned:
         counted = {(o["order_id"], o["product_id"]) for o in used}
         hits = [r for r in table if (r["order_id"], r["product_id"]) in counted]
-        where = "returns, as it was at " + sales.started[11:19] if as_read else "returns, as it is now"
-        made = ", ".join(sorted({r["run"] for r in hits})) if as_read else "record_return"
+        where = "returns, rebuilt as at " + sales.started if as_read else "returns, as it is now"
+        if as_read:
+            made = ", ".join(sorted({r["run"] for r in hits}))
+        else:
+            writers = {e.object.rsplit("/", 1)[1].removesuffix(".json"): r for r, e in executions(week) if e.job == "record_return"}
+            made = ", ".join(sorted({f"{writers[r['return_id']]}, record_return" for r in hits}))
         less = sum(o["price_pence"] * returned.get((o["order_id"], o["product_id"]), 0) for o in used)
         detail = "; ".join(f"{r['return_id']}: {r['quantity']} of order {r['order_id']}" for r in hits)
         out.append({"step": 3, "asset": where, "made by": made, "rows": detail or "none for these orders", "pence": -less})
     if dropped:
         left = [o for o in orders if o not in used]
-        if left:
-            out.append({"step": 3, "asset": "clean_orders, not counted", "made by": f"{run}, {sales.job}", "rows": ", ".join(f"{o['order_id']}: {keep} is false" for o in left), "pence": sum(o["price_pence"] * o["quantity"] for o in left)})
+        for o in left:
+            out.append({"step": 3, "asset": "not counted by " + run, "made by": f"{run}, {sales.job}", "rows": f"order {o['order_id']}: {keep} is false", "pence": o["price_pence"] * o["quantity"]})
 
     version = _version(week, FILES["orders"], cleaned.started)
     lines = [json.loads(t) for t in week.storage.version_text(FILES["orders"], version["version"]).splitlines()]
@@ -110,7 +118,7 @@ def trace(week: Week, day: str, dropped: bool = False, as_read: bool = False) ->
     first: dict[int, int] = {}
     for n, l in found:
         first.setdefault(l["order_id"], n)
-    asset = f"orders.jsonl, version of {version['at'][5:16].replace('T', ' ')}"
+    asset = f"orders.jsonl, version of {version['at']}"
     out.append(
         {
             "step": 4,
@@ -133,20 +141,20 @@ def trace(week: Week, day: str, dropped: bool = False, as_read: bool = False) ->
             elif l.get("quantity") is not None and l["quantity"] <= 0:
                 why.append((n, l, "quantity > 0 is false"))
             seen.add(l["order_id"])
-        if why:
+        for n, l, reason in why:
             out.append(
                 {
                     "step": 4,
-                    "asset": asset + ", read and left out",
+                    "asset": "left out by " + run_c,
                     "made by": f"{run_c}, {cleaned.job}",
-                    "rows": "; ".join(f"line {n}, order {l['order_id']}: {reason}" for n, l, reason in why),
-                    "pence": sum(l["price_pence"] * l["quantity"] for n, l, reason in why),
+                    "rows": f"line {n}, order {l['order_id']}: {reason}",
+                    "pence": l["price_pence"] * l["quantity"],
                 }
             )
     return Rows(out, null="")
 
 
-def figure_adds_up(week: Week, day: str, as_read: bool = False) -> bool:
+def adds_up(week: Week, day: str, as_read: bool = False) -> bool:
     """Whether the rows `trace` finds add up to the row of `daily_sales`."""
     steps = trace(week, day, as_read=as_read)
     written = steps[1]["pence"]
@@ -164,4 +172,4 @@ def object_versions(week: Week, return_id: str) -> Rows:
     return Rows(out, null="")
 
 
-__all__ = ["figure_adds_up", "object_versions", "returns_as_of", "trace"]
+__all__ = ["adds_up", "object_versions", "returns_as_of", "trace"]

@@ -2,7 +2,7 @@
 
 """Every sentence of the notebooks that states a fact, pinned against the engine, and the prose rules.
 
-Chapters 1 to 13 are a notebook each. Their words are their markdown cells and the labels in their
+Chapters 1 to 17 are a notebook each. Their words are their markdown cells and the labels in their
 code cells. A number in them is a number the engine produced; if the shop changes, this fails
 until the words change with it.
 """
@@ -32,6 +32,10 @@ CHAPTERS = {
     11: ROOT / "notebook" / "chapter_11.py",
     12: ROOT / "notebook" / "chapter_12.py",
     13: ROOT / "notebook" / "chapter_13.py",
+    14: ROOT / "notebook" / "chapter_14.py",
+    15: ROOT / "notebook" / "chapter_15.py",
+    16: ROOT / "notebook" / "chapter_16.py",
+    17: ROOT / "notebook" / "chapter_17.py",
 }
 SOURCE = {chapter: path.read_text(encoding="utf-8") for chapter, path in CHAPTERS.items()}
 
@@ -196,6 +200,10 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("## Before Chapter 12", 11)
         self.says("## Before Chapter 13", 12)
         self.says("## Before Chapter 14", 13)
+        self.says("## Before Chapter 15", 14)
+        self.says("## Before Chapter 16", 15)
+        self.says("## Before Chapter 17", 16)
+        self.says("## Before Chapter 18", 17)
         self.says("Chapter 10 reads the jobs' SQL", 9)
 
     def test_each_chapter_has_its_own_title_in_its_tab(self):
@@ -218,7 +226,11 @@ class TheWordsMatchTheEngine(unittest.TestCase):
             10: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 9](chapter_09.ipynb) · [Next: Chapter 11](chapter_11.ipynb)",
             11: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 10](chapter_10.ipynb) · [Next: Chapter 12](chapter_12.ipynb)",
             12: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 11](chapter_11.ipynb) · [Next: Chapter 13](chapter_13.ipynb)",
-            13: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 12](chapter_12.ipynb)",
+            13: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 12](chapter_12.ipynb) · [Next: Chapter 14](chapter_14.ipynb)",
+            14: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 13](chapter_13.ipynb) · [Next: Chapter 15](chapter_15.ipynb)",
+            15: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 14](chapter_14.ipynb) · [Next: Chapter 16](chapter_16.ipynb)",
+            16: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 15](chapter_15.ipynb) · [Next: Chapter 17](chapter_17.ipynb)",
+            17: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 16](chapter_16.ipynb)",
         }
         for chapter, line in nav.items():
             self.assertTrue(CELLS[chapter][0].startswith(line + "\n"), chapter)
@@ -1068,6 +1080,119 @@ class TheWordsOfChapter12(unittest.TestCase):
         self.says("Pair 6 is one object, but not the same rows or version.")
 
 
+class TheWordsOfPartIV(unittest.TestCase):
+    """Chapters 14 to 17: every number and run the prose states, computed again."""
+
+    @classmethod
+    def setUpClass(cls):
+        from shop import cause, impact, provenance, quality
+
+        cls.Q, cls.P, cls.I, cls.C = quality, provenance, impact, cause
+        cls.week = shop.run_week()
+
+    def says(self, phrase: str, chapter: int) -> None:
+        self.assertIn(flat(phrase), flat(TEXT[chapter]))
+
+    def test_chapter_14_the_counts(self):
+        m = self.Q.measurements(self.week, "orders.jsonl")
+        self.assertEqual((m[0]["rows"], m[-1]["rows"]), (6, 48))
+        self.says("6 rows on Tuesday 8, 48 on Monday 14", 14)
+        self.assertEqual([r["night"] for r in m if r["order_id twice"] == 1][0], "2026-09-10")
+        self.assertEqual([r["night"] for r in m if r["no customer_id"] == 3][0], "2026-09-11")
+        self.assertEqual({r["quantity 0 or less"] for r in m}, {0})
+        self.says("From Thursday 10, `order_id twice` is 1.", 14)
+        self.says("From Friday 11, `no customer_id` is 3.", 14)
+
+    def test_chapter_14_the_assertions(self):
+        table = self.Q.check(self.week, "clean_orders", "no customer_id")
+        self.assertEqual((len(table), {r["passed"] for r in table}), (7, {"yes"}))
+        self.says("It passed on all 7 runs.", 14)
+        self.assertIn("customer_id IS NOT NULL", shop.week.CLEAN_ORDERS)
+        failed = [r["night"] for r in self.Q.check(self.week, "orders.jsonl", "no customer_id") if r["passed"] == "no"]
+        self.assertEqual(failed, ["2026-09-11", "2026-09-12", "2026-09-13", "2026-09-14"])
+        self.says("On `orders.jsonl`, 4 runs fail: Friday 11, Saturday 12, Sunday 13 and Monday 14, each with a count of 3.", 14)
+        r = {x["night"]: x for x in self.Q.reconcile(self.week)}
+        self.assertEqual((r["2026-09-10"]["rows read"], r["2026-09-10"]["rows written"], r["2026-09-10"]["left out"]), (20, 19, 0))
+        self.assertEqual(tuple(r["2026-09-11"][k] for k in ("rows read", "rows written", "repeats", "left out")), (27, 23, 1, 3))
+        self.says("On Friday 11: 27 read, 23 written, 1 repeat, 3 left out.", 14)
+        self.assertEqual([x["met"] for x in self.Q.readings(self.week)], ["no", "yes", "no"])
+        self.assertEqual(list(self.Q.left_out(self.week)), [{"day": "2026-09-10", "orders": 3, "pence": 15400}])
+        self.says("Thursday's total leaves out 3 completed orders, worth 15400 pence", 14)
+        f = self.Q.facets(self.week, "run-014")
+        self.assertEqual((f["facets"]["dataQualityMetrics"]["rowCount"], f["facets"]["dataQualityMetrics"]["columnMetrics"]["order_id"]["distinctCount"]), (27, 26))
+        self.says("`rowCount` is 27.", 14)
+        self.says("For `order_id`, `distinctCount` is 26.", 14)
+
+    def test_chapter_15_thursday(self):
+        steps = self.P.trace(self.week, "2026-09-10")
+        self.assertEqual([r["made by"] for r in steps[:3]], ["run-028, refresh_dashboard", "run-015, build_daily_sales", "run-026, build_clean_orders"])
+        self.assertEqual((steps[2]["rows"], steps[3]["rows"], {r["pence"] for r in steps}), ("7020, 7022, 7024, 7026", "lines 21, 23, 25, 27", {5150}))
+        self.says("Lines 21, 23, 25 and 27 of `orders.jsonl`, in the version the export wrote at 01:00 on Friday 11", 15)
+        self.says("Each step adds up to 5150 pence.", 15)
+        left = [r for r in self.P.trace(self.week, "2026-09-10", dropped=True) if r["asset"].startswith("left out")]
+        self.assertEqual([r["rows"][:19] for r in left], ["line 22, order 7021", "line 24, order 7023", "line 26, order 7025"])
+        self.assertEqual(sum(r["pence"] for r in left), 15400)
+        self.says("The last row lists lines 22, 24 and 26 of the same version of `orders.jsonl`", 15)
+
+    def test_chapter_15_sunday(self):
+        week = shop.run_week(["corrected"])
+        steps = self.P.trace(week, "2026-09-13")
+        self.assertEqual([r["pence"] for r in steps], [6925, 6925, 9775, -1425, 9775])
+        self.assertEqual(steps[1]["made by"], "run-034, build_daily_sales")
+        self.says("8350 is not 6925.", 15)
+        read = self.P.trace(week, "2026-09-13", as_read=True)
+        self.assertEqual((read[3]["made by"], read[3]["pence"]), ("run-031", -2850))
+        self.says("9775 less 2850 is 6925", 15)
+        self.assertEqual([(v["at"], v["quantity"]) for v in self.P.object_versions(week, "r-205")], [("2026-09-13T18:10:00Z", 2), ("2026-09-14T08:40:00Z", 1)])
+        from shop.runs import executions
+
+        [run] = [e for r, e in executions(week) if r == "run-034"]
+        self.assertEqual(run.started, "2026-09-14T02:30:00Z")
+
+    def test_chapter_16_the_rename(self):
+        w0 = shop.run_week(["copy"])
+        down = self.I.downstream(w0, "clean_orders")
+        self.assertEqual([(r["step"], r["program"]) for r in down], [(1, "copy_clean_orders"), (1, "build_daily_sales"), (2, "refresh_dashboard")])
+        cols = self.I.downstream_columns(w0, "clean_orders", "customer_id")
+        self.assertEqual(len(cols), 1)
+        status = {r["column"] for r in self.I.downstream_columns(w0, "clean_orders", "status")}
+        self.assertTrue({"daily_sales.day", "daily_sales.revenue_pence", "sales_dashboard.day", "sales_dashboard.revenue_pence"} <= status)
+        got = {r["output"]: r for r in self.I.readers(w0, shop.run_week(["copy", "customer"]))}
+        self.assertEqual(got["daily_sales"]["after"], "7 rows, 100798 pence")
+        self.assertEqual(got["Jo Marsh's query result"]["before"], "7 rows, 41 orders")
+        self.says("7 rows, 100798 pence", 16)
+        self.says("before, 7 rows, one for each country, 41 orders; after, the error `no such column: o.customer_id`.", 16)
+        self.assertEqual(len(w0.warehouse.sql("SELECT DISTINCT country FROM clean_customers")), 7)
+
+    def test_chapter_16_the_withdrawn_return(self):
+        week = shop.run_week(["withdrawn"])
+        made = self.I.made_from(week, "r-206")
+        self.assertEqual([r["by"] for r in made[:2]], ["run-031, record_return", "run-034, build_daily_sales"])
+        [row] = week.warehouse.sql("SELECT revenue_pence FROM daily_sales WHERE day = '2026-09-13'")
+        self.assertEqual(row["revenue_pence"], 8575)
+        self.says("It holds 8575 pence, and Sunday's five orders add up to 9775 pence.", 16)
+        self.assertEqual({v["day"]: v["revenue"] for v in week.reporting.dashboard()["values"]}["2026-09-13"], "£85.75")
+        self.says("The dashboard still shows £85.75 for Sunday 13.", 16)
+
+    def test_chapter_17_the_searches(self):
+        thu = self.C.search(self.week, "2026-09-10")
+        self.assertEqual([r["pence"] for r in thu[:4]], [5150, 5150, 5150, 20550])
+        self.assertEqual(thu[2]["made by"], "run-014, build_clean_orders")
+        self.says("holds 20550 pence", 17)
+        week = shop.run_week(["refunds"])
+        sat = self.C.search(week, "2026-09-12")
+        self.assertEqual(([r["pence"] for r in sat[:3]], sat[1]["made by"]), ([21549, 21549, 19149], "run-023, build_daily_sales"))
+        self.says("21549 pence, where `clean_orders` holds 19149 for Saturday", 17)
+        [o] = week.warehouse.sql("SELECT quantity, price_pence, status FROM clean_orders WHERE order_id = 7037")
+        self.assertEqual((o["quantity"], o["quantity"] * o["price_pence"], o["status"]), (2, 2400, "cancelled"))
+        self.says("Saturday's cancelled order 7037, 2 sets of brake pads, 2400 pence", 17)
+        tue = self.C.search(week, "2026-09-08")
+        self.assertEqual({r["pence"] for r in tue[:4]}, {16225})
+        self.says("Every step holds 16225 pence", 17)
+        [c] = week.warehouse.sql("SELECT status FROM clean_orders WHERE order_id = 7009")
+        self.assertEqual(c["status"], "cancelled")
+
+
 class TheWordsOfChapter13(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -1221,6 +1346,11 @@ class TheWordsKeepTheRules(unittest.TestCase):
             (12, "In pair 1, both names refer", ("qualified name",)),
             (13, "## What each run recorded", ("observation",)),
             (13, "## How recent each asset is", ("freshness",)),
+            (14, "The file grows each night", ("data quality",)),
+            (14, "## A rule tested on every run", ("assertion",)),
+            (15, "Thursday's total goes back through four steps", ("provenance",)),
+            (16, "Step 1:", ("impact analysis",)),
+            (17, "## Two causes", ("root cause",)),
         ):
             # The chapter's title is the plan's, and may name its term ("Metadata as a graph").
             cells = [re.sub(r"^# Chapter \d+: .*$", "", re.sub(r"\]\([^)]*\)", "]", c), flags=re.M) for c in CELLS[number]]

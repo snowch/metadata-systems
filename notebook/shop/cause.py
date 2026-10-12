@@ -66,11 +66,11 @@ def search(week: Week, day: str) -> Rows:
         if o["ordered_at"][:10] == day and o.get("status") == "completed" and o["order_id"] not in seen:
             seen.add(o["order_id"])
             pence += o["price_pence"] * (o.get("quantity") or 0)
-    out.append({"step": 4, "asset": f"orders.jsonl, version of {versions[-1]['at'][5:16].replace('T', ' ')}", "made by": "the export", "pence": pence, "code changed": ""})
+    out.append({"step": 4, "asset": f"orders.jsonl, version of {versions[-1]['at']}", "made by": "the export", "pence": pence, "code changed": ""})
 
     for k, r in enumerate(out):
         r["differs from its input"] = "" if k == len(out) - 1 else ("yes" if r["pence"] != out[k + 1]["pence"] else "no")
-    out.append({"step": 5, "asset": "the checkout", "made by": "", "pence": None, "code changed": "", "differs from its input": ""})
+    out.append({"step": None, "asset": "the checkout: no record", "made by": "", "pence": None, "code changed": "", "differs from its input": ""})
     return Rows(
         ({"step": r["step"], "asset": r["asset"], "made by": r["made by"], "pence": r["pence"], "differs from its input": r["differs from its input"], "code changed since the night before": r["code changed"]} for r in out),
         null="",
