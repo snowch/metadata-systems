@@ -28,20 +28,6 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.callout(mo.md("The page runs Python in your browser, and the first time you open it on its own, your browser downloads about 13 MB. Measured on a computer, the page downloaded less than 1 MB when opened from Chapter 1's link, in a browser that had opened Chapter 1. Chapter 1's link opens this page in a new tab. Chapter 1 stays open in its own tab and keeps its own memory. On a phone, closing Chapter 1 leaves more memory for this page. On a computer, running every cell took 10 to 12 seconds, and the page used about 420 MB of memory. If a phone runs short of memory, the browser may reload the page, and a reload loses anything you have not saved."), kind="warn")
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.callout(mo.md(r"""
-    Nothing on the page runs until you run it. Run every cell first: press **Run all**, at the top of the page.
-    """), kind="info")
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
     mo.md(r"""
     ## Monday morning
 
@@ -75,6 +61,30 @@ def _(mo):
     mo.md(r"""
     Thursday shows £51.50, against £153.75 on Wednesday and £204.24 on Friday.
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    The page runs Python in your browser, and the first time you open it on its own your browser downloads about 13 MB.
+
+    <details><summary>Time and memory</summary>
+
+    The page downloaded less than 1 MB when opened from Chapter 1's link, in a browser that had opened Chapter 1 (measured on a computer). Chapter 1's link opens this page in a new tab. Chapter 1 stays open in its own tab and keeps its own memory. On a phone, closing Chapter 1 leaves more memory for this page.
+
+    Running every cell took 10 to 12 seconds, and the page used about 420 MB of memory. If a phone runs short of memory, the browser may reload the page, and a reload loses anything you have not saved.
+
+    </details>
+    """), kind="warn")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Nothing on the page runs until you run it. Run every cell first: press **Run all**, at the top of the page.
+    """), kind="info")
     return
 
 
@@ -192,9 +202,7 @@ def _(mo):
     mo.md(r"""
     ## What the platform holds
 
-    Take `daily_sales`. The warehouse records two columns, `day` and `revenue_pence`, with their types; 7 rows and a size in bytes; a created time, 1 September, and a last-altered time, 02:30 on Monday 14 September; and an owner, `etl_service`. It records nothing else about the table.
-
-    The cell below reads the warehouse's record of `daily_sales`. The warehouse keeps a record of its own tables, which you query with SQL as `information_schema`. `information_schema.tables` has one row per table, and `information_schema.columns` has one row per column, with the column's type.
+    What does the warehouse record about `daily_sales`? The two cells below read `information_schema` with SQL, the warehouse's own record of its tables: `information_schema.tables` has one row per table, and `information_schema.columns` has one row per column, with the column's type.
     """)
     return
 
@@ -208,6 +216,14 @@ def _(warehouse):
 @app.cell
 def _(warehouse):
     warehouse.sql("SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'daily_sales'")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The cells showed the two columns of `daily_sales`, `day` and `revenue_pence`, with their types. They also showed 7 rows, a size in bytes, a created time of 1 September, and a last-altered time of 02:30 on Monday 14 September. The warehouse lists `etl_service` as the owner. It records nothing else about the table.
+    """)
     return
 
 
@@ -276,7 +292,7 @@ def _(mo):
 
     When the platform records no history, the usual move is to infer it from the data. For `daily_sales`, that means finding a query over another asset that gives the same rows. One does: read `clean_orders`, keep the completed orders, add up price times quantity per day. It reproduces `daily_sales` exactly, all seven rows. It also explains Thursday.
 
-    Take out the guess you wrote for `daily_sales` at the end of Chapter 1. Compare it with the query in the cell below, which the data supports.
+    Compare the guess you wrote for `daily_sales` in Chapter 1's last cell with the query in the cell below, which the data supports.
 
     The cell below runs a query over `clean_orders` that adds up price times quantity, in pence, for each day, counting only completed orders. It compares the query's rows with the rows of `daily_sales`; `True` means every row is the same.
     """)
@@ -432,8 +448,10 @@ def _(mo):
     The questions at the start need three kinds of record, none of which the platform keeps:
 
     - what an asset is: what `daily_sales` means, what it is for, and who is responsible for it;
-    - what happened: each night's write of `daily_sales`, when it ran, what it read, and whether it succeeded;
+    - what happened: each night's write of `daily_sales`, when it ran, which version of the job's code ran, what it read, and whether it succeeded;
     - what was made from what: such a record would say that `daily_sales` is built from the completed orders in `clean_orders`, and that the dashboard reads `daily_sales`.
+
+    A record of what the job read would have answered the analyst's copy. A record of which version of the job's code ran each night would have answered the edit. A record of whether each night's write succeeded would have answered the failed night.
 
     Information of this kind, about an asset or about the platform, is called metadata: what an asset is, where it came from, who is responsible for it, what its numbers mean, how it is made, and how it relates to other assets. Some of it the systems already keep for their own purposes: the names, types, counts and times you read above. The systems do not keep what an asset means, what happened to it or what it was made from; somebody has to record those, and the second and third have to be recorded when the thing happens. A note of what a job read, written the next morning from the data, is a reconstruction, with the limits shown above.
 
@@ -485,7 +503,7 @@ def _(mo):
 
     The platform's state answers what exists. It does not answer what happened or why. Inferring the history from the data gave an explanation that fitted, and three ordinary changes made it ambiguous, made it wrong, or left a failed night looking like a normal one. The records that would have answered had to be made when the work was done.
 
-    Chapter 3 starts making them: a description of each asset, kept beside the data, with what the asset means and who is responsible for it. It then asks the four questions at the start again, to see which of them that record answers.
+    Chapter 3 starts making them: a description of each asset, kept beside the data, with what the asset means and who is responsible for it. It then asks the four questions at the start again, to see which of them that record answers. Chapter 6 records what was made from what, which is called lineage. Chapter 7 records each run of a job: when it started and ended, which version of its code ran, what it read and wrote, and whether it succeeded.
 
     Nothing in this chapter tested your guess for `clean_customers`. What would test it?
 

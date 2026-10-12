@@ -86,9 +86,14 @@ class TheWarnings(unittest.TestCase):
             ],
         }
         for part, pairs in expected.items():
-            [warning] = re.findall(r'mo\.callout\(mo\.md\("([^"]+)"\)', SOURCE[part])
+            [warning] = re.findall(r'mo\.callout\(mo\.md\(r"""(.*?)"""\), kind="warn"\)', SOURCE[part], re.S)
+            warning = flat(warning)
+            # One line stays visible; the measurements fold into a section the reader opens.
+            self.assertIn("<details><summary>", warning, part)
+            self.assertLess(warning.index("downloads about 13 MB"), warning.index("<details>"), part)
             for said, measured in pairs:
-                self.assertIn(said, warning, part)
+                # A phrase may open its sentence, so its first letter's case is not compared.
+                self.assertIn(said.lower(), warning.lower(), part)
                 self.assertIn(flat(measured), note, part)
             self.assertIn("a reload loses anything you have not saved", warning)
 

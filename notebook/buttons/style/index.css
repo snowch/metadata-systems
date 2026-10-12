@@ -275,3 +275,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* The line a reader taps to open a box's details (the warning's time and memory): a pointer, and
+   enough height to tap on a phone. */
+.jp-RenderedMarkdown .ms-box summary {
+  padding: 8px 0;
+  cursor: pointer;
+}

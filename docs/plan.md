@@ -258,6 +258,33 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 12 October 2026: two outside reviews of Chapters 1 and 2
+
+Two reviewers read both chapters; the author accepted their findings, and Haiku drafted the
+changed text from brief BG (`docs/notes/chapter-01/briefs/BG-two-reviews.md`).
+
+- **The warning comes after the opening.** Each chapter opens with the situation, the platform and
+  the week; the warning follows, with one line always shown (about 13 MB, the first time) and its
+  time and memory folded into a `details` section the reader opens.
+- **Chapter 1 is pitched at a data engineer.** It no longer explains how a CSV file names its
+  columns or what JSON's types are; it keeps the two facts the chapters use (`products.csv` stores
+  every value as text, a JSON Lines date is a string). Its objectives are framed around what you
+  must establish before you can look into the reported discrepancy, and a line before the tour
+  says what to note in each file.
+- **The guesses have a place.** Chapter 1 ends with a code cell holding the learner's three guesses
+  in a string, kept by Save as the handover note is; a widget's text is not.
+- **The record before its description.** Chapter 2's "What the platform holds" shows the two cells
+  that read `information_schema` first and states what they showed after.
+- **Each change mapped to its record.** Chapter 2 says which record would have answered each of its
+  three changes: what the job read (the analyst's copy), which version of the job's code ran (the
+  edit), whether each night's write succeeded (the failed night).
+- **The course's arc is named once.** The reviewers found a reader could not see where the course
+  goes. Chapter 2's closing paragraph names Chapter 6's record of what was made from what, "which is
+  called lineage", and Chapter 7's record of "each run of a job". Both are rationed terms of later
+  chapters; the term gate exempts that one paragraph, and a test holds each word to one use there.
+  Chapter 2 keeps both figures the second reviewer thought repeated Chapter 1's: the platform and
+  the dashboard are what its questions are asked of.
+
 ### 11 October 2026: figures drawn into the page, not by code cells
 
 Each figure was a hidden code cell, so it showed only after Run all, behind a stub such as

@@ -18,29 +18,10 @@ def _(mo):
 
     **Objectives**
 
-    - Name the shop's three systems, and what each one holds: files, tables or a dashboard.
-    - Read the shop's products, customers and orders as their files store them.
-    - Read the rows of the warehouse's three tables, and the values the dashboard shows.
-    - Say what happens on the platform each night, and what you cannot see of it: the export, the jobs, when they are due to run, and any notes.
+    - Identify what the platform holds: three systems, which hold files, tables and a dashboard.
+    - Describe what happens on the platform each night, and what you cannot see of it: the export, the jobs, when they are due to run, and any notes.
+    - Write a guess, for each warehouse table, at what it is made from.
     """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.callout(mo.md("The page runs Python in your browser. The first time you open it, your browser downloads about 13 MB. On a computer, running every cell took 10 to 12 seconds, and the page used about 400 MB of memory. If a phone runs short of memory, the browser may reload the page, and a reload loses anything you have not saved."), kind="warn")
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.callout(mo.md(r"""
-    **Running and saving the page**
-
-    1. Nothing on the page runs until you run it. Run every cell first: press **Run all**, at the top of the page.
-    2. A cell does not run again when a cell it uses changes. After you change a cell, select it and press **Run below**: it runs that cell and every cell below it.
-    3. To keep your changes, press **Save**, or press Ctrl+S (Cmd+S on a Mac). After a reload, the page shows your saved copy, which stays in this browser and is shown instead of the chapter, even after the chapter is updated.
-    """), kind="info")
     return
 
 
@@ -94,10 +75,44 @@ def _(figures, mo, week):
 
 @app.cell(hide_code=True)
 def _(mo):
+    mo.callout(mo.md(r"""
+    The page runs Python in your browser, and the first time you open it your browser downloads about 13 MB.
+
+    <details><summary>Time and memory</summary>
+
+    On a computer, running every cell took 10 to 12 seconds, and the page used about 400 MB of memory. If a phone runs short of memory, the browser may reload the page, and a reload loses anything you have not saved.
+
+    </details>
+    """), kind="warn")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    **Running and saving the page**
+
+    1. Nothing on the page runs until you run it. Run every cell first: press **Run all**, at the top of the page.
+    2. A cell does not run again when a cell it uses changes. After you change a cell, select it and press **Run below**: it runs that cell and every cell below it.
+    3. To keep your changes, press **Save**, or press Ctrl+S (Cmd+S on a Mac). After a reload, the page shows your saved copy, which stays in this browser and is shown instead of the chapter, even after the chapter is updated.
+    """), kind="info")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    As you read each file, note which fields could tie it to a table in the warehouse. Note also anything in the rows that a job might have to deal with.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
     mo.md(r"""
     ## The product catalogue
 
-    `products.csv`, in object storage, holds the shop's product catalogue: 8 products in 6 categories. Each product has an id (`product_id`), a name, a category, a list price in pence (`list_price_pence`) and the member of staff who last edited it (`updated_by`). `products.csv` names its columns once, in its first line, and has no types: every value is text.
+    `products.csv`, in object storage, holds the shop's product catalogue: 8 products in 6 categories. Each product has an id (`product_id`), a name, a category, a list price in pence (`list_price_pence`) and the member of staff who last edited it (`updated_by`). `products.csv` stores every value as text, and it has no types.
 
     The cell below prints `products.csv` exactly as it is stored.
     """)
@@ -115,7 +130,7 @@ def _(mo):
     mo.md(r"""
     ## The customers
 
-    `customers.jsonl` holds the shop's 10 customers, in 7 countries. A customer's record has five fields: an id (`customer_id`), a name, an email address (`email`), a country as a two-letter code, and the date the customer signed up (`signed_up`). `orders.jsonl` and `customers.jsonl` are JSON Lines, with one record per line, and every record names its fields. A JSON value has one of a few types, such as a string, a number, true or false, or null, and a date or an amount is just a string or a number.
+    `customers.jsonl` holds the shop's 10 customers, in 7 countries. A customer's record has five fields: `customer_id`, a name, `email`, a country as a two-letter code, and `signed_up`. Each record names its fields. A date such as `signed_up` is just a string: the file has no date type.
 
     The cell below prints `customers.jsonl` exactly as it is stored.
     """)
@@ -214,8 +229,18 @@ def _(mo):
     mo.md(r"""
     ## Your guesses about the warehouse tables
 
-    For each of the three tables, write down which file or table you think it is made from, and what on this page makes you think so. Keep what you wrote. Chapter 2 asks what evidence like this can establish.
+    For each of the three tables, write in the cell below which file or table you think it is made from, and what on this page makes you think so. Write one line per table, then press **Save** to keep it. Chapter 2 asks what evidence like this can establish.
     """)
+    return
+
+
+@app.cell
+def _():
+    guesses = """
+clean_customers: made from ........ because ........
+clean_orders:    made from ........ because ........
+daily_sales:     made from ........ because ........
+"""
     return
 
 

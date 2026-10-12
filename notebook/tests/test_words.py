@@ -215,18 +215,22 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertEqual(cols, ["day", "revenue_pence"])
         self.assertEqual((t["row_count"], t["created"][:10], t["last_altered"][:16], t["table_owner"]), (7, "2026-09-01", "2026-09-14T02:30", "etl_service"))
         self.says(
-            "two columns, `day` and `revenue_pence`, with their types; 7 rows and a size in bytes; "
-            "a created time, 1 September, and a last-altered time, 02:30 on Monday 14 September; "
-            "and an owner, `etl_service`"
+            "The cells showed the two columns of `daily_sales`, `day` and `revenue_pence`, with their types. "
+            "They also showed 7 rows, a size in bytes, a created time of 1 September, and a last-altered time "
+            "of 02:30 on Monday 14 September. The warehouse lists `etl_service` as the owner."
         )
+        # The record is shown before it is described: the cells come first.
+        holds = SOURCE[2][SOURCE[2].index("## What the platform holds"):]
+        self.assertLess(holds.index("information_schema.columns WHERE table_name"), holds.index("The cells showed"))
         self.says("two column names, a row count, a size, two times and an account")
 
     def test_the_file_formats(self):
         self.assertTrue(shop.FILES["orders"].endswith("orders.jsonl") and shop.FILES["customers"].endswith("customers.jsonl"))
-        self.says("`orders.jsonl` and `customers.jsonl` are JSON Lines", 1)
+        self.says("Each record names its fields. A date such as `signed_up` is just a string: the file has no date type.", 1)
+        self.assertIsInstance(self.week.storage.records(shop.FILES["customers"])[0]["signed_up"], str)
         first = self.week.storage.read_text(shop.FILES["products"]).splitlines()[0]
         self.assertEqual(first, "product_id,name,category,list_price_pence,updated_by")
-        self.says("`products.csv` names its columns once, in its first line", 1)
+        self.says("`products.csv` stores every value as text, and it has no types.", 1)
         keys = [r["key"] for r in self.week.storage.ls("s3://shop-raw/")]
         self.assertIn("s3://shop-raw/orders.jsonl", keys)
         self.assertEqual(set(self.week.storage.ls("s3://shop-raw/")[0]), {"key", "size_bytes", "last_modified"})
@@ -391,13 +395,19 @@ class TheWordsKeepTheRules(unittest.TestCase):
         }
         self.assertGreater(len(terms), 40)
         self.assertEqual((terms["asset"], terms["metadata"], terms["run"]), (1, 2, 7))
+        # A second exemption, at the author's decision of 12 October 2026: Chapter 2's closing
+        # paragraph names what later chapters build, "lineage" (Chapter 6) and a "run" of a job
+        # (Chapter 7), once each, so a reader sees where the course goes. Nowhere else.
+        closing = re.compile(r"Chapter 3 starts making them:[^\n]*")
+        [preview] = closing.findall(TEXT[2])
+        self.assertEqual((len(re.findall(r"\blineage\b", preview)), len(re.findall(r"\beach run of a job\b", preview))), (1, 1))
         found = [
             (chapter, term, t[:60])
             for chapter in CHAPTERS
             for term, home in terms.items()
             if home > chapter and term != "run"
             for t in self.learner_text(chapter)
-            if re.search(rf"\b{re.escape(term)}", re.sub(r"\]\([^)]*\)", "]", t), re.I)
+            if re.search(rf"\b{re.escape(term)}", closing.sub("", re.sub(r"\]\([^)]*\)", "]", t)), re.I)
         ]
         self.assertEqual(found, [])
 
