@@ -1,17 +1,18 @@
 # Copyright © 2026 Christopher Snow
 
-"""A backwards search from a wrong figure to where it went wrong (Chapter 17).
+"""A backwards search from a wrong total to where it went wrong (Chapter 17).
 
 `search` starts at one day's value on the dashboard and steps back along the lineage that feeds it:
-the row of `daily_sales`, the rows of `clean_orders`, and the version of `orders.jsonl` the run of
-`build_clean_orders` read. At each step it measures the day's revenue the way the dashboard's own
-program defines it (price times quantity, over the day's completed orders, each order once), and
-records whether the measure differs from the step after it, and whether the code of the program that
-made the step had changed since its run the night before. The search stops at the export, whose
-inputs no record names.
+the row of `daily_sales`, the rows of `clean_orders`, and the version of `orders.jsonl` that was
+current when the run of `build_clean_orders` started. Steps 1 and 2 are the values the dashboard and
+`daily_sales` hold. Steps 3 and 4 add up the day's revenue from the rows and from the file, one way:
+price times quantity over the day's completed orders, each order once, which is revenue as
+`build_daily_sales` counted it before the `refunds` change. Each step records whether its total
+differs from its input's, and whether the code of the program that made it had changed since its run
+the night before. The search stops at the export, whose inputs no record names.
 
-It reads each file in the version the run read and each table as it is now (Chapter 15). Every rule
-here is the shop's own choice.
+`made by` at step 3 is the run whose output `build_daily_sales` read; the table is read as it is now
+(Chapter 15). Every rule here is the shop's own choice.
 """
 
 from __future__ import annotations
@@ -56,7 +57,7 @@ def search(week: Week, day: str) -> Rows:
     [total] = w.sql(
         "SELECT SUM(price_pence * quantity) AS p FROM clean_orders WHERE status = 'completed' AND date(ordered_at) = :d", d=day
     )
-    out.append({"step": 3, "asset": "clean_orders", "made by": f"{run}, {cleaned.job}", "pence": total["p"], "code changed": _changed(week, cleaned.job, night)})
+    out.append({"step": 3, "asset": "clean_orders, as it is now", "made by": f"{run}, {cleaned.job}", "pence": total["p"], "code changed": _changed(week, cleaned.job, night)})
 
     versions = [v for v in week.storage.versions(FILES["orders"]) if v["key"] == FILES["orders"] and v["at"] <= cleaned.started]
     text = week.storage.version_text(FILES["orders"], versions[-1]["version"])
