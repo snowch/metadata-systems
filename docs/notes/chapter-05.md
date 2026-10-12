@@ -152,7 +152,9 @@ has two types) and 15 (the platform figure is the course's convention).
 12 October 2026, local build (`docs/notes/notebook-prototype.md`, "Chapters 5 and 6"): Run all 8.3
 to 8.7 s; peak memory 397 to 403 MB; 0.32 MB from Chapter 4's link.
 
+12 October 2026, the published page after the review (desktop, opened alone, measured twice): Run all
+10.4 and 10.6 s; peak memory 403 and 404 MB.
+
 ## Known gaps
 
-- The published page's run time is to be measured after the deploy, as Chapters 3 and 4's were.
 - The reader's expectations are free text, kept by **Save**.

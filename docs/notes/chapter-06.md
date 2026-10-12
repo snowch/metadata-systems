@@ -144,8 +144,8 @@ The head sets the requirement after the stale lines.
 ## Originality
 
 The obvious examples are a lineage tool's demo graph over a sample warehouse, or dbt's generated
-dependency diagram of a staging-and-marts project. Here the reader writes the lineage lines
-themselves from four short jobs of an invented shop, sees the shop's map gain arrows only then, and
+dependency diagram of a staging-and-marts project. Here the reader reads four short jobs of an invented
+shop and the lineage lines written from them, sees the shop's map gain arrows only then, and
 meets lineage's two failures in the shop's own terms: a manager's belief written as a line, and a
 line left behind by a code change that the data cannot reveal. The jobs, their code and the
 repository are invented for the course; the code's `read`, `write` and `refresh` are the course's
@@ -191,7 +191,10 @@ code above does not show.
 12 October 2026, local build: Run all 8.0 to 9.3 s; peak memory 398 to 418 MB; 0.32 MB from Chapter
 5's link.
 
+12 October 2026, the published page after the review (desktop, opened alone, measured twice; a third
+attempt whose Run all did not start, 0.6 s, is left out): Run all 10.0 and 11.2 s; peak memory 415
+and 419 MB.
+
 ## Known gaps
 
-- The published page's run time is to be measured after the deploy.
 - `reads_and_writes` is a small rule over the shop's own notation; Chapter 10 parses SQL properly.
