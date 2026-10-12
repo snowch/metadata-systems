@@ -145,6 +145,10 @@ agent tried one message, which was refused.
 
 See `docs/notes/notebook-prototype.md`, "Chapters 10 to 13".
 
+12 October 2026, the published page after the review (opened alone, desktop and phone): Run all 10.4 s on a desktop, 10.6 and 10.6 s as a phone; peak memory 411 MB, and 402 and
+404 MB. Two earlier phone attempts whose Run all did not start, 0.6 s, are left out and measured
+again.
+
 ## Known gaps
 
 - The shop's events carry the times, the status and the row counts, not a size or the error;

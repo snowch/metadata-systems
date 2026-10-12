@@ -156,6 +156,9 @@ was right.
 
 See `docs/notes/notebook-prototype.md`, "Chapters 10 to 13".
 
+12 October 2026, the published page after the review (opened alone, desktop and phone): Run all 10.2 s on a desktop, 10.6 and 10.8 s as a phone; peak memory 402 MB, and 398 and
+398 MB.
+
 ## Known gaps
 
 - Chapter 22 takes names across systems (a transformation tool's model names, the dashboard's

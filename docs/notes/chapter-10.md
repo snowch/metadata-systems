@@ -184,6 +184,10 @@ was right, and "the shop's requirement reads" became the head of the shop's.
 
 See `docs/notes/notebook-prototype.md`, "Chapters 10 to 13".
 
+12 October 2026, the published page after the review (opened alone, desktop and phone): Run all 10.8 and 11.4 s on a desktop, 9.8 s as a phone; peak memory 412 and 415 MB, and
+408 MB. One desktop run logged a 503 from the host for one file while the page loaded, and ran
+with no error output; it is kept.
+
 ## Known gaps
 
 - The parser reads one source per SELECT: no joins, no subqueries in FROM, no CASE. Part VI's query

@@ -142,6 +142,8 @@ paragraphs; every fact was right. The drafting agent tried one message, which wa
 
 See `docs/notes/notebook-prototype.md`, "Chapters 10 to 13".
 
+12 October 2026, the published page after the review (opened alone, desktop and phone): Run all 11.6 s on a desktop, 11.4 s as a phone; peak memory 405 MB and 399 MB.
+
 ## Known gaps
 
 - Versions are compared by name; the shop keeps no column ids.
