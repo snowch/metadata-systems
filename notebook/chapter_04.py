@@ -129,7 +129,12 @@ def _(mo):
 
 @app.cell
 def _(together):
-    together.sql("SELECT asset, value AS responsible FROM records WHERE field = 'responsible' ORDER BY asset")
+    together.sql("""
+        SELECT asset, value AS responsible
+        FROM records
+        WHERE field = 'responsible'
+        ORDER BY asset
+    """)
     return
 
 
@@ -157,7 +162,11 @@ How I decided:
 
 @app.cell
 def _(together):
-    together.sql("SELECT COUNT(DISTINCT value) AS owners FROM records WHERE field = 'responsible'")
+    together.sql("""
+        SELECT COUNT(DISTINCT value) AS owners
+        FROM records
+        WHERE field = 'responsible'
+    """)
     return
 
 
@@ -307,7 +316,11 @@ def _(mo):
 
 @app.cell
 def _(records):
-    records.sql("SELECT COUNT(DISTINCT value) AS owners FROM records WHERE attribute = 'responsible'")
+    records.sql("""
+        SELECT COUNT(DISTINCT value) AS owners
+        FROM records
+        WHERE attribute = 'responsible'
+    """)
     return
 
 

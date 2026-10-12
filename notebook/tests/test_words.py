@@ -269,7 +269,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         )
         # The record is shown before it is described: the cells come first.
         holds = SOURCE[2][SOURCE[2].index("## What the platform holds"):]
-        self.assertLess(holds.index("information_schema.columns WHERE table_name"), holds.index("The cells showed"))
+        self.assertLess(holds.index("FROM information_schema.columns"), holds.index("The cells showed"))
         self.says("two column names, a row count, a size, two times and an account")
 
     def test_the_file_formats(self):
@@ -530,7 +530,7 @@ class TheWordsOfChapter4(unittest.TestCase):
         after = self.model.check(self.merged())
         self.assertEqual(len(after), 3)
         self.says("The check then lists 3 problems.")
-        count = "SELECT COUNT(DISTINCT value) AS owners FROM records WHERE attribute = 'responsible'"
+        count = "SELECT COUNT(DISTINCT value) AS owners\n        FROM records\n        WHERE attribute = 'responsible'"
         self.assertIn(count, SOURCE[4])
         self.assertEqual((self.records.sql(count)[0]["owners"], self.merged().sql(count)[0]["owners"]), (4, 3))
         self.says("Before your change it counts 4. After your change it counts 3: `j.marsh`, `s.lund` and the data engineer")

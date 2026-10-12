@@ -176,7 +176,10 @@ def _(mo):
 
 @app.cell
 def _(records):
-    records.sql("SELECT value FROM records WHERE asset = 'daily_sales' AND field = 'responsible'")
+    records.sql("""
+        SELECT value FROM records
+        WHERE asset = 'daily_sales' AND field = 'responsible'
+    """)
     return
 
 
@@ -299,7 +302,10 @@ def _(mo):
 
 @app.cell
 def _(warehouse):
-    warehouse.sql("SELECT table_name, column_name, data_type FROM information_schema.columns")
+    warehouse.sql("""
+        SELECT table_name, column_name, data_type
+        FROM information_schema.columns
+    """)
     return
 
 
@@ -315,7 +321,14 @@ def _(mo):
 
 @app.cell
 def _(storage):
-    storage.sql("s3://shop-raw/products.csv", "SELECT updated_by, COUNT(*) AS products FROM file GROUP BY updated_by")
+    storage.sql(
+        "s3://shop-raw/products.csv",
+        """
+        SELECT updated_by, COUNT(*) AS products
+        FROM file
+        GROUP BY updated_by
+        """,
+    )
     return
 
 
@@ -387,7 +400,10 @@ def _(mo):
 
 @app.cell
 def _(shop, warehouse):
-    columns = warehouse.sql("SELECT table_name, column_name FROM information_schema.columns")
+    columns = warehouse.sql("""
+        SELECT table_name, column_name
+        FROM information_schema.columns
+    """)
     by_name = shop.records("\n".join(
         f"{c['table_name']} {c['column_name']} means: {c['column_name'].replace('_', ' ')}"
         for c in columns

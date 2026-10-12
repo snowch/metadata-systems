@@ -135,7 +135,13 @@ def _(mo):
 
 @app.cell
 def _(day, warehouse):
-    warehouse.sql("SELECT * FROM daily_sales WHERE day = :day", day=day)
+    warehouse.sql(
+        """
+        SELECT * FROM daily_sales
+        WHERE day = :day
+        """,
+        day=day,
+    )
     return
 
 
@@ -209,13 +215,20 @@ def _(mo):
 
 @app.cell
 def _(warehouse):
-    warehouse.sql("SELECT * FROM information_schema.tables WHERE table_name = 'daily_sales'")
+    warehouse.sql("""
+        SELECT * FROM information_schema.tables
+        WHERE table_name = 'daily_sales'
+    """)
     return
 
 
 @app.cell
 def _(warehouse):
-    warehouse.sql("SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'daily_sales'")
+    warehouse.sql("""
+        SELECT column_name, data_type
+        FROM information_schema.columns
+        WHERE table_name = 'daily_sales'
+    """)
     return
 
 
@@ -281,7 +294,10 @@ def _(mo):
 
 @app.cell
 def _(warehouse):
-    warehouse.sql("SELECT table_name, table_owner FROM information_schema.tables")
+    warehouse.sql("""
+        SELECT table_name, table_owner
+        FROM information_schema.tables
+    """)
     return
 
 
@@ -374,7 +390,10 @@ def _(mo):
 
 @app.cell
 def _(changed):
-    changed.warehouse.sql("SELECT * FROM information_schema.tables WHERE table_name = 'daily_sales'")
+    changed.warehouse.sql("""
+        SELECT * FROM information_schema.tables
+        WHERE table_name = 'daily_sales'
+    """)
     return
 
 

@@ -158,7 +158,14 @@ def _(mo):
 @app.cell
 def _(storage):
     day = "2026-09-07"
-    storage.sql("s3://shop-raw/orders.jsonl", "SELECT * FROM file WHERE date(ordered_at) = :day", day=day)
+    storage.sql(
+        "s3://shop-raw/orders.jsonl",
+        """
+        SELECT * FROM file
+        WHERE date(ordered_at) = :day
+        """,
+        day=day,
+    )
     return
 
 

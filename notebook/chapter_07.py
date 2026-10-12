@@ -114,7 +114,11 @@ job build_clean_orders writes: clean_orders
 
 @app.cell
 def _(warehouse):
-    warehouse.sql("SELECT table_name, row_count, last_altered FROM information_schema.tables WHERE table_name = 'clean_orders'")
+    warehouse.sql("""
+        SELECT table_name, row_count, last_altered
+        FROM information_schema.tables
+        WHERE table_name = 'clean_orders'
+    """)
     return
 
 

@@ -39,6 +39,10 @@ chapter is added to `CHAPTERS` in `build_ipynb.py`, in `notebook/tests/test_word
 - Every section is a `## ` heading that names its subject, never the reader's activity.
 - The last section closes with what the chapter's experiments showed and could not show, then
   reflective questions, and names the next chapter; the last cell repeats the links.
+- A query in a code cell that the reader sees is written over several lines, one clause per line
+  (SELECT, FROM, WHERE, GROUP BY, ORDER BY), in a triple-quoted string, so a phone shows it whole
+  without scrolling sideways. A query of one short clause, such as `SELECT * FROM daily_sales`,
+  stays on one line.
 - The page tells the learner to press **Run all**, **Run below** and **Save**, the row of buttons
   `notebook/buttons/` puts above the cells; the tests hold the page to the buttons it has.
 

@@ -167,7 +167,11 @@ def _(mo):
 
 @app.cell
 def _(shop):
-    shop.run_week(["retyped"]).warehouse.sql("SELECT typeof(customer_id) AS type, COUNT(*) AS n FROM clean_orders GROUP BY 1")
+    shop.run_week(["retyped"]).warehouse.sql("""
+        SELECT typeof(customer_id) AS type, COUNT(*) AS n
+        FROM clean_orders
+        GROUP BY 1
+    """)
     return
 
 
