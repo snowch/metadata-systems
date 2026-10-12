@@ -285,7 +285,7 @@ def _(mo):
 
     Each system records what it does about an asset because its own work needs it. The warehouse keeps column names and types so that it can run a query. Object storage keeps a file's key so that it can serve the file. The reporting tool keeps the values so that it can draw the chart. In the shop's platform, a system records what its own work needs and nothing more. The questions you want answered are not its work.
 
-    The owner the warehouse records shows how far that goes. "Who should I ask about `daily_sales`?" wants a person or a team. The head of the shop's requirement is: "Every table must have an owner." The cell below lists the owner of every table in the warehouse.
+    The owner the warehouse records shows how far that goes. "Who should I ask about `daily_sales`?" wants a person or a team. As the shop's data engineer, you want that question to have an answer for every table. So you might write a requirement for the platform: "Every table must have an owner." The cell below lists the owner the warehouse records for each table.
     """)
     return
 
@@ -311,7 +311,7 @@ def _(mo):
     | which job writes it | a program | no: it names an account, not a program |
     | which account controls it in the warehouse | an account | yes |
 
-    "Who should I ask about `daily_sales`?" needs the first or the second reading. The requirement as written is met only by the fourth: every table has an owner, and the owner is an account.
+    "Who should I ask about `daily_sales`?" needs the first or the second reading. The warehouse meets your requirement as written. It does so on the fourth reading only: every table has an owner, and the owner is an account. So the requirement is met before you do anything, and the question the requirement was written for still has no answer.
     """)
     return
 

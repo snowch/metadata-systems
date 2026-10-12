@@ -107,7 +107,16 @@ as), the question that record answers (which account controls the table) and the
 does not (who to ask about `daily_sales`), so the requirement is met as written and not as meant.
 The requirement figure (`requirement`) the chapter carried until 9 October 2026 asked the learner
 to choose what to store first; the essay states the finding instead. The figure went with the pages on 11 October 2026; the
-notebook's warehouse records an owner for every table, and a cell reads it.
+notebook's warehouse records an owner for every table, and a cell reads it. Since 12 October 2026 the
+requirement is the data engineer's own, written so that "Who should I ask about `daily_sales`?" has
+an answer for every table: the author asked why the head of the shop would care whether a table has
+an owner, and a rule about tables is a data engineer's, not a shop owner's. The warehouse meets the
+learner's own requirement as written before they do anything, and their question stays unanswered,
+which makes the gap between a requirement's words and its purpose the learner's, not someone
+else's. Brief and draft: `chapter-02/briefs/round-12/whose-rule.md`,
+`chapter-02/drafts/round-12/whose-rule.md`; every fact landed, nothing added. Chapter 4's "Each
+asset has one owner." stays the head's: there the head asks for a list of whom to ask, a request a
+shop's head makes.
 
 ## Originality
 

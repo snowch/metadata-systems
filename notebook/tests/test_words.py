@@ -304,7 +304,11 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertEqual((owners, len(programs)), ({"etl_service"}, 4))
         tables = self.w.sql("SELECT table_name FROM information_schema.tables")
         self.assertEqual(len(tables), 3)
-        self.says('The head of the shop\'s requirement is: "Every table must have an owner."')
+        # The rule is the data engineer's own, written so that "Who should I ask?" has an answer; the
+        # warehouse meets it as written before anyone acts.
+        self.says('So you might write a requirement for the platform: "Every table must have an owner."')
+        self.says("So the requirement is met before you do anything")
+        self.assertNotIn("head of the shop's requirement is: \"Every table", self.text[2])
         self.says("The warehouse records `etl_service` as the owner of all three tables, in the column `table_owner` of `information_schema.tables`.")
         # The readings of the requirement, each against what the warehouse records: the account it
         # names answers only which account controls the table. Its owner is one account for every
