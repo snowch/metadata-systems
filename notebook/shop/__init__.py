@@ -9,14 +9,16 @@ finds it on Monday morning: `storage`, `warehouse` and `reporting`. `run_week(["
 writes about the shop (Chapters 3 and 4); `graph` makes them a graph (Chapters 5 and 6), and
 `repository` gives the jobs' code (Chapter 6). `["returns"]` adds the returns desk (Chapter 7 on).
 `events`, `runs`, `readings` and `lineage` are Chapter 7's runs and their events; `openlineage`
-holds Chapter 8's run events, check and consumer; `ingest` is Chapter 9's pipeline.
+holds Chapter 8's run events, check and consumer; `ingest` is Chapter 9's pipeline. `columns`,
+`schemas`, `identity` and `observe` are Part III's: column lineage, schema versions, references,
+and what runs recorded with how recent each asset is.
 """
 
 from .data import ARRIVAL, DAYS
 from .infer import cleaning_rules_that_fit, day_gap, queries_that_rebuild
 from .platform import pounds
 from .graph import compare_with_code, graph
-from . import ingest, openlineage
+from . import columns, identity, ingest, observe, openlineage, schemas
 from .records import model, owners, records, typed_records
 from .runs import event_fields, events, lineage, readings, runs
 from .week import CHANGES, COPY, FILES, NIGHTS, Week, reads_and_writes, repository, run_week, timeline
@@ -30,15 +32,19 @@ __all__ = [
     "NIGHTS",
     "Week",
     "cleaning_rules_that_fit",
+    "columns",
     "compare_with_code",
     "day_gap",
     "event_fields",
     "events",
+    "identity",
     "ingest",
     "lineage",
+    "observe",
     "openlineage",
     "readings",
     "runs",
+    "schemas",
     "graph",
     "model",
     "owners",

@@ -383,5 +383,141 @@ class TheEventsAndTheirStandard(unittest.TestCase):
         self.assertTrue(all(r["state"] == "COMPLETE" for r in objs.runs.values()))
 
 
+class TheColumnLineage(unittest.TestCase):
+    """Chapter 10: the shop's parser over the programs' SQL."""
+
+    @classmethod
+    def setUpClass(cls):
+        from shop import columns
+
+        cls.C = columns
+        cls.week = shop.run_week()
+
+    def test_the_select_names_no_column_of_the_table_it_writes(self):
+        code = [p["code"] for p in self.C.programs(self.week) if p["job"] == "build_daily_sales"][0]
+        self.assertEqual({r["column"] for r in self.C.lineage(code)}, {"daily_sales.column 1", "daily_sales.column 2"})
+        named = self.C.lineage(code, self.week.warehouse)
+        self.assertEqual({r["column"] for r in named}, {"daily_sales.day", "daily_sales.revenue_pence"})
+        revenue = {(r["from"], r["kind"], r["how"]) for r in named if r["column"] == "daily_sales.revenue_pence"}
+        self.assertEqual(
+            revenue,
+            {
+                ("clean_orders.price_pence", "value", "aggregated"),
+                ("clean_orders.quantity", "value", "aggregated"),
+                ("clean_orders.status", "rows", "filter"),
+                ("clean_orders.ordered_at", "rows", "filter"),
+                ("clean_orders.ordered_at", "rows", "grouping"),
+            },
+        )
+
+    def test_upstream_to_the_raw_orders(self):
+        up = self.C.upstream(self.week, "daily_sales", "revenue_pence", self.week.warehouse)
+        raw = {r["column"]: r for r in up if r["dataset"] == "orders.jsonl"}
+        self.assertEqual(len(raw), 7)
+        self.assertEqual({c for c, r in raw.items() if r["value"] == "yes"}, {"price_pence", "quantity"})
+        self.assertEqual(raw["customer_id"]["rows"], "distinct in build_clean_orders; filter in build_clean_orders")
+        self.assertIn("filter in build_daily_sales", raw["status"]["rows"])
+
+    def test_a_star_names_no_column_until_the_catalogue_does(self):
+        week = shop.run_week(["source"])
+        self.assertEqual([r["from"] for r in self.C.lineage(self.C.ANALYST_COPY)], ["clean_orders.*"])
+        self.assertEqual(len(self.C.lineage(self.C.ANALYST_COPY, week.warehouse)), 7)
+        up = self.C.upstream(week, "daily_sales", "revenue_pence", week.warehouse)
+        self.assertEqual([r["dataset"] for r in up][0], "clean_orders_copy.csv")
+        self.assertIn("orders.jsonl", {r["dataset"] for r in up})
+
+    def test_a_function_hides_the_table_it_reads(self):
+        week = shop.run_week(["net"])
+        self.assertEqual(week.warehouse.sql("SELECT * FROM daily_sales"), self.week.warehouse.sql("SELECT * FROM daily_sales"))
+        up = self.C.upstream(week, "daily_sales", "revenue_pence", week.warehouse)
+        self.assertNotIn("returns", {r["dataset"] for r in up})
+        self.assertEqual({r["column"] for r in up if r["dataset"] == "clean_orders" and r["value"] == "yes"}, {"order_id", "product_id", "price_pence", "quantity"})
+
+    def test_the_facet_keeps_both_kinds(self):
+        f = self.C.facet(self.week, "daily_sales")
+        self.assertEqual(sorted(f["fields"]), ["day", "revenue_pence"])
+        self.assertEqual({(x["field"], x["transformations"][0]["subtype"]) for x in f["dataset"]}, {("ordered_at", "FILTER"), ("ordered_at", "GROUP_BY"), ("status", "FILTER")})
+
+
+class TheSchemaHistory(unittest.TestCase):
+    """Chapter 11: the supplier's three changes to the orders file."""
+
+    def test_versions_and_diffs(self):
+        from shop import schemas as S
+
+        expected = {
+            "added": [("coupon_code", "added")],
+            "renamed": [("quantity", "removed"), ("qty", "added")],
+            "retyped": [("customer_id", "retyped")],
+        }
+        for change, diff in expected.items():
+            week = shop.run_week([change])
+            self.assertEqual([v["writes"] for v in S.versions(week, "orders.jsonl")], [5, 2])
+            self.assertEqual([(r["column"], r["change"]) for r in S.diff(week, "orders.jsonl")], diff)
+            # The catalogue's record of clean_orders does not change.
+            self.assertEqual(len(S.versions(week, "clean_orders")), 1)
+
+    def test_what_each_reader_gets(self):
+        from shop import schemas as S
+
+        got = {c: [r[f"with {c}"] for r in S.compare(c)] for c in ("added", "renamed", "retyped")}
+        self.assertEqual(got, {"added": [7, 7, 7], "renamed": [5, 5, 0], "retyped": [7, 7, 0]})
+        week = shop.run_week(["renamed"])
+        self.assertEqual([r["program"] for r in S.readers(week, "orders.jsonl", "quantity")], ["build_clean_orders"])
+        self.assertEqual(len(S.readers(week, "orders.jsonl", "qty")), 0)
+
+
+class TheIdentities(unittest.TestCase):
+    """Chapter 12: references, environments and the development run."""
+
+    def test_the_pairs(self):
+        from shop import identity as I
+
+        week = shop.run_week(["returns", "dev", "view"])
+        v = [x["version"] for x in week.storage.versions("s3://shop-returns/r-202.json")]
+        pairs = [
+            ("shop.analytics.daily_sales", "SHOP.ANALYTICS.DAILY_SALES"),
+            ("daily_sales", "shop.analytics.daily_sales"),
+            ("shop.analytics.daily_sales", "shop_dev.analytics.daily_sales"),
+            ("shop.analytics.daily_sales", "shop.analytics.sales_by_day"),
+            ("s3://shop-raw/orders.jsonl", "s3://shop-raw/Orders.jsonl"),
+            (f"s3://shop-returns/r-202.json@{v[0]}", f"s3://shop-returns/r-202.json@{v[1]}"),
+        ]
+        got = [(r["same object"], r["same rows"], r["same environment"]) for r in I.compare(week, pairs)]
+        self.assertEqual(got, [("yes", "yes", "yes"), ("yes", "yes", "yes"), ("no", "no", "no"), ("no", "yes", "yes"), ("no", "no", "yes"), ("yes", "no", "yes")])
+
+    def test_the_development_run_joins_production_until_the_rule_knows_its_producer(self):
+        I = shop.ingest
+        week = shop.run_week(["returns", "dev"])
+        parsed = I.parse(I.event_lines(week))
+        writers = lambda edges: {(r["job"], r["dataset"].rsplit("/", 1)[-1]) for r in edges.by_job if r["edge"] == "writes" and "daily_sales" in r["dataset"]}
+        self.assertEqual(writers(I.edges(I.objects(I.normalise(parsed)))), {("shop/build_daily_sales", "shop.analytics.daily_sales"), ("dev/build_daily_sales", "shop.analytics.daily_sales")})
+        fixed = I.normalise(parsed, {shop.openlineage.DEV_PRODUCER: "shop_dev"})
+        self.assertEqual(writers(I.edges(I.objects(fixed))), {("shop/build_daily_sales", "shop.analytics.daily_sales"), ("dev/build_daily_sales", "shop_dev.analytics.daily_sales")})
+
+
+class TheObservations(unittest.TestCase):
+    """Chapter 13: what runs recorded, and three readings of "fresh"."""
+
+    def test_the_readings_week_by_week(self):
+        from shop import observe as O
+
+        met = lambda changes: [r["met"] for r in O.readings(shop.run_week(changes))]
+        self.assertEqual(met([]), ["yes", "yes", "yes"])
+        self.assertEqual(met(["failed"]), ["yes", "no", "no"])
+        self.assertEqual(met(["clock"]), ["yes", "no", "yes"])
+        self.assertEqual(met(["renamed"]), ["yes", "yes", "no"])
+        # The runs' events carry one clock, and by them the dashboard was refreshed after its input.
+        self.assertEqual([r["met"] for r in O.readings(shop.run_week(["clock"]), by="runs")], ["yes", "yes", "yes"])
+
+    def test_a_run_that_succeeded_and_wrote_nothing(self):
+        from shop import observe as O
+
+        empty = [r for r in O.observations(shop.run_week(["renamed"])) if r["rows written"] == 0]
+        self.assertEqual([(r["program"], r["status"]) for r in empty], [("build_clean_orders", "succeeded"), ("build_daily_sales", "succeeded")] * 2)
+        [failed] = [r for r in O.observations(shop.run_week(["failed"])) if r["status"] == "failed"]
+        self.assertEqual(failed["error"], "database is locked")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -87,7 +87,7 @@ def code_version(code: str | None) -> str | None:
 
 def executions(week: Week) -> list[tuple[str, Execution]]:
     """Every time one of the repository's programs did its work, in order, each with its run identifier."""
-    done = [e for e in week.executions if e.job]
+    done = [e for e in week.executions if e.job and e.environment == "production"]
     return [(f"run-{k + 1:03d}", e) for k, e in enumerate(done)]
 
 

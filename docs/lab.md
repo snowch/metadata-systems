@@ -98,8 +98,26 @@ Chapter 3 adds a fourth:
   orders into a new column, `order_count`; the rows before have none. The warehouse's catalogue
   records the column at once, so a check of a person's records against it sees the change.
 
-Chapter 6 adds `source`, and Chapter 7 `returns` (below). Later chapters add their own: a renamed
-column, a late file, a duplicated event, a second environment.
+Chapter 6 adds `source`, and Chapter 7 `returns` (below). Part III adds six:
+
+- **`net`** (Chapter 10). From Saturday's row on, daily sales takes away what was returned, through a
+  function the shop's developer added to the warehouse, `returned_quantity(order_id, product_id)`,
+  which reads the table `returns`; the query names the table nowhere. It brings `returns` with it.
+  No order of Saturday or Sunday was returned, so the rows are the same.
+- **`added`, `renamed` and `retyped`** (Chapter 11). From the export before Saturday's row, the
+  checkout's supplier changes `orders.jsonl`: a new field `coupon_code`; `quantity` renamed `qty`;
+  or every customer id written as text (`C101`). Clean orders reads the fields it names: after the
+  rename `quantity` is empty, its filter keeps no order, and the program still succeeds with no
+  rows. After the retype the warehouse keeps the text in a column declared INTEGER.
+- **`dev`** (Chapter 12). A development database, `shop_dev`, beside production's, where a developer
+  runs the daily sales program on Monday at 10:20 over Sunday's orders; the developer's runner sends
+  events that name tables without their database. It also writes the supplier's test export,
+  `Orders.jsonl`, into `shop-raw` on Friday.
+- **`view`** (Chapter 12). Jo Marsh's view `sales_by_day` over `daily_sales`.
+- **`clock`** (Chapter 13). The reporting tool's clock runs 40 minutes slow.
+
+The failed night (`failed`) also records the error the warehouse gave, `database is locked`. The
+analyst's copy (`copy`) runs `SELECT * FROM clean_orders` and writes the result's columns.
 
 ### The returns desk (Chapter 7 on)
 
@@ -172,6 +190,24 @@ evidence:
   schema outside the repository (`docs/notes/chapter-08.md`).
 - **Ingestion** (`notebook/shop/ingest.py`, Chapter 9). `event_lines`, then `parse`, `normalise`,
   `objects` and `edges`, each a stage a notebook shows, every rule the shop's own.
+- **Column lineage** (`notebook/shop/columns.py`, Chapter 10). The shop's own parser for the
+  course's SQL, inside a program's code: for every column a program writes, the columns it reads, of
+  two kinds, `value` (copied, computed, aggregated) and `rows` (filter, grouping, distinct). A
+  table's columns are matched by position, so naming them needs the warehouse's catalogue; `*`
+  names no column without it; a function is taken to depend on its arguments only. `upstream`
+  follows every program whose code the shop has; `facet` writes OpenLineage's column lineage facet.
+- **Schema versions** (`notebook/shop/schemas.py`, Chapter 11). Every write records the schema of
+  what it wrote (`Execution.schema`: a file's fields and the JSON types of their values, or a
+  table's declared columns); `versions`, `diff` (by name), `readers` (by column lineage) and
+  `compare` (what three readers get with and without a change).
+- **References** (`notebook/shop/identity.py`, Chapter 12). `resolve` finds what a reference names
+  by its store's rules (the warehouse ignores case and fills in production's defaults; object
+  storage reads keys exactly); `compare` tests pairs for the same text, object, rows, environment and
+  version. Ingestion's `normalise` takes a database per producer.
+- **Observations and freshness** (`notebook/shop/observe.py`, Chapter 13). What each run recorded as
+  it ran (`Execution.bytes`, `Execution.error`), each asset's last write by its store's clock and the
+  latest day its data holds, and the dashboard against three readings of "fresh", by the stores'
+  clocks or by the runs'.
 - **The records as a graph** (`notebook/shop/graph.py`, Chapters 5 and 6). `graph(records, model)`
   makes each entity a node and each line whose value names another entity an edge; `traverse`
   walks the edges it is given, each way it is given; `downstream` and `upstream` walk `reads` and

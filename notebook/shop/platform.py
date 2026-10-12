@@ -116,6 +116,20 @@ def parse(uri: str, text: str) -> "Rows":
     raise ValueError(f"no reader for {uri}")
 
 
+def file_schema(records: list[dict]) -> tuple[tuple[str, str], ...]:
+    """A file's fields as a reader finds them: each name, in the order first seen, and the type of its
+    values (JSON's: integer, number, string, boolean), with an empty value left out. A field with
+    values of two types gets both, as `integer or string`; one with no value at all, `null`."""
+    seen: dict[str, set[str]] = {}
+    for r in records:
+        for k, v in r.items():
+            kinds = seen.setdefault(k, set())
+            if v is None or v == "":
+                continue
+            kinds.add("boolean" if isinstance(v, bool) else "integer" if isinstance(v, int) else "number" if isinstance(v, float) else "string")
+    return tuple((k, " or ".join(sorted(v)) or "null") for k, v in seen.items())
+
+
 def stage(db: sqlite3.Connection, name: str, records: list[dict], fields: tuple[str, ...]) -> None:
     """Loads records into a temporary table, with no declared types, as a reader of a file would."""
     db.execute(f'DROP TABLE IF EXISTS temp."{name}"')
@@ -133,6 +147,7 @@ class ObjectStorage:
         self._root = Path(tempfile.mkdtemp(prefix="shop-storage-"))
         weakref.finalize(self, shutil.rmtree, self._root, ignore_errors=True)
         self._versions: dict[str, list[dict]] = {}
+        self._texts: dict[tuple[str, str], str | None] = {}
 
     def _path(self, uri: str) -> Path:
         if not uri.startswith("s3://"):
@@ -142,6 +157,7 @@ class ObjectStorage:
     def _version(self, uri: str, at: str, text: str | None) -> str:
         """A new version of an object: an opaque identifier, the same on every machine."""
         made = hashlib.sha1(f"{uri}|{at}|{text}".encode()).hexdigest()[:12]
+        self._texts[(uri, made)] = text
         self._versions.setdefault(uri, []).append(
             {"key": uri, "version": made, "at": at, "deleted": text is None, "size_bytes": len(text.encode()) if text is not None else None}
         )
@@ -166,6 +182,10 @@ class ObjectStorage:
             ({k: v for k, v in version.items()} for uri in sorted(self._versions) if uri.startswith(prefix) for version in self._versions[uri]),
             null="",
         )
+
+    def version_text(self, uri: str, version: str) -> str | None:
+        """One version's contents, exactly as written; None for a delete marker."""
+        return self._texts[(uri, version)]
 
     def ls(self, prefix: str = "s3://") -> Rows:
         """Every file under a prefix, as object storage lists it."""
@@ -299,6 +319,41 @@ class Warehouse:
             for name in staged:
                 self.db.execute(f'DROP TABLE IF EXISTS temp."{name}"')
 
+    def tables(self) -> list[str]:
+        """The names of the production tables the catalogue records."""
+        return [t for (t,) in self.db.execute("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE'")]
+
+    def bytes(self, table: str) -> int:
+        """The catalogue's size of a table, in bytes."""
+        [(n,)] = self.db.execute("SELECT bytes FROM information_schema.tables WHERE table_name = ?", (table,))
+        return n
+
+    def create_view(self, view: str, select: str, created: str) -> None:
+        """A view: a name for a query, which the catalogue records as a VIEW and which holds no rows."""
+        self.db.execute(f"CREATE VIEW main.{view} AS {select}")
+        self.db.execute(
+            "INSERT INTO information_schema.tables VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            ("shop", "analytics", view, "VIEW", "j.marsh", None, None, created, created),
+        )
+        self.db.commit()
+
+    def create_database(self, name: str, tables: tuple[str, ...]) -> None:
+        """A second database in the warehouse, with empty tables of the same columns as production's."""
+        self.db.execute(f"ATTACH DATABASE ':memory:' AS {name}")
+        for t in tables:
+            columns, _ = TABLES[t]
+            self.db.execute(f"CREATE TABLE {name}.{t} ({', '.join(f'{c} {k}' for c, k in columns)})")
+        self.db.commit()
+
+    def table_schema(self, table: str) -> tuple[tuple[str, str], ...]:
+        """A table's columns and declared types, as the catalogue records them."""
+        return tuple(
+            (c, t)
+            for c, t in self.db.execute(
+                "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = ? ORDER BY ordinal_position", (table,)
+            )
+        )
+
     def add_column(self, table: str, column: str, kind: str) -> None:
         """A change to a table's columns, which the warehouse's catalogue records at once."""
         self.db.execute(f"ALTER TABLE main.{table} ADD COLUMN {column} {kind}")
@@ -369,7 +424,10 @@ def pounds(pence: int) -> str:
 class Reporting:
     """The reporting tool: a dashboard and what it records about it."""
 
-    def __init__(self) -> None:
+    def __init__(self, slow_seconds: int = 0) -> None:
+        # The reporting tool keeps its own clock. With the `clock` change it runs slow, and every
+        # time the tool records is early by this much (Chapter 13).
+        self.slow_seconds = slow_seconds
         self._dashboard = {
             "name": "sales_dashboard",
             "title": DASHBOARD_TITLE,
@@ -382,7 +440,7 @@ class Reporting:
     def refresh(self, rows: list[tuple[str, int]], at: str) -> None:
         """Redraws the chart from rows of day and pence, and records the time."""
         self._dashboard["values"] = [{"day": day, "revenue": pounds(p)} for day, p in rows]
-        self._dashboard["last_refreshed"] = at
+        self._dashboard["last_refreshed"] = iso(epoch(at) - self.slow_seconds)
 
     def dashboard(self, name: str = "sales_dashboard") -> Record:
         """What the reporting tool records about a dashboard, and the values it shows."""

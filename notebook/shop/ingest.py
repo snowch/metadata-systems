@@ -26,7 +26,7 @@ import json
 from datetime import datetime, timezone
 
 from .graph import Graph
-from .openlineage import WAREHOUSE, analyst_events, problems, run_events
+from .openlineage import WAREHOUSE, analyst_events, dev_events, problems, run_events
 from .platform import Rows
 from .week import Week
 
@@ -53,7 +53,7 @@ MESSAGES = {
 def event_lines(week: Week) -> list[str]:
     """Every event the collector received in the week, one line of JSON each, in the order received:
     the jobs' and the functions', and the analyst's script's when the week has the analyst's copy."""
-    events = run_events(week) + analyst_events(week)
+    events = run_events(week) + analyst_events(week) + dev_events(week)
     events.sort(key=lambda ev: _utc(ev["eventTime"]))
     return [json.dumps(ev, separators=(",", ":")) for ev in events]
 
@@ -108,9 +108,14 @@ class Normalised(list):
         return ("text/html", self._repr_html_())
 
 
-def normalise(events: list[dict]) -> Normalised:
+def normalise(events: list[dict], databases: dict[str, str] | None = None) -> Normalised:
     """The same thing written the same way: times in UTC with `Z`; a warehouse table's name with its
-    database, `shop`, where the producer left it out."""
+    database where the producer left it out.
+
+    `databases` says which database a producer's names without one mean, producer by producer; a
+    producer it does not list gets `shop`, the production database, as in Chapter 9.
+    """
+    databases = databases or {}
     out, changes = [], []
     for event in events:
         e = copy.deepcopy(event)
@@ -122,7 +127,7 @@ def normalise(events: list[dict]) -> Normalised:
         for side in ("inputs", "outputs"):
             for k, d in enumerate(e.get(side) or []):
                 if d["namespace"] == WAREHOUSE and d["name"].count(".") == 1:
-                    after = f"shop.{d['name']}"
+                    after = f"{databases.get(e.get('producer'), 'shop')}.{d['name']}"
                     changes.append({"line": line, "where": f"{side}[{k}].name", "before": d["name"], "after": after})
                     d["name"] = after
         out.append(e)

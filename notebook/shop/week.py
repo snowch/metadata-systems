@@ -18,6 +18,19 @@ A change is applied before the week runs, so a changed week is as deterministic 
 - `source` (Chapter 6): from Saturday's row on, the program that writes `daily_sales` reads the
   analyst's copy instead of `clean_orders`. It brings `copy` with it. The rows it writes are the
   same; only the code, which the shop's repository holds, says which it reads.
+- `net` (Chapter 10): from Saturday's row on, the program that writes `daily_sales` takes away
+  what was returned, through a function the shop's developer added to the warehouse,
+  `returned_quantity(order_id, product_id)`, which reads the table `returns`. It brings `returns`
+  with it. No order of Saturday or Sunday was returned, so the rows it writes are the same.
+- `added`, `renamed` and `retyped` (Chapter 11): from the export that comes before Saturday's row,
+  the checkout's supplier changes `orders.jsonl`: it adds a field `coupon_code`; or it renames
+  `quantity` to `qty`; or it writes each customer id as text, `C101` where it wrote `101`.
+- `dev` (Chapter 12): a development database, `shop_dev`, beside the production one, where a
+  developer runs the program that writes `daily_sales` on Monday morning over a sample of Sunday's
+  orders; and the supplier's test of a new export, which wrote `Orders.jsonl` into `shop-raw`.
+- `view` (Chapter 12): a view, `sales_by_day`, that Jo Marsh made over `daily_sales`.
+- `clock` (Chapter 13): the reporting tool's clock runs 40 minutes slow, so the time it records for
+  each refresh is 40 minutes early.
 - `returns` (Chapter 7 on): the returns desk keeps each return as an object in `shop-returns`, at
   any hour of the day. Each create, overwrite or delete starts a function at once: `record_return`
   writes the return's row into the table `returns`, `remove_return` removes it. Object storage
@@ -47,9 +60,9 @@ from .data import (
     PRODUCTS,
     day_of,
 )
-from .platform import ObjectStorage, Reporting, Rows, Warehouse, epoch, iso, stage
+from .platform import ObjectStorage, Reporting, Rows, Warehouse, epoch, file_schema, iso, stage
 
-CHANGES = ("copy", "refunds", "failed", "column", "source", "returns")
+CHANGES = ("copy", "refunds", "failed", "column", "source", "returns", "net", "added", "renamed", "retyped", "dev", "view", "clock")
 
 # The nights of the week: the date each night's work starts on, Tuesday 8 to Monday 14.
 NIGHTS = DAYS[1:] + ("2026-09-14",)
@@ -62,6 +75,8 @@ FILES = {
     "products": f"{RAW}/products.csv",
 }
 COPY = f"{SCRATCH}/clean_orders_copy.csv"
+# The analyst's script's query (the `copy` change): every column of `clean_orders`.
+ANALYST_SQL = "SELECT * FROM clean_orders"
 RETURNS_BUCKET = "s3://shop-returns"
 RETURNS_TABLE = (
     ("return_id", "TEXT"),
@@ -71,6 +86,32 @@ RETURNS_TABLE = (
     ("returned_at", "TIMESTAMP"),
 )
 RETURNS_CREATED = "2026-09-07T09:00:00Z"
+
+# The first night whose export the supplier's changes (`added`, `renamed`, `retyped`) reach: the
+# export before Saturday's row.
+EXPORT_CHANGED = "2026-09-13"
+# The value the `added` change gives `coupon_code`, for the two orders that used one.
+COUPONS = {7040: "WHEELS10", 7046: "WHEELS10"}
+# The `clock` change: how slow the reporting tool's clock runs.
+SLOW_CLOCK = 40 * 60
+# The `dev` change: the development database, when the developer's run starts and how long it takes,
+# the day of the sample it reads, and the supplier's test export.
+DEV_DATABASE = "shop_dev"
+DEV_RUN = "2026-09-14T10:20:00Z"
+DEV_DURATION = 4
+DEV_SAMPLE_DAY = "2026-09-13"
+TEST_EXPORT = f"{RAW}/Orders.jsonl"
+TEST_EXPORT_AT = "2026-09-11T15:12:00Z"
+TEST_ORDERS = (
+    (9001, 101, 1, 1, 650, "completed", "2026-09-11T15:00:00Z"),
+    (9002, 102, 2, 1, 1200, "completed", "2026-09-11T15:01:00Z"),
+)
+# The `view` change: Jo Marsh's view over `daily_sales`, and when Jo made it.
+VIEW = "sales_by_day"
+VIEW_SQL = "SELECT day, revenue_pence FROM daily_sales"
+VIEW_CREATED = "2026-09-04T11:02:00Z"
+# The error the warehouse gave the failed night's program (`failed`).
+FAILED_ERROR = "database is locked"
 
 # Each program's name in the shop's repository. The export and the analyst's copy are not there.
 JOBS = {
@@ -129,7 +170,30 @@ FROM clean_orders
 WHERE status = 'completed' AND date(ordered_at) = :day
 GROUP BY date(ordered_at)"""
 
+# The edited program of the `net` change: each order's quantity less what was returned of it.
+DAILY_SALES_NET = """WITH lines AS (
+    SELECT date(ordered_at) AS day, price_pence * (quantity - returned_quantity(order_id, product_id)) AS line_pence, status
+    FROM clean_orders
+)
+SELECT day, SUM(line_pence)
+FROM lines
+WHERE status = 'completed' AND day = :day
+GROUP BY day"""
+
 DASHBOARD = "SELECT day, revenue_pence FROM daily_sales ORDER BY day"
+
+
+def returned_quantity(db) -> callable:
+    """The warehouse function of the `net` change: how many of one product of an order came back."""
+
+    def returned(order_id, product_id) -> int:
+        [(n,)] = db.execute(
+            "SELECT COALESCE(SUM(quantity), 0) FROM main.returns WHERE order_id = ? AND product_id = ?",
+            (order_id, product_id),
+        ).fetchall()
+        return n
+
+    return returned
 
 
 def timestamp(day: str, time: str, plus_seconds: int = 0) -> str:
@@ -185,6 +249,10 @@ class Execution:
     object: str | None = None
     version: str | None = None
     change: str | None = None
+    schema: tuple[tuple[str, str], ...] | None = None
+    bytes: int | None = None
+    error: str | None = None
+    environment: str = "production"
 
 
 @dataclass
@@ -203,16 +271,24 @@ def run_week(changes=()) -> Week:
     changes = tuple(changes)
     if "source" in changes and "copy" not in changes:
         changes = ("copy",) + changes
+    if "net" in changes and "returns" not in changes:
+        changes = changes + ("returns",)
     for c in changes:
         if c not in CHANGES:
             raise ValueError(f"no change called {c!r}; the changes are {', '.join(CHANGES)}")
     storage = ObjectStorage()
-    week = Week(changes, storage, Warehouse(storage), Reporting())
+    week = Week(changes, storage, Warehouse(storage), Reporting(SLOW_CLOCK if "clock" in changes else 0))
     storage, warehouse, reporting = week.storage, week.warehouse, week.reporting
     db = warehouse.db
 
     if "returns" in changes:
         warehouse.create_table("returns", RETURNS_TABLE, RETURNS_CREATED)
+    if "net" in changes:
+        db.create_function("returned_quantity", 2, returned_quantity(db))
+    if "view" in changes:
+        warehouse.create_view(VIEW, VIEW_SQL, VIEW_CREATED)
+    if "dev" in changes:
+        warehouse.create_database(DEV_DATABASE, ("clean_orders", "daily_sales"))
 
     def returns_desk(on: str) -> None:
         """What the returns desk did on one day, and the function each change started."""
@@ -252,21 +328,32 @@ def run_week(changes=()) -> Week:
     for night in NIGHTS:
         day = DAYS[NIGHTS.index(night)]
 
-        def done(writer: str, status: str = "succeeded", wrote=None, rows=None, after=0, reads=(), rows_read=None) -> str:
+        def done(writer: str, status: str = "succeeded", wrote=None, rows=None, after=0, reads=(), rows_read=None, error=None) -> str:
             started = timestamp(night, STARTS[writer], after)
             finished = timestamp(night, STARTS[writer], after + DURATION[writer])
             job = JOBS.get(writer)
             code = job_code(writer, changes, day) if job else None
+            schema, size = None, None
+            if status == "succeeded" and wrote and wrote.startswith("s3://"):
+                schema, size = file_schema(storage.records(wrote)), len(storage.read_text(wrote).encode())
+            elif status == "succeeded" and wrote in warehouse.tables():
+                schema, size = warehouse.table_schema(wrote), warehouse.bytes(wrote)
             week.executions.append(
-                Execution(writer, night, started, finished, status, wrote, rows, job, tuple(reads), rows_read, code)
+                Execution(
+                    writer, night, started, finished, status, wrote, rows, job, tuple(reads), rows_read, code,
+                    schema=schema, bytes=size, error=error,
+                )
             )
             return finished
 
         # The export: three files, two minutes apart.
         orders = exported_orders(night)
+        fields = ORDER_FIELDS
+        if night >= EXPORT_CHANGED:
+            fields, orders = supplier_changes(changes, fields, orders)
         for k, (uri, text, n) in enumerate(
             (
-                (FILES["orders"], jsonl(ORDER_FIELDS, orders), len(orders)),
+                (FILES["orders"], jsonl(fields, orders), len(orders)),
                 (FILES["customers"], jsonl(CUSTOMER_FIELDS, CUSTOMERS), len(CUSTOMERS)),
                 (FILES["products"], to_csv(PRODUCT_FIELDS, PRODUCTS), len(PRODUCTS)),
             )
@@ -287,18 +374,21 @@ def run_week(changes=()) -> Week:
         done("clean_orders", wrote="clean_orders", rows=n, reads=[FILES["orders"]], rows_read=len(raw))
 
         if "copy" in changes:
-            rows = db.execute(f"SELECT {', '.join(ORDER_FIELDS)} FROM clean_orders").fetchall()
-            storage.put(COPY, to_csv(ORDER_FIELDS, rows), timestamp(night, "02:15", 17))
+            cursor = db.execute(ANALYST_SQL)
+            rows = cursor.fetchall()
+            storage.put(COPY, to_csv(tuple(d[0] for d in cursor.description), rows), timestamp(night, "02:15", 17))
             done("analyst_copy", wrote=COPY, rows=len(rows))
 
         if "failed" in changes and night == NIGHTS[-1]:
-            done("daily_sales", status="failed", reads=["clean_orders"])
+            done("daily_sales", status="failed", reads=["clean_orders"], error=FAILED_ERROR)
         else:
             sql = DAILY_SALES_FOR_REFUNDS if "refunds" in changes and day >= "2026-09-12" else DAILY_SALES
             if "column" in changes and day >= "2026-09-12":
                 if day == "2026-09-12":
                     warehouse.add_column("daily_sales", "order_count", "INTEGER")
                 sql = DAILY_SALES_WITH_COUNT
+            if "net" in changes and day >= "2026-09-12":
+                sql = DAILY_SALES_NET
             source, [(read,)] = "clean_orders", db.execute("SELECT COUNT(*) FROM clean_orders")
             if "source" in changes and day >= "2026-09-12":
                 copied = storage.records(COPY)
@@ -317,8 +407,43 @@ def run_week(changes=()) -> Week:
         db.execute("DROP TABLE temp.raw_orders")
         if "returns" in changes:
             returns_desk(day)
+        if "dev" in changes and day == "2026-09-11":
+            storage.put(TEST_EXPORT, jsonl(ORDER_FIELDS, TEST_ORDERS), TEST_EXPORT_AT)
+    if "dev" in changes:
+        development_run(week)
     week.executions.sort(key=lambda e: e.started)
     return week
+
+
+def supplier_changes(changes, fields: tuple[str, ...], orders: list[tuple]) -> tuple[tuple[str, ...], list[tuple]]:
+    """The orders file as the supplier's changed export writes it (`added`, `renamed`, `retyped`)."""
+    if "added" in changes:
+        fields = fields + ("coupon_code",)
+        orders = [row + (COUPONS.get(row[0]),) for row in orders]
+    if "renamed" in changes:
+        fields = tuple("qty" if f == "quantity" else f for f in fields)
+    if "retyped" in changes:
+        k = fields.index("customer_id")
+        orders = [row[:k] + ((None if row[k] is None else f"C{row[k]}"),) + row[k + 1 :] for row in orders]
+    return fields, orders
+
+
+def development_run(week: Week) -> None:
+    """The `dev` change's run: on Monday morning a developer loads Sunday's orders into the development
+    database and runs the program that writes `daily_sales` there, for Sunday."""
+    db, warehouse = week.warehouse.db, week.warehouse
+    sample = [r for r in ORDERS if r[6][:10] == DEV_SAMPLE_DAY]
+    db.executemany(f"INSERT INTO {DEV_DATABASE}.clean_orders VALUES (?, ?, ?, ?, ?, ?, ?)", sample)
+    finished = iso(epoch(DEV_RUN) + DEV_DURATION)
+    sql = DAILY_SALES.replace("FROM clean_orders", f"FROM {DEV_DATABASE}.clean_orders")
+    n = db.execute(f"INSERT INTO {DEV_DATABASE}.daily_sales {sql}", {"day": DEV_SAMPLE_DAY}).rowcount
+    db.commit()
+    week.executions.append(
+        Execution(
+            "daily_sales", None, DEV_RUN, finished, "succeeded", "daily_sales", n, JOBS["daily_sales"],
+            ("clean_orders",), len(sample), job_code("daily_sales", (), DEV_SAMPLE_DAY), environment="development",
+        )
+    )
 
 
 def timeline(week: Week) -> list[dict]:
@@ -375,6 +500,8 @@ def job_code(writer: str, changes, day: str) -> str:
     daily = DAILY_SALES_FOR_REFUNDS if "refunds" in changes and edited else DAILY_SALES
     if "column" in changes and edited:
         daily = DAILY_SALES_WITH_COUNT
+    if "net" in changes and edited:
+        daily = DAILY_SALES_NET
     reads: dict[str, str] = {}
     if "source" in changes and edited:
         daily = daily.replace("FROM clean_orders", "FROM clean_orders_copy")

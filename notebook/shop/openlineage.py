@@ -50,6 +50,8 @@ FACETS = {
     "jobType": ("2-0-4", "JobTypeJobFacet"),
     "sourceCodeLocation": ("1-1-0", "SourceCodeLocationJobFacet"),
     "nominalTime": ("1-0-1", "NominalTimeRunFacet"),
+    "columnLineage": ("1-2-0", "ColumnLineageDatasetFacet"),
+    "schema": ("1-2-0", "SchemaDatasetFacet"),
 }
 # The shop's custom facet, named as the specification asks: a prefix, then the name.
 OBJECT_CHANGE = "shop_objectChange"
@@ -96,6 +98,8 @@ def run_events(week: Week) -> list[dict]:
     for each run that succeeded, a START and a FAIL for one that failed, in time order."""
     out = []
     for run, e in executions(week):
+        if e.environment != "production":
+            continue
         producer = FUNCTIONS_PRODUCER if e.object else PRODUCER
         facet_ = lambda name, **fields: facet(name, producer, **fields)
         when = (lambda t: t.replace("Z", "+00:00")) if e.object else (lambda t: t)
@@ -169,6 +173,40 @@ def analyst_events(week: Week) -> list[dict]:
         out.append({"eventType": "START", "eventTime": e.started, **copy.deepcopy(base), "outputs": []})
         done = {"eventType": "COMPLETE", "eventTime": e.finished, **copy.deepcopy(base)}
         done["outputs"] = [{**dataset(e.wrote), "outputFacets": {"outputStatistics": facet("outputStatistics", ANALYST_PRODUCER, rowCount=e.rows)}}]
+        out.append(done)
+    return out
+
+
+# The developer's runner (Chapter 12, the `dev` change): a fourth producer, run from a laptop, which
+# names a warehouse table by its schema and name only, as the analyst's script does, and puts its jobs
+# in a namespace of their own.
+DEV_PRODUCER = "https://example.org/dev/laptop-runner/v1"
+DEV_NAMESPACE = "dev"
+
+
+def dev_events(week: Week) -> list[dict]:
+    """The development run as the developer's runner reports it: a START and a COMPLETE, with the
+    tables named `analytics.clean_orders` and `analytics.daily_sales`, without their database."""
+    out = []
+    for e in week.executions:
+        if e.environment != "development":
+            continue
+        base = {
+            "run": {"runId": uuid7(e.started, f"dev|{e.job}|{e.started}")},
+            "job": {"namespace": DEV_NAMESPACE, "name": e.job},
+            "inputs": [{"namespace": WAREHOUSE, "name": f"analytics.{r}"} for r in e.reads],
+            "producer": DEV_PRODUCER,
+            "schemaURL": SCHEMA_URL,
+        }
+        out.append({"eventType": "START", "eventTime": e.started, **copy.deepcopy(base), "outputs": []})
+        done = {"eventType": "COMPLETE", "eventTime": e.finished, **copy.deepcopy(base)}
+        done["outputs"] = [
+            {
+                "namespace": WAREHOUSE,
+                "name": f"analytics.{e.wrote}",
+                "outputFacets": {"outputStatistics": facet("outputStatistics", DEV_PRODUCER, rowCount=e.rows)},
+            }
+        ]
         out.append(done)
     return out
 
