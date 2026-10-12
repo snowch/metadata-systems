@@ -275,9 +275,11 @@ it, then follows its "Next" link.
 
 The files a chapter downloads opened alone are the same as Chapter 2's, so the compressed size is
 the 12.5 MB measured for it above. Each chapter's warning (brief CD) states: about 13 MB the first
-time on its own; less than 1 MB from the chapter before's link; 9 to 11 seconds to run every cell;
-about 420 MB (Chapter 3) and about 410 MB (Chapter 4). The published pages' times are still to be
-measured; the earlier chapters took about 2 s longer there.
+time on its own; less than 1 MB from the chapter before's link; 9 to 12 seconds to run every cell;
+about 420 MB (Chapter 3) and about 410 MB (Chapter 4). The published pages, measured the same way
+after the deploy of `2690b76` from `snowch.github.io`, opened alone on a computer: Run all took
+11.8 s (Chapter 3) and 11.4 s (Chapter 4), with memory peaking at 421 MB and 408 MB. The warnings
+said "9 to 11 seconds" until then, from the local build alone; they now say "9 to 12 seconds".
 
 ## Phones
 

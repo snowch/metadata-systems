@@ -289,5 +289,8 @@ messages of brief CF. What changed:
 
 ## Known gaps
 
-- The run time and memory were measured on the local build, not yet on the published page.
+- The warning's run time, "9 to 11 seconds" from the local build, became "9 to 12 seconds" once the
+  published page was measured (11.4 to 11.8 s): a number changed to the measurement, not a sentence
+  rewritten.
+
 - The reader's verdicts are free text, kept by **Save**; nothing compares them with the outputs.

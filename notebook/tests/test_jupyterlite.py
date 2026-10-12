@@ -90,13 +90,15 @@ class TheWarnings(unittest.TestCase):
             4: ("| Opened from the chapter before's link, after it ran | 11 files, 0.32 MB, in a new tab | 11 files, 0.32 MB, in a new tab |", "| Peak memory of a renderer process, opened alone | 400 to 418 MB | 400 to 406 MB |"),
         }
         runs = "| Run all, from the press until no cell waits (desktop, phone, from the link) | 8.9 to 9.6 s | 8.9 to 10.5 s |"
+        live = "Run all took 11.8 s (Chapter 3) and 11.4 s (Chapter 4)"
         for chapter, memory in ((3, "about 420 MB"), (4, "about 410 MB")):
             link, peak = table[chapter]
             expected[chapter] = [
                 ("downloads about 13 MB", gzip),
                 (f"the page downloaded less than 1 MB when opened from Chapter {chapter - 1}'s link", link),
                 (f"Chapter {chapter - 1}'s link opens this page in a new tab", link),
-                ("running every cell took 9 to 11 seconds", runs),
+                ("running every cell took 9 to 12 seconds", runs),
+                ("running every cell took 9 to 12 seconds", live),
                 (f"the page used {memory} of memory", peak),
             ]
         for part, pairs in expected.items():
