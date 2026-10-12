@@ -288,6 +288,11 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("`source` names the asset it reads; `keep` says which orders it keeps (all, completed or cancelled)")
         self.says("Each record is normal on its own. The gap shows only when you compare the last-altered times.")
 
+    def test_what_the_rows_can_answer(self):
+        # Under the four questions: the rows answer only whether Thursday's total differs.
+        self.says("The rows show whether Thursday's total differs from Thursday's orders.")
+        self.says("The rows a table holds today record none of these.")
+
     def test_the_rule_the_week_never_tests(self):
         orders = self.week.storage.records(shop.FILES["orders"])
         self.assertEqual(sum(1 for o in orders if o["quantity"] <= 0), 0)
