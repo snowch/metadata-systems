@@ -21,9 +21,9 @@
 // its end only. The chapters are the site's files named chapter_NN.ipynb, so a new chapter gains its
 // arrows when its file is added. Each arrow is a link that opens its chapter in a new tab, as the
 // text's links do; their names are the text's links' own words. Between them, a link to the course's
-// contents, which opens in a new tab too. On a phone the arrows show without their chapters' numbers,
-// so that the row fits 360 pixels, and below 600 pixels the contents link does not show, so that the
-// row fits (style/index.css); the chapter's text links to the contents at its top and its end.
+// contents, which opens in a new tab too. Below 500 pixels the arrows show without their chapters'
+// numbers, below 600 the contents link shows as an icon, and below 390 not at all, so that the row
+// fits 360 pixels (style/index.css); the chapter's text links to the contents at its top and end.
 
 import { NotebookActions, INotebookTracker } from "@jupyterlab/notebook";
 import { Widget } from "@lumino/widgets";
@@ -146,7 +146,20 @@ function contents() {
   link.className = "ms-Buttons-link ms-Buttons-contents";
   link.href = new URL("../../", window.location.href).href;
   link.target = "_blank";
-  link.textContent = "Contents";
+  // The word on a wide screen, and on a narrower one a list's three lines (style/index.css).
+  const text = document.createElement("span");
+  text.className = "ms-Buttons-contents-text";
+  text.textContent = "Contents";
+  const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  icon.setAttribute("class", "ms-Buttons-contents-icon");
+  icon.setAttribute("viewBox", "0 0 18 18");
+  icon.setAttribute("aria-hidden", "true");
+  for (const y of [4, 9, 14]) {
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    for (const [k, v] of Object.entries({ x1: 2, x2: 16, y1: y, y2: y })) line.setAttribute(k, v);
+    icon.append(line);
+  }
+  link.append(text, icon);
   link.setAttribute("aria-label", "Back to contents");
   link.title = "Back to contents";
   return link;

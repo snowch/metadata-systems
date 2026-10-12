@@ -89,10 +89,24 @@
   line-height: 1;
 }
 
-/* On a phone, the arrows without their numbers, and the row closer together: so it fits 360 pixels,
-   with the five controls 44 pixels tall, with room to spare in a wider typeface than the one a phone
-   uses (DejaVu Sans, on the notebook workflow's runner, takes 333 pixels). */
-@media (max-width: 429px) {
+/* The link to the contents: its word, or on a narrower screen a list's three lines, drawn in the
+   text's colour. */
+.ms-Buttons-contents-icon {
+  display: none;
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* The row's widths (index.js's comment), measured in Inter, this machine's interface typeface; the
+   notebook workflow's runner draws in DejaVu Sans, about 3 per cent wider, and its smoke test checks
+   that the row fits at 360, 390, 500 and 600 pixels. Below 500 pixels: the arrows without their
+   numbers, 40 pixels wide and 44 tall, and the row closer together, 324 pixels in all (333 in
+   DejaVu Sans). From 390 the contents link joins it as an icon, 368 (377). From 500 the arrows show
+   their numbers, with the icon, 440; from 600 the link shows its word, 478. */
+@media (max-width: 499px) {
   .ms-Buttons {
     gap: 4px;
   }
@@ -112,9 +126,25 @@
   }
 }
 
-/* Below 600 pixels, no link to the contents: the text has one at its top and its end. With it, the
-   row takes about 490 pixels, more in a wider typeface. */
 @media (max-width: 599px) {
+  .ms-Buttons-contents {
+    width: 40px;
+    min-width: 40px;
+    padding: 0;
+  }
+
+  .ms-Buttons-contents-text {
+    display: none;
+  }
+
+  .ms-Buttons-contents-icon {
+    display: block;
+  }
+}
+
+/* Below 390 pixels there is no room for the contents link: the text links to the contents at its
+   top and its end. */
+@media (max-width: 389px) {
   .ms-Buttons-contents {
     display: none;
   }

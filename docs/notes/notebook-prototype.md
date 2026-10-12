@@ -492,6 +492,16 @@ screens only, opening in a new tab.
   from 600, between the arrows, and the row does not scroll. `smoke.mjs` checks every chapter at
   600 pixels (the link's name, text, address, new tab, height and place, and that the row fits) and
   at 360 (that it does not show).
+- Later the same day the author, on a phone about 410 pixels wide, saw room for it between the
+  arrows. It now shows from 390 pixels as an icon, a list's three lines drawn in the text's colour,
+  40 pixels wide, with the same name and tooltip, and its word from 600. Below 500 pixels the row
+  takes its phone form (arrows without numbers, closer together): 324 pixels, 368 with the icon
+  (333 and 377 in DejaVu Sans). From 500 the arrows show their numbers again, 440 with the icon; from
+  600, 478 with the word. So the arrows lost their numbers between 430 and 499 pixels, where they
+  had them, so that the icon fits. 360-pixel phones still have no room for it; 375-pixel ones would
+  in Inter but not in DejaVu Sans, so the line is at 390. Checked at 360, 390, 412 (dark), 499, 500
+  and 600 pixels; `smoke.mjs` checks every chapter at 390, 500 and 600 (icon or word, place, address,
+  new tab, height, and that the row fits) and at 360.
 
 ### The menu bar and the toolbar hidden
 

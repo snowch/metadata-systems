@@ -472,7 +472,7 @@ check and the reason it exists.
 - **The notebooks, in a browser, as a phone** (`notebook/jupyterlite/smoke.mjs`, in the Notebooks
   workflow): the menu bar and toolbar hidden, the row of buttons there and 44 pixels tall, with
   arrows to the chapters either side that open in a new tab and a row that fits 360 pixels, a link
-  to the contents between them from 600 pixels wide, Run all running every visible cell with no
+  to the contents between them from 390 pixels wide, Run all running every visible cell with no
   error and keeping the reader's place, Run below the same, the warning and the steps drawn as boxes
   and, from Chapter 2, the requirement in a box of its own colour, every figure showing before
   anything runs and the week's words at 11 pixels or more on a 360-pixel phone, a printed file
