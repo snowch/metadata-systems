@@ -292,7 +292,10 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertEqual((owners, len(programs)), ({"etl_service"}, 4))
         tables = self.w.sql("SELECT table_name FROM information_schema.tables")
         self.assertEqual(len(tables), 3)
-        self.says('The requirement is: "Every table must have an owner." The warehouse records `etl_service` as the owner of all three tables.')
+        self.says('The requirement is: "Every table must have an owner." The warehouse records `etl_service` as the owner of all three tables, in the column `table_owner` of `information_schema.tables`.')
+        # "field" is kept for a file's record (Chapter 1); what a system keeps is not called one here.
+        self.says("## Why each system records what it does about an asset")
+        self.assertNotIn("These fields", self.text[2])
 
     def test_the_reconstruction_and_thursday(self):
         self.assertEqual(len(shop.queries_that_rebuild(self.week)), 1)

@@ -35,7 +35,7 @@ against the writing standard (`AGENTS.md`), keeping the author's structure. In t
   match and four that do not, and no record connecting the two sets of numbers;
 - what the warehouse, object storage and the reporting tool record about an asset, read for
   `daily_sales` in full: a complete picture of the state and no account of its history;
-- why those fields exist (a system records what its own work needs) and the owner field as the
+- why each system records what it does (its own work needs it) and the warehouse's owner as the
   standing example: `etl_service`, an account, answers which account controls the table, not who
   to ask;
 - a reconstruction of `daily_sales` (completed orders in `clean_orders`, price times quantity per
@@ -819,6 +819,20 @@ owner requirement is stated before it is met; "catalogue" now means only the sho
 "message", not "line"; the warning says why the new tab matters; three reflective questions close
 the chapter. In the whole-chapter read, two repeats were cut and the questions moved after the
 Chapter 3 paragraph, where "them" had lost its referent.
+
+## "What fields?", 12 October 2026
+
+The author read the section then headed "What the fields are for" and asked "What fields?". Its
+first sentence, "These fields exist because the systems need them", pointed back across a heading to
+nothing the page had named, and "field" meant there what a system keeps about an asset, where
+Chapter 1 had used it for a named value in a file's record (`customer_id`, `quantity`): one word
+with two meanings. Brief `chapter-02/briefs/round-10/fields.md` gave Haiku four passages' facts with
+"field" kept to a file's record; its draft is placed as written, but for one change of mine: "The
+warehouse's owner" became "The owner the warehouse records", since the first reads as the owner of
+the warehouse. The section is now headed "Why each system records what it does about an asset", the
+owner is named as the column `table_owner` of `information_schema.tables`, and the paragraph before
+it says "Everything the three systems showed" for "Everything here". Chapter 4's reflective question
+about "its owner field" is left: by then Chapter 3 has made a field a line of a record.
 
 ## Known gaps
 
