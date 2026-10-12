@@ -17,7 +17,11 @@ Explain, and build in small, the machinery of a metadata platform:
 - how metadata supports data quality, provenance, impact analysis and root-cause analysis;
 - what breaks when events are missing, repeated, late or contradictory, and at scale;
 - how real systems (OpenLineage producers, Marquez, OpenMetadata, DataHub, Atlas) are built;
-- and how to build a simplified metadata platform themselves, because they have built one.
+- and how to build a simplified metadata platform themselves, because they have built one;
+- and, at the end, how to build the metadata and lineage process for a platform of a common
+  kind: data that lands in object storage, functions that run when objects are created,
+  overwritten or deleted, scheduled jobs beside them, and results queried as tables. Chapter 33
+  asks them to do it for one they have not seen.
 
 Beside all of this, the learner leaves with a habit: when a requirement sounds obvious, ask what it
 actually means. They can say what a requirement literally asks, what it might mean, what each
@@ -178,7 +182,7 @@ Parts I to V named.
 
 | Ch | Title | The learner does |
 | --- | --- | --- |
-| 33 | Build the whole thing | receive a second, unfamiliar platform and model it, instrument it, capture and ingest its lineage, track its schemas and quality, diagnose a failure, analyse an impact and explain a result's provenance |
+| 33 | Build the whole thing | receive a second, unfamiliar platform, built not on a nightly batch but on object storage whose changes start functions, with scheduled jobs beside them and tables over the results, and model it, instrument its functions and jobs, capture and ingest its lineage (per object and per version, deletions included), track its schemas and quality, diagnose a failure, analyse an impact and explain a result's provenance |
 
 ## Questioning the requirement, chapter by chapter
 
@@ -257,6 +261,23 @@ The author reviews the course at five checkpoints:
 5. Before Chapter 33.
 
 ## Decisions since the brief
+
+### 12 October 2026: the end goal, a metadata and lineage process for an event-driven platform
+
+The author asked that the course leave the reader able to build an end-to-end metadata and lineage
+process on top of a platform of the kind that reacts to object storage, without naming a product
+and without setting out what one platform supports less well than another. The course's end goals
+("What the learner can do at the end") gain it, and Chapter 33's unfamiliar platform is now of that
+kind: data landing in object storage, functions started when objects are created, overwritten or
+deleted, scheduled jobs beside them, and tables over the results. The returns desk (the decision
+below) is the small case the reader meets from Chapter 7 on.
+
+No product is named for it, so the course makes no claim about one, favourable or not. Part VII is
+unchanged: Chapter 30's systems are a scheduler and three engines, Chapter 31's are metadata
+platforms, and neither compares a storage platform with another. The course's premise treats every
+platform alike: each system records what its own work needs (Chapter 2), and what it does not
+record is what the reader builds on top. Any claim the course does make about a real system is
+still checked against that system's own documentation (`CLAUDE.md`, "Accuracy").
 
 ### 12 October 2026: processing started by objects, as a use case of the shop's
 
