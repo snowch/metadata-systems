@@ -199,7 +199,8 @@ it.
 - `content/plan/notebooks.test.ts` and `plan.test.ts`: the plan against `docs/plan.md`, and each
   notebook headed with its chapter's title.
 - `notebook/jupyterlite/smoke.mjs`, as a phone, in the Notebooks workflow: the menu bar and toolbar
-  hidden, the row of buttons there and 44 pixels tall, Run all and Run below running every cell
-  with no error and keeping the reader's place.
+  hidden, the row of buttons there and 44 pixels tall, with arrows to the chapters either side that
+  open in a new tab and a row that fits 360 pixels, Run all and Run below running every cell with no
+  error and keeping the reader's place.
 
 A commit carries the tests for the code it changes, so every commit passes the check on its own.

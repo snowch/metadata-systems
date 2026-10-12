@@ -3,7 +3,8 @@
 // Opens the built JupyterLite site in Chromium as a phone, with touch, and presses the row of
 // buttons (notebook/buttons/) as the chapters' texts tell a reader to. For each chapter: the menu bar
 // and the notebook's toolbar are hidden; the row shows the labels buttons.json gives, each button
-// at least 44 pixels tall; a press disables the row and marks the pressed button busy until the
+// at least 44 pixels tall, and arrows to the chapters either side, which open in a new tab, the row
+// fitting 360 pixels; a press disables the row and marks the pressed button busy until the
 // run ends; Run all runs every visible code cell, with no error in any output, and leaves the
 // notebook where it was scrolled; the warning and the steps for running the page are boxes; in
 // Chapter 1 a printed file keeps one record per line, scrolling inside its box, and the page never
@@ -84,7 +85,8 @@ try {
       return !!e && e.getBoundingClientRect().height > 0;
     }, selector);
 
-  for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]) {
+  const chapters = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+  for (const chapter of chapters) {
     const stem = `chapter_${String(chapter).padStart(2, "0")}`;
     await page.goto(`http://127.0.0.1:${port}/notebooks/index.html?path=${stem}.ipynb`);
     await page.waitForFunction(() => document.querySelector(".jp-MarkdownOutput h1"), null, {
@@ -109,6 +111,55 @@ try {
       row.every((b) => b.height >= 44),
       `Chapter ${chapter}: every button is at least 44 pixels tall`,
     );
+    // The arrows to the chapters either side: none before the first chapter or after the last,
+    // each 44 pixels tall, and the row fits a phone 360 pixels wide without scrolling.
+    const stemOf = (n) => `chapter_${String(n).padStart(2, "0")}.ipynb`;
+    const expected = [
+      chapter > chapters[0] && `Previous: Chapter ${chapter - 1}|${stemOf(chapter - 1)}`,
+      chapter < chapters.at(-1) && `Next: Chapter ${chapter + 1}|${stemOf(chapter + 1)}`,
+    ].filter(Boolean);
+    await page
+      .waitForFunction(
+        (n) => document.querySelectorAll(".ms-Buttons-link").length === n,
+        expected.length,
+        { timeout: 10_000 },
+      )
+      .catch(() => {});
+    await page.setViewportSize({ width: 360, height: 800 });
+    await page.waitForTimeout(300);
+    const arrows = await page.evaluate(() => {
+      const bar = document.querySelector(".ms-Buttons");
+      return {
+        links: [...bar.querySelectorAll(".ms-Buttons-link")].map((a) => ({
+          name: `${a.getAttribute("aria-label")}|${new URL(a.href).searchParams.get("path")}`,
+          height: a.getBoundingClientRect().height,
+          tab: a.target,
+        })),
+        fits: bar.scrollWidth <= bar.clientWidth,
+      };
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.waitForTimeout(300);
+    check(
+      JSON.stringify(arrows.links.map((a) => a.name)) === JSON.stringify(expected) &&
+        arrows.links.every((a) => a.height >= 44 && a.tab === "_blank"),
+      `Chapter ${chapter}: the arrows lead to ${expected.map((e) => e.split("|")[0]).join(" and ")}, in a new tab`,
+    );
+    check(arrows.fits, `Chapter ${chapter}: at 360 pixels wide the row fits without scrolling`);
+    if (chapter === 1) {
+      const opened = page.context().waitForEvent("page", { timeout: 30_000 });
+      await page.locator(".ms-Buttons-next").tap();
+      const next = await opened;
+      await next.waitForFunction(() => document.querySelector(".jp-MarkdownOutput h1"), null, {
+        timeout: 120_000,
+      });
+      const heading = await next.locator(".jp-MarkdownOutput h1").first().textContent();
+      check(
+        heading.startsWith("Chapter 2:") && page.url().endsWith(stemOf(1)),
+        "Chapter 1: its Next arrow opens Chapter 2 in a new tab",
+      );
+      await next.close();
+    }
     // The figures are in Markdown cells, drawn when the site was built: they show before anything
     // runs, with no code cell for any of them, and the week's words are readable on a phone.
     const figures = await page.evaluate(async () => {

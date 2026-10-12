@@ -418,6 +418,30 @@ The author did not choose to have the notebook run itself on opening, so it does
   it should, on a copy of the site without the extension; a cell that raises shows as the error
   output it counts.
 
+### Arrows to the chapters either side
+
+Asked whether the row should carry links to the other chapters, the author agreed to two arrows at
+its right end, to the chapter before and the chapter after. The row stays in view while the cells
+scroll; the links the chapter's text gives are at its top and its end, and a Part III chapter is
+long.
+
+- The extension finds the chapters among the site's files, the notebooks named `chapter_NN.ipynb`,
+  so a chapter added to the site gains its arrows, and the chapter before it its Next arrow, with
+  no list to keep. Chapter 1 has no Previous arrow, and the last chapter no Next.
+- Each arrow is a link, `index.html?path=chapter_NN.ipynb`, that opens in a new tab, as the text's
+  links do, so each chapter's warning, which says the link from the chapter before opens it in a new
+  tab, and the memory measured with that chapter open, still hold. Each arrow's accessible name and
+  tooltip are the text's links' own words, "Previous: Chapter 12" and "Next: Chapter 14".
+- Width. With the three buttons as they were, at 360 pixels the row was 24 pixels too wide for two
+  arrows with their chapters' numbers. Below 430 pixels the arrows show without their numbers, 44
+  pixels square, and the buttons' side padding is 12 pixels and the gaps 6: the row is 352 pixels
+  wide at 360 with both arrows. Above it, each arrow shows its chapter's number.
+- Checked on the built site, by touch at 360 and 390 pixels, in the light and dark themes, and by
+  mouse at 1280: Chapters 1, 7, 12 and 13 show the arrows they should; the row did not scroll;
+  every arrow was 44 pixels tall; Chapter 13's Previous arrow opened Chapter 12 in a new tab, and
+  Chapter 13 stayed open. `smoke.mjs` checks each chapter's arrows, their height and their new tab,
+  that the row fits 360 pixels, and that Chapter 1's Next arrow opens Chapter 2.
+
 ### The menu bar and the toolbar hidden
 
 After the row was published, the author reported that the buttons did not seem to work, and asked

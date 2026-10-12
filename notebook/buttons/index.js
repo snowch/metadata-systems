@@ -15,6 +15,13 @@
 // With the toolbar hidden, nothing else on the page shows that Python is busy, and on a phone the
 // first run waits several seconds for Python to start. So while a button's work is under way, the
 // row's buttons are disabled and the pressed one shows a spinner (style/index.css).
+//
+// At the row's right end, an arrow to the chapter before and one to the chapter after. The row
+// stays in view while the cells scroll, and the links the chapter's text gives are at its top and
+// its end only. The chapters are the site's files named chapter_NN.ipynb, so a new chapter gains its
+// arrows when its file is added. Each arrow is a link that opens its chapter in a new tab, as the
+// text's links do; their names are the text's links' own words. On a phone the arrows show without
+// their chapters' numbers, so that the row fits 360 pixels (style/index.css).
 
 import { NotebookActions, INotebookTracker } from "@jupyterlab/notebook";
 import { Widget } from "@lumino/widgets";
@@ -88,6 +95,43 @@ function row(app, panel) {
   return widget;
 }
 
+const CHAPTER = /^chapter_(\d\d)\.ipynb$/;
+
+/** Arrows to the chapters either side of the panel's, added to the row when the site's files are
+    listed. */
+async function arrows(app, panel, widget) {
+  const own = CHAPTER.exec(panel.context.path);
+  if (!own) return;
+  const listing = await app.serviceManager.contents.get("", { content: true });
+  const chapters = listing.content
+    .map((file) => file.name)
+    .filter((name) => CHAPTER.test(name))
+    .sort();
+  const at = chapters.indexOf(panel.context.path);
+  const links = [
+    [chapters[at - 1], "Previous", "\u2039"],
+    [chapters[at + 1], "Next", "\u203a"],
+  ];
+  for (const [name, which, arrow] of links) {
+    if (at < 0 || !name) continue;
+    const number = Number(CHAPTER.exec(name)[1]);
+    const link = document.createElement("a");
+    link.className = `ms-Buttons-link ms-Buttons-${which.toLowerCase()}`;
+    link.href = `${window.location.pathname}?path=${encodeURIComponent(name)}`;
+    link.target = "_blank";
+    const sign = document.createElement("span");
+    sign.className = "ms-Buttons-arrow";
+    sign.textContent = arrow;
+    const label = document.createElement("span");
+    label.className = "ms-Buttons-number";
+    label.textContent = String(number);
+    link.append(...(which === "Next" ? [label, sign] : [sign, label]));
+    link.setAttribute("aria-label", `${which}: Chapter ${number}`);
+    link.title = `${which}: Chapter ${number}`;
+    widget.node.append(link);
+  }
+}
+
 // The notebooks' names until 11 October 2026, when the two parts of Chapter 1 became Chapters 1 and
 // 2, and the names they have now.
 const MOVED = {
@@ -110,14 +154,18 @@ function followMove(app) {
 export default {
   id: "ms-notebook-buttons:row",
   description:
-    "Adds a row of large Run all, Run below and Save buttons above every notebook's cells, hides the menu bar and the notebook's toolbar, and sends the notebooks' earlier names to their chapters.",
+    "Adds a row of large Run all, Run below and Save buttons above every notebook's cells, with arrows to the chapters either side, hides the menu bar and the notebook's toolbar, and sends the notebooks' earlier names to their chapters.",
   autoStart: true,
   requires: [INotebookTracker],
   activate(app, tracker) {
     followMove(app);
     const add = (panel) => {
       panel.toolbar.setHidden(true);
-      panel.contentHeader.addWidget(row(app, panel));
+      const widget = row(app, panel);
+      panel.contentHeader.addWidget(widget);
+      panel.context.ready
+        .then(() => arrows(app, panel, widget))
+        .catch((reason) => console.error("arrows", reason));
       // The menu bar's area in Jupyter Notebook's page, which its zen mode hides the same way.
       app.shell.menu?.setHidden(true);
     };

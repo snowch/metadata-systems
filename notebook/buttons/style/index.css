@@ -48,6 +48,66 @@
   color: var(--jp-ui-font-color2);
 }
 
+/* The arrows to the chapters either side, at the row's right end, as tall as the buttons. */
+.ms-Buttons-link {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 44px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  font-family: var(--jp-ui-font-family);
+  font-size: var(--jp-content-font-size1);
+  color: var(--jp-ui-font-color1);
+  text-decoration: none;
+  gap: 4px;
+  white-space: nowrap;
+  background: var(--jp-layout-color1);
+  border: var(--jp-border-width) solid var(--jp-border-color1);
+  border-radius: var(--jp-border-radius);
+}
+
+.ms-Buttons-button + .ms-Buttons-link {
+  margin-left: auto;
+}
+
+.ms-Buttons-link:hover {
+  background: var(--jp-layout-color2);
+}
+
+.ms-Buttons-link:focus-visible {
+  outline: 2px solid var(--jp-brand-color1);
+  outline-offset: 1px;
+}
+
+.ms-Buttons-arrow {
+  font-size: 1.5em;
+  line-height: 1;
+}
+
+/* On a phone, the arrows without their numbers, and the row closer together: so it fits 360
+   pixels, with the five controls 44 pixels tall. */
+@media (max-width: 429px) {
+  .ms-Buttons {
+    gap: 6px;
+  }
+
+  .ms-Buttons-button {
+    padding: 0 12px;
+  }
+
+  .ms-Buttons-link {
+    width: 44px;
+    padding: 0;
+  }
+
+  .ms-Buttons-number {
+    display: none;
+  }
+}
+
 /* The pressed button, while its work is under way: a spinner after its label. */
 .ms-Buttons-button[aria-busy="true"]::after {
   content: "";

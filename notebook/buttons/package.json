@@ -2,7 +2,7 @@
   "name": "ms-notebook-buttons",
   "version": "1.0.0",
   "private": true,
-  "description": "A row of large buttons at the top of every notebook in the chapter's JupyterLite site: Run all, Run below and Save.",
+  "description": "A row of large buttons at the top of every notebook in the chapter's JupyterLite site: Run all, Run below and Save, and arrows to the chapters either side.",
   "main": "index.js",
   "style": "style/index.css",
   "scripts": {

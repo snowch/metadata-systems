@@ -470,9 +470,10 @@ check and the reason it exists.
   notebook, no console error, no horizontal scroll, no visible text under 11 pixels, every phone
   control at least 40 pixels tall, no line of prose over about 85 characters.
 - **The notebooks, in a browser, as a phone** (`notebook/jupyterlite/smoke.mjs`, in the Notebooks
-  workflow): the menu bar and toolbar hidden, the row of buttons there and 44 pixels tall, Run all
+  workflow): the menu bar and toolbar hidden, the row of buttons there and 44 pixels tall, with
+  arrows to the chapters either side that open in a new tab and a row that fits 360 pixels, Run all
   running every visible cell with no error and keeping the reader's place, Run below the same, the
   warning and the steps drawn as boxes, every figure showing before anything runs and the week's
-  words at 11 pixels or more on a 360-pixel phone, a printed file keeping one record per line, the theme
-  following the browser's light or dark setting, and a notebook's earlier name leading to its
+  words at 11 pixels or more on a 360-pixel phone, a printed file keeping one record per line, the
+  theme following the browser's light or dark setting, and a notebook's earlier name leading to its
   chapter.

@@ -49,6 +49,7 @@ node notebook/jupyterlite/smoke.mjs site          # presses the buttons in a bro
 
 The repository: `notebook/` (the chapters' sources, `chapter_NN.py`, each built into a notebook;
 `shop`, the engine; `tests`, which pin every number and sentence the notebooks state; `buttons`,
-the row of Run all, Run below and Save buttons; `jupyterlite`, the site's build), `apps/course`
-(the front page), `content/plan` (the plan as data, and which chapters have notebooks), and
+the row of Run all, Run below and Save buttons, with arrows to the chapters either side;
+`jupyterlite`, the site's build), `apps/course` (the front page), `content/plan` (the plan as data,
+and which chapters have notebooks), and
 `tests/educational` (Playwright, for the front page).
