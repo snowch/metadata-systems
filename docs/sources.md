@@ -207,6 +207,22 @@ pages read on 6 October say nothing either (above, "The documentation pages"). S
 delivery path, its acknowledgements and retries, and ingestion's rules for repeats and order are
 the shop's own, and the pages say so.
 
+The same review relied on the run-cycle page (above) for two more of Part V's lines: Chapter 18's
+note that a streaming job's runs have no expected terminal event under normal operation, so an open
+run is normal there; and Chapter 20's note that after a terminal event no other events about the
+run will be sent. Chapter 19's note that a key of run id and event type would drop real events
+rests on `eventType` above: a run may send `RUNNING` and `OTHER` events, and more than one.
+Chapter 22's `symlinks` facet is the entry under "Read for Part III" above.
+
+*Alias*, *entity resolution*, *index*, *partition*, *retention* and *compaction* are the course's own
+words for what Chapters 22 and 23 build, not OpenLineage's terms; each chapter defines its word for
+what its cells do. Compaction is the word that means most else elsewhere, so Chapter 23 says so,
+from Apache Kafka's documentation: `docs/design/design.md` in `apache/kafka`, branch `trunk`, read
+12 October 2026, section "Log Compaction": log compaction keeps at least the last known value for
+each message key in a topic partition's log and removes records that a later record with the same
+key replaces, as a finer-grained retention than retention by time. Read for checking, not copied;
+Apache License 2.0.
+
 ## W3C PROV (Chapter 15)
 
 *PROV-DM: The PROV Data Model*, W3C Recommendation, 30 April 2013

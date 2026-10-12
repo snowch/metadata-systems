@@ -210,7 +210,7 @@ and its notes say which (`CLAUDE.md`, "Question the requirement").
 | 16 | "Tell us what breaks if `customer_id` is renamed." | what fails, or also what keeps running and gives a wrong answer. A second candidate, from the returns: "When a return is deleted, remove everything made from it": its row, the totals that counted it, copies, or also what was already reported |
 | 17 | "Find the cause of the wrong total." | where the data first went wrong; the change that did it; the decision behind that change |
 | 18 | "Lineage must be complete." | complete for the programs that send events, or for every program that touches the data |
-| 19 | "Ingestion must ignore duplicates." | the same event twice; the same run reported twice; the same content at another time |
+| 19 | "Ingestion must ignore duplicates." | the same event twice; the same run reported twice, with a new time; the same work done twice |
 | 20 | "Show the latest state of each run." | latest by when it happened, or by when it arrived |
 | 21 | "Show the correct owner." | the newest claim; the claim from the most trusted system; every claim with where it came from. Chapter 2's owner returns |
 | 22 | "Merge the same dataset across systems." | the same name, the same rows, or the same thing to the business; across environments or not |

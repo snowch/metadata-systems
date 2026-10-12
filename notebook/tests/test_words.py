@@ -1157,16 +1157,30 @@ class TheWordsOfPartV(unittest.TestCase):
         self.says("It sends the event again if no acknowledgement comes within 30 seconds.", 18)
         [r] = D.send(self.week, lose=["remove_return COMPLETE"], at_least_once=True).retried()
         self.assertEqual((r["sendings"], r["received"], r["first arrival"]), (2, 1, "2026-09-12T16:50:37Z"))
-        self.says("The receipt was at 16:50:37 on Saturday 12, 30 seconds after the first sending.", 18)
+        sendings = sorted(a.sent for a in D.send(self.week, lose_ack=["remove_return COMPLETE"], at_least_once=True).arrivals if a.event["job"]["name"] == "remove_return" and a.event["eventType"] == "COMPLETE")
+        self.assertEqual(sendings, ["2026-09-12T16:50:05Z", "2026-09-12T16:50:35Z"])
+        self.says("The program sent it at 16:50:05. No acknowledgement came, so it sent it again at 16:50:35, 30 seconds later.", 18)
+        self.says("The collector received it once, at 16:50:37.", 18)
         [r] = D.send(self.week, lose_ack=["remove_return COMPLETE"], at_least_once=True).retried()
         self.assertEqual((r["first arrival"], r["last arrival"]), ("2026-09-12T16:50:07Z", "2026-09-12T16:50:37Z"))
         self.says("the `COMPLETE` is sent twice and received twice: at 16:50:07 and at 16:50:37", 18)
+        self.says("The export sends no events (Chapter 13).", 18)
+        lost_once = D.send(self.week, lose=["remove_return COMPLETE"])
+        self.assertEqual(list(self.graph(lost_once.events).of("shop/remove_return")), [])
+        self.assertEqual([r["job"] for r in self.graph(lost_once.events).of("returns") if r["edge"] == "writes"], ["shop/record_return"])
+        self.says("The graph now shows `record_return` as the only program that writes `returns`.", 18)
+        [o] = D.open_runs(lost_once.events, "2026-09-14T09:00:00Z")
+        self.assertEqual((o["started"], o["usual seconds"]), ("2026-09-12T16:50:02Z", None))
 
     def test_chapter_19(self):
         D, I = self.D, self.I
         twice = D.send(self.week, lose_ack=["build_daily_sales COMPLETE 2026-09-10"], at_least_once=True)
         self.assertEqual(len(twice.events), 69)
-        self.says("The cell shows `69` and `True`. The collector received 69 events, 1 more than the 68 sent.", 19)
+        once = D.send(self.week)
+        self.assertEqual(self.graph(twice.events).by_job, self.graph(once.events).by_job)
+        self.assertEqual([(r["edge"], r["runs"]) for r in self.graph(twice.events).of("shop/build_daily_sales")], [("reads", 7), ("writes", 7)])
+        self.says("The collector received 69 events, 1 more than the 68 sent.", 19)
+        self.says("`reads` `clean_orders` in 7 runs, and `writes` `daily_sales` in 7 runs", 19)
         retimed = D.send(self.week, lose_ack=["build_daily_sales COMPLETE 2026-09-10"], at_least_once=True, restamp=True)
         [run] = [r for r in I.objects(I.normalise(retimed.events)).runs.values() if r["job"].endswith("build_daily_sales") and r["started"].startswith("2026-09-10")]
         self.assertEqual(run["ended"], "2026-09-10T02:30:52Z")
@@ -1174,8 +1188,18 @@ class TheWordsOfPartV(unittest.TestCase):
         [d] = I.dedupe(retimed.events, "run").dropped
         self.assertEqual((d["event time"][11:19], d["kept event time"][11:19]), ("02:30:52", "02:30:21"))
         self.says("By run, one event is dropped: the `COMPLETE` with the time 02:30:52. The event kept has the time 02:30:21.", 19)
+        self.assertEqual(I.dedupe(retimed.events, "content").dropped, [])
+        ended = lambda events: [r["ended"] for r in I.objects(I.normalise(events)).runs.values() if r["job"].endswith("build_daily_sales") and r["started"].startswith("2026-09-10")]
+        self.assertEqual((ended(I.dedupe(retimed.events, "content")), ended(I.dedupe(retimed.events, "run"))), (["2026-09-10T02:30:52Z"], ["2026-09-10T02:30:21Z"]))
+        self.says("The run early on Thursday 10 still ends at 02:30:52.", 19)
+        self.says("In the cell below it, the run early on Thursday 10 ends at 02:30:21 again.", 19)
         self.says("So `record_return` starts twice for the one change, 25 seconds apart.", 19)
+        side = I.edges_side_by_side("shop/record_return", label="notice", once=D.week_events(self.week), twice=D.week_events(shop.run_week(["returns", "twice"])))
+        runs = {(r["notice"], r["edge"], r["dataset"].rsplit("/", 1)[-1]): r["runs"] for r in side}
+        self.assertEqual((runs[("once", "writes", "shop.analytics.returns")], runs[("twice", "writes", "shop.analytics.returns")]), (5, 6))
+        self.assertEqual((runs[("once", "reads", "r-202.json")], runs[("twice", "reads", "r-202.json")]), (2, 3))
         self.says("In the lineage, `record_return` now writes `returns` in 6 runs, not 5.", 19)
+        self.says("It reads `r-202.json` in 3 runs, not 2.", 19)
 
     def test_chapter_20(self):
         D, I = self.D, self.I
@@ -1183,13 +1207,25 @@ class TheWordsOfPartV(unittest.TestCase):
         times = {(r["type"], r["event time"]): r["arrived"] for r in late.received() if r["job"] == "build_daily_sales"}
         self.assertEqual(times[("COMPLETE", "2026-09-09T02:30:21Z")], "2026-09-10T04:30:24Z")
         self.assertEqual(times[("COMPLETE", "2026-09-10T02:30:21Z")], "2026-09-10T02:30:24Z")
-        self.says("It arrives at 04:30:24 on Thursday 10, after the `COMPLETE` of the run early on Thursday 10, which arrived at 02:30:24.", 20)
+        self.says("Wednesday 9's `COMPLETE` arrived at 04:30:24 on Thursday 10, after Thursday 10's, which arrived at 02:30:24.", 20)
+        self.says("is held up for 26 hours on its way to the collector. Every other event takes 2 seconds.", 20)
+        self.assertEqual(D.LATENCY, 2)
+        seen = I.normalise(late.until("2026-09-10T09:00:00Z"))
+        self.assertEqual([r["run ended"] for r in I.objects(seen, order="arrival").last_write("daily_sales")], ["2026-09-09T02:30:21Z"])
+        self.assertEqual([r["run ended"] for r in I.objects(seen, order="event").last_write("daily_sales")], ["2026-09-10T02:30:21Z"])
+        shorter = D.send(self.week, delay={"build_daily_sales COMPLETE 2026-09-09": 20 * 3600})
+        self.assertIn({"arrived": "2026-09-09T22:30:24Z", "job": "build_daily_sales", "type": "COMPLETE", "event time": "2026-09-09T02:30:21Z"}, shorter.received(job="build_daily_sales", type="COMPLETE"))
+        self.assertEqual([r["run ended"] for r in I.objects(I.normalise(shorter.until("2026-09-10T09:00:00Z")), order="arrival").last_write("daily_sales")], ["2026-09-10T02:30:21Z"])
+        self.says("Wednesday 9's `COMPLETE` now arrives at 22:30:24 on Wednesday 9, before Thursday 10's. By arrival, the last write is Thursday's run again, ended at 02:30:21 on Thursday 10.", 20)
         self.says("By event time, the run that last wrote `daily_sales` ended at 02:30:21 on Thursday 10.", 20)
         self.says("By arrival, it ended at 02:30:21 on Wednesday 9: a day earlier.", 20)
         early = D.send(self.week, delay={"build_daily_sales START 2026-09-09": 60})
         times = {(r["type"], r["event time"]): r["arrived"] for r in early.received() if r["job"] == "build_daily_sales"}
         self.assertEqual((times[("START", "2026-09-09T02:30:00Z")], times[("COMPLETE", "2026-09-09T02:30:21Z")]), ("2026-09-09T02:31:03Z", "2026-09-09T02:30:24Z"))
         self.says("It arrives at 02:31:03, after its own `COMPLETE`, which arrived at 02:30:24.", 20)
+        [r] = I.objects(I.normalise(early.events), order="arrival").runs_of(state="START", columns=["started", "ended"])
+        self.assertEqual((r["started"], r["ended"]), ("2026-09-09T02:30:00Z", "2026-09-09T02:30:21Z"))
+        self.says("The run early on Wednesday 9 has an end time of 02:30:21, and its state is `START`.", 20)
         held = D.send(shop.run_week(["returns", "withdrawn"]), delay={"record_return START 2026-09-13": 12 * 3600, "record_return COMPLETE 2026-09-13": 12 * 3600})
         self.assertIn("2026-09-14T09:15:05Z", [r["arrived"] for r in held.received() if r["job"] == "record_return"])
         self.says("They arrive at 09:15 on Monday 14, after the events of the `remove_return` run at 08:50.", 20)
@@ -1205,7 +1241,18 @@ class TheWordsOfPartV(unittest.TestCase):
         self.says("its catalogue, read every night at 03:30", 21)
         self.assertEqual(C.TABLE_ALTERED[11:], "02:30:21Z")
         self.says("The warehouse's content changes every night, at 02:30:21", 21)
-        self.says("Every claim is kept, with its source and its two times: five rows.", 21)
+        tuesday = C.claims("2026-09-15T09:00:00Z")
+        chosen = lambda rule, held=tuesday: {r["attribute"]: r["value"] for r in C.resolve(held, rule)}
+        self.assertEqual(chosen("newest"), {"columns": "day, revenue", "owner": "data team"})
+        self.assertEqual(chosen("as of"), {"columns": "day, revenue_pence", "owner": "etl_service"})
+        self.assertEqual(chosen("ranked"), {"columns": "day, revenue_pence", "owner": "j.marsh"})
+        self.assertEqual(len(C.resolve(tuesday, "all")), 5)
+        self.assertEqual({r["source"]: r["sent"] for r in tuesday}, {"team sheet": "2026-09-15T04:00:00Z", "warehouse": "2026-09-15T03:30:00Z", "records": "2026-09-14T16:40:00Z"})
+        self.says("The team sheet's claims were sent at 04:00 on Tuesday 15, the warehouse's at 03:30, and your records' at 16:40 on Monday 14.", 21)
+        self.says("The owner is `etl_service` and the columns are `day, revenue_pence`, both from the warehouse.", 21)
+        self.assertEqual(chosen("ranked", C.claims("2026-09-14T12:00:00Z"))["owner"], "data team")
+        self.says("At 12:00 on Monday 14, before your records were sent, `ranked` gave the owner `data team`, from the team sheet.", 21)
+        self.says("The cell lists every claim the shop holds, with its source and its two times: five rows.", 21)
 
     def test_chapter_22(self):
         A = self.A
@@ -1217,19 +1264,26 @@ class TheWordsOfPartV(unittest.TestCase):
     def test_chapter_23(self):
         S = self.S
         [m] = S.measure(self.week)
-        self.says("The week holds 11 assets, 6 jobs, 34 runs, 68 events, 67 run edges and 14 job edges, over 7 days. An event takes 1492 bytes on average.", 23)
+        self.says("The week holds 11 assets, 6 jobs, 34 runs, 68 events, 67 edges by run and 14 edges by job, over 7 days. An event takes 1492 bytes on average.", 23)
         self.assertEqual((m["assets"], m["events"], m["bytes per event"]), (11, 68, 1492))
         self.assertEqual(round(m["events"] / m["days"] / m["assets"], 1), 0.9)
         self.says("about 0.9 events per asset per day", 23)
         top = S.reach(self.week)
         self.assertEqual([(r["edges followed"], r["share"]) for r in top[:2]], [(6, 0.43), (4, 0.29)])
-        self.says("From `orders.jsonl`, a search downstream follows 6 of the 14 job edges: 0.43, the widest share. From `clean_orders`, it follows 4: 0.29.", 23)
+        self.says("From `orders.jsonl`, a traversal downstream follows 6 of the 14 edges by job: 0.43, the widest share. From `clean_orders`, it follows 4: 0.29.", 23)
+        self.assertEqual((S.FANOUT, S.FANOUT ** S.DEPTH), (3, 81))
+        self.says("so 4 steps follow at most 81 edges", 23)
         self.assertEqual((S.BUDGET, S.RETENTION_DAYS, S.DEPTH, S.SIZES[-1]), (1_000_000, 90, 4, 10_000_000))
         self.says("pass the limit first, at 100,000 assets", 23)
-        self.says("the latest run reads 31 records at 10,000,000 assets", 23)
+        self.says("the latest run reads 31 records at 10,000,000 assets: about 30 steps down the index, then one record", 23)
         self.says("At 10,000,000 assets, the projection holds 794,805,210 events.", 23)
         self.says("The output shows 68 events, of which 28 are kept.", 23)
         self.says("`record_return` reads it, in 1 run, first and last at 14:20:05 on Tuesday 8", 23)
+        events = self.D.week_events(self.week)
+        found = lambda now: self.I.edges(self.I.objects(self.I.normalise(S.retain(events, 90, now)))).by_run
+        self.assertEqual((len(S.lineage_of(found("2026-12-07T14:20:00Z"), "r-201.json")), len(S.lineage_of(found("2026-12-07T14:21:00Z"), "r-201.json"))), (1, 0))
+        self.says("With 90 days, that run's events would be deleted after 14:20 on Monday 7 December.", 23)
+        self.assertEqual([r["return_id"] for r in self.week.warehouse.sql("SELECT return_id FROM returns WHERE return_id = 'r-201'")], ["r-201"])
 
 
 class TheWordsOfPartIV(unittest.TestCase):
@@ -1507,14 +1561,14 @@ class TheWordsKeepTheRules(unittest.TestCase):
             (18, "## From the programs to the collector", ("collector", "delivery")),
             (18, "The open run of `remove_return`", ("at least once",)),
             (19, "The run early on Thursday 10 started at 02:30:00", ("deduplication",)),
-            (19, "By content, no event was dropped.", ("idempotent",)),
+            (19, "Change `\"content\"` to `\"run\"`", ("idempotent",)),
             (20, "## Two times", ("event time", "arrival time")),
-            (21, "At 09:00 on Tuesday 15", ("precedence",)),
+            (21, "The team sheet's claims were sent at 04:00 on Tuesday 15", ("precedence",)),
             (22, "Under that rule, all six become one entity.", ("entity resolution",)),
             (22, "## What each system states", ("alias",)),
             (23, "The two questions that read every stored event", ("index", "partition")),
             (23, "## Keeping less", ("retention",)),
-            (23, "The output shows 68 events", ("compaction",)),
+            (23, "The row is still in `returns`.", ("compaction",)),
         ):
             # The chapter's title is the plan's, and may name its term ("Metadata as a graph").
             cells = [re.sub(r"^# Chapter \d+: .*$", "", re.sub(r"\]\([^)]*\)", "]", c), flags=re.M) for c in CELLS[number]]

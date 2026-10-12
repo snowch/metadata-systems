@@ -114,11 +114,13 @@ class Delivery:
         """The events the collector had received by `at`, in the order received."""
         return [a.event for a in self.arrivals if epoch(a.arrived) <= epoch(at)]
 
-    def received(self) -> Rows:
-        """Each event as the collector received it: its job, type and event time, and when it arrived."""
+    def received(self, job: str | None = None, type: str | None = None) -> Rows:
+        """Each event as the collector received it, in the order it arrived: its job, type and event
+        time, and when it arrived; only `job`'s events, or only those of `type`, if given."""
         return Rows(
             {"arrived": a.arrived, "job": _job(a.event), "type": a.event["eventType"], "event time": _time(a.event)}
             for a in self.arrivals
+            if (job is None or _job(a.event) == job) and (type is None or a.event["eventType"] == type)
         )
 
     def _repr_html_(self) -> str:

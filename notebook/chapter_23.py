@@ -19,7 +19,7 @@ def _(mo):
     **Objectives**
 
     - Measure the week's metadata.
-    - Project it to 10,000,000 assets, and find which question costs too much first.
+    - Project it to 10,000,000 assets, and find which way of answering a question passes a limit first.
     - Delete old events, and find what lineage that loses.
     - Question the requirement "Keep lineage for 90 days."
     """)
@@ -73,7 +73,7 @@ def _(mo):
     mo.md(r"""
     ## The week, counted
 
-    The shop's metadata system holds one week of one small shop. The next cell counts what it holds.
+    The shop's metadata system holds the events of one week. The next cell counts what it holds.
     """)
     return
 
@@ -88,11 +88,11 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The week holds 11 assets, 6 jobs, 34 runs, 68 events, 67 run edges and 14 job edges, over 7 days. An event takes 1492 bytes on average.
+    The week holds 11 assets, 6 jobs, 34 runs, 68 events, 67 edges by run and 14 edges by job, over 7 days. An event takes 1492 bytes on average.
 
     The week's rate is about 0.9 events per asset per day: 68 events, over 7 days, for 11 assets.
 
-    The next cell lists, for each dataset, how many of the 14 job edges a search downstream from it follows to the end, and the share of all 14 that number is.
+    The next cell lists, for each dataset, how many of the 14 edges by job a traversal downstream from it follows to the end, and the share of all 14 that is.
     """)
     return
 
@@ -106,17 +106,25 @@ def _(shop, week23):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    From `orders.jsonl`, a search downstream follows 6 of the 14 job edges: 0.43, the widest share. From `clean_orders`, it follows 4: 0.29.
+    From `orders.jsonl`, a traversal downstream follows 6 of the 14 edges by job: 0.43, the widest share. From `clean_orders`, it follows 4: 0.29.
 
-    The projection below keeps the week's rates as the platform grows from 10 assets to 10,000,000. Each asset gets the week's events per day. Every event is kept for 90 days. The widest search follows 0.43 of the edges. The projection counts the stored records that three questions read, each in two ways:
+    The projection below grows the platform from 10 assets to 10,000,000, in powers of ten: 10, 100, 1,000 and so on.
+
+    At every size it keeps the week's rates: about 0.9 events per asset per day, the week's number of edges by job per asset, and a widest traversal that follows 0.43 of the edges.
+
+    It keeps every event for 90 days, the time the head of the shop's requirement at the end of the chapter names.
+
+    It counts the records each of three questions reads, each answered in two ways:
 
     - The latest run of one job: read every stored event, or read the events sorted by job and time.
     - One day's events: read every stored event, or read the events stored day by day.
-    - What is downstream of one asset: follow the search to the end, or follow it 4 steps.
+    - What is downstream of one asset: follow the traversal to the end, or follow it 4 steps. At each step, each dataset leads to at most 3 edges, so 4 steps follow at most 81 edges.
 
-    For each way, the projection gives the first number of assets at which it reads more than 1,000,000 records. That limit is the shop's own choice.
+    For each way, the projection gives the first of these sizes at which it reads more than 1,000,000 records.
 
-    Before you read on, write in the next cell which question passes that limit first.
+    The limit of 1,000,000 records, the 4 steps and the 3 edges a step are the shop's own choices.
+
+    Before you read on, write in the next cell which ways pass that limit first.
     """)
     return
 
@@ -124,7 +132,7 @@ def _(mo):
 @app.cell
 def _():
     expected_first = """
-Which question passes the limit first?
+Which ways of answering pass the limit first?
 ........
 """
     return
@@ -139,13 +147,15 @@ def _(shop, week23):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The two questions that read every stored event pass the limit first, at 100,000 assets: the latest run of one job, and one day's events.
+    The two questions that read every stored event pass the limit first, at 100,000 assets: the latest run of one job, and one day's events, each in its way that reads every stored event. The sizes go up in powers of ten, so each passes it somewhere between 10,000 and 100,000 assets.
 
-    A structure that lets a question go straight to the records it needs, the way a book's index points to pages, is an **index**. With the events sorted by job and time, the latest run reads 31 records at 10,000,000 assets. It never passes the limit.
+    A structure that lets a question go straight to the records it needs, the way a book's index points to pages, is an **index**. The events sorted by job and time are one.
 
-    Storing records in separate parts by a key is a **partition**. Here the key is the day. One day's events read one part, and that question passes the limit only at 10,000,000 assets.
+    With that index, the latest run reads 31 records at 10,000,000 assets: about 30 steps down the index, then one record. It never passes the limit.
 
-    Followed to the end, the search downstream passes the limit at 10,000,000 assets. Followed 4 steps, it never passes it.
+    Storing records in separate parts by a key is a **partition**. Here the key is the day. One day's events read one part, and that way passes the limit only at 10,000,000 assets.
+
+    Followed to the end, the traversal downstream passes the limit at 10,000,000 assets. Followed 4 steps, it reads at most 81 edges and never passes it.
 
     Compare this with what you wrote. The next cell lists the projection's numbers at each size.
     """)
@@ -165,9 +175,13 @@ def _(mo):
 
     At 10,000,000 assets, the projection holds 794,805,210 events.
 
-    Deleting events older than a set time is **retention**. The next cell keeps the week's events no older than 3 days, measured at 09:00 on Monday 14. Then it lists the run edges that remain and include `r-201.json`.
+    Deleting events older than a set time is **retention**.
 
-    The returns desk recorded `r-201` on Tuesday 8 at 14:20, and `record_return` read `r-201.json`.
+    The week holds 7 days of events, so 90 days would delete none of them. The next cell keeps the events no older than 3 days, measured at 09:00 on Monday 14, as a stand-in: 90 days deletes the same way, later.
+
+    It lists the edges by run that remain and include `r-201.json`.
+
+    The returns desk recorded the return `r-201` on Tuesday 8 at 14:20, and `record_return` read the file `r-201.json`.
     """)
     return
 
@@ -185,11 +199,33 @@ def _(shop, week23):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The output shows 68 events, of which 28 are kept. No run edge still includes `r-201.json`, because the run that read it is no longer in the kept events.
+    The output shows 68 events, of which 28 are kept.
 
-    `r-201`'s row is still in `returns`. The asset is in use; its lineage is not kept.
+    No edge by run still includes `r-201.json`, because the run that read the file is no longer in the kept events.
 
-    Folding each run's edges into one edge per job, before the events are deleted, is **compaction**. The folded edge keeps how many runs had it, and the first and last time. The next cell applies compaction to the whole week's events, and lists the edges that include `r-201.json`.
+    With 90 days, that run's events would be deleted after 14:20 on Monday 7 December.
+
+    The next cell reads `r-201`'s row from the table `returns`.
+    """)
+    return
+
+
+@app.cell
+def _(week23):
+    week23.warehouse.sql("SELECT * FROM returns WHERE return_id = 'r-201'")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The row is still in `returns`. Chapter 10's SQL function `returned_quantity(7004, 2)` reads it.
+
+    The row is still used. The record of the run that wrote it is gone.
+
+    Folding each run's edges into one edge per job, before the events are deleted, is **compaction**. The folded edge keeps how many runs had it, and the first and last time.
+
+    The next cell applies compaction to the whole week's events, and lists the edges by job that include `r-201.json`.
     """)
     return
 
@@ -203,9 +239,11 @@ def _(events23, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    After compaction, `r-201.json` appears in one edge: `record_return` reads it, in 1 run, first and last at 14:20:05 on Tuesday 8. That edge stays when the events are deleted.
+    After compaction, `r-201.json` appears in one edge. `record_return` reads it, in 1 run, first and last at 14:20:05 on Tuesday 8.
 
-    That job edge keeps that `r-201.json` was read, and when. It does not keep which run read it, or what that run wrote.
+    The shop keeps edges by job when it deletes events. The cell deleted nothing: keeping this edge is the shop's rule.
+
+    The edge keeps that `record_return` read `r-201.json`, and when. It does not keep which run read the file, or what that run wrote.
     """)
     return
 
@@ -246,15 +284,13 @@ What does "lineage for 90 days" mean here?
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The requirement could mean three things, and each needs something different:
+    The requirement could mean three things. Each is a question the head of the shop might be asking, with what it needs:
 
-    - 90 days of events: retention of events by age.
-    - 90 days of edges: compaction before retention.
-    - The lineage of every asset still in use, however old: retention by use, not by age.
+    - Can I see the events of the last 90 days? It needs the events kept for 90 days by age: retention.
+    - Can I see which jobs read and wrote which assets in the last 90 days? It needs edges by job kept for 90 days, folded before the events are deleted: compaction. It keeps jobs, not runs.
+    - Can I see how every asset still in use was made, however old it is? It needs a record of which assets are still in use, and lineage kept by use, not by age.
 
-    Retention by age meets the first meaning. It also lost the lineage of `r-201` while its row was still in use.
-
-    Compaction meets the second, at the level of jobs. The third needs to know which assets are still in use.
+    The shop records nowhere which assets are in use. With 90 days' retention, the run that wrote `r-201`'s row would be deleted on Monday 7 December, while the row stays in `returns`.
 
     The requirement does not say which it means.
     """)
@@ -266,9 +302,9 @@ def _(mo):
     mo.md(r"""
     ## Before Chapter 24
 
-    The week's metadata, kept at its rates, grows to 794,805,210 events at 10,000,000 assets. The questions that read every stored event passed the limit first, at 100,000 assets. An index and partitions held them off. A search limited to 4 steps never passed the limit. Deleting events by age lost the lineage of a row still in use. Folding each run's edges into job edges first kept that `r-201.json` was read.
+    Kept at the week's rates, the metadata grows to 794,805,210 events at 10,000,000 assets. The ways that read every stored event passed the limit first, at 100,000 assets. The index kept the latest run under the limit at every size, and partitions by day kept one day's events under it until 10,000,000 assets. A traversal limited to 4 steps never passed the limit. Deleting events by age lost the run that wrote a row still in use. Compaction first kept the edge by job showing that `record_return` read `r-201.json`.
 
-    Part V ends here. Chapter 24 starts Part VI, where you build the parts of a metadata system that the shop's pages have used so far.
+    Part V ends here. In Chapter 24, the first chapter of Part VI, you build a metadata store: as JSON documents, then as tables, then as an indexed store, then as a graph.
 
     - Which of your metadata system's questions read everything it stores?
     - How long does it keep events, and what is kept after?
@@ -277,8 +313,10 @@ def _(mo):
     ### How this differs from a real platform
 
     - The projection keeps the week's rates at every size. A real platform's rates differ by asset: some assets change every second, and many never change.
-    - The projection counts the stored records that each question reads. It does not count time, memory or the cost of each read.
+    - The projection keeps the widest share, 0.43, and 3 edges a step at every size. A real graph's shape changes as it grows.
+    - The projection counts the records each question reads. It does not count writes, the work of keeping an index up to date, time, memory or the cost of each read.
     - The limit of 1,000,000 records, the 90 days and the 4 steps are the shop's own choices.
+    - The word compaction means other things in other systems. Apache Kafka's log compaction, for example, keeps at least the last record for each key and removes older ones.
 
     [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 22](chapter_22.ipynb)
 

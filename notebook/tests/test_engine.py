@@ -822,19 +822,19 @@ class TheScale(unittest.TestCase):
         from shop import scale as S
 
         [m] = S.measure(self.week)
-        self.assertEqual(m, {"assets": 11, "jobs": 6, "runs": 34, "events": 68, "run edges": 67, "job edges": 14, "days": 7, "bytes per event": 1492})
+        self.assertEqual(m, {"assets": 11, "jobs": 6, "runs": 34, "events": 68, "edges by run": 67, "edges by job": 14, "days": 7, "bytes per event": 1492})
         self.assertEqual((S.reach(self.week)[0]["dataset"], S.reach(self.week)[0]["share"]), ("s3://shop-raw/orders.jsonl", 0.43))
 
     def test_which_question_passes_the_budget_first(self):
         from shop import scale as S
 
-        first = {r["question"]: r["first over budget at"] for r in S.first_over(self.week)}
+        first = {r["way"]: r["first over the limit at"] for r in S.first_over(self.week)}
         self.assertEqual(first, {
-            "latest run, scan": 100000, "latest run, index": None, "one day, scan": 100000,
-            "one day, partitions": 10000000, "downstream, to the end": 10000000, "downstream, 4 steps": None,
+            "latest run: every event": 100000, "latest run: sorted by job and time": None, "one day: every event": 100000,
+            "one day: stored by day": 10000000, "downstream: to the end": 10000000, "downstream: 4 steps": None,
         })
         top = S.project(self.week)[-1]
-        self.assertEqual((top["events stored"], top["latest run, index"]), (794805210, 31))
+        self.assertEqual((top["events stored"], top["latest run: sorted by job and time"]), (794805210, 31))
 
     def test_retention_and_compaction(self):
         from shop import delivery as D, scale as S

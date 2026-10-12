@@ -156,6 +156,14 @@ class Objects:
         ]
         return Rows(rows, null="", empty=MESSAGES["no_runs"])
 
+    def last_write(self, dataset: str) -> Rows:
+        """When the run that last wrote a dataset whose name ends with `dataset` ended, in the order
+        the events were read."""
+        return Rows(
+            ({"dataset": r["dataset"], "job": r["job"], "run ended": r["run ended"]} for r in self.written if r["dataset"].endswith(dataset)),
+            null="", empty=MESSAGES["no_runs"],
+        )
+
     def _repr_html_(self) -> str:
         return Rows(
             [{"jobs": len(self.jobs), "runs": len(self.runs), "datasets": len(self.datasets), "unknown facets": len(self.unknown)}]
@@ -227,6 +235,16 @@ class Deduped(list):
 
     def _mime_(self):
         return ("text/html", self._repr_html_())
+
+
+def edges_side_by_side(job: str, label: str = "week", **weeks: list[dict]) -> Rows:
+    """One job's edges, by job, from each named list of events: the list's name under `label`, then
+    each edge, its dataset and how many runs had it."""
+    out = []
+    for name, events in weeks.items():
+        for r in edges(objects(normalise(events))).of(job):
+            out.append({label: name, "edge": r["edge"], "dataset": r["dataset"], "runs": r["runs"]})
+    return Rows(out, null="", empty=MESSAGES["no_runs"])
 
 
 def dedupe(events: list[dict], key: str = "content") -> Deduped:
@@ -306,4 +324,4 @@ def edges(objs: Objects) -> Edges:
     return Edges(by_run, list(by_job.values()))
 
 
-__all__ = ["event_lines", "parse", "normalise", "objects", "edges", "dedupe", "KNOWN"]
+__all__ = ["event_lines", "parse", "normalise", "objects", "edges", "edges_side_by_side", "dedupe", "KNOWN"]

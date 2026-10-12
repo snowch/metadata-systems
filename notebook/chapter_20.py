@@ -19,8 +19,8 @@ def _(mo):
     **Objectives**
 
     - Tell the time an event happened from the time it arrived.
-    - Hold an event up, and find what taking the last one to arrive as the latest shows.
-    - Find a run and a return whose state depends on the order events are read in.
+    - Hold an event up, and find when taking the last event to arrive as the latest goes wrong.
+    - Find a run whose state, and a return whose existence, depend on the order events are read in.
     - Question the requirement "Show the latest state of each run."
     """)
     return
@@ -77,11 +77,11 @@ def _(mo):
 
     The collector receives each event at a time of its own. This is the event's **arrival time**.
 
-    Ingestion so far took a run's state and each dataset's last write from the events in the order of their event times (Chapter 9). Taking them in the order they arrived is the other way.
+    Since Chapter 9, ingestion has taken each run's state from its events in the order of their event times. In the same order, it keeps, for each dataset, the run that last wrote it: the dataset's last write. Reading them in the order they arrived is the other way. (Chapter 8's consumer did that.)
 
-    Here the `COMPLETE` of the run of `build_daily_sales` early on Wednesday 9 is held up for 26 hours on its way. It arrives at 04:30:24 on Thursday 10, after the `COMPLETE` of the run early on Thursday 10, which arrived at 02:30:24.
+    Here the `COMPLETE` of the run of `build_daily_sales` early on Wednesday 9 is held up for 26 hours on its way to the collector. Every other event takes 2 seconds.
 
-    Before you read on, write in the next cell when `daily_sales` was last written, as the collector's events show it at 09:00 on Thursday 10: by event time, and by arrival.
+    Before you read on, write in the next cell when `daily_sales` was last written, as the collector's events show it at 09:00 on Thursday 10: by event time, and by arrival. "Last written" is when the run that last wrote it ended.
     """)
     return
 
@@ -102,8 +102,8 @@ def _(shop):
     week20 = shop.run_week(["returns"])
     late = shop.delivery.send(week20, delay={"build_daily_sales COMPLETE 2026-09-09": 26 * 3600})
     seen = shop.ingest.normalise(late.until("2026-09-10T09:00:00Z"))
-    shop.ingest.objects(seen, order="event").written
-    return (week20,)
+    shop.ingest.objects(seen, order="event").last_write("daily_sales")
+    return late, week20
 
 
 @app.cell(hide_code=True)
@@ -113,11 +113,35 @@ def _(mo):
 
     Change `order="event"` to `order="arrival"` in the cell, select it and press **Run below**.
 
-    By arrival, it ended at 02:30:21 on Wednesday 9: a day earlier. The late `COMPLETE` arrived last, so it was taken as the latest, and older state replaced newer.
+    By arrival, it ended at 02:30:21 on Wednesday 9: a day earlier.
 
-    Chapter 13's freshness, read from this, would find `daily_sales` a day behind on Thursday morning.
+    The next cell lists when each `COMPLETE` of `build_daily_sales` arrived.
+    """)
+    return
+
+
+@app.cell
+def _(late):
+    late.received(job="build_daily_sales", type="COMPLETE")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Wednesday 9's `COMPLETE` arrived at 04:30:24 on Thursday 10, after Thursday 10's, which arrived at 02:30:24.
+
+    Taken in the order they arrived, Wednesday's `COMPLETE` came last, so Wednesday's run became the last write.
+
+    Chapter 13's freshness, taken from the collector's last write by arrival, would find `daily_sales` a day behind on Thursday morning.
 
     Compare these with what you wrote.
+
+    In the cell that starts `week20 =`, keep `order="arrival"` and change `26` to `20`. Select it and press **Run below**.
+
+    Wednesday 9's `COMPLETE` now arrives at 22:30:24 on Wednesday 9, before Thursday 10's. By arrival, the last write is Thursday's run again, ended at 02:30:21 on Thursday 10.
+
+    A held-up event changes the last write only when it arrives after the next `COMPLETE` of the same job.
     """)
     return
 
@@ -144,7 +168,11 @@ def _(shop, week20):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The run early on Wednesday 9 shows the state `START`, with an end of 02:30:21. Read by arrival, the `START` came last, so the run seems to have started again after it ended.
+    The run early on Wednesday 9 has an end time of 02:30:21, and its state is `START`.
+
+    Read by arrival, its `START` came last, so its state is `START`.
+
+    Chapter 9 listed the runs whose latest event is a `START`. That list would now hold this run, which has ended.
 
     By event time, its state is `COMPLETE`.
 
@@ -174,7 +202,7 @@ def _(mo):
 
     Change `"arrival"` to `"event"` in the cell, select it and press **Run below**. By event time, its last change is `deleted`, at 08:50:02 on Monday 14, and it does not exist.
 
-    Event time depends on the clock of the program that sets it. A program whose clock runs slow, as the reporting tool's did in Chapter 13, sets event times that are early. Its events then sort in the wrong order beside other programs' events.
+    Each program sets its events' times by its own clock. A program whose clock runs slow sets event times that are early, and its events then sort in the wrong order beside other programs' events.
     """)
     return
 
@@ -215,12 +243,14 @@ What does "latest" mean here?
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    "Latest" could mean two things, and each needs something different.
+    "Latest" could mean at least two things, and each needs something different.
 
-    - latest by when it happened: each event's event time, and clocks that agree;
-    - latest by when it arrived: each event's arrival time, which the collector sets itself.
+    - Latest by when it happened: it needs `eventTime` on every event, set by each program's clock, and clocks that agree. The shop's ingestion reads events in this order unless told otherwise.
+    - Latest by when it arrived: it needs only the order in which the collector received the events, which the shop keeps. It answers which event the collector received last.
 
-    By when it happened, the shop's ingestion meets that meaning. By when it arrived, the run early on Wednesday 9 shows `START`, and `daily_sales` is a day old.
+    Both can be computed from what the shop records.
+
+    By event time, the run early on Wednesday 9 is `COMPLETE`, `daily_sales` was last written on Thursday 10, and `r-206.json` is deleted. By arrival, the run is `START`, the last write is Wednesday's, and `r-206.json` exists.
 
     The requirement does not say which it means.
     """)
@@ -232,7 +262,7 @@ def _(mo):
     mo.md(r"""
     ## Before Chapter 21
 
-    An event's event time is set by the program that sends it. Its arrival time is set by the collector. Taking the last event to arrive as the latest made `daily_sales` a day old on Thursday morning. It put a run back to `START` after it ended, and it left a withdrawn return existing. By event time, each of these is right, as long as the programs' clocks agree.
+    A program sets an event's event time, and the collector sets its arrival time. Taking the last event to arrive as the latest made `daily_sales` a day behind on Thursday morning. The same rule also gave an ended run the state `START`, and left a withdrawn return existing. A delay changed the last write only when the late event arrived after the next one. By event time, each of these showed the order in which things happened, as long as the programs' clocks agree.
 
     Chapter 21 asks what happens when two sources disagree about the same fact.
 
@@ -244,7 +274,7 @@ def _(mo):
 
     - The shop's faults are invented for the course.
     - The shop's ingestion keeps every event and can read them again in any order. A real collector that updates its state as each event arrives must decide what to do with a late one when it comes.
-    - The OpenLineage specification says nothing about events that arrive late or out of order (Chapter 8).
+    - The OpenLineage specification does not say what a consumer does with an event that arrives late or out of order (Chapter 8). Its run-cycle page says that after a terminal event, no other events about that run will be sent.
 
     [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 19](chapter_19.ipynb) · [Next: Chapter 21](chapter_21.ipynb)
 

@@ -18,9 +18,9 @@ def _(mo):
 
     **Objectives**
 
-    - Read the six references that six systems make to `daily_sales`, or to a thing named like it.
+    - Read six references to `daily_sales`, or to a table or file named like it, and where each comes from.
     - Merge them by the last part of their names, and find what merged that should not.
-    - Merge them by qualified names, then by what each system's own configuration states.
+    - Merge them by qualified names, then by what two systems' configurations declare.
     - Question the requirement "Merge the same dataset across systems."
     """)
     return
@@ -73,11 +73,17 @@ def _(mo):
     mo.md(r"""
     ## Six references
 
-    Chapter 12 tested pairs of references inside the warehouse and object storage. The shop's metadata system takes references from more systems than those.
+    A reference is the name one system uses for an asset. Chapter 12 tested pairs of references inside the warehouse and object storage. The shop's metadata system takes references from more places than those.
 
-    The shop's developer has started using a transformation tool. The tool names each program's output as a model in a project. The output `daily_sales` is `shop_models:daily_sales`. The reporting tool names the dataset behind the dashboard `Daily sales`. Jo Marsh exported `daily_sales` to a CSV file in `shop-scratch`.
+    The shop's developer has started using a transformation tool. The tool names each program's output as a model in a project. The project is `shop_models`, so the output `daily_sales` is `shop_models:daily_sales`.
 
-    The next cell lists the six references, and the system each came from.
+    The reporting tool names the dataset behind the dashboard `Daily sales`, written with the prefix `dataset:`.
+
+    Jo Marsh exported `daily_sales` to a CSV file in `shop-scratch`.
+
+    The events name a dataset by a namespace and a name (Chapter 8). The development table is Chapter 12's, in `shop_dev`, a second database of the warehouse.
+
+    The next cell lists the six references, and where each came from.
     """)
     return
 
@@ -91,16 +97,7 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    These are the six references, with the system each came from:
-
-    - the warehouse: `shop.analytics.daily_sales`
-    - the events' namespace and name: `warehouse://shop-warehouse/shop.analytics.daily_sales`
-    - the development warehouse: `shop_dev.analytics.daily_sales` (Chapter 12)
-    - the transformation tool: `shop_models:daily_sales`
-    - the reporting tool: `dataset:Daily sales`
-    - object storage: `s3://shop-scratch/daily_sales.csv`
-
-    This is the rule for merging. Take the last part of each name, in lower case, with spaces and hyphens read as underscores, and a file's extension left off. References with the same last part become one.
+    This is the rule for merging: take the last part of each name, in lower case, with spaces and hyphens read as underscores, and a file's extension left off. References with the same last part become one.
 
     Before you read on, write in the next cell which references this rule will merge.
     """)
@@ -125,13 +122,19 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Under that rule, all six become one entity. Among them are the development table, which holds other rows in another environment, and Jo Marsh's CSV file, a copy made at one time.
+    Under that rule, all six become one entity. Among them are the development table, which holds other rows in another environment (Chapter 12), and Jo Marsh's CSV file, a copy made at one time.
 
-    Deciding which references name one entity is **entity resolution**. Merging too much is as much a fault as merging too little: the development table's runs would show in production's lineage.
+    Compare this with what you wrote.
+
+    Deciding which references name one entity is **entity resolution**.
+
+    If it merges too much, the development table's runs show in production's lineage (Chapter 12). If it merges too little, the model, the reporting tool's dataset and the table stay three entities, and what each system records about one is not joined to what the others record.
 
     In the cell, change `"last part"` to `"qualified"`. Select the cell and press **Run below**. The qualified rule reads each warehouse name by the warehouse's rules (Chapter 12), and it takes an event's namespace as the warehouse.
 
-    The result has five entities. The warehouse's reference and the events' reference merge into one. The other four references each stay alone. The transformation tool's name and the reporting tool's name are not warehouse names.
+    The result has five entities. The warehouse's reference and the events' reference merge into one.
+
+    The other four each stay alone: the development table is in another database; the CSV file's name is an object's key in storage, not a warehouse name; the transformation tool's and the reporting tool's names are not warehouse names.
     """)
     return
 
@@ -141,11 +144,15 @@ def _(mo):
     mo.md(r"""
     ## What each system states
 
-    The transformation tool's configuration states which table each model builds. The model `shop_models:daily_sales` builds `shop.analytics.daily_sales`. The reporting tool's configuration states which table each dataset reads. `Daily sales` reads `daily_sales`.
+    The transformation tool's configuration declares that the model `shop_models:daily_sales` stands for the table `shop.analytics.daily_sales`. The reporting tool's configuration declares that the dataset `Daily sales` stands for the table `daily_sales`.
 
-    Another name a system uses for an asset, stated by that system, is an **alias**.
+    Taking those declarations to name the table itself is the shop's choice.
 
-    In the cell, change the rule to `"aliases"`. Select the cell and press **Run below**. The `aliases` rule merges by qualified names first, then by the aliases each system states.
+    Another name a system declares for an asset is an **alias**.
+
+    A dataset that filtered the table's rows, or added them up, would not be an alias of the table. A rule that merged it with the table would merge two different assets.
+
+    In the cell, change the rule to `"aliases"`. Select the cell and press **Run below**. The `aliases` rule merges by qualified names first, then by the aliases each system declares.
 
     The result has three entities. One of them holds four references: the warehouse's, the events', the transformation tool's and the reporting tool's. The development table is alone. Jo Marsh's CSV file is alone.
     """)
@@ -188,14 +195,12 @@ What does "the same dataset" mean here?
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    "The same dataset" could mean four things, and each needs different information:
+    "The same dataset" could mean four things, and each needs different information.
 
-    - the same name: a rule for reading names, such as `last part` or `qualified`;
-    - the same rows: a way to compare contents (Chapter 12);
-    - the same thing to the business: someone's statement, or each system's own;
-    - across environments or not: which environment holds each asset.
-
-    The `aliases` rule merges by what each system states it reads or builds, and it keeps the environments apart. A reading of "the same thing to the business" might merge the development table too. A reading of "the same rows" might merge Jo Marsh's file on the day it was exported.
+    - The same name: it needs a rule for reading names. Met for warehouse names, by the qualified rule. The other references' names alone do not merge.
+    - The same rows: it needs a comparison of contents (Chapter 12). No rule here compares contents, so this reading is not tested.
+    - The same thing to the business: it needs a statement of what each name stands for. Met only as far as the two configurations declare it, which is the shop's choice.
+    - The same across environments: it needs to know which environment holds each table. The `aliases` rule keeps the development table apart.
 
     The requirement does not say which it means.
     """)
@@ -207,18 +212,20 @@ def _(mo):
     mo.md(r"""
     ## Before Chapter 23
 
-    Six systems name `daily_sales`, or something named like it, in six ways. The last part of each name merged all six, the development table and the copy among them. Qualified names merged two references. Adding what each system's configuration states merged four, and kept the development table and the copy apart.
+    Six references name `daily_sales`, or a table or file named like it. The last part of each name merged all six, the development table and the copy among them. Qualified names merged two. Adding what two configurations declare merged four, and kept the development table and the copy apart.
+
+    The rules decided from names and from what two configurations declare. Nothing compared contents, and nothing checked that the configurations are right.
 
     Chapter 23 asks what the shop's metadata system costs as the platform grows.
 
     - Which of your systems name the same table differently?
-    - Where does each of your systems state what it reads or builds?
+    - Where does each of your systems declare what a name stands for?
     - Which of your environments share table names?
 
     ### How this differs from a real platform
 
-    - The transformation tool, its notation and the reporting tool's dataset are invented for the course.
-    - The shop's rules work on six references.
+    - The transformation tool, its notation, the reporting tool's dataset and Jo Marsh's export are invented for the course.
+    - A real catalogue resolves references with rules written for each system. A producer can also state other names for a dataset in its events: OpenLineage defines a `symlinks` dataset facet for these.
 
     [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 21](chapter_21.ipynb) · [Next: Chapter 23](chapter_23.ipynb)
 

@@ -251,7 +251,9 @@ evidence:
   function started more than once for one change of one object; `object_states` gives each
   return's object its last change, by event time or by arrival. Ingestion gains `dedupe` (by
   content, or by run and type) and an arrival order for `objects`, which also keeps the run that
-  last wrote each dataset (`written`).
+  last wrote each dataset (`written`, and `last_write` for one); `Delivery.received` lists arrivals,
+  for one job or type if asked; `edges_side_by_side` sets one job's edges from two weeks in one
+  table.
 - **Claims** (`notebook/shop/claims.py`, Chapter 21). Three sources' claims about `daily_sales`'s
   owner and columns (the warehouse's catalogue, read nightly; your records; the previous engineer's
   team sheet, imported nightly), each with when it was sent and when its source last changed, and
@@ -261,9 +263,10 @@ evidence:
   `aliases`.
 - **Scale** (`notebook/shop/scale.py`, Chapter 23). `measure` counts the week's metadata; `reach`
   measures how much of the job graph a traversal from each dataset follows; `project` scales the
-  week's rates to ten million assets and counts the records four questions read, with and without
-  an index, partitions or a depth limit; `first_over` gives the size at which each passes a budget
-  of a million records. `retain` deletes events older than a number of days; `compact` folds runs'
+  week's rates to ten million assets, in powers of ten, and counts the records three questions read,
+  each two ways (every stored event or sorted by job and time; every stored event or stored by day;
+  a traversal to the end or 4 steps of at most 3 edges); `first_over` gives the first of those sizes
+  at which each way reads more than a million records, or "not within 10,000,000". `retain` deletes events older than a number of days; `compact` folds runs'
   edges into job edges with their first and last times.
 - **The records as a graph** (`notebook/shop/graph.py`, Chapters 5 and 6). `graph(records, model)`
   makes each entity a node and each line whose value names another entity an edge; `traverse`

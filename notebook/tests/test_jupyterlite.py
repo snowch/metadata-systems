@@ -99,7 +99,9 @@ class TheWarnings(unittest.TestCase):
         table[11] = table[12] = table[13] = table[10]
         table[14] = ("| Opened from the chapter before's link, after it ran | 11 files, 0.32 MB, in a new tab | 12 files, 0.32 MB, in a new tab | 11 files, 0.32 MB, in a new tab | 11 files, 0.32 MB, in a new tab |", "| Peak memory of a renderer process, opened alone | 395 to 402 MB | 394 to 400 MB | 394 to 402 MB | 392 to 397 MB |")
         table[15] = table[16] = table[17] = table[14]
-        for chapter, memory in ((3, "about 420 MB"), (4, "about 410 MB"), (5, "about 400 MB"), (6, "about 420 MB"), (7, "about 420 MB"), (8, "about 400 MB"), (9, "about 410 MB"), (10, "about 400 MB"), (11, "about 400 MB"), (12, "about 400 MB"), (13, "about 400 MB"), (14, "about 400 MB"), (15, "about 400 MB"), (16, "about 400 MB"), (17, "about 400 MB")):
+        table[18] = ("| Opened from the chapter before's link, after it ran | 11 files, 0.32 MB, in a new tab | 11 files, 0.31 MB, in a new tab | 11 files, 0.31 MB, in a new tab | 11 files, 0.31 MB, in a new tab | 11 files, 0.31 MB, in a new tab | 11 files, 0.31 MB, in a new tab |", "| Peak memory of a renderer process, opened alone | 395 to 402 MB | 393 to 402 MB | 392 to 395 MB | 390 to 397 MB | 388 to 394 MB | 395 to 398 MB |")
+        table[19] = table[20] = table[21] = table[22] = table[23] = table[18]
+        for chapter, memory in ((3, "about 420 MB"), (4, "about 410 MB"), (5, "about 400 MB"), (6, "about 420 MB"), (7, "about 420 MB"), (8, "about 400 MB"), (9, "about 410 MB"), (10, "about 400 MB"), (11, "about 400 MB"), (12, "about 400 MB"), (13, "about 400 MB"), (14, "about 400 MB"), (15, "about 400 MB"), (16, "about 400 MB"), (17, "about 400 MB")) + tuple((c, "about 400 MB") for c in range(18, 24)):
             link, peak = table[chapter]
             expected[chapter] = [
                 ("downloads about 13 MB", gzip),

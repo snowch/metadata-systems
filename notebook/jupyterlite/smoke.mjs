@@ -627,15 +627,22 @@ try {
         last.includes("2026-09-09T02:30:21Z"),
         "Chapter 20: by arrival, daily_sales was last written a day earlier",
       );
+      await rewrite("late.until(", ["26 * 3600"], ["20 * 3600"]);
+      await run("Run below", "Chapter 20, Run below with a shorter hold-up");
+      const shorter = await output("late.until(");
+      check(
+        shorter.includes("2026-09-10T02:30:21Z"),
+        "Chapter 20: held up 20 hours, the last write by arrival is Thursday's",
+      );
       await rewrite("shop.delivery.object_states(held.events", ['"arrival"'], ['"event"']);
       await run("Run below", "Chapter 20, Run below by event time");
       const states = await output("shop.delivery.object_states(held.events");
       check(/r-206\.json\tdeleted/.test(states), "Chapter 20: by event time, r-206 is deleted");
     }
     if (chapter === 21) {
-      await rewrite("tuesday = shop.claims.claims", ['"newest"'], ['"ranked"']);
+      await rewrite("shop.claims.resolve(tuesday, rule)", ['rule = "as of"'], ['rule = "ranked"']);
       await run("Run below", "Chapter 21, Run below ranked");
-      const ranked = await output("tuesday = shop.claims.claims");
+      const ranked = await output("shop.claims.resolve(tuesday, rule)");
       check(
         ranked.includes("j.marsh") && ranked.includes("day, revenue_pence"),
         "Chapter 21: ranked, the owner is j.marsh and the columns the warehouse's",

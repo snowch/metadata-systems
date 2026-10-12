@@ -7,8 +7,8 @@
 events per asset per day, and counts the stored records each of four questions reads, with and
 without the structure that serves it:
 
-- the latest run of one job: every stored event, or with an index on job and time, a walk down the
-  index (about log2 of the events) and one record;
+- the latest run of one job: every stored event, or with the events sorted by job and time (an
+  index), a walk down the index (about log2 of the events, counted as records read) and one record;
 - one day's events: every stored event, or with the events partitioned by day, one day's;
 - what is downstream of one asset, followed to the end: every edge it reaches. The share of the
   graph the widest traversal reaches is measured in the week (`reach`) and kept as the graph grows;
@@ -38,6 +38,8 @@ BUDGET = 1_000_000
 FANOUT = 3
 DEPTH = 4
 
+MESSAGES = {"never_over": "not within 10,000,000"}
+
 QUESTIONS = (
     "latest run of one job",
     "one day's events",
@@ -59,8 +61,8 @@ def measure(week: Week) -> Rows:
             "jobs": len(objs.jobs),
             "runs": len(objs.runs),
             "events": len(events),
-            "run edges": len(found.by_run),
-            "job edges": len(found.by_job),
+            "edges by run": len(found.by_run),
+            "edges by job": len(found.by_job),
             "days": days,
             "bytes per event": round(size / len(events)),
         }
@@ -100,7 +102,7 @@ def project(week: Week, sizes=SIZES, retention_days: int = RETENTION_DAYS) -> Ro
     m = measure(week)[0]
     widest = reach(week)[0]["share"]
     per_asset_day = m["events"] / m["days"] / m["assets"]
-    edges_per_asset = m["job edges"] / m["assets"]
+    edges_per_asset = m["edges by job"] / m["assets"]
     out = []
     for n in sizes:
         per_day = round(n * per_asset_day)
@@ -111,12 +113,12 @@ def project(week: Week, sizes=SIZES, retention_days: int = RETENTION_DAYS) -> Ro
             "events a day": per_day,
             "events stored": stored,
             "edges": graph,
-            "latest run, scan": stored,
-            "latest run, index": math.ceil(math.log2(max(stored, 2))) + 1,
-            "one day, scan": stored,
-            "one day, partitions": per_day,
-            "downstream, to the end": max(1, round(graph * widest)),
-            "downstream, 4 steps": min(max(1, round(graph * widest)), FANOUT ** DEPTH),
+            "latest run: every event": stored,
+            "latest run: sorted by job and time": math.ceil(math.log2(max(stored, 2))) + 1,
+            "one day: every event": stored,
+            "one day: stored by day": per_day,
+            "downstream: to the end": max(1, round(graph * widest)),
+            "downstream: 4 steps": min(max(1, round(graph * widest)), FANOUT ** DEPTH),
         })
     return Rows(out)
 
@@ -127,8 +129,8 @@ def first_over(week: Week, budget: int = BUDGET) -> Rows:
     rows = project(week)
     ways = [k for k in rows[0] if k not in ("assets", "events a day", "events stored", "edges")]
     return Rows(
-        {"question": w, "first over budget at": next((r["assets"] for r in rows if r[w] > budget), None)}
-        for w in ways
+        ({"way": w, "first over the limit at": next((r["assets"] for r in rows if r[w] > budget), None)} for w in ways),
+        null=MESSAGES["never_over"],
     )
 
 
