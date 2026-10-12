@@ -155,7 +155,11 @@ words, and the readings' lead sentence restored.
 ## Measured
 
 12 October 2026, local build (`docs/notes/notebook-prototype.md`, "Chapters 7, 8 and 9"): Run all 8.9 to 9.3 s; peak memory 396 to 405 MB;
-0.29 MB from Chapter 7's link. The published page is measured after the deploy.
+0.29 MB from Chapter 7's link.
+
+12 October 2026, the published page after the review (opened alone, measured twice at each
+width): Run all 9.8 and 10.0 s on a desktop, 10.0 and 9.6 s as a phone; peak memory
+414 and 416 MB on a desktop, 409 and 413 MB as a phone.
 
 ## Known gaps
 

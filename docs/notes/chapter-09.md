@@ -156,7 +156,11 @@ agent tried one message, which was refused.
 ## Measured
 
 12 October 2026, local build (`docs/notes/notebook-prototype.md`, "Chapters 7, 8 and 9"): Run all 8.3 to 9.0 s; peak memory 403 to 411 MB;
-0.29 MB from Chapter 8's link. The published page is measured after the deploy.
+0.29 MB from Chapter 8's link.
+
+12 October 2026, the published page after the review (opened alone, measured twice at each
+width): Run all 10.4 and 9.4 s on a desktop, 9.4 and 9.6 s as a phone; peak memory
+416 and 413 MB on a desktop, 408 and 408 MB as a phone. A first desktop attempt whose Run all did not start, 0.6 s, is left out and measured again.
 
 ## Known gaps
 

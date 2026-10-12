@@ -186,7 +186,11 @@ the brief's "once a night". One stray session listing by the drafting agent chan
 ## Measured
 
 12 October 2026, local build (`docs/notes/notebook-prototype.md`, "Chapters 7, 8 and 9"): Run all 8.0 to 9.3 s; peak memory 397 to 421 MB;
-0.29 MB from Chapter 6's link. The published page is measured after the deploy.
+0.29 MB from Chapter 6's link.
+
+12 October 2026, the published page after the review (opened alone, measured twice at each
+width): Run all 11.0 and 9.6 s on a desktop, 10.2 and 10.2 s as a phone; peak memory
+427 and 427 MB on a desktop, 410 and 407 MB as a phone. A second desktop attempt whose Run all did not start, 0.6 s, is left out and measured again.
 
 ## Known gaps
 
