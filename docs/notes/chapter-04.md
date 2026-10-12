@@ -18,13 +18,14 @@ list." The reader's records from Chapter 3 and the notes Jo Marsh keeps are put 
   people the records must describe people, say what kind of thing each line is about, and use one
   value for each person; files and tables share their attributes and become one type;
 - reads the same records in Chapter 4's notation (`type identifier attribute: value`), with the
-  staff list as person and team records, and a model of them (`type attribute: text`, or a type, a
-  relationship type);
+  head's answer about the two logins as person and team lines, and a model of them
+  (`type attribute: text`, or a type, a relationship type);
 - checks the records against the model: 5 problems (four values that name no person or team, one
   attribute the model lacks); merges the two spellings by editing two values to identifiers; checks
-  again: 3;
-- weighs the fact the model has no type for, `clean_orders drops`, which is the rule behind
-  Thursday: refuse it, or accept it as text no check can test;
+  again: 3; counts the `responsible` values again: 4, then 3, one for each person or role;
+- weighs the fact the model has no type for, `clean_orders drops: orders with no customer id`, the
+  rule Chapter 2 found behind Thursday: refuse it, or add `dataset drops: text` (2 problems left)
+  and accept it as text no check can test;
 - questions "Each asset has one owner." (below).
 
 It introduces the plan's four terms in the section "What the records describe", which the term test
@@ -60,8 +61,9 @@ holds; it uses none of Chapter 5's (graph, node, edge, traversal) and says "rela
   people, and that the records alone cannot say whether two spellings are one person.
 - **Known before:** the records cell's lines, the list of `responsible` lines, and Chapter 3's two
   facts about Jo Marsh and `j.marsh`.
-- **Driving question:** how many people are responsible for the shop's assets, by these records?
-- **The action:** write the expected number and how it was counted, then run the count.
+- **Driving question:** will the count of different `responsible` values be the number of people
+  responsible, more, fewer, or can you not tell yet?
+- **The action:** write the expectation and how it was decided, then read the count.
 - **Why the action:** a reader who counts people ("three: me, Jo, Sam") commits to the belief the
   query then contradicts.
 - **Evidence:** 4 values.
@@ -87,7 +89,8 @@ holds; it uses none of Chapter 5's (graph, node, edge, traversal) and says "rela
   **Run below**; read the check again.
 - **Why the action:** the merge is the reader's edit, and the change from 5 to 3 problems is its
   evidence.
-- **Evidence:** 5 problems, then 3: the data engineer twice, and `drops`.
+- **Evidence:** 5 problems, then 3: the data engineer twice, and `drops`; the count of
+  `responsible` values, 4, then 3.
 - **Consequence:** the reader sees one owner for `daily_sales` because two lines now hold one
   identifier, and the spelling kept as the person's `name`.
 - **Predictable:** the first result is, once the rules are read.
@@ -99,14 +102,17 @@ holds; it uses none of Chapter 5's (graph, node, edge, traversal) and says "rela
 ### `owners`
 
 - **Role:** experiment, completing the requirement exercise
-- **Objective:** the reader sees which assets meet which reading of "one owner", and that the two
-  files the export writes meet none.
-- **Known before:** the three readings and what each needs; the reader's own choice, written above.
+- **Objective:** the reader sees which assets meet which reading of "one owner", that `orders.jsonl`
+  and `customers.jsonl` meet none, and that a choice of theirs (the data engineer a team or a
+  person) moves the counts.
+- **Known before:** the reader's own answer, written first; then the three readings, each named by
+  its column, and what each needs.
 - **Driving question:** which reading would you require, and what does the shop's list meet?
 - **The action:** write the choice, then run the cell.
 - **Why the action:** the choice is the reader's, as it would be at work; the table answers only
   what the records meet.
-- **Evidence:** 7 assets: one owner 5, one person 3, one team 5.
+- **Evidence:** 7 assets: with the data engineer a team, one owner 5, one person 3, one team 5;
+  with the data engineer a person (the reader's choice, one line in the cell), 5, 5 and 3.
 - **Consequence:** no reading is marked wrong; the list must say which reading it meets.
 - **Predictable:** mostly, from the records above.
 - **Gives nothing away:** the readings are stated as needs, not verdicts; the choice comes first.
@@ -114,8 +120,9 @@ holds; it uses none of Chapter 5's (graph, node, edge, traversal) and says "rela
 - **Next question:** the references now lead from one entity to the next: Chapter 5.
 - **An experiment:** the reader commits and runs.
 
-The cell applies the two merge edits itself (idempotently) and makes "the data engineer" a team,
-`data_engineering`, so its output is the same whether or not the reader made the edits.
+The cell applies the two merge edits itself (idempotently), so its output is the same whether or not
+the reader made them, and makes "the data engineer" a team or a person, `data_engineering`, by the
+line `the_data_engineer = "team"`, which the reader may change.
 
 ## Requirements
 
@@ -126,10 +133,14 @@ The chapter questions "Each asset has one owner.", the plan's candidate, with th
    records spell the owner's name.
 3. **What each needs:** `responsible` naming a person, one value per asset; a team per asset,
    directly or through the person; identifiers, so two spellings count once.
-4. **What the records hold:** after the merge, one value for every asset except the two files the
-   export writes; a person for three assets; a team for five.
-5. **Whether it is met:** as written, for 5 of 7 assets; one person, 3; one team, 5. The head of
-   the shop did not say which was meant.
+4. **What the records hold:** after the merge, one value for every asset except `orders.jsonl` and
+   `customers.jsonl`, which have no `responsible` line; with the data engineer a team, a person for
+   three assets and a team for five; as a person, five and three.
+5. **Whether it is met:** for no reading on all 7 assets. As written, 5 of 7; the others depend on
+   the reader's choice for the data engineer. The head of the shop did not say which was meant.
+
+The reader writes what they would send and what "one owner" means to them before the readings
+appear; the readings name the columns of the table.
 
 The reader writes their choice first; no reading is marked wrong. Chapter 2's owner (an account in
 the warehouse) is not among the readings here: the records are the reader's, and Chapter 21
@@ -161,6 +172,34 @@ came from brief CC and the warning from CD (Chapter 3's notes).
 12 October 2026, as Chapter 3 (`docs/notes/notebook-prototype.md`, "Chapters 3 and 4"): about 13
 MB on its own; 0.32 MB from Chapter 3's link in a new tab after Chapter 3 had run; Run all 8.9 to
 10.5 s; peak memory 400 to 406 MB.
+
+## The review, 12 October 2026
+
+A reader on another model read the chapter as built and after the edit, as a learner who had done
+Chapters 1 to 3 (`docs/notes/chapter-04/review/`: 17 findings, 8 marked blocking), and an
+independent sceptic attacked each (`verdicts.md`): one rejected (the staff list's size), several
+trimmed. Code first, then brief DC (Haiku, checked for facts: nothing dropped, nothing wrong), then
+the messages and the first cell's notes of brief CF. What changed:
+
+- The first cell says where each of its lines comes from (findings 3, 4): the reader's own record
+  of `daily_sales` from Chapter 3, three lines from the head's message, and one line from the
+  orders Chapter 2 found missing, `clean_orders drops: orders with no customer id`, which is all
+  Chapter 2 showed; the quantity rule, which the week never tests, is gone from it.
+- The page says that the head's "owner" is counted as the `responsible` lines, and that the
+  warehouse's account answers a different question (6).
+- The first expectation asks whether the count of values will be the number of people, more, fewer,
+  or not yet known (7); a new count after the merge gives 3 (14). Cells are named by their first
+  line, and the prose under the check says "before your change" (11).
+- *Records* is the set, a *line* is one line, everywhere, and the check's column is `text` (8).
+- The data engineer is the reader's choice, team or person, with both results stated (5); the
+  reader is not on the head's list because they started today.
+- The requirement: the reader commits first; the readings follow, each named by its column; "no
+  reading holds for all 7 assets"; the two files are named, with no claim about the export (1, 2,
+  12).
+- Smaller: the objectives say what the reader does (9); the reader can add `dataset drops: text`
+  and see 2 problems (10); the dashboard's type, the assets as entities, and columns as entities
+  (13); the identifier's sentence (15); the forward reference to Chapter 6 for `drops` is gone, and
+  the repetitions are cut (16).
 
 ## Known gaps
 

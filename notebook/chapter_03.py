@@ -20,8 +20,9 @@ def _(mo):
 
     - Write a record of `daily_sales` from what the shop's people tell you.
     - Find which of Chapter 2's four questions the record answers.
-    - Tell what a record of an asset holds, from what the systems record about it.
-    - Test a requirement about descriptions, and a check, against changes to the shop.
+    - Tell the information that says what an asset is from the information about what happened to it.
+    - Question the requirement "Every column must have a description."
+    - Find what a check against the warehouse catches when the shop changes.
     """)
     return
 
@@ -31,17 +32,17 @@ def _(mo):
     mo.md(r"""
     ## Monday afternoon
 
-    It is still Monday 14 September 2026, in the afternoon. In Chapter 2 you found that `daily_sales` leaves out Thursday's three orders with no customer id (7021, 7023 and 7025, worth 15400 pence together), and nothing on the platform records whether they should be left out. You asked the head of the shop who decides what `daily_sales` should count.
+    It is still Monday 14 September 2026, in the afternoon. In Chapter 2 you found that `daily_sales` leaves out Thursday's three orders with no customer id (7021, 7023 and 7025, worth 15400 pence together), and nothing on the platform says whether they should be left out. You sent the head of the shop what Chapter 2 found.
 
     The head of the shop replied:
 
-    > Jo Marsh, in finance, built the dashboard and decides what counts as revenue. Sam Lund keeps the product catalogue. The two cleaned tables, `clean_customers` and `clean_orders`, were the last engineer's and are now yours.
+    > For `daily_sales` and the dashboard, ask Jo Marsh in finance, who built the dashboard and decides what counts as revenue. Sam Lund keeps the product catalogue. The two cleaned tables, `clean_customers` and `clean_orders`, were the last engineer's and are now yours.
 
     Jo Marsh's answer, about a day's revenue:
 
     > The value of every completed order placed that day, taking the day from the order's time in UTC, in pence.
 
-    Next, you write what you have learnt as a record kept beside the data, then ask Chapter 2's four questions again.
+    None of this is on the platform. The next engineer to look at `daily_sales` would have to ask again.
     """)
     return
 
@@ -95,7 +96,7 @@ def _(mo):
 
     A record is a set of lines of text that you write and keep beside the data. Each line holds one fact. It starts with the asset's name. If the fact is about a column, the column's name comes next. Then come a field, a colon and the value. For example:
 
-    `daily_sales revenue_pence unit: pence`
+    `clean_orders price_pence unit: pence`
 
     The cells use three fields:
 
@@ -105,7 +106,7 @@ def _(mo):
 
     A value of `........` is one not yet written.
 
-    The record cell below holds five lines for `daily_sales`, each with `........` as its value. Replace each `........` with what the head of the shop and Jo Marsh told you. Then select the cell and press **Run below**. The cell shows the record as a table, one row per line. **Save** keeps what you wrote.
+    The record cell below holds five lines for `daily_sales`, each with `........` as its value. Replace each `........` with what the head of the shop and Jo Marsh told you. Then select the cell and press **Run below**. The cell shows the record as a table, one row per line. **Save** keeps what you wrote. Until you fill in the dots and press **Run below**, the cells below the record show the dots, and the checks list them as problems.
     """)
     return
 
@@ -126,7 +127,7 @@ daily_sales revenue_pence unit: ........
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The check cell lists each column of `daily_sales` that has no description, meaning no `means` line with a value. It also lists each line that names a column the warehouse does not have. With every line written, it finds no problems.
+    The check cell lists each column of `daily_sales` that has no description, meaning no `means` line with a value. With every line written, it finds no problems.
     """)
     return
 
@@ -149,7 +150,7 @@ def _(mo):
     - If the checkout renames a column in `orders.jsonl`, what stops working?
     - Who should I ask about `daily_sales`?
 
-    Before you run the cells below, write in the next cell, for each question, whether your record answers it, in part or not at all, and why. **Save** keeps what you wrote.
+    Before you read on, write in the next cell, for each question, whether your record answers it, in part or not at all, and why. **Save** keeps what you wrote.
     """)
     return
 
@@ -182,7 +183,7 @@ def _(records):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The record answers the fourth question: it names Jo Marsh as responsible for `daily_sales`. The next cell takes Jo Marsh's words about a day's revenue and turns them into a query over `orders.jsonl`. It keeps each completed order once, even an order the export wrote twice. It adds up price times quantity for each UTC day, and puts that total beside each row of `daily_sales`, marked `same` or `different`.
+    The record answers the fourth question with Jo Marsh, the name you wrote from the head of the shop's reply, now kept where the next engineer can query it. The next cell takes Jo Marsh's words about a day's revenue and turns them into a query over `orders.jsonl`. It keeps each completed order once, even an order the export wrote twice. It adds up price times quantity for each UTC day, and puts that total beside each row of `daily_sales`, marked `same` or `different`.
     """)
     return
 
@@ -208,11 +209,11 @@ def _(warehouse):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Thursday is the only day that differs: `daily_sales` shows 5150 pence, and Jo Marsh's meaning gives 20550. Every other day is the same. By that meaning, Thursday's total is wrong.
+    Thursday is the only day that differs: `daily_sales` shows 5150 pence, and Jo Marsh's meaning gives 20550. Every other day is the same. Tuesday, Wednesday and Saturday agree because the query leaves out cancelled orders and counts the order the export wrote twice once; Thursday differs, because its three orders with no customer id are completed orders, which Jo Marsh's meaning counts. By that meaning, Thursday's total is wrong.
 
     The record says nothing about since when. It has no time in it, and nothing about what happened each night.
 
-    The words "every completed order" do not say what to do with an order the export wrote twice. The query had to decide, and it counts each order once. A query that counted every line of the file would also find Wednesday different, because order 7015 is in the file twice.
+    The file holds order 7015 on two lines. The words "every completed order" do not say whether a line or an order is counted. The query counts orders. A query that counted every line would find Wednesday different too.
     """)
     return
 
@@ -245,7 +246,7 @@ def _(warehouse):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Every day is the same, Thursday included. A description written from the data agrees with the data on every day, so it cannot show that any day is wrong. Jo Marsh's description came from the person who decides what counts as revenue, not from `daily_sales`, so `daily_sales` can be checked against it.
+    Every day is the same, Thursday included. A description written from the data is Chapter 2's query, which was chosen because it reproduces `daily_sales`. So it agrees with the table on every day, and it cannot show any day wrong. Jo Marsh's description came from the person who decides what counts as revenue, not from `daily_sales`, so `daily_sales` can be checked against it.
     """)
     return
 
@@ -253,7 +254,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The last cell lists each line of your record that names `products.csv` or `orders.jsonl`.
+    The cell lists each line of your record that names `products.csv` or `orders.jsonl`.
     """)
     return
 
@@ -271,7 +272,7 @@ def _(records):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    It finds none. The second and third questions ask what reads those files. A record of what each asset is does not say what reads it. Chapter 6 records what reads each asset.
+    It finds none. Every line of the record is about `daily_sales`, so none could say what reads a file. The second and third questions ask what reads those files. A record of what each asset is does not say what reads it. Chapter 6 keeps information about what reads each asset.
     """)
     return
 
@@ -279,21 +280,19 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## What the platform records already
+    ## What the platform keeps
 
-    Your record says what `daily_sales` is: what it means, who is responsible for it, and what its columns mean and their unit. The warehouse, object storage and the reporting tool record other things.
+    The warehouse, object storage and the reporting tool keep the following information.
 
-    The warehouse records each table's columns and their types, its owner (an account) and its created time. It also records the table's row count, size and last-altered time. The row count, the size and the last-altered time change with every write to the table. Together with the created time, they record what happened to the table. The columns, their types and the owner say what the table is.
+    - The warehouse: its columns, their types and its owner (an account) say what the table is and who controls it now. Its row count and size measure the table as the last write left it. Its last-altered time gives when that write happened, and its created time gives when the table was created.
+    - Object storage: a file's key gives its name and where it is. Its size and last-modified time come from its last write.
+    - The reporting tool: a dashboard's title says what the dashboard is. The creator, the creation time and the last refresh are work done to it.
 
-    Object storage records a file's key, which says what the file is and where it is. Its size and last-modified time record the file's last write.
+    Information about what an asset is, or who controls it now, is **descriptive**. Information about work done on the platform (who did something, when, and what it left) is **operational**. The warehouse keeps the last of each, not a history. Your record of `daily_sales` is descriptive.
 
-    The reporting tool records a dashboard's title, which says what the dashboard is. It also records who created the dashboard and when, and when it last refreshed. The creator, the creation time and the last refresh record what happened to the dashboard.
+    A table's columns and their types make up its structure. That list is the table's **schema**. The word has a second use: in `information_schema`, its column `table_schema` names a group of tables in a database, such as `analytics`. The next cell lists the schema of the warehouse's three tables: 14 columns in all, 5 in `clean_customers`, 7 in `clean_orders` and 2 in `daily_sales`.
 
-    Records of the first kind say what an asset is. Records of the second kind say what happened to it. The first kind is **descriptive**. The second is **operational**. Your record of `daily_sales` is descriptive.
-
-    A table's columns and their types make up its structure. That list is the table's **schema**. The next cell lists the schema of the warehouse's three tables: 14 columns in all, 5 in `clean_customers`, 7 in `clean_orders` and 2 in `daily_sales`.
-
-    `orders.jsonl` declares no schema. Each line names its fields, and a reader works out their types. `products.csv`'s first line names its columns and gives no types.
+    `orders.jsonl` declares no schema. Each line of the file names its fields, and a reader works out their types. `products.csv`'s first line names its columns and gives no types.
     """)
     return
 
@@ -309,7 +308,7 @@ def _(mo):
     mo.md(r"""
     ## A column that names a person
 
-    The head of the shop said Sam Lund keeps the product catalogue. `products.csv` has a column, `updated_by`, that holds a member of staff's login for each product. The next cell counts the products each login last edited.
+    Does the column `updated_by`, whose values include `s.lund`, say who to ask about `products.csv`? The head of the shop said Sam Lund keeps the product catalogue. `products.csv` has a column, `updated_by`, that holds a member of staff's login for each product. The next cell counts the products each login last edited.
     """)
     return
 
@@ -323,13 +322,13 @@ def _(storage):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The cell counts `k.adeyemi` 3, `r.novak` 2 and `s.lund` 3. Three people last edited the 8 products.
+    Three people last edited the 8 products.
 
-    `updated_by` says who last changed each product. It is a fact about each product: the shop's catalogue keeps it, and the export copies it into the file. It says nothing about who is responsible for `products.csv`. The column would hold the same logins whoever that was. It is data about the shop's business.
+    `updated_by` describes each product in the shop's catalogue: who last edited it there. Each edit was made in the catalogue, which is not one of the platform's assets. The export copies the values into the file. So `updated_by` is the shop's data. A field that said who last wrote `products.csv` would be metadata about the file.
 
     The file's first line, `product_id,name,category,list_price_pence,updated_by`, names the file's columns. That line describes the file, so it is metadata, kept inside the same file as the data.
 
-    So what makes information metadata is what it describes: an asset, or the work done on the platform. Where the information is kept, and who wrote it, does not decide that. The warehouse keeps its tables' schemas inside itself. You keep your record beside the data.
+    Chapter 2's definition holds: metadata is information about an asset or about the platform. Where the information is kept does not decide whether it is metadata. The warehouse keeps its tables' schemas inside itself, and you keep your record beside the data. Both describe assets, so both are metadata.
     """)
     return
 
@@ -339,7 +338,7 @@ def _(mo):
     mo.md(r"""
     ## "Every column must have a description."
 
-    Suppose the shop sets the requirement: "Every column must have a description." Before you read on, write in the next cell whether the line `daily_sales revenue_pence means: the revenue in pence` meets it, and why.
+    Suppose the shop sets the requirement: "Every column must have a description." Before you read on, write in the next cell whether the line `daily_sales revenue_pence means: the revenue in pence` describes the column `revenue_pence` as the requirement asks, and why.
     """)
     return
 
@@ -348,7 +347,7 @@ def _(mo):
 def _():
     verdict = """
 daily_sales revenue_pence means: the revenue in pence
-Does this line meet the requirement? Why?
+Does this line meet the requirement for revenue_pence? Why?
 ........
 """
     return
@@ -357,14 +356,15 @@ Does this line meet the requirement? Why?
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The requirement could ask four different things. Each needs a different line:
+    The requirement could ask five different things. Each needs a different line:
 
+    - As written: the check's rule. It needs a `means` line with a value.
     - The column's meaning: which orders it counts. It needs a line saying which orders, such as completed orders, each once, by UTC day.
     - The unit. It needs a `unit` line that says pence.
     - Where its values come from: which asset and which columns. It needs a line naming them. Your record holds nothing of this.
     - Whether it may be empty. It needs a line saying so, which a check could test against the rows.
 
-    The words `the revenue in pence` repeat the column's name: `revenue_pence` already said "revenue" and "pence".
+    The line already says "in pence". Under the reading about meaning, it says nothing the name `revenue_pence` did not.
 
     The next cell runs the check over all three tables. Your record describes only the columns of `daily_sales`, so the check lists the 12 columns of `clean_customers` and `clean_orders` that have no description.
     """)
@@ -399,7 +399,7 @@ def _(shop, warehouse):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    With a description for each of the 14 columns, the check finds no problems: the requirement is met as written.
+    With a description for each of the 14 columns, the check finds no problems. Its rule, the requirement as written, is met.
 
     The next cell shows the two lines it wrote for `daily_sales`.
     """)
@@ -415,7 +415,7 @@ def _(by_name):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Under the other readings, these descriptions say nothing the names did not. They do not say which orders a column counts, where its values come from, or whether it may be empty. A check can count descriptions. It cannot tell whether a description says more than the column's name.
+    Under the readings about what a column means, its unit, where its values come from and whether it may be empty, these descriptions say nothing the names did not. They do not say which orders a column counts, where its values come from, or whether it may be empty. A check can count descriptions. It cannot tell whether a description says more than the column's name.
     """)
     return
 
@@ -423,14 +423,14 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## A record nobody updates
+    ## When the platform changes
 
     Your record describes `daily_sales` as it is this Monday. The shop could make two changes. Each applies from Saturday's row of `daily_sales` on.
 
     1. The job that writes `daily_sales` also writes each day's number of completed orders, in a new column, `order_count`. The rows before Saturday have no value in `order_count`.
     2. The job is edited to keep every order that has not been refunded, as in Chapter 2. The shop has no refunds, so from Saturday a cancelled order counts too.
 
-    Before you run the cells below, write in the next cell, for each change, whether the check of `daily_sales` will report a problem.
+    Before you read on, write in the next cell, for each change, whether the check of `daily_sales` will report a problem.
     """)
     return
 
@@ -461,7 +461,7 @@ def _(records, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    For change 1, the check reports the new column, `order_count`, with no description. The warehouse records its columns, so the check can compare them with your record, and your record has no line for `order_count`.
+    For change 1, the check reports `order_count`, which has no description in your record. The check compares the columns of your record with the warehouse's, so the record is now incomplete.
 
     For change 2, the check reports nothing: the edit changed no column.
 
@@ -479,9 +479,9 @@ def _(by_jos_meaning, refunds_week):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Saturday now differs too: 21549 pence in `daily_sales`, against 19149 by Jo's meaning. Thursday still differs.
+    Saturday now differs too: 21549 pence in `daily_sales`, against 19149 by Jo's meaning. Thursday still differs. Jo's query compares the values with Jo's meaning. It finds that the table no longer matches the meaning the record holds, although neither the record nor Jo's meaning has changed.
 
-    Your record still says what Jo means by revenue. From Saturday the table counts a cancelled order. Nothing on the platform recorded the edit. So nothing prompted a change to your record, and the check could not see the edit. A record written by hand stays as written while the platform changes. An operational record, made when the job changed and saying which version of the job's code wrote each row, would have shown the edit. Chapter 7 makes such records.
+    Neither comparison says what changed in the job, when it changed, or who changed it. Information made when the job changed, saying which version of the job's code ran each night, would show the change. Chapter 7 makes that kind of information.
     """)
     return
 
@@ -491,13 +491,13 @@ def _(mo):
     mo.md(r"""
     ## Before Chapter 4
 
-    The experiments showed that your record answered who to ask about `daily_sales`: Jo Marsh. It answered whether Thursday is wrong by its stated meaning. A description written from the data could not have shown Thursday wrong, because it agrees with the data on every day. The check caught a new column, but not a changed meaning. The experiments could not show since when Thursday is wrong, or what reads `products.csv` or `orders.jsonl`.
+    The experiments showed that your record answered who to ask about `daily_sales`: Jo Marsh. It answered whether Thursday is wrong by its stated meaning. A description written from the data could not have shown Thursday wrong, because it agrees with the data on every day. The requirement was met as written by four lines of code, and by no description that says more than the column's name. The check caught the new column. Jo's meaning caught the edit's effect on the table, but not the edit that caused it. The experiments could not show since when Thursday is wrong, or what reads `products.csv` or `orders.jsonl`.
 
-    Your record names Jo Marsh as responsible for `daily_sales`. The reporting tool records `j.marsh` as the dashboard's creator. Whether those are one person, and how a record could say so, is where Chapter 4 starts. Chapter 4 asks what each record is about, and how one record can point to what another describes.
+    Chapter 4 begins from two values. Your record names Jo Marsh as responsible for `daily_sales`. The reporting tool gives `j.marsh` as the dashboard's creator. Neither your record nor the reporting tool says that the two names refer to one person. Chapter 4 asks what each set of information is about, and how one set can point to what another describes.
 
-    - Pick a platform you work on. Which of its records say what a table is, and which say what happened to it?
-    - Which question does a column's description need to answer before a check can tell it apart from the column's name?
-    - If a job changed and nothing recorded the change, how would you find out when a table's meaning changed?
+    - Pick a platform you work on. Which of its information says what a table is, and which says what happened to it?
+    - What would a description of a column have to say for a reader to learn something its name does not?
+    - How could two sets of information say that two names refer to one person?
     """)
     return
 
@@ -509,7 +509,7 @@ def _(mo):
 
     The shop, its people and its data are invented for the course. All times are UTC.
 
-    Some real databases keep a description with a table or column. In PostgreSQL, the command `COMMENT ON` stores one comment for a table or a column, and a new one replaces the old. The comment is kept inside the database. `psql`'s `\d` commands show it. For most objects, only the owner can set it. The shop's warehouse keeps no descriptions.
+    Some real databases keep a description with a table or column. In PostgreSQL, the command `COMMENT ON` stores one comment for a table or a column, and a new one replaces the old. The comment is kept inside the database. The `\d` family of `psql` commands shows it. For most objects, only the owner can set it. The shop's warehouse keeps no descriptions.
 
     The record notation is the course's own.
 

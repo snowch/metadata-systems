@@ -171,9 +171,9 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("## Before Chapter 3", 2)
         self.says("Chapter 3 starts making them", 2)
         self.says("## Before Chapter 4", 3)
-        self.says("is where Chapter 4 starts", 3)
+        self.says("Neither your record nor the reporting tool says that the two names refer to one person.", 3)
         self.says("## Before Chapter 5", 4)
-        self.says("Chapter 5 follows those references from one entity to the next.", 4)
+        self.says("Chapter 5 follows them from one entity to the next.", 4)
 
     def test_each_chapter_opens_and_ends_with_the_way_back_to_the_course(self):
         # Relative links in a notebook open as files of the site, so the course's address is whole.
@@ -360,7 +360,7 @@ class TheWordsOfChapter3(unittest.TestCase):
         self.assertEqual((gap["left_ids"], gap["left_pence"]), ([7021, 7023, 7025], 15400))
         self.says("Thursday's three orders with no customer id (7021, 7023 and 7025, worth 15400 pence together)")
         self.assertEqual(self.week.reporting.dashboard()["created_by"], "j.marsh")
-        self.says("Jo Marsh, in finance, built the dashboard and decides what counts as revenue.")
+        self.says("For `daily_sales` and the dashboard, ask Jo Marsh in finance, who built the dashboard and decides what counts as revenue.")
         self.says("The value of every completed order placed that day, taking the day from the order's time in UTC, in pence.")
 
     def test_the_record_and_its_check(self):
@@ -368,8 +368,11 @@ class TheWordsOfChapter3(unittest.TestCase):
         self.assertEqual(self.mine.check(self.w, "daily_sales"), [])
         self.says("With every line written, it finds no problems.")
         self.assertEqual(self.mine.sql("SELECT value FROM records WHERE asset = 'daily_sales' AND field = 'responsible'"), [{"value": "Jo Marsh"}])
-        self.says("it names Jo Marsh as responsible for `daily_sales`")
-        self.says("`daily_sales revenue_pence unit: pence`")
+        self.says("The record answers the fourth question with Jo Marsh")
+        # The example line is not one of the five the reader fills in.
+        self.says("`clean_orders price_pence unit: pence`")
+        self.assertNotIn("clean_orders price_pence", literal(3, "records"))
+        self.assertEqual([r["line"] for r in self.blank], [1, 2, 3, 4, 5])
 
     def test_jos_meaning_against_the_table(self):
         files = {"raw_orders": shop.FILES["orders"]}
@@ -380,7 +383,11 @@ class TheWordsOfChapter3(unittest.TestCase):
         every_line = self.jos.replace("(SELECT DISTINCT * FROM raw_orders)", "raw_orders")
         self.assertEqual([r["day"] for r in self.w.sql(every_line, files=files) if r["compared"] == "different"], ["2026-09-09", "2026-09-10"])
         self.assertEqual(shop.data.DUPLICATED, 7015)
-        self.says("A query that counted every line of the file would also find Wednesday different, because order 7015 is in the file twice.")
+        self.says("The file holds order 7015 on two lines.")
+        self.says("A query that counted every line would find Wednesday different too.")
+        cancelled = {o["ordered_at"][:10] for o in self.week.storage.records(shop.FILES["orders"]) if o["status"] == "cancelled"}
+        self.assertEqual(cancelled, {"2026-09-08", "2026-09-12"})
+        self.says("Tuesday, Wednesday and Saturday agree because the query leaves out cancelled orders and counts the order the export wrote twice once")
         rebuilt = self.jos.replace("(SELECT DISTINCT * FROM raw_orders)", "clean_orders")
         self.assertEqual({r["compared"] for r in self.w.sql(rebuilt)}, {"same"})
         self.assertIn("FROM clean_orders", SOURCE[3])
@@ -397,7 +404,8 @@ class TheWordsOfChapter3(unittest.TestCase):
         self.says("14 columns in all, 5 in `clean_customers`, 7 in `clean_orders` and 2 in `daily_sales`")
         edits = self.week.storage.sql(shop.FILES["products"], "SELECT updated_by, COUNT(*) AS products FROM file GROUP BY updated_by")
         self.assertEqual([(r["updated_by"], r["products"]) for r in edits], [("k.adeyemi", 3), ("r.novak", 2), ("s.lund", 3)])
-        self.says("The cell counts `k.adeyemi` 3, `r.novak` 2 and `s.lund` 3. Three people last edited the 8 products.")
+        self.says("Three people last edited the 8 products.")
+        self.says("whose values include `s.lund`")
         first = self.week.storage.read_text(shop.FILES["products"]).splitlines()[0]
         self.says(f"The file's first line, `{first}`, names the file's columns.")
 
@@ -418,7 +426,7 @@ class TheWordsOfChapter3(unittest.TestCase):
     def test_the_record_nobody_updates(self):
         [p] = self.mine.check(shop.run_week(["column"]).warehouse, "daily_sales")
         self.assertEqual(p["column"], "order_count")
-        self.says("For change 1, the check reports the new column, `order_count`, with no description.")
+        self.says("For change 1, the check reports `order_count`, which has no description in your record.")
         refunds = shop.run_week(["refunds"])
         self.assertEqual(self.mine.check(refunds.warehouse, "daily_sales"), [])
         self.says("For change 2, the check reports nothing: the edit changed no column.")
@@ -467,7 +475,7 @@ class TheWordsOfChapter4(unittest.TestCase):
         self.assertEqual(typed, plain)
         people = {(r["identifier"], r["attribute"], r["value"]) for r in self.records if r["type"] == "person"}
         self.assertEqual(people, {("j.marsh", "name", "Jo Marsh"), ("j.marsh", "team", "finance"), ("s.lund", "name", "Sam Lund"), ("s.lund", "team", "catalogue")})
-        self.says("`j.marsh` is Jo Marsh, in finance; `s.lund` is Sam Lund, in catalogue.")
+        self.says("The head answers that `j.marsh` is Jo Marsh, in finance, and `s.lund` is Sam Lund, in catalogue.")
         self.assertEqual({r["type"] for r in self.model}, {"dataset", "column", "dashboard", "person", "team"})
         self.says("The model cell defines the types `dataset`, `column`, `dashboard`, `person` and `team`.")
 
@@ -475,34 +483,42 @@ class TheWordsOfChapter4(unittest.TestCase):
         problems = self.model.check(self.records)
         self.assertEqual(len(problems), 5)
         self.assertEqual(
-            sorted(p["record"].split(":")[0] for p in problems),
+            sorted(p["text"].split(":")[0] for p in problems),
             sorted([
                 "dataset daily_sales responsible", "dataset s3", "dataset clean_customers responsible",
                 "dataset clean_orders responsible", "dataset clean_orders drops",
             ]),
         )
-        self.says("The check finds 5 problems.")
+        self.says("Before your change, the check lists 5 problems.")
         after = self.model.check(self.merged())
         self.assertEqual(len(after), 3)
         self.says("The check then lists 3 problems.")
+        count = "SELECT COUNT(DISTINCT value) AS owners FROM records WHERE attribute = 'responsible'"
+        self.assertIn(count, SOURCE[4])
+        self.assertEqual((self.records.sql(count)[0]["owners"], self.merged().sql(count)[0]["owners"]), (4, 3))
+        self.says("Before your change it counts 4. After your change it counts 3: `j.marsh`, `s.lund` and the data engineer")
+        drops = shop.model(self.model.text + "\ndataset drops: text\n")
+        self.assertEqual(len(drops.check(self.merged())), 2)
+        self.says("Add the line `dataset drops: text` to the model cell, and press **Run below**. The check then lists 2 problems")
         self.assertEqual(sorted({r["value"] for r in self.merged() if r["identifier"] == "daily_sales" and r["attribute"] == "responsible"}), ["j.marsh"])
 
     def test_the_owners_by_reading(self):
         self.assertIn('.replace("responsible: Jo Marsh", "responsible: j.marsh")', SOURCE[4])
-        after = shop.typed_records(
-            self.merged().text.replace("responsible: the data engineer", "responsible: data_engineering")
-            + "\nteam data_engineering name: Data engineering\n"
-        )
-        rows = shop.owners(self.week, after)
-        self.assertEqual(len(rows), 7)
-        yes = lambda k: [r["asset"] for r in rows if r[k] == "yes"]
-        self.assertEqual(len(yes("one_owner")), 5)
-        self.assertEqual({r["asset"] for r in rows if r["one_owner"] == "no"}, {"s3://shop-raw/orders.jsonl", "s3://shop-raw/customers.jsonl"})
-        self.says("Of the 7 assets, 5 have one owner under `one_owner`: every asset except `orders.jsonl` and `customers.jsonl`.")
-        self.assertEqual(yes("one_person"), ["s3://shop-raw/products.csv", "daily_sales", "sales_dashboard"])
-        self.says("Three assets have one person under `one_person`: `products.csv`, with `s.lund`, and `daily_sales` and `sales_dashboard`, both with `j.marsh`.")
-        self.assertEqual(yes("one_team"), yes("one_owner"))
-        self.says("Five assets have one team under `one_team`: every asset with an owner.")
+        self.assertIn('the_data_engineer = "team"', SOURCE[4])
+        got = {}
+        for kind in ("team", "person"):
+            after = shop.typed_records(
+                self.merged().text.replace("responsible: the data engineer", "responsible: data_engineering")
+                + f"\n{kind} data_engineering name: the data engineer\n"
+            )
+            rows = shop.owners(self.week, after)
+            self.assertEqual(len(rows), 7)
+            got[kind] = tuple(sum(1 for r in rows if r[k] == "yes") for k in ("one_owner", "one_person", "one_team"))
+            self.assertEqual({r["asset"] for r in rows if r["one_owner"] == "no"}, {"s3://shop-raw/orders.jsonl", "s3://shop-raw/customers.jsonl"})
+        self.assertEqual(got, {"team": (5, 3, 5), "person": (5, 5, 3)})
+        self.says("With the data engineer as a team, 5 of the 7 assets have one owner under `one_owner`, 3 have one person under `one_person`, and 5 have one team under `one_team`. With the data engineer as a person, the counts are 5, 5 and 3")
+        self.says("`orders.jsonl` and `customers.jsonl` have no `responsible` line in the records, so they fail every reading.")
+        self.says("No reading holds for all 7 assets.")
 
 
 class TheWordsAboutThePage(unittest.TestCase):
@@ -587,7 +603,7 @@ class TheWordsKeepTheRules(unittest.TestCase):
         # record beside what the systems record; Chapter 4 its four terms where it asks what the
         # records describe. Neither uses its terms before then, objectives included.
         for number, heading, words in (
-            (3, "## What the platform records already", ("descriptive", "operational", "schema")),
+            (3, "## What the platform keeps", ("descriptive", "operational", "schema")),
             (4, "## What the records describe", ("entity", "attribute", "identifier", "dataset")),
         ):
             cells = [re.sub(r"\]\([^)]*\)", "]", c) for c in CELLS[number]]

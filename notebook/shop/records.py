@@ -25,19 +25,20 @@ import sqlite3
 
 from .platform import Rows
 
-# What a check prints, in the reader's words: Haiku's drafts of brief CC (docs/notes/chapter-03/).
+# What a check prints, in the reader's words: Haiku's drafts of briefs CC and CF (docs/notes/chapter-03/).
 MESSAGES = {
     "none": "No problems found.",
     "unread": "This line is not in the form `asset field: value` or `asset column field: value`.",
     "no_asset": "This line names an asset that is neither a table in the warehouse nor a file in object storage.",
     "no_column": "This line names a column that the warehouse table does not have.",
-    "no_description": "The records do not describe this column, because there is no `means` line for it or its value is still only dots.",
+    "no_description": "Your record has no `means` line for the column, so add one.",
+    "unwritten": "Replace the dots on the column's `means` line with what the column holds.",
     "typed_unread": "This record line is not in the form `type identifier attribute: value`.",
     "model_unread": "This model line is not in the form `type attribute: text`, `type attribute: type`, or `type attribute: type or type`.",
     "no_type": "The model does not define this line's type.",
     "no_attribute": "The model does not give this type this attribute.",
     "no_value_type": "This model line names a value type that the model does not define.",
-    "no_thing": "This value should be the identifier of something of type {types}, and no record describes such a thing with that identifier.",
+    "no_thing": "The value should be the identifier of a {types}, but no line describes one with that identifier.",
 }
 
 # A value not yet written: dots, as the chapters' records leave them for the reader.
@@ -52,7 +53,12 @@ def written(value: str | None) -> bool:
 
 
 def _lines(text: str):
-    """Each line that holds a fact: its number and its text, without blank lines and `#` notes."""
+    """Each line that holds a fact: its number and its text, without blank lines and `#` notes.
+
+    A cell's records open with a newline after the triple quotes; lines are counted from the one
+    after it, as the reader sees them.
+    """
+    text = text[1:] if text.startswith("\n") else text
     for number, raw in enumerate(text.splitlines(), start=1):
         line = raw.strip()
         if line and not line.startswith("#"):
@@ -127,13 +133,16 @@ class Records(Rows):
                 out.append({"line": r["line"], "asset": r["asset"], "column": r["column"], "problem": MESSAGES["no_asset"]})
             elif r["column"] is not None and r["column"] not in columns.get(r["asset"], ()):
                 out.append({"line": r["line"], "asset": r["asset"], "column": r["column"], "problem": MESSAGES["no_column"]})
-        described = {(r["asset"], r["column"]) for r in self if r["field"] == "means" and written(r["value"])}
+        means = {(r["asset"], r["column"]): r for r in self if r["field"] == "means"}
         for table, names in columns.items():
             if asset is not None and table != asset:
                 continue
             for column in names:
-                if (table, column) not in described:
+                line = means.get((table, column))
+                if line is None:
                     out.append({"line": None, "asset": table, "column": column, "problem": MESSAGES["no_description"]})
+                elif not written(line["value"]):
+                    out.append({"line": line["line"], "asset": table, "column": column, "problem": MESSAGES["unwritten"]})
         return Rows(out, null="", empty=MESSAGES["none"])
 
 
@@ -198,22 +207,22 @@ class Model(Rows):
     def check(self, records: TypedRecords) -> Rows:
         """The records against the model: every line the model has no type or attribute for, and
         every value that should name a thing and names none the records describe."""
-        out = [{"line": u["line"], "record": u["text"], "problem": MESSAGES["model_unread"]} for u in self.unread]
+        out = [{"line": u["line"], "text": u["text"], "problem": MESSAGES["model_unread"]} for u in self.unread]
         for r in self:
             if any(v != "text" and v not in self.types() for v in self.attribute(r["type"], r["attribute"]) or ()):
-                out.append({"line": r["line"], "record": f"{r['type']} {r['attribute']}: {r['value']}", "problem": MESSAGES["no_value_type"]})
-        out += [{"line": u["line"], "record": u["text"], "problem": MESSAGES["typed_unread"]} for u in records.unread]
+                out.append({"line": r["line"], "text": f"{r['type']} {r['attribute']}: {r['value']}", "problem": MESSAGES["no_value_type"]})
+        out += [{"line": u["line"], "text": u["text"], "problem": MESSAGES["typed_unread"]} for u in records.unread]
         things = records.things()
         for r in records:
             text = f"{r['type']} {r['identifier']} {r['attribute']}: {r['value']}"
             if r["type"] not in self.types():
-                out.append({"line": r["line"], "record": text, "problem": MESSAGES["no_type"]})
+                out.append({"line": r["line"], "text": text, "problem": MESSAGES["no_type"]})
                 continue
             kinds = self.attribute(r["type"], r["attribute"])
             if kinds is None:
-                out.append({"line": r["line"], "record": text, "problem": MESSAGES["no_attribute"]})
+                out.append({"line": r["line"], "text": text, "problem": MESSAGES["no_attribute"]})
             elif kinds != ["text"] and not any((k, r["value"]) in things for k in kinds):
-                out.append({"line": r["line"], "record": text, "problem": MESSAGES["no_thing"].format(types=" or ".join(kinds))})
+                out.append({"line": r["line"], "text": text, "problem": MESSAGES["no_thing"].format(types=" or ".join(kinds))})
         return Rows(out, null="", empty=MESSAGES["none"])
 
 

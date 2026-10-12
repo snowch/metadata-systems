@@ -326,7 +326,7 @@ try {
       await run("Run below", "Chapter 4, Run below from the records");
       const problems = (await output("model.check(records)"))
         .split("\n")
-        .filter((l) => l.includes("This value") || l.includes("The model")).length;
+        .filter((l) => /^\d+\t/.test(l)).length;
       check(problems === 3, `Chapter 4: after the merge the check lists 3 problems (${problems})`);
       if (problems !== 3) console.log((await output("model.check(records)")).slice(0, 400));
     }

@@ -25,11 +25,13 @@ messages, in a line notation of the course's own (`asset [column] field: value`)
   the file, and the file's first line, which describes the file from inside it: metadata is defined
   by what it describes, not where it is kept;
 - questions "Every column must have a description." (below);
-- watches a record go stale: a new column the check catches, and a changed meaning (Chapter 2's
-  edited job) it cannot.
+- sees what two comparisons catch when the platform changes: the check against the warehouse's
+  columns catches a new column (the record is incomplete); Jo's meaning as a query catches the
+  effect of Chapter 2's edited job (the table no longer matches the meaning the record holds); and
+  neither says what changed in the job, when, or who changed it.
 
 It introduces *descriptive*, *operational* and *schema* (the plan's terms for the chapter), each
-in the section "What the platform records already", which the term test holds.
+in the section "What the platform keeps", which the term test holds.
 
 ## What was built for it
 
@@ -250,6 +252,40 @@ Measured 12 October 2026 on the built site, served locally, in Chromium with a p
 (`docs/notes/notebook-prototype.md`, "Chapters 3 and 4"): about 13 MB the first time on its own;
 0.32 MB from Chapter 2's link in a new tab after Chapter 2 had run; Run all 8.9 to 9.6 s; peak
 memory 400 to 418 MB.
+
+## The review, 12 October 2026
+
+A reader on another model read the chapter as built and after the reader's edit, as a learner who
+had done Chapters 1 and 2 (`docs/notes/chapter-03/review/`: the brief, the pages read, 22 findings,
+8 marked blocking), and an independent sceptic attacked each finding (`verdicts.md`): none was
+rejected outright, several were trimmed, and one piece of evidence was wrong (`daily_sales` gains a
+row every night; the claim about row counts still failed for `clean_customers`, which each night
+replaces with the same 9 rows). Code first, then brief CE (Haiku, checked for facts: nothing
+dropped, nothing wrong; the close's heading, which the draft left out, was put back), then the
+messages of brief CF. What changed:
+
+- The expectation cells say "before you read on": after **Run all**, and after **Run below** from
+  the record, the cells below have already run (findings 1, 6). The record cell says that until it
+  is filled in the cells below show the dots.
+- The head of the shop's reply now names Jo Marsh for `daily_sales` (2); the answer to "who should I
+  ask" is said to be what the reader wrote, now kept where it can be queried.
+- The stale-record section is now "When the platform changes", and says what each comparison
+  compares and catches, and what neither can say (3); the close and its questions follow.
+- The two kinds of information: what the warehouse keeps is the last of each, not a history,
+  reconciled with Chapter 2; the criterion is stated; only the last-altered time changes with every
+  write (4, 5). The section is a list, not five paragraphs (19).
+- The definition is Chapter 2's ("information about an asset or about the platform"), and
+  `updated_by` is said to describe products and edits made in the catalogue, not an asset (7).
+- *Record* is the reader's set of lines only; what a system keeps is information; one line is a
+  line (8). The check's messages tell a missing `means` line from one still dots (14), and lines are
+  numbered from 1 (15).
+- Smaller: the example line is not one the reader fills in (9); the files' lookup says why it finds
+  nothing (10); the order written twice is said once (11); why Tuesday, Wednesday and Saturday agree
+  with Jo's meaning, and that the reconstruction agrees by construction (12); the requirement's five
+  readings, the first as written (13); the check's unused capability is not mentioned (16); the
+  opening ends on the problem, not a roadmap (17); the question comes before the `updated_by` count
+  (18); the second use of "schema" (20); the closing questions lead to Chapter 4 (21); the
+  objectives and the close cover the requirement (22).
 
 ## Known gaps
 
