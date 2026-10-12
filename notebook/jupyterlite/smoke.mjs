@@ -326,14 +326,23 @@ try {
         .locator(".jp-CodeCell", { has: page.locator(".jp-InputArea", { hasText }) })
         .first()
         .elementHandle();
-      await cell.scrollIntoViewIfNeeded();
+      // In the middle of the screen: a cell scrolled only just into view can sit under the row of
+      // buttons, which stays at the top, and a tap there misses the editor.
+      await cell.evaluate((e) => e.scrollIntoView({ block: "center" }));
+      await page.waitForTimeout(300);
       const editor = await cell.$(".cm-content");
       // Near its first character: a long line makes the editor wider than the phone's screen, and
       // its centre can fall outside it.
       await editor.tap({ position: { x: 8, y: 8 } });
       await page.keyboard.press("ControlOrMeta+a");
       const text = (await editor.innerText()).replace(/\u00a0/g, " ");
-      await page.keyboard.insertText(from.reduce((t, f, i) => t.replaceAll(f, to[i]), text));
+      const changed = from.reduce((t, f, i) => t.replaceAll(f, to[i]), text);
+      await page.keyboard.insertText(changed);
+      const typed = (await editor.innerText()).replace(/\u00a0/g, " ");
+      check(
+        to.every((t) => typed.includes(t)),
+        `the edit to the cell with ${JSON.stringify(hasText)} is in its editor`,
+      );
       await (await cell.$(".jp-InputPrompt")).tap();
     };
     const output = async (hasText) => {
