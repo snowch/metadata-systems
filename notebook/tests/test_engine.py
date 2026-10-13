@@ -1002,7 +1002,7 @@ class ThePartVIIRules(unittest.TestCase):
 
         week = shop.run_week(list(I.WEEK))
         self.assertEqual([r["OpenLineage runs"] for r in I.airflow(week)], [1, 1, 1, 1, 1, 1, 2])
-        self.assertEqual(I.spark(), "shop_nightly.execute_insert_into_hadoop_fs_relation_command.shop_analytics_daily_sales")
+        self.assertEqual(I.spark(), "shop_nightly.execute_insert_into_hadoop_fs_relation_command.analytics_daily_sales")
         self.assertEqual({r["events sent at"] for r in I.dbt(week)}, {"02:30:21"})
         self.assertEqual({r["name format"]: r["jobs"] for r in I.jobs_by_format(week)}, {"$QUERY_ID": 28, "$SOURCE": 1, "$USER": 1, "$CLIENT_IP": 1})
         for which, passed in (("stub", 0), ("reference", 2)):

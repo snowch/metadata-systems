@@ -12,9 +12,10 @@ desk, the analyst's copy and Monday's failed night.
   names the job `{dag_id}.{task_id}` and makes each try's run id from the try number among other
   values, so a retried task instance is two OpenLineage runs. The shop's Dag retries a task once.
 - Spark (4.0.0; OpenLineage's Spark integration): the job is named from the application's name,
-  the executed plan's top node put through the integration's normaliser, and the output table with
-  its dots made `_`. For an insert into a table kept as files, the top node is Spark's
-  `Execute InsertIntoHadoopFsRelationCommand`.
+  the executed plan's top node put through the integration's normaliser, and, for an insert into a
+  table kept as files, the last two parts of the path its files are written to. The top node of
+  such an insert is Spark's `Execute InsertIntoHadoopFsRelationCommand`. Where the shop's table's
+  files are kept (`SPARK_PATH`) is the shop's assumption.
 - dbt (artifacts of 1.11; `openlineage-dbt`): the wrapper runs dbt, then reads its artifacts and
   sends every event; a model's job is `{database}.{schema}.{package}.{model}`, and each reading of
   the artifacts makes new run ids. The shop's warehouse jobs run as one dbt invocation.
@@ -109,9 +110,17 @@ def _normalise(name: str) -> str:
     return re.sub(r"[^a-zA-Z0-9]+", "_", s.lower())
 
 
-def spark(table: str = "shop.analytics.daily_sales") -> str:
-    """The job name Spark's integration gives an insert into `table`."""
-    return f"{APP}.{_normalise(SPARK_TOP_NODE)}.{table.replace('.', '_')}"
+SPARK_PATH = "s3://shop-warehouse/analytics/daily_sales"
+
+
+def spark(path: str = SPARK_PATH) -> str:
+    """The job name Spark's integration gives an insert into a table whose files are under `path`:
+    the application, the plan's top node through the normaliser, and the last two parts of the
+    output's path joined with `_` (`JobNameSuffixProvider.trimPath`), its dots then made `_`."""
+    name = path.split("://", 1)[-1].split("/", 1)[-1]
+    parts = name.split("/")
+    suffix = "_".join(parts[-2:]) if len(parts) >= 2 else parts[-1]
+    return f"{APP}.{_normalise(SPARK_TOP_NODE)}.{suffix.replace('.', '_')}"
 
 
 def dbt(week: Week, day: str = "2026-09-13") -> Rows:
