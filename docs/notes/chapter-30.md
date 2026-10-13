@@ -128,6 +128,10 @@ Locally, 13 October 2026, after the review's changes (`docs/notes/notebook-proto
 test (`notebook/jupyterlite/smoke.mjs`) types the reference into the chapter's cell and reads the
 check.
 
+Live, 13 October 2026, published at `c12c414`, opened alone at desktop and phone widths: Run all
+10.6 to 10.8 s; peak memory 401 to 406 MB; no error output, no console error. The warning's 9 to 12 seconds and
+about 400 MB hold.
+
 ## Known gaps
 
 - The answer cells print below the prediction once **Run all** has run, as the course's

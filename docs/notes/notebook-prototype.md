@@ -420,8 +420,10 @@ outside review's changes. The link followed is the chapter text's own "Next" lin
 | Peak memory, with the chapter before open in its own tab | 609 MB | 614 MB | 608 MB | 617 MB |
 | Cells with an error output; console errors from the page | none | none | none | none |
 
-Each warning states what Chapters 24 to 28 state, and the live measurement after publishing is the
-check on its 9 to 12 seconds.
+Each warning states what Chapters 24 to 28 state. Live, 13 October 2026, published at `c12c414`,
+opened alone at desktop and phone widths: Run all 10.0 to 11.4 s, peak memory 396 to 406 MB, no
+error output, no console error; one desktop run of Chapter 31 timed 0.6 s, as Chapter 28's once did,
+and measured again took 11.2 s. The warnings' 9 to 12 seconds and about 400 MB hold.
 
 ## Phones
 
