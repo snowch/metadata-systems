@@ -1830,7 +1830,8 @@ class TheWordsOfPartVII(unittest.TestCase):
         g = F.graph(c)
         edges = {(r["job"], r["edge"]): r for r in F.edges(g)}
         self.assertEqual((edges[("load_scans", "reads")]["dataset"], edges[("load_scans", "reads")]["runs"]), ("s3://ferry-gates/... (37 batches)", 38))
-        self.says("`load_scans` read 37 batches in 38 runs. `drop_scans` read 1 batch.", 33)
+        self.says("`load_scans` read 37 batches in 38 runs. The 37 are the 36 batches in the bucket and the test batch", 33)
+        self.says("`drop_scans` read 1 batch.", 33)
         self.assertEqual(len(f.storage.ls("s3://ferry-gates/")), 36)
         rows = [(r["sailing_loads"], r["counted on board"]) for r in F.compare_counts(f, "2026-09-24", "island")]
         self.assertEqual(rows, [(31, 31), (14, 24), (10, 17)])
@@ -1851,7 +1852,10 @@ class TheWordsOfPartVII(unittest.TestCase):
         self.assertEqual(made, ["no", "yes", "no", "yes", "no"])
         report = {r["sailing"]: r["passengers"] for r in f.report("2026-09-23")}
         self.assertEqual(report["2026-09-23 island 19:30"], "22")
-        self.says("the report shows 22 passengers on Wednesday's 19:30 from the island, and the harbour master counted 17", 33)
+        self.says("it holds 17 for Wednesday's 19:30 from the island, the harbour master's count. `sailing_loads` and `loads-2026-09-23.csv` still do: each shows 22.", 33)
+        versions = [r["version"] for r in f.storage.versions("s3://ferry-gates/" + F.TEST_KEY)]
+        self.assertEqual(versions[0], deleted["previous"])
+        self.says(f"the test batch's version `{versions[0]}` is still in the bucket behind the delete marker", 33)
 
 
 if __name__ == "__main__":

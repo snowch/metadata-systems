@@ -23,7 +23,7 @@ def _(mo):
     - Diagnose a loss that no failed run shows.
     - Explain one sailing's figure from the versions its run counted.
     - Find what still counts a batch after it was deleted.
-    - Question three of the ferry's requirements before building to them.
+    - Question three of the ferry's requirements before building to them, and say which reading the platform meets.
     """)
     return
 
@@ -59,20 +59,6 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The figure below shows the ferry's four systems on Friday 25 at 09:00.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(figures, mo, shop):
-    mo.Html(figures.figure(figures.ferry_platform(shop.ferry.run()), "The ferry's four systems on Friday 25 at 09:00; object storage holds 36 batches and 3 reports; the platform records which change to a batch starts which function, and not what a function or a job writes."))
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
     ## The ferry's platform
 
     You have joined the data team of an island ferry. It crosses between the mainland and the island three times a day from each side: from the mainland at 07:30, 12:30 and 17:30, and from the island at 09:30, 14:30 and 19:30.
@@ -85,12 +71,24 @@ def _(mo):
 
     On Friday 25 at 09:00, the operations manager sends three messages:
 
-    - "Thursday afternoon's sailings from the island look nearly empty. The harbour master counted far more people on board."
+    - "Thursday's sailings after noon from the island look nearly empty. The harbour master counted far more people on board."
     - "Tuesday's 17:30 from the mainland shows 35 passengers. `boardings` has 38."
     - "An engineer's test batch got into Wednesday's figures. It was deleted on Thursday morning."
-
-    The next cell runs the ferry's three days and lists its systems, with what each records about its own work.
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The figure below shows the ferry's four systems on Friday 25 at 09:00. The cell after it runs the ferry's three days and lists its systems, with what each records about its own work.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(figures, mo, shop):
+    mo.Html(figures.figure(figures.ferry_platform(shop.ferry.run()), "The ferry's four systems on Friday 25 at 09:00; object storage holds 36 batches and 3 reports."))
     return
 
 
@@ -142,11 +140,11 @@ def _(mo):
 
     No record links a run of `build_loads` to a batch or a version.
 
-    From the times you can work out that Wednesday's 01:00 run counted gate 2's first version. That is a reconstruction, as in Chapter 2, not a record.
+    The times might let you work out which version a run counted. That would be a reconstruction, as in Chapter 2, not a record.
 
     ## What to record
 
-    The ferry's data team has a requirement for this, in the box below.
+    The ferry's data team has a requirement for lineage, in the box below.
     """)
     return
 
@@ -183,7 +181,7 @@ def _(mo):
 
     - per scan: each row of `boardings` needs the batch it came from. `boardings` keeps the batch's name, in its column `batch`, and not its version;
     - per batch: each run of a function needs to name the batch it read;
-    - per version: each run needs to name the batch and the version it read, so that a figure can be traced to the versions it counted. The question above needs this one.
+    - per version: each run needs to name the batch and the version it read, so that a figure can be traced to the versions it counted. The question about Tuesday's 17:30 above needs this one.
 
     The requirement does not say which it means. This page builds to the third. With the column `batch`, it answers the first two as well.
 
@@ -199,11 +197,13 @@ def _(mo):
 
     As it stands, `inputs` names the batch without its version for a create or an overwrite, and nothing for a delete. The shop's `remove_return`, in Chapters 7 and 8, named no input either.
 
-    A run of `drop_scans` reads nothing: the batch is gone. Naming the version it removed as its input is the ferry's choice: it links the removal to the batch.
+    A run of `drop_scans` reads nothing: the batch is no longer listed in the bucket. Naming the version it removed as its input is the ferry's choice: it links the removal to the batch.
 
     Change `inputs` so that each run names the version it read, and a delete names the version it removed. `shop.ferry.version_facet(version)` makes the `version` facet. Select the cell and press **Run below**.
 
-    The check below it tests every function run of the three days. As `inputs` stands, 1 of 3 tests passes. The cell after the check prints the event of the run that the delete of the test batch started.
+    The event the cell after the check prints, from the run that the delete of the test batch started, holds the facet `ferry_batchChange`, with the change that started the function. OpenLineage has a dataset facet, `lifecycleStateChange`, whose values include `CREATE`, `OVERWRITE` and `DROP`; its documentation shows it on a run's output. Recording the change that started a function in a facet of its own is the ferry's choice.
+
+    The check below it tests every function run of the three days. As `inputs` stands, 1 of 3 tests passes.
     """)
     return
 
@@ -235,11 +235,9 @@ def _(mo):
     mo.md(r"""
     With the change, all 3 tests pass. The delete's event names the test batch with the version `e622b165c27a`, the version the engineer deleted.
 
-    OpenLineage has a facet for a change to a dataset, `lifecycleStateChange`, with values such as `CREATE`, `OVERWRITE` and `DROP`. It describes a change a run makes to a dataset. The gates and the engineer changed the batches, not the functions, so the ferry records the change that started a function in a facet of its own, `ferry_batchChange`.
-
     ## Capturing the ferry's lineage
 
-    The next cell sends every event through the collector and builds the lineage graph, with the shop's versions of the pieces you wrote in Chapters 25 and 26. It lists the graph's edges by job, with the batches counted rather than listed.
+    The next cell sends every event through the collector and builds the lineage graph, with the shop's reference collector and graph from Chapters 25 and 26. The jobs' events, for `build_loads` and `send_report`, are the ferry's own: you did not write them. The cell lists the graph's edges by job, with the batches counted rather than listed.
     """)
     return
 
@@ -255,15 +253,15 @@ def _(inputs, platform, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    With your change to `inputs`, `load_scans` read 37 batches in 38 runs. `drop_scans` read 1 batch. `build_loads` read `boardings` and `sailings` and wrote `sailing_loads`. `send_report` read `sailing_loads` and wrote 3 report files.
+    With your change to `inputs`, `load_scans` read 37 batches in 38 runs. The 37 are the 36 batches in the bucket and the test batch, which is no longer listed. The 38th run is gate 2's second upload for Tuesday's 17:30. `drop_scans` read 1 batch. `build_loads` read `boardings` and `sailings` and wrote `sailing_loads`. `send_report` read `sailing_loads` and wrote 3 report files.
 
     No job writes `sailings`. The timetable was typed in by hand, and nothing sends an event about it.
 
     The graph now holds which run read which version of each batch, and when. The question about Tuesday's 17:30 comes back below.
 
-    ## Thursday afternoon
+    ## Thursday after noon
 
-    The first message is about Thursday afternoon's sailings from the island. The next cell sets Thursday's rows of `sailing_loads` for the island beside the harbour master's own count of the people on board.
+    The first message is about Thursday's sailings after noon from the island. The next cell sets Thursday's rows of `sailing_loads` for the island beside the harbour master's own count of the people on board.
     """)
     return
 
@@ -279,7 +277,7 @@ def _(mo):
     mo.md(r"""
     At the 09:30 sailing, `sailing_loads` has 31 and the harbour master counted 31 on board. At the 14:30 sailing, it has 14 and the harbour master counted 24. At the 19:30 sailing, it has 10 and the harbour master counted 17.
 
-    For the two afternoon sailings, `sailing_loads` counts 10 and 7 fewer than the harbour master.
+    For the two sailings after noon, `sailing_loads` counts 10 and 7 fewer than the harbour master.
 
     Before you read on, write in the next cell whether any run of a function or a job failed in the three days.
     """)
@@ -377,10 +375,6 @@ def _(collected, shop, suspect):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    A rule that flags a run that wrote fewer rows than it read scans also flags Wednesday's 12:30 from the mainland, gate 1. That batch holds one aborted scan with no `scanned_at`. The gates write no `scanned_at` when a scan is aborted, and `load_scans` leaves such a scan out on purpose.
-
-    Change `suspect` until both tests pass.
-
     The next cell lists every batch from the island's gate 2, with its fields as its run recorded them.
     """)
     return
@@ -395,7 +389,7 @@ def _(collected, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    From 14:31:02 on Thursday, the island's gate 2 batches hold `scan_time` where the earlier ones hold `scanned_at`. `load_scans` read 10 scans and 7 scans from them and wrote 0 rows: it keeps only scans with a `scanned_at`.
+    From 14:31:02 on Thursday, the island's gate 2 batches hold `scan_time` where the earlier ones hold `scanned_at`. `load_scans` read 10 scans and 7 scans from them and wrote 0 rows: it keeps only scans with a `scanned_at`. That is also why a rule that flags any run that wrote fewer rows than it read scans also flags Wednesday's 12:30 from the mainland, gate 1: that batch holds one aborted scan, which the gates write with no time, and `load_scans` leaves it out on purpose.
 
     The fields show what changed and when. Nothing in the records shows why the gate's batches changed.
 
@@ -467,13 +461,13 @@ def _(graph33, platform, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    `boardings` no longer counts them. `sailing_loads` and `loads-2026-09-23.csv` still do: the report shows 22 passengers on Wednesday's 19:30 from the island, and the harbour master counted 17.
+    `boardings` no longer counts the test scans: it holds 17 for Wednesday's 19:30 from the island, the harbour master's count. `sailing_loads` and `loads-2026-09-23.csv` still do: each shows 22.
 
     Compare this with what you wrote.
 
     The delete reached only what `drop_scans` changed. The row of `sailing_loads` was built before the delete, and the report is a copy that was emailed at 06:00.
 
-    The graph reached all three because each run that read the test batch, or something made from it, named what it read.
+    The graph also reached the reports for Tuesday's and Thursday's sailings, `loads-2026-09-22.csv` and `loads-2026-09-24.csv`. They have no row for that sailing and do not count the test scans. Following the edges job by job reaches every file `send_report` wrote, and cannot tell those two apart from Wednesday's.
 
     The ferry has a requirement for deleted batches, in the box below.
     """)
@@ -508,16 +502,17 @@ What does "a deleted batch must leave no trace" mean here?
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    It could mean four things. Each item says what it needs:
+    It could mean five things. Each item says what it needs:
 
     - no rows made from the batch: `drop_scans` does this;
-    - no figure that counted it: each figure built from it must be built again; the graph lists them;
+    - no figure that counted it: each figure built from it must be built again; the graph lists the datasets to look at;
     - no copy of such a figure: each copy must be found and replaced, the reports already emailed included; the graph lists the files, not the inboxes they were sent to;
+    - no copy of the batch itself: object storage keeps every version, so the test batch's version `e622b165c27a` is still in the bucket behind the delete marker; each version must be removed;
     - no record that the batch ever existed: this would remove the events and edges that explain why Wednesday's 19:30 showed 22, and the version the delete removed.
 
     The last reading works against the second and the third: finding every figure the batch reached needs the lineage that the last reading would remove.
 
-    The requirement does not say which it means.
+    The ferry's platform meets the first reading only. The requirement does not say which it means.
     """)
     return
 
@@ -529,7 +524,7 @@ def _(mo):
 
     The ferry's platform recorded its triggers, its function runs and its job runs, and nothing that linked a figure to the batches it counted. Your inputs added that link, version by version.
 
-    Thursday's loss failed no run. The runs' own counts showed it, and the batches' fields showed what changed.
+    Thursday's loss after noon failed no run. The runs' own counts showed it, and the batches' fields showed what changed.
 
     Tuesday's row counted gate 2's first version, and no later run rebuilt Tuesday.
 
@@ -539,18 +534,19 @@ def _(mo):
 
     The course ends here.
 
-    Three questions:
+    Four questions:
 
     - On a platform you work on, which record links a figure to the version of the data it counted?
     - Which of your jobs rebuild only the latest day, and what happens to a correction that arrives later?
     - When data must be deleted, which copies of what was made from it does your platform know about?
+    - Pick a requirement your platform is said to meet. Which reading of it does the platform meet, and which does it not?
 
     ### How this differs from a real platform
 
     - The ferry, its platform and its three days are invented. No real object store, function platform or scheduler is described: when a change starts a function, and what each system records, are the ferry's own.
     - Here each change to a batch starts its function once, in order. Chapters 19 and 20 showed what happens when a start is repeated or out of order.
     - The facets `version`, `schema`, `inputStatistics`, `outputStatistics` and `lifecycleStateChange` are OpenLineage's. `ferry_batchChange` is the ferry's own.
-    - Naming the removed version as the input of a run that reads nothing is the ferry's choice.
+    - Naming the removed version as the input of a run that reads nothing, and recording the change that started a function in `ferry_batchChange` rather than in `lifecycleStateChange`, are the ferry's choices.
 
     [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 32](chapter_32.ipynb)
 

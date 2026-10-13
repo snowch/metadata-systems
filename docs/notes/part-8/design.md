@@ -124,3 +124,13 @@ or the shop's reference pieces from Part VI. No new terms (the plan has none for
 The obvious examples for an event-driven capstone are a ride-hire or taxi trips dataset, a web shop's
 clickstream, and the cloud vendors' "thumbnail a picture when it lands in a bucket" tutorial. The
 ferry's ticket-gate batches, its timetable and its three days are the course's own.
+
+## As built
+
+What the review changed from the design above (the chapter's note, "The review", has the rest): the
+situation comes before the figure, whose labels say only what the page has told; the first section
+says only that the times might allow a reconstruction; the test batch's downstream lists all five
+datasets the graph reaches, each with its figure beside the harbour master's count; "A deleted batch
+must leave no trace" has five readings, the copy of the batch that object storage keeps among them,
+and the platform meets the first; and the ferry's choice of its own facet over `lifecycleStateChange`
+is labelled as the ferry's.

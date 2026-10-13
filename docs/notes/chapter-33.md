@@ -40,9 +40,10 @@ Every number the page states is pinned in `notebook/tests/test_words.py` (`test_
 - **Role:** reference
 - **Serves:** what are the ferry's systems, and what does each hold on Friday morning?
 - **Why now:** the reader meets a platform they have not seen; the figure carries its four systems
-  so the prose need not. It draws no arrow from one asset to another, and its labels say that what
-  the functions and jobs write is not recorded: the standing map's rule, for this platform. The
-  shop's map does not appear: this chapter's platform is the ferry's.
+  so the prose need not. It comes after the situation, draws no arrow from one asset to another,
+  and its labels say only what the page has told the reader; what the platform records is left to
+  the cells after it (the review: the first labels gave that away). The shop's map does not appear:
+  this chapter's platform is the ferry's.
 
 ### `records`
 
@@ -106,7 +107,9 @@ Every number the page states is pinned in `notebook/tests/test_words.py` (`test_
 - **Driving question:** which runs lost their scans?
 - **The action:** change `suspect(run)`, read the check, change it again.
 - **Why the action:** the reader chooses the threshold; the check shows what each choice flags.
-- **Evidence:** 0 of 2 flagged; then Wednesday's aborted scan flagged too; then 2 and no other.
+- **Evidence:** 0 of 2 flagged; then, for the obvious rule, Wednesday's 12:30 from the mainland
+  flagged too, which the check names; then 2 and no other. The page explains the aborted scan only
+  after the fields, so the check carries the discovery.
 - **Consequence:** a rule has to tell a scan dropped on purpose from one lost; the batches' fields
   then show the rename.
 - **Predictable:** partly.
@@ -150,7 +153,9 @@ Every number the page states is pinned in `notebook/tests/test_words.py` (`test_
 - **The action:** write the prediction; read the graph's downstream with each dataset's state.
 - **Why the action:** the graph finds what was made from the batch; each dataset's own rows say
   whether it still counts it.
-- **Evidence:** no, yes, yes; the report 22, the harbour master 17.
+- **Evidence:** every dataset the graph reaches, five, with what each holds for the sailing beside
+  the harbour master's 17: `boardings` 17, `sailing_loads` 22, Wednesday's report 22, and two
+  reports with no row for it, which following edges job by job cannot tell apart.
 - **Consequence:** the requirement "leave no trace" has readings that conflict.
 - **Predictable:** yes, from the build times.
 - **Gives nothing away:** the cell asks which; the result prints below, by the course's convention.
@@ -164,8 +169,9 @@ building to it. The chapter questions three, each in a box and a free-text cell,
 "Record the lineage of every boarding." (per scan, per batch, per version; the page builds to the
 third), "Alert us when a sailing's data is missing." (no batch, a failed run, scans that did not
 reach the table, fewer passengers than usual; it builds to the third), and "A deleted batch must
-leave no trace." (no rows, no figure, no copy, no record; the last works against the second and the
-third).
+leave no trace." (no rows, no figure, no copy of a figure, no copy of the batch, which object storage
+keeps behind the delete marker, and no record; the last works against the second and the third; the
+platform meets the first only).
 
 ## Originality
 
@@ -182,3 +188,43 @@ test batch"; "With your change to `inputs`" before the graph's counts, which hol
 first question called "the question about Tuesday's 17:30", since "the first question" read as the
 first message; and "`sailing_loads` shows 35 passengers for it", where "It shows" had no clear
 subject. The figure's three labels are Haiku's, copied into `figures.FERRY_FLOWS`.
+
+The review's revision: briefs `part-8/briefs/rev-common.md` and `P33-rev.md`, draft
+`part-8/drafts/P33-rev.md`. Every fact landed. Cut by me: a sentence repeating that the cell after the
+check prints the delete's event, and the instruction after the `suspect` check, which repeated the one
+above it. The figure's new labels are Haiku's, copied into `figures.FERRY_FLOWS`.
+
+## The review
+
+A reviewer on another model read the chapter as built (`chapter-33/review/findings.md`); an
+independent sceptic attacked each of the 13 findings (`chapter-33/review/verdicts.md`): 7 upheld, 5
+partly, 1 rejected (already handled). Read whole again after the fixes
+(`chapter-33/review/chapter_33-after-review.md`). Acted on:
+
+- the figure's caption and labels said what the platform does not record, the first section's
+  answer: they now name only what the page has told; the situation comes before the figure;
+- the first section said which version Tuesday's run counted, the later prediction's answer: it now
+  says only that the times might allow a reconstruction;
+- the test batch's downstream showed 3 of the 5 datasets the graph reaches: all five now, each with
+  its figure beside the harbour master's count, and the page says why the edges by job reach two
+  reports that never counted it;
+- storage keeps the deleted batch's version: a fifth reading of "leave no trace", "no longer
+  listed" for "gone", and the platform's reading said; a closing question about requirements;
+- the aborted scan's explanation moved after the fields, and the repeated instruction cut; "no
+  time" for "no `scanned_at`";
+- the 36, 37 and 38 reconciled; "the shop's reference collector and graph" for "versions"; the
+  jobs' events said to be the ferry's; `ferry_batchChange` explained before the event that shows it;
+- the `lifecycleStateChange` sentence kept to what the source supports, and the ferry's choice
+  labelled in the reality note and in `docs/sources.md`; "after noon" for "afternoon"; the input
+  check's lines now say whether a version is missing, wrong or in the wrong place.
+
+Rejected, with the sceptic: rewording the check's first line (a test names its target), the
+figure and the systems' table as a duplicate, and "run" as verb and noun.
+
+## Measured
+
+Locally, 13 October 2026, after the review's changes (`docs/notes/notebook-prototype.md`, "Chapter
+33"): from Chapter 32's link, 11 files, 0.33 MB, in a new tab; Run all 9.9 to 10.3 s; peak memory 407
+to 414 MB alone, 627 MB with Chapter 32 open; no error output, no console error. The browser test
+(`notebook/jupyterlite/smoke.mjs`) types the reference into both of the chapter's cells and reads the
+checks, and counts the chapter's three requirement boxes.

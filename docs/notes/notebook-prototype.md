@@ -427,15 +427,15 @@ and measured again took 11.2 s. The warnings' 9 to 12 seconds and about 400 MB h
 
 ## Chapter 33
 
-Measured 13 October 2026 as Chapters 29 to 32 were, on the built site served locally, before the
-outside review. The link followed is Chapter 32's "Next" link.
+Measured 13 October 2026 as Chapters 29 to 32 were, on the built site served locally, after the
+outside review's changes. The link followed is Chapter 32's "Next" link.
 
 | | Chapter 33 |
 | --- | --- |
 | Opened from the chapter before's link, after it ran | 11 files, 0.33 MB, in a new tab |
-| Run all, from the press until no cell waits (desktop, phone, from the link) | 9.5 to 10.3 s |
-| Peak memory of a renderer process, opened alone | 403 to 415 MB |
-| Peak memory, with the chapter before open in its own tab | 626 MB |
+| Run all, from the press until no cell waits (desktop, phone, from the link) | 9.9 to 10.3 s |
+| Peak memory of a renderer process, opened alone | 407 to 414 MB |
+| Peak memory, with the chapter before open in its own tab | 627 MB |
 | Cells with an error output; console errors from the page | none |
 
 The ferry runs in the page beside the shop's package, and the chapter holds more cells than any

@@ -672,9 +672,8 @@ Read in the OpenLineage repository (`OpenLineage/OpenLineage`, `main`, commit
   `lifecycleStateChange` is one of `ALTER`, `CREATE`, `DROP`, `OVERWRITE`, `RENAME` and `TRUNCATE`,
   with a `previousIdentifier` for a rename. `website/docs/spec/object-model.md` describes it as
   capturing "the lifecycle states of the Dataset" (quoted), and the facet's documentation page shows
-  it on an output. The chapter says it describes a change a run makes to a dataset, and that the
-  ferry, whose functions are started by changes the gates make, records the starting change in a
-  facet of its own.
+  it on an output. The chapter says only that; recording the change that started a function in a
+  facet of its own, `ferry_batchChange`, is labelled as the ferry's choice.
 - `spec/facets/DatasetVersionDatasetFacet.json` (1-0-1): a dataset's version as the string
   `datasetVersion` (also read for Chapter 8); `object-model.md` describes it as the dataset version
   "when versioning is defined by the data store" (quoted).

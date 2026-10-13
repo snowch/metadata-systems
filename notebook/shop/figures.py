@@ -166,9 +166,9 @@ def figure(body: str, caption: str) -> str:
 
 
 # Chapter 33's second platform: four systems where the shop had three. The labels are drafted by the
-# prose process (docs/notes/part-8/briefs/), and the figure draws no arrow from one asset to another:
-# the ferry's platform records which change starts which function, not what a function or a job writes.
-FERRY_FLOWS = ("a change starts a function", "what they write is not recorded", "reads and writes not recorded")
+# prose process (docs/notes/part-8/briefs/) and say only what the page has told the reader; the figure
+# draws no arrow from one asset to another, and leaves what the platform records to the chapter's cells.
+FERRY_FLOWS = ("a change starts a function", "the functions write to tables", "the jobs run at set times")
 
 
 def ferry_platform(f) -> str:
