@@ -474,7 +474,9 @@
 
 /* A name in a total's label is set in the code face without the chip inline code has, so the three
    labels sit on one line each and the amounts line up. */
-.jp-RenderedMarkdown .ms-stat-label code {
+/* JupyterLab sets inline code in .jp-ThemedContainer .jp-RenderedHTMLCommon code, so this rule
+   names the same container to outrank it. */
+.jp-ThemedContainer .jp-RenderedMarkdown .ms-stat-label code {
   padding: 0;
   background: none;
   font-size: 0.95em;
