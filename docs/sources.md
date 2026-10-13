@@ -570,7 +570,13 @@ notes, with line numbers, are in `docs/notes/part-7/research/`.
   `$QUERY_ID`; the query types sent by default are `ALTER_TABLE_EXECUTE`, `DELETE`, `INSERT`,
   `MERGE`, `UPDATE` and `DATA_DEFINITION`, so a `SELECT` sends nothing unless configured.
 - `job/OpenLineageJobInterpolatedValues.java`: the format may use `$QUERY_ID`, `$SOURCE`,
-  `$CLIENT_IP` and `$USER`.
+  `$CLIENT_IP` and `$USER`. `OpenLineageListenerConfig.isJobNameFormatValid` gives the rule's own
+  message: a format "may consist of only letters, digits, underscores, commas, spaces, equal signs
+  and predefined values" (quoted), so the values can be combined with fixed text. The shop's cell
+  takes one value; that is its simplification. `FormatInterpolator` itself was not read.
+- `OpenLineageListener.java`: `queryTypeSupported` decides both events of a query, so a query whose
+  type is not sent has neither; a query's output comes from `QueryIOMetadata.getOutput()`, a Trino
+  catalog, schema and table, so a file a client saves from a query's result is no output at all.
 - `OpenLineageListener.java`: `START` when a query is created, with no inputs or outputs; `COMPLETE`,
   or `FAIL` when the query's state is `FAILED`, when it ends, with its inputs and its output.
 
