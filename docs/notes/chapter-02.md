@@ -1122,7 +1122,10 @@ did not line up.
   runs Python. Fresh open 11 to 25 s, first Run all 51 to 98 s, the Next arrow 9 to 10 s, a reload
   7 to 9 s with outputs cleared and all 15 back after Run all (36 to 40 s); no errors. The warning
   now says, in its visible line, that a slow phone can take a minute or more (brief BN), and its
-  details give the times.
+  details give the times. At the author's word, every chapter now starts Python on its setup as
+  it opens (`docs/plan.md`, 13 October 2026): Run all after 45 seconds of reading took 4.5 s on the
+  faster network and 55 s on the slower, and the warning (brief BO) says that reading first
+  shortens the wait.
 
 ## Known gaps
 

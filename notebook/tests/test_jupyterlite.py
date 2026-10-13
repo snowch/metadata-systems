@@ -54,6 +54,13 @@ class TheButtons(unittest.TestCase):
             self.assertNotIn("menu", source, part)
             self.assertNotIn("mo.ui.", source, part)
 
+    def test_the_setup_cells_are_marked_for_the_warm_up(self):
+        build = (ROOT / "notebook" / "jupyterlite" / "build_ipynb.py").read_text(encoding="utf-8")
+        script = (BUTTONS / "index.js").read_text(encoding="utf-8")
+        self.assertIn('"ms": {"setup": True}', build)
+        self.assertIn('cell.model.getMetadata("ms")?.setup', script)
+        self.assertIn("silent: true", script)
+
     def test_the_build_adds_the_row_to_the_site(self):
         build = (ROOT / "notebook" / "jupyterlite" / "build.sh").read_text(encoding="utf-8")
         package = json.loads((BUTTONS / "package.json").read_text(encoding="utf-8"))
@@ -86,9 +93,11 @@ class TheWarnings(unittest.TestCase):
                 ("running every cell took 10 to 12 seconds", live_run),
                 ("the page used about 420 MB of memory", memory),
                 # On an emulated slow phone (docs/notes/notebook-prototype.md, 13 October 2026).
-                ("On a slow phone, running every cell the first time can take a minute or more.", "| First Run all, from the press until no cell waits | 51.1 s | 98.4 s |"),
-                ("took 51 seconds on a fast mobile network (9 Mbps) and 98 seconds on a slow one (1.6 Mbps)", "| First Run all, from the press until no cell waits | 51.1 s | 98.4 s |"),
-                ("running every cell again took 36 to 40 seconds", "| Run all again after the reload (all 15 outputs back) | 40.1 s | 36.3 s |"),
+                ("On a slow phone, running every cell the first time can take a minute or more.", "| Run all pressed as soon as the page showed | 52.0 s | 100.6 s |"),
+                ("Python starts loading as soon as the page opens, so the wait is shorter if you read the opening", "| Run all pressed after 45 s of reading | 4.5 s | 54.8 s |"),
+                ("took 52 seconds on a fast mobile network (9 Mbps) and 101 seconds on a slow one (1.6 Mbps)", "| Run all pressed as soon as the page showed | 52.0 s | 100.6 s |"),
+                ("after 45 seconds of reading took 4.5 seconds on the fast network and 55 seconds on the slow one", "| Run all pressed after 45 s of reading | 4.5 s | 54.8 s |"),
+                ("running every cell again at once took 39 to 40 seconds", "| Run all again at once after a reload | 38.8 s | 40.0 s |"),
             ],
         }
         table = {

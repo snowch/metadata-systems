@@ -216,6 +216,18 @@ try {
       );
       await next.close();
     }
+    // Python starts on the setup as the page opens (the extension's warm-up), silently: before Run
+    // all, no cell has a count and none has an output.
+    const before = await page.evaluate(() => ({
+      counted: [...document.querySelectorAll(".jp-CodeCell .jp-InputPrompt")].filter((p) =>
+        /\d/.test(p.textContent),
+      ).length,
+      outputs: document.querySelectorAll(".jp-CodeCell .jp-OutputArea-output").length,
+    }));
+    check(
+      before.counted === 0 && before.outputs === 0,
+      `Chapter ${chapter}: before Run all, no cell has run (${JSON.stringify(before)})`,
+    );
     // The figures are in Markdown cells, drawn when the site was built: they show before anything
     // runs, with no code cell for any of them, and the week's words are readable on a phone.
     const figures = await page.evaluate(async () => {

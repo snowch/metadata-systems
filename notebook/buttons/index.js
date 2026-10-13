@@ -25,6 +25,9 @@
 // numbers, below 600 the contents link shows as an icon, and below 390 not at all, so that the row
 // fits 360 pixels (style/index.css); the chapter's text links to the contents at its top and end.
 //
+// As the page opens, Python is started on the chapter's hidden setup cells (warmUp, below), so that
+// on a slow phone the reader does not wait for it after pressing Run all.
+//
 // A link in the text to one of the notebook's own headings scrolls the notebook to that heading
 // (followLinks, below), where JupyterLab's own handling lands it a screen away in a long notebook.
 
@@ -170,6 +173,27 @@ function contents() {
 
 // The notebooks' names until 11 October 2026, when the two parts of Chapter 1 became Chapters 1 and
 // 2, and the names they have now.
+/** Starts Python on the chapter's setup as the page opens. Python starts in the browser when the
+    notebook opens, but the setup cells (installing the shop's package, the imports and the shop's
+    week) wait for Run all, and on a slow phone they take most of a minute. This sends their code
+    to Python as soon as it is up, silently: no cell runs, nothing is printed and no cell's count
+    changes. When the reader presses Run all, the setup cells run again, now in a moment, and a
+    press before the warm-up ends waits for it. A notebook without marked setup cells (one a
+    reader saved before the mark existed) is left as it is. */
+async function warmUp(panel) {
+  await panel.context.ready;
+  await panel.sessionContext.ready;
+  const kernel = panel.sessionContext.session?.kernel;
+  if (!kernel) return;
+  const code = panel.content.widgets
+    .filter((cell) => cell.model.type === "code" && cell.model.getMetadata("ms")?.setup)
+    .map((cell) => cell.model.sharedModel.getSource())
+    .join("\n\n");
+  if (!code) return;
+  await kernel.info;
+  await kernel.requestExecute({ code, silent: true, store_history: false }).done;
+}
+
 /** A heading's address in a link, as JupyterLab writes it: its words with each space a hyphen. */
 const anchor = (text) =>
   text
@@ -252,7 +276,7 @@ function followMove(app) {
 export default {
   id: "ms-notebook-buttons:row",
   description:
-    "Adds a row of large Run all, Run below and Save buttons above every notebook's cells, with arrows to the chapters either side, hides the menu bar and the notebook's toolbar, scrolls to a heading the text links to, and sends the notebooks' earlier names to their chapters.",
+    "Adds a row of large Run all, Run below and Save buttons above every notebook's cells, with arrows to the chapters either side, hides the menu bar and the notebook's toolbar, starts Python on the chapter's setup as it opens, scrolls to a heading the text links to, and sends the notebooks' earlier names to their chapters.",
   autoStart: true,
   requires: [INotebookTracker],
   activate(app, tracker) {
@@ -265,6 +289,7 @@ export default {
       panel.context.ready
         .then(() => arrows(app, panel, widget))
         .catch((reason) => console.error("arrows", reason));
+      warmUp(panel).catch((reason) => console.error("warm-up", reason));
       // The menu bar's area in Jupyter Notebook's page, which its zen mode hides the same way.
       app.shell.menu?.setHidden(true);
     };

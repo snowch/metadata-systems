@@ -70,7 +70,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.callout(mo.md(r"""
-    The page runs Python in your browser, and the first time you open it on its own your browser downloads about 13 MB. On a slow phone, running every cell the first time can take a minute or more.
+    The page runs Python in your browser, and the first time you open it on its own your browser downloads about 13 MB. On a slow phone, running every cell the first time can take a minute or more. Python starts loading as soon as the page opens, so the wait is shorter if you read the opening before you run anything.
 
     <details><summary>Time and memory</summary>
 
@@ -78,7 +78,7 @@ def _(mo):
 
     Running every cell took 10 to 12 seconds, and the page used about 420 MB of memory. If a phone runs short of memory, the browser may reload the page, and a reload loses anything you have not saved.
 
-    Measured on 13 October 2026, on a computer set to run like a slow phone with the browser held to a third of one processor core, the first time every cell ran took 51 seconds on a fast mobile network (9 Mbps) and 98 seconds on a slow one (1.6 Mbps). After a reload, the files come from the browser's store, and running every cell again took 36 to 40 seconds.
+    Measured on 13 October 2026, on a computer set to run like a slow phone, with the browser held to a third of one processor core, running every cell as soon as the page showed took 52 seconds on a fast mobile network (9 Mbps) and 101 seconds on a slow one (1.6 Mbps). Running every cell after 45 seconds of reading took 4.5 seconds on the fast network and 55 seconds on the slow one. After a reload, running every cell again at once took 39 to 40 seconds.
 
     </details>
     """), kind="warn")

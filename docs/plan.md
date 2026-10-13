@@ -262,6 +262,16 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 13 October 2026: Python starts as a chapter opens
+
+At the author's request, after Chapter 2 was tried on an emulated slow phone (a third of one core,
+throttled network; `docs/notes/notebook-prototype.md`): most of the first Run all, 51 to 98 seconds
+there, was Python installing the shop's package and running the setup cells. The row of buttons'
+extension now runs the setup cells' code silently as soon as the kernel is up, in every chapter, so
+a reader who reads the opening first finds Python ready (4.5 seconds after 45 seconds of reading, on
+the faster network). No cell runs and no output appears until the reader presses a button, as the
+steps box says. Chapter 2's warning tells the reader that reading first shortens the wait.
+
 ### 13 October 2026: Chapter 2 as an investigation in three stages
 
 At the author's request, with a mock-up as a design reference, Chapter 2 is reorganised for

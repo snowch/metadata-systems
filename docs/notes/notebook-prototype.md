@@ -673,3 +673,21 @@ Python starts and fetches its packages, so it understated the times.
 
 Chapter 2's warning says so: its visible line says a slow phone can take a minute or more, and its
 details give these times.
+
+### Python started as the page opens
+
+Most of that first Run all was Python installing the shop's package and running the setup cells,
+not the chapter's code (under half a second in CPython). The row of buttons' extension now sends the
+setup cells' code to Python as soon as the kernel is up, silently (`warmUp` in
+`notebook/buttons/index.js`; the build marks the cells `"ms": {"setup": true}`): no cell runs, no
+output appears and no count changes. Measured again, the same way, with Run all pressed as soon as
+the page showed and after 45 seconds of reading:
+
+| Emulated phone, Chapter 2, with the warm-up | Fast 4G (9 Mbps, 170 ms) | Slow 4G (1.6 Mbps, 563 ms) |
+| --- | --- | --- |
+| Run all pressed as soon as the page showed | 52.0 s | 100.6 s |
+| Run all pressed after 45 s of reading | 4.5 s | 54.8 s |
+| Run all again at once after a reload | 38.8 s | 40.0 s |
+
+A press during the warm-up waits for it; no run gave an error. Every chapter has the warm-up: the
+setup cells are the same in each.

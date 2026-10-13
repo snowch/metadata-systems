@@ -171,7 +171,9 @@ def build(chapter: int) -> nbformat.NotebookNode:
             raise SystemExit(f"no Jupyter form for this hidden cell of the source file:\n{code}")
     if setup_at is None:
         raise SystemExit(f"chapter {chapter} has no warning: the setup has nowhere to go")
-    out[setup_at:setup_at] = [nbformat.v4.new_code_cell(setup, metadata=HIDDEN) for setup in SETUP]
+    # Marked as the setup, which the row of buttons' extension runs, silently, as the page opens
+    # (notebook/buttons/index.js, warmUp), so Python is ready by the time the reader runs a cell.
+    out[setup_at:setup_at] = [nbformat.v4.new_code_cell(setup, metadata={**HIDDEN, "ms": {"setup": True}}) for setup in SETUP]
     for i, cell in enumerate(out):
         cell["id"] = f"cell-{i + 1:02d}"
     nb = nbformat.v4.new_notebook(cells=out)
