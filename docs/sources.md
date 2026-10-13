@@ -223,6 +223,18 @@ each message key in a topic partition's log and removes records that a later rec
 key replaces, as a finer-grained retention than retention by time. Read for checking, not copied;
 Apache License 2.0.
 
+### Read for Part VI (13 October 2026)
+
+Chapter 28's note that a failed run's empty outputs are the shop's choice rests on
+`spec/OpenLineage.json` (`$id` version 2-0-2, `OpenLineage/OpenLineage`, branch `main`, commit
+`60261f0b57fb1370c2c6c3cadc9f1721b6c3c3b5`, read 13 October 2026 for checking, not copied): a
+`RunEvent` requires `run` and `job` beyond the base event's fields, and its `inputs` and `outputs`
+are optional whatever its `eventType`, so a `FAIL` may list outputs and none must. Chapter 25's
+note on `RUNNING` and `OTHER` and its note on what the specification does not say rest on the Part V
+entry above; the same search was repeated for Part VII (`docs/notes/part-7/research/chapter-29.md`,
+section 3) and found no rule for a consumer's handling of a repeat, a late event or an event after a
+terminal one.
+
 ## W3C PROV (Chapter 15)
 
 *PROV-DM: The PROV Data Model*, W3C Recommendation, 30 April 2013
@@ -453,6 +465,24 @@ Read 10 October 2026, for `notebook/` and `docs/notes/notebook-prototype.md`.
   documentation of a limit: no Apple page found states the memory a page may use. A WebKit bug
   report with figures for one iPhone was found by search but could not be opened from this
   environment, so nothing here relies on it.
+
+## SQLite's query plan (Chapter 24)
+
+Read on 13 October 2026, in SQLite's source: `src/wherecode.c` in the project's GitHub mirror
+(`sqlite/sqlite`, branch `master`, commit `264c92b92307999ffc5c256bd11f5193b4f629de`, version
+3.55.0), the function that writes one line of `EXPLAIN QUERY PLAN` for each loop over a table.
+
+- A loop that reads every row of a table is written `SCAN` and the table's name; one that looks rows
+  up by a constraint is written `SEARCH` and the table's name.
+- A search through an index adds `USING INDEX` and the index's name (`USING COVERING INDEX` when the
+  index holds every column the query needs), then, in brackets, the index's columns the search
+  constrains, as `column=?` joined by `AND` (`explainIndexRange`).
+- These are the words the shop's store reads to count the rows a query reads (`shop/store.py`,
+  `Tables.rows_read`). `notebook/tests/test_engine.py` pins the two plans the chapter shows, in the
+  SQLite the tests run (3.45.1 on 13 October 2026), and the notebooks' browser test checks the
+  counts in the SQLite the page runs.
+- Not read: SQLite's page on `EXPLAIN QUERY PLAN` (`sqlite.org/eqp.html`), which the proxy refused.
+  The course says nothing about whether the plan's wording stays the same between versions.
 
 ## Still to be read
 

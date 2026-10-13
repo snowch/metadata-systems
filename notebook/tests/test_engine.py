@@ -881,6 +881,26 @@ class ThePartVIPieces(unittest.TestCase):
             tables = S.tables(week)
             exec((S.STUBS if which == "stub" else S.REFERENCE)["index"], {"tables": tables})
             self.assertEqual(S.check(week, tables, query).read, read, which)
+        # other indexes a reader might try: each is searched, and the rows its search matches are counted
+        for create, read in (
+            ("CREATE INDEX edges_index ON edges(edge)", 88),
+            ("CREATE INDEX edges_index ON edges(edge, dataset)", 8),
+            ("CREATE INDEX edges_index ON edges(dataset, edge)", 8),
+        ):
+            tables = S.tables(week)
+            tables.sql("DROP INDEX IF EXISTS edges_index")
+            tables.sql(create)
+            self.assertEqual(S.check(week, tables, query).read, read, create)
+        # changing only the column in the starting cell works: the cell drops its index first
+        tables = S.tables(week)
+        exec(S.STUBS["index"], {"tables": tables})
+        exec(S.STUBS["index"].replace("edges(job)", "edges(dataset)"), {"tables": tables})
+        self.assertEqual(S.check(week, tables, query).read, 14)
+        # the plan's wording the counting reads, in this SQLite
+        tables = S.tables(week)
+        self.assertEqual(tables.plan(query, dataset="x"), ["SCAN edges"])
+        exec(S.REFERENCE["index"], {"tables": tables})
+        self.assertEqual(tables.plan(query, dataset="x"), ["SEARCH edges USING INDEX edges_index (dataset=?)"])
         self.assertEqual(
             [(r["documents"], r["table with the index"], r["graph"]) for r in S.compare(week, "warehouse://shop-warehouse/shop.analytics.clean_orders", "shop/build_daily_sales")],
             [(17, 2, 2), (1, 14, 2)],
@@ -899,6 +919,10 @@ class ThePartVIPieces(unittest.TestCase):
                 exec((C.STUBS if which == "stub" else C.REFERENCE)[name], ns)
             checked = C.check(week, ns["key"], ns["newer"], ns["start"])
             self.assertEqual(checked.passed == len(checked), combo == ("reference",) * 3, combo)
+        # the developer's event breaks only the missing time: given one, the check keeps it
+        broken = C._broken(week)
+        self.assertEqual(shop.openlineage.problems(broken), [("eventTime", "missing")])
+        self.assertEqual(shop.openlineage.problems({**broken, "eventTime": "2026-09-11T10:00:00Z"}), [])
         ns = _pieces(C, "reference", names)
         c = C.run(week, ns["key"], ns["newer"], ns["start"])
         self.assertEqual((len(c.file), len(c.refused), len(c.dropped)), (68, 1, 2))
@@ -910,8 +934,17 @@ class ThePartVIPieces(unittest.TestCase):
         self.assertEqual(L.check(week, _pieces(L, "stub", ["add"])["add"]).passed, 2)
         self.assertEqual(L.check(week, _pieces(L, "reference", ["add"])["add"]).passed, 3)
         graph = L.build(week, _pieces(L, "reference", ["add"])["add"])
-        now = {r["dataset"]: (r["in the latest run"], r["ever"], r["in the last 2 days"]) for r in L.now(graph, L.MONDAY) if r["edge"] == "reads"}
-        self.assertEqual(now, {"clean_orders_copy.csv": ("yes", "yes", "yes"), "shop.analytics.clean_orders": ("no", "yes", "no")})
+        now = {(r["job"], r["dataset"]): (r["in the latest run"], r["ever"], r["in the last 2 days"]) for r in L.now(graph, L.MONDAY)}
+        self.assertEqual(now[("build_daily_sales", "clean_orders_copy.csv")], ("yes", "yes", "yes"))
+        self.assertEqual(now[("build_daily_sales", "shop.analytics.clean_orders")], ("no", "yes", "no"))
+        # record_return last ran on Friday 11: its latest run and the last 2 days disagree
+        self.assertEqual(now[("record_return", "r-204.json")], ("yes", "yes", "no"))
+        self.assertEqual(now[("record_return", "shop.analytics.returns")], ("yes", "yes", "no"))
+        self.assertEqual(sum(r["in the latest run"] == "yes" for r in L.now(graph, L.MONDAY)), 4)
+        # an add that fixes only the last time passes too: no late event in the week creates an edge
+        ns: dict = {"shop": shop}
+        exec(L.REFERENCE["add"].replace('edge["first"] = min(edge["first"], event["eventTime"])\n        ', ""), ns)
+        self.assertEqual(L.check(week, ns["add"]).passed, 3)
 
     def test_the_query_layer(self):
         from shop import query as Q
@@ -928,8 +961,18 @@ class ThePartVIPieces(unittest.TestCase):
         from shop import interface as I
 
         self.assertEqual(I.check(_pieces(I, "stub", ["run_history"])["run_history"]).passed, 0)
-        self.assertEqual(I.check(_pieces(I, "reference", ["run_history"])["run_history"], ["runs"]).passed, 2)
-        self.assertEqual(I.check(_pieces(I, "reference", ["run_history"])["run_history"], ["runs", "lineage"]).passed, 1)
+        self.assertEqual(I.check(_pieces(I, "reference", ["run_history"])["run_history"]).passed, 1)
+        # a history of the failed run alone, or of each run twice, does not pass
+        self.assertEqual(I.check(lambda a: [r for r in I.runs() if r["state"] == "FAIL"]).passed, 0)
+        self.assertEqual(I.check(lambda a: 2 * [r for r in I.runs() if r["job"] in I.writers(a)]).passed, 0)
+        self.assertEqual(
+            I.check(_pieces(I, "stub", ["run_history"])["run_history"])[0]["test"],
+            "The run history of `daily_sales` holds 6 runs: 1 of the program's runs is not among them, Monday's `FAIL` included.",
+        )
+        # a section the page cannot draw is named as such, not as left out
+        page = I.page("daily_sales", ["runs", "lineag"], _pieces(I, "reference", ["run_history"])["run_history"])._repr_html_()
+        self.assertIn("Not a section the page can draw: lineag.", page)
+        self.assertNotIn("lineag", page.split("Not on this page:")[-1])
 
 
 if __name__ == "__main__":

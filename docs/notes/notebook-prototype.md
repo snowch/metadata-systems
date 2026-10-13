@@ -382,6 +382,24 @@ at desktop and phone widths: ready to run in 5.2 to 6.1 s; Run all 10.2 to 10.4 
 to 11.2 s (19), 9.8 to 10.0 s (20), 9.4 to 9.6 s (21), 9.2 to 9.4 s (22), 9.8 s (23); peak memory 389
 to 411 MB; no error output and no console error. The warning's 9 to 12 seconds and about 400 MB hold.
 
+## Chapters 24 to 28
+
+Measured 13 October 2026 as Chapters 18 to 23 were, on the built site served locally, after the
+outside review's changes. The link followed is the chapter text's own "Next" link.
+
+| | Chapter 24 | Chapter 25 | Chapter 26 | Chapter 27 | Chapter 28 |
+| --- | --- | --- | --- | --- | --- |
+| Opened from the chapter before's link, after it ran | 11 files, 0.32 MB, in a new tab | 11 files, 0.32 MB, in a new tab | 11 files, 0.32 MB, in a new tab | 11 files, 0.32 MB, in a new tab | 11 files, 0.31 MB, in a new tab |
+| Run all, from the press until no cell waits (desktop, phone, from the link) | 8.2 to 9.1 s | 8.0 to 8.8 s | 8.1 to 8.5 s | 8.3 to 8.6 s | 8.6 to 9.0 s |
+| Peak memory of a renderer process, opened alone | 396 to 403 MB | 389 to 402 MB | 394 to 400 MB | 391 to 404 MB | 393 to 397 MB |
+| Peak memory, with the chapter before open in its own tab | 615 MB | 612 MB | 611 MB | 615 MB | 615 MB |
+| Cells with an error output; console errors from the page | none | none | none | none | none |
+
+Each warning states what Chapters 18 to 23 state: about 13 MB on its own; less than 1 MB from the
+chapter before's link; 9 to 12 seconds to run every cell, as the published Chapters 18 to 23 took 9.2
+to 11.2 s while the same pages took 7.6 to 8.7 s here; about 400 MB. The live measurement after
+publishing is the check on the 9 to 12 seconds.
+
 ## Phones
 
 Nothing here measured a real phone, so the page says only what was measured and what one report

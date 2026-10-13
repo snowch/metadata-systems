@@ -32,7 +32,14 @@ MEANINGS = ("account", "responsible", "team")
 
 # Each meaning's source, for the assets that have a value in it.
 ACCOUNT = "etl_service"  # the warehouse records it as every table's owner (Chapter 2)
-RESPONSIBLE = {"daily_sales": "j.marsh", "sales_dashboard": "j.marsh", "products.csv": "s.lund"}
+# the `responsible` lines of your records and Jo's notes (Chapter 4)
+RESPONSIBLE = {
+    "daily_sales": "j.marsh",
+    "sales_dashboard": "j.marsh",
+    "products.csv": "s.lund",
+    "clean_orders": "the data engineer",
+    "clean_customers": "the data engineer",
+}
 TEAM = {"daily_sales": claims.SOURCES["team sheet"]["owner"]}
 
 MESSAGES = {
@@ -87,8 +94,16 @@ def upstream(graph: dict, asset: str) -> list[str]:
 
 def owners(asset: str) -> dict[str, str | None]:
     """Each meaning's owner of `asset`, from its own source; None where the source has none."""
+    asset = _short(asset)
     warehouse = asset in ("daily_sales", "clean_orders", "clean_customers", "returns")
     return {"account": ACCOUNT if warehouse else None, "responsible": RESPONSIBLE.get(asset), "team": TEAM.get(asset)}
+
+
+def coverage(week: Week) -> Rows:
+    """Every asset on the platform, and the owner each meaning's source has for it."""
+    from .records import assets
+
+    return Rows(({"asset": _short(identifier), **owners(identifier)} for _, identifier in assets(week)), null="")
 
 
 class Checked(Rows):
@@ -161,4 +176,4 @@ REFERENCE = {
     return {"owner": shop.query.owners(asset)["responsible"], "meaning": "responsible"}''',
 }
 
-__all__ = ["graph", "next_assets", "previous_assets", "upstream", "owners", "check_downstream", "check_owner", "answers", "MEANINGS", "WEEK", "STUBS", "REFERENCE"]
+__all__ = ["coverage", "graph", "next_assets", "previous_assets", "upstream", "owners", "check_downstream", "check_owner", "answers", "MEANINGS", "WEEK", "STUBS", "REFERENCE"]

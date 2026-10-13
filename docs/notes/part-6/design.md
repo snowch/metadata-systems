@@ -29,7 +29,8 @@ learner writes in each chapter, what checks it, which requirement each chapter q
 The week's metadata as one store, in four shapes, each passing the same tests.
 
 - **The data.** The week with the returns desk (`run_week(["returns"])`): Chapter 4's descriptive
-  records for the assets, Chapter 9's runs, and Chapter 9's edges by job (14).
+  records for the assets, its runs, and its edges by job (14), as Chapter 9 builds them (as built:
+  the week Chapter 23 measured; Chapter 9's own week, with `source`, has 17).
 - **The question all four shapes answer:** what reads a dataset? The learner writes
   `readers_of(store, dataset)` four times, once per shape, and the same test runs it for every
   dataset in the week against the answer from Chapter 9's graph.
@@ -99,7 +100,7 @@ which assets are stale, which jobs failed, what a schema change affects.
 - **What the learner writes:** `downstream(graph, asset)`, a traversal over Chapter 26's edges
   (about eight lines), and `owner(asset)`, which returns an owner and says which meaning it holds.
   The other four questions are the shop's, built on the same graph, and shown answering.
-- **The tests:** downstream of `orders.jsonl` is Chapter 14's set; upstream by reversing the edges;
+- **The tests:** downstream of `orders.jsonl` is Chapter 6's set; upstream by reversing the edges;
   the owner query must name its meaning.
 - **Requirement (the plan's):** the query layer must answer "who owns X?". Whichever meaning the
   learner's records keep, the query says which: Chapter 2's account, Chapter 4's responsible person,
@@ -117,6 +118,21 @@ quality, as HTML in the page.
 - **Requirement:** "The asset page must show everything about an asset." Readings: every field the
   store holds; everything a person asking about the asset needs; the asset's full history. The first
   is a dump, the third unbounded; the learner chooses, and the page says what it leaves out.
+
+## As built, after the review (13 October 2026)
+
+The chapters keep this design, with these differences, each recorded in its chapter's notes:
+
+- Chapter 27's other questions are not all asked of the graph: where an asset came from follows the
+  graph; stale assets read Chapter 13's freshness measure, failed runs the week's events, and a
+  column's reach Chapter 16's column lineage. The page says which.
+- Chapter 27's owners: no meaning's source has an owner for every asset (`query.coverage`), which
+  the page shows after the check, so the requirement's "each asset" is tested against the record.
+- Chapter 28's tests check the run history only (each run of the programs that write the asset,
+  once); the page is smaller than planned (seven sections, no row counts), and its last line names
+  the sections it leaves out and any name it cannot draw.
+- Every earlier piece reaches Chapters 26 to 28 as the shop's reference, not the learner's code; the
+  pages say so once.
 
 ## Originality
 

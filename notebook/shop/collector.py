@@ -19,7 +19,7 @@ The learner writes three pieces, and the rest is the shop's:
 - `start(stored)`: what the collector remembers when it starts, from the events in its file.
 
 `check` runs the collector over the week with the three pieces and reports each test. Validation
-is Chapter 8's check; the file is a list of normalised events (Chapter 9's first stage), which
+is Chapter 8's check; the file is a list of normalised events (Chapter 9's second stage), which
 survives the restart; everything else is in memory and does not.
 """
 
@@ -43,18 +43,19 @@ FAULTS = {
 }
 
 MESSAGES = {
-    "refused": "The broken event is refused: {why}.",
-    "refused_no": "The broken event is not refused.",
+    "refused": "The developer's event with no `eventTime` is refused: {why}.",
+    "refused_no": "The developer's event with no `eventTime` is not refused.",
     "once": "Each of the week's {n} events is kept once.",
     "once_no": "The file holds {stored} events, not {n}: {extra}.",
     "thursday": "The run early on Thursday 10 ends at {got}.",
     "thursday_no": "The run early on Thursday 10 ends at {got}, not {want}.",
+    "thursday_state": "The run early on Thursday 10 is held as its {got}, not as a `COMPLETE` at {want}.",
     "friday": "The run early on Friday 11 is {got}.",
     "friday_no": "The run early on Friday 11 is {got}, not {want}.",
     "restart": "The COMPLETE that arrived again after the restart is dropped.",
     "restart_no": "The COMPLETE that arrived again after the restart is kept a second time.",
-    "graph": "The graph from the file is the graph of the week with no faults.",
-    "graph_no": "The graph from the file differs from the graph of the week with no faults.",
+    "graph": "The edges by job from the file, with their run counts and first and last times, match the week with no faults.",
+    "graph_no": "The edges by job from the file, with their run counts and first and last times, differ from the week with no faults.",
     "summary": "{passed} of {total} tests pass.",
 }
 
@@ -189,8 +190,11 @@ def check(week: Week, key, newer, start=None) -> Checked:
     extra = len(c.file) - len(whole)
     test(len(c.file) == len(whole) and len(set(keys)) == len(keys), MESSAGES["once"], MESSAGES["once_no"], n=len(whole), stored=len(c.file), extra=f"{extra} more" if extra > 0 else f"{-extra} fewer")
     thu = _run_of(c, "build_daily_sales", "2026-09-10")
-    got = thu["eventTime"][11:19] if thu and thu["eventType"] == "COMPLETE" else (thu or {}).get("eventType", "missing")
-    test(got == "02:30:21", MESSAGES["thursday"], MESSAGES["thursday_no"], got=got, want="02:30:21")
+    if thu and thu["eventType"] == "COMPLETE":
+        got = thu["eventTime"][11:19]
+        test(got == "02:30:21", MESSAGES["thursday"], MESSAGES["thursday_no"], got=got, want="02:30:21")
+    else:
+        test(False, "", MESSAGES["thursday_state"], got=f"`{(thu or {}).get('eventType', 'missing')}`", want="02:30:21")
     fri = _run_of(c, "build_daily_sales", "2026-09-11")
     got = (fri or {}).get("eventType", "missing")
     test(got == "COMPLETE", MESSAGES["friday"], MESSAGES["friday_no"], got=f"`{got}`", want="`COMPLETE`")

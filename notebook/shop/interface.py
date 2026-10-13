@@ -25,12 +25,10 @@ MESSAGES = {
     "summary": "{passed} of {total} tests pass.",
     "runs": "The run history of `daily_sales` holds each of its {n} runs once, Monday's `FAIL` among them.",
     "runs_no": "The run history of `daily_sales` holds {n} {noun}: {problems}.",
-    "missing": "{n} of the program's runs are not among them, {which} included",
+    "missing": "{n} of the program's runs {verb} not among them, {which} included",
     "repeated": "{n} {noun} appear more than once",
     "others": "it holds runs of programs that do not write `daily_sales`",
     "unknown": "Not a section the page can draw: {names}.",
-    "sections": "Every section named is one the page can draw.",
-    "sections_no": "The page cannot draw {unknown}: choose from {known}.",
     "left_out": "Not on this page: {names}.",
     "none_left_out": "Every section is on this page.",
     "nothing": "Nothing recorded.",
@@ -116,8 +114,8 @@ class Checked(Rows):
         return f"<p>{MESSAGES['summary'].format(passed=self.passed, total=len(self))}</p>" + super()._repr_html_()
 
 
-def check(run_history, sections: list[str] | None = None) -> Checked:
-    """The run history of `daily_sales`; and, given `sections`, whether the page can draw each."""
+def check(run_history) -> Checked:
+    """The run history of `daily_sales`: each run of the programs that write it, once."""
     rows = []
     got = list(run_history("daily_sales"))
     jobs = set(writers("daily_sales"))
@@ -129,20 +127,13 @@ def check(run_history, sections: list[str] | None = None) -> Checked:
     problems = []
     if missing:
         which = "Monday's `FAIL`" if any(r["state"] == "FAIL" for r in missing) else f"the run started {missing[0]['started']}"
-        problems.append(MESSAGES["missing"].format(n=len(missing), which=which))
+        problems.append(MESSAGES["missing"].format(n=len(missing), verb="is" if len(missing) == 1 else "are", which=which))
     if repeated:
         problems.append(MESSAGES["repeated"].format(n=len(repeated), noun="run" if len(repeated) == 1 else "runs"))
     if any(r["job"] not in jobs for r in got):
         problems.append(MESSAGES["others"])
     msg = MESSAGES["runs"].format(n=len(want)) if not problems else MESSAGES["runs_no"].format(n=len(got), noun="run" if len(got) == 1 else "runs", problems="; ".join(problems))
     rows.append({"test": msg, "passes": "no" if problems else "yes"})
-    if sections is None:
-        return Checked(rows)
-    unknown = [s for s in sections if s not in SECTIONS]
-    rows.append({
-        "test": MESSAGES["sections"] if not unknown else MESSAGES["sections_no"].format(unknown=", ".join(f"`{u}`" for u in unknown), known=", ".join(f"`{k}`" for k in SECTIONS)),
-        "passes": "no" if unknown else "yes",
-    })
     return Checked(rows)
 
 

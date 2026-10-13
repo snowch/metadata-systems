@@ -685,9 +685,9 @@ try {
       );
       await run("Run below", "Chapter 24, Run below with the query");
       await rewrite(
-        "CREATE INDEX IF NOT EXISTS edges_by_job",
-        ['tables.sql("CREATE INDEX IF NOT EXISTS edges_by_job ON edges(job)")'],
-        ['tables.sql("CREATE INDEX IF NOT EXISTS edges_by_dataset ON edges(dataset)")'],
+        "CREATE INDEX edges_index ON edges(job)",
+        ['tables.sql("CREATE INDEX edges_index ON edges(job)")'],
+        ['tables.sql("CREATE INDEX edges_index ON edges(dataset)")'],
       );
       await run("Run below", "Chapter 24, Run below with the index");
       const indexed = await output("shop.store.check(week24, tables, query)", 1);
@@ -785,7 +785,7 @@ try {
       await run("Run below", "Chapter 28, Run below with the run history");
       const history = await output("shop.interface.check(run_history)");
       check(
-        history.includes("holds 7 runs"),
+        history.includes("holds each of its 7 runs once"),
         "Chapter 28: the run history holds 7 runs, the failed one among them",
       );
     }

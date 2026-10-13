@@ -1334,6 +1334,7 @@ class TheWordsOfPartVI(unittest.TestCase):
         graph = S.check(week, S.graph(week), self.pieces(S, "stub", ["graph"])["readers_of"])
         self.assertEqual(graph.right, 6)
         self.says("the check finds 6 of 11 right", 24)
+        self.says("88 in all", 24)
         self.says("What reads `clean_orders`: 17 documents, 2 rows of the table, 2 edges of the graph.", 24)
         self.says("What `build_daily_sales` reads: 1 document, 14 rows of the table, 2 edges of the graph.", 24)
 
@@ -1374,6 +1375,9 @@ class TheWordsOfPartVI(unittest.TestCase):
         self.assertEqual(rows["shop.analytics.clean_orders"], (5, "2026-09-08T02:30:00Z", "2026-09-12T02:30:21Z"))
         self.assertEqual(rows["clean_orders_copy.csv"], (2, "2026-09-13T02:30:00Z", "2026-09-14T02:30:21Z"))
         self.says("`build_daily_sales` reads `clean_orders` in 5 runs, first at 02:30:00 on Tuesday 8 and last at 02:30:21 on Saturday 12.", 26)
+        self.assertEqual(len(L.stored(week)) - len(L.stored(shop.run_week(["returns"]))), 14)
+        self.says("That is 14 more than Chapter 25's 68.", 26)
+        self.says("`record_return` last ran on Friday 11 at 13:15.", 26)
 
     def test_chapter_27(self):
         from shop import query as Q
@@ -1387,7 +1391,12 @@ class TheWordsOfPartVI(unittest.TestCase):
         self.assertEqual(stale, ["daily_sales", "returns"])
         dash = next(r for r in shop.observe.freshness(week) if r["asset"] == "sales_dashboard")
         self.assertEqual((dash["last written"], dash["hours before"], dash["latest day"]), ("2026-09-14T03:00:09Z", 6.0, "2026-09-12"))
-        self.says("it was last written at 03:00:09 on Monday 14, 6 hours before. Its latest day is Saturday 12", 27)
+        self.says("`sales_dashboard` was last written at 03:00:09 on Monday 14, 6 hours before 09:00. Its latest day is Saturday 12.", 27)
+        cover = Q.coverage(week)
+        self.assertEqual(len(cover), 12)
+        self.assertEqual({m: sum(1 for r in cover if r[m]) for m in Q.MEANINGS}, {"account": 4, "responsible": 5, "team": 1})
+        self.assertEqual(sum(1 for r in cover if not any(r[m] for m in Q.MEANINGS)), 6)
+        self.says("6 assets have no owner", 27)
 
     def test_chapter_28(self):
         from shop import interface as I

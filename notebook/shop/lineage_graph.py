@@ -27,12 +27,12 @@ MONDAY = "2026-09-14T09:00:00Z"
 
 MESSAGES = {
     "summary": "{passed} of {total} tests pass.",
-    "whole": "Built from the whole file, the graph has Chapter 9's edges, each with the same number of runs.",
-    "whole_no": "Built from the whole file, the graph differs from Chapter 9's in {n} edges or run counts.",
+    "whole": "Built from the whole file, the graph has the edges and run counts Chapter 9's way of building edges by job gives for it.",
+    "whole_no": "Built from the whole file, the graph differs in {n} edges or run counts from what Chapter 9's way of building edges by job gives for it.",
     "thursday": "At 09:00 on Thursday 10, `build_daily_sales` last wrote `daily_sales` at {got}.",
     "thursday_no": "At 09:00 on Thursday 10, `build_daily_sales` last wrote `daily_sales` at {got}, not {want}.",
-    "reload": "Saved and loaded again after the restart, the graph goes on from where it was.",
-    "reload_no": "Saved and loaded again after the restart, the graph differs from one never restarted.",
+    "reload": "Saved and loaded again after the restart, the graph holds the same edges, runs and times as one never saved.",
+    "reload_no": "Saved and loaded again after the restart, the graph differs from one never saved.",
 }
 
 
@@ -116,22 +116,24 @@ def check(week: Week, add) -> Checked:
     return Checked(rows)
 
 
-def now(graph: dict, at: str, days: int = 2) -> Rows:
-    """Which of `build_daily_sales`'s edges the platform has now, three ways."""
+def now(graph: dict, at: str, days: int = 2, jobs: tuple[str, ...] = ("build_daily_sales", "record_return")) -> Rows:
+    """Which of the chosen programs' edges the platform has now, three ways: in the program's latest
+    run, ever, and seen in the last `days` days before `at`."""
     latest: dict[str, str] = {}
     for (j, e, d), v in graph.items():
         latest[j] = max(latest.get(j, ""), v["last"])
     since = epoch(at) - days * 86400
     out = []
-    for (j, e, d), v in sorted(graph.items()):
-        if not j.endswith("build_daily_sales"):
-            continue
-        out.append({
-            "edge": e, "dataset": d.rsplit("/", 1)[-1],
-            "in the latest run": "yes" if v["last"] == latest[j] else "no",
-            "ever": "yes",
-            f"in the last {days} days": "yes" if epoch(v["last"]) >= since else "no",
-        })
+    for name in jobs:
+        for (j, e, d), v in sorted(graph.items()):
+            if j.rsplit("/", 1)[-1] != name:
+                continue
+            out.append({
+                "job": name, "edge": e, "dataset": d.rsplit("/", 1)[-1],
+                "in the latest run": "yes" if v["last"] == latest[j] else "no",
+                "ever": "yes",
+                f"in the last {days} days": "yes" if epoch(v["last"]) >= since else "no",
+            })
     return Rows(out)
 
 

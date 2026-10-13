@@ -2,20 +2,23 @@
 
 """The week's metadata as one store, in four shapes, each asked the same question (Chapter 24).
 
-The store holds the week with the returns desk: each job's runs and its edges by job (Chapter 9),
-and the descriptive lines Chapter 4 ended with for the assets that have them. Four shapes:
+The store holds the week with the returns desk, the week Chapter 23 measured: each program's runs
+and its 14 edges by job (built as Chapter 9 builds them), and Chapter 4's `means` and `responsible`
+lines for `daily_sales` and `sales_dashboard`. Its 11 datasets are the ones the edges name. Four
+shapes:
 
 - `documents`: one JSON document per job (its runs, what it reads, what it writes) and one per
   dataset (its descriptive fields). Going through the documents counts each one read.
 - `tables`: SQLite tables `edges(job, edge, dataset, runs)` and `descriptions(asset, field,
-  value)`. What a query reads is taken from SQLite's own query plan: a scan reads every row of the
-  table; a search through an index reads the index's entries for the value it looks up.
+  value)`. What a query reads is taken from SQLite's own query plan (`docs/sources.md`): a scan
+  reads every row of the table; a search through an index reads the rows that match every column
+  the plan says the search uses, with the values the query gives them.
 - the same tables with an index the learner adds;
 - `graph`: Chapter 5's shape, a node for each job and dataset and an edge for each edge by job;
   `edges_at(name)` gives one node's edges and counts each one read.
 
 The question each shape answers is what reads a dataset. The learner writes it for each shape, and
-`check` runs it for every dataset in the week against the answer from Chapter 9's edges. Each
+`check` runs it for every dataset in the week against the answer from the week's edges by job. Each
 shape's stub (`STUBS`) gives a wrong answer and the reference (`REFERENCE`) the right one; the
 course's tests hold both to `check`.
 
@@ -207,7 +210,7 @@ tables.sql("CREATE INDEX edges_index ON edges(dataset)")''',
 
 
 def expected(week: Week) -> dict[str, list[str]]:
-    """What reads each dataset, from Chapter 9's edges by job."""
+    """What reads each dataset, from the week's edges by job."""
     by_job = _week_edges(week)
     return {d: sorted(r["job"] for r in by_job if r["dataset"] == d and r["edge"] == "reads") for d in sorted({r["dataset"] for r in by_job})}
 
