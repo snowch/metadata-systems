@@ -393,11 +393,13 @@ def _(mo):
 
     Compare the query with your guess. Did you name the same table and the same orders?
 
-    The query is evidence of how the table could have been made, not a record of how it was made, and three small changes to the shop show the difference.
+    The query shows how `daily_sales` could have been made. It does not show how it was made. You can test that difference with three small changes to the shop. Each changes the shop's week in one way, and you apply them one at a time. None of the three happened in the week you have read so far.
 
-    - An analyst copies `clean_orders` to a CSV file, `clean_orders_copy.csv`, in the bucket `shop-scratch`, every night.
-    - The job that writes `daily_sales` is edited, from Saturday's row on, to keep every order that has not been refunded.
-    - On the last night the job that writes `daily_sales` fails and writes nothing.
+    - **An analyst copies clean_orders every night**: the analyst copies `clean_orders` to a CSV file, `clean_orders_copy.csv`, in the bucket `shop-scratch`, every night.
+    - **From Saturday, the daily_sales job keeps unrefunded orders**: the job that writes `daily_sales` is edited, from Saturday's row on, to keep every order that has not been refunded, where it kept completed orders.
+    - **The daily_sales job fails on the last night**: it writes nothing that night.
+
+    For each change, the question is the same: does a query over the week's assets still give every row of `daily_sales`, and which of the platform's records show the change?
     """)
     return
 
@@ -421,7 +423,7 @@ def _(mo):
         label="Choose a change to the shop",
         full_width=True,
     )
-    mo.vstack([mo.md("For each change, find which of the platform's records show it, and whether a query still gives every row of `daily_sales`. Choose a change to the shop from the menu below. Then select the first cell below the menu and press **Run below**. The cells below show the platform on Monday morning, after the week ran with the change you chose. The cells above the menu keep showing the week as it ran."), change])
+    mo.vstack([mo.md("Choose a change to the shop from the menu below. Then select the first cell below the menu and press **Run below**. The cells below show the platform on Monday morning, after the week ran with the change you chose. The cells above the menu keep showing the week as it ran."), change])
     return (change,)
 
 

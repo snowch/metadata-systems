@@ -895,6 +895,18 @@ The author then asked to drop the code block's wide gap and to set the guess in 
 beneath it: the guess is now one bold line, `daily_sales`: made from ..., because:, at the text's
 margin, and the list of reasons sits indented under it. The words are unchanged.
 
+## The three changes, said as changes the reader makes, 13 October 2026
+
+The author found the passage before the menu confusing: "three small changes to the shop show the
+difference" did not say what the reader would look at, and its three items read as things that had
+happened in the week, when they are changes the reader applies one at a time from the menu below.
+The passage now says the query shows how `daily_sales` could have been made, not how it was made;
+that none of the three changes happened in the week read so far; each change under the menu's own
+label in bold; and the one question asked of each. Brief `chapter-02/briefs/round-19/BH-the-three-changes.md`,
+draft under `drafts/round-19/`; every fact landed. Cut by me as repeats: the draft's last line, "The
+menu below applies one change at a time.", and the first sentence of the menu's own text, which asked
+the same question.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,
