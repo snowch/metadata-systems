@@ -228,3 +228,7 @@ Locally, 13 October 2026, after the review's changes (`docs/notes/notebook-proto
 to 414 MB alone, 627 MB with Chapter 32 open; no error output, no console error. The browser test
 (`notebook/jupyterlite/smoke.mjs`) types the reference into both of the chapter's cells and reads the
 checks, and counts the chapter's three requirement boxes.
+
+Live, 13 October 2026, published at `cd06d1f`, opened alone at desktop and phone widths: Run all 11.5
+to 11.8 s; peak memory 417 to 424 MB; no error output, no console error. The 9 to 12 seconds hold;
+the warning's memory, about 410 MB from the local measurement, became about 420 MB.

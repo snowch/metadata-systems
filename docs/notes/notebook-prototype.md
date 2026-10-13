@@ -439,7 +439,9 @@ outside review's changes. The link followed is Chapter 32's "Next" link.
 | Cells with an error output; console errors from the page | none |
 
 The ferry runs in the page beside the shop's package, and the chapter holds more cells than any
-other; its warning says about 410 MB where Chapters 18 to 32 say about 400.
+other. Live, 13 October 2026, published at `cd06d1f`, opened alone at desktop and phone widths: Run
+all 11.5 to 11.8 s, peak memory 417 to 424 MB, no error output, no console error. Its warning says
+about 420 MB, from the live peak, where Chapters 18 to 32 say about 400; the 9 to 12 seconds hold.
 
 ## Phones
 
