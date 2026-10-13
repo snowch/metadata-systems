@@ -25,6 +25,7 @@ The shapes, the counting and the rule for reading a query plan are the shop's ow
 from __future__ import annotations
 
 import json
+import re
 import sqlite3
 
 from .delivery import week_events
@@ -131,14 +132,24 @@ class Tables:
         for step in steps:
             if step.startswith("SEARCH") and "INDEX" in step:
                 index = step.split("INDEX", 1)[1].split()[0]
-                column = self.db.execute(f"PRAGMA index_info({index})").fetchone()[2]
-                value = params.get(column)
-                n = self.db.execute(f"SELECT COUNT(*) FROM edges WHERE {column} = ?", (value,)).fetchone()[0]
+                # The plan names the columns the index is searched by, as "(edge=? AND dataset=?)".
+                used = re.findall(r"(\w+)=\?", step.split("INDEX", 1)[1])
+                values = [_value(query, params, c) for c in used]
+                where = " AND ".join(f"{c} = ?" for c in used) or "1"
+                n = self.db.execute(f"SELECT COUNT(*) FROM edges WHERE {where}", values).fetchone()[0]
                 return n, MESSAGES["search"].format(index=index)
         return total, MESSAGES["scan"].format(table="edges")
 
     def _repr_html_(self) -> str:
         return self.sql("SELECT * FROM edges")._repr_html_()
+
+
+def _value(query: str, params: dict, column: str):
+    """The value a query compares `column` with: its parameter, or the quoted text it is compared with."""
+    m = re.search(rf"\b{column}\s*=\s*(?::(\w+)|'([^']*)')", query)
+    if not m:
+        return None
+    return params.get(m.group(1)) if m.group(1) else m.group(2)
 
 
 def tables(week: Week) -> Tables:
@@ -174,7 +185,8 @@ STUBS = {
         pass  # add doc["job"] when the document's "reads" lists the dataset
     return found''',
     "tables": '''query = "SELECT job FROM edges"''',
-    "index": '''tables.sql("CREATE INDEX IF NOT EXISTS edges_by_job ON edges(job)")''',
+    "index": '''tables.sql("DROP INDEX IF EXISTS edges_index")
+tables.sql("CREATE INDEX edges_index ON edges(job)")''',
     "graph": '''def readers_of(graph, dataset):
     return [e["job"] for e in graph.edges_at(dataset)]''',
 }
@@ -187,7 +199,8 @@ REFERENCE = {
             found.append(doc["job"])
     return found''',
     "tables": '''query = "SELECT job FROM edges WHERE edge = 'reads' AND dataset = :dataset"''',
-    "index": '''tables.sql("CREATE INDEX IF NOT EXISTS edges_by_dataset ON edges(dataset)")''',
+    "index": '''tables.sql("DROP INDEX IF EXISTS edges_index")
+tables.sql("CREATE INDEX edges_index ON edges(dataset)")''',
     "graph": '''def readers_of(graph, dataset):
     return [e["job"] for e in graph.edges_at(dataset) if e["edge"] == "reads"]''',
 }
@@ -256,7 +269,7 @@ def compare(week: Week, dataset: str, job: str) -> Rows:
     """Records read by each shape for two questions: what reads `dataset`, and what `job` reads;
     each answered by the shop's own code, with the index on `dataset` in place."""
     docs, tab, g = documents(week), tables(week), graph(week)
-    tab.sql("CREATE INDEX IF NOT EXISTS edges_by_dataset ON edges(dataset)")
+    tab.sql("CREATE INDEX edges_index ON edges(dataset)")
     out = []
     docs.read = 0
     [d for d in docs if dataset in d.get("reads", [])]

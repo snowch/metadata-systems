@@ -23,10 +23,12 @@ SECTIONS = ("description", "owner", "runs", "upstream", "downstream", "columns",
 
 MESSAGES = {
     "summary": "{passed} of {total} tests pass.",
-    "runs": "The run history of `daily_sales` holds {n} runs, Monday's `FAIL` among them.",
-    "runs_no": "The run history of `daily_sales` holds {n} runs: {missing}.",
-    "missing_fail": "Monday's run, which failed, is not among them",
+    "runs": "The run history of `daily_sales` holds each of its {n} runs once, Monday's `FAIL` among them.",
+    "runs_no": "The run history of `daily_sales` holds {n} {noun}: {problems}.",
+    "missing": "{n} of the program's runs are not among them, {which} included",
+    "repeated": "{n} {noun} appear more than once",
     "others": "it holds runs of programs that do not write `daily_sales`",
+    "unknown": "Not a section the page can draw: {names}.",
     "sections": "Every section named is one the page can draw.",
     "sections_no": "The page cannot draw {unknown}: choose from {known}.",
     "left_out": "Not on this page: {names}.",
@@ -84,10 +86,13 @@ def _section(name: str, asset: str, run_history) -> Rows:
 class Page:
     def __init__(self, asset: str, sections: list[str], run_history) -> None:
         self.asset, self.sections = asset, [s for s in sections if s in SECTIONS]
+        self.unknown = [s for s in sections if s not in SECTIONS]
         self.parts = [(s, _section(s, asset, run_history)) for s in self.sections]
 
     def _repr_html_(self) -> str:
         out = [f"<h3>{html.escape(self.asset)}</h3>"]
+        if self.unknown:
+            out.append("<p>" + html.escape(MESSAGES["unknown"].format(names=", ".join(self.unknown))) + "</p>")
         for name, rows in self.parts:
             out.append(f"<h4>{html.escape(name)}</h4>" + rows._repr_html_())
         left = [s for s in SECTIONS if s not in self.sections]
@@ -116,13 +121,21 @@ def check(run_history, sections: list[str] | None = None) -> Checked:
     rows = []
     got = list(run_history("daily_sales"))
     jobs = set(writers("daily_sales"))
-    states = [r["state"] for r in got]
+    want = [r for r in runs() if r["job"] in jobs]
+    key = lambda r: (r["job"], r["started"])
+    seen = [key(r) for r in got]
+    missing = [r for r in want if key(r) not in seen]
+    repeated = {k for k in seen if seen.count(k) > 1}
     problems = []
-    if "FAIL" not in states:
-        problems.append(MESSAGES["missing_fail"])
+    if missing:
+        which = "Monday's `FAIL`" if any(r["state"] == "FAIL" for r in missing) else f"the run started {missing[0]['started']}"
+        problems.append(MESSAGES["missing"].format(n=len(missing), which=which))
+    if repeated:
+        problems.append(MESSAGES["repeated"].format(n=len(repeated), noun="run" if len(repeated) == 1 else "runs"))
     if any(r["job"] not in jobs for r in got):
         problems.append(MESSAGES["others"])
-    rows.append({"test": (MESSAGES["runs"] if not problems else MESSAGES["runs_no"]).format(n=len(got), missing="; ".join(problems)), "passes": "no" if problems else "yes"})
+    msg = MESSAGES["runs"].format(n=len(want)) if not problems else MESSAGES["runs_no"].format(n=len(got), noun="run" if len(got) == 1 else "runs", problems="; ".join(problems))
+    rows.append({"test": msg, "passes": "no" if problems else "yes"})
     if sections is None:
         return Checked(rows)
     unknown = [s for s in sections if s not in SECTIONS]
