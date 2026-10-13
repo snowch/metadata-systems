@@ -650,3 +650,26 @@ notebooks were parts, and their names in this note are the names they had then.
   `shop.queries_that_rebuild`, `shop.cleaning_rules_that_fit`); the code that draws the figures
   is in hidden cells. "No lab on the page" (`CLAUDE.md`) holds for the words; whether it should hold
   for the code is the author's call.
+
+## Chapter 2 on an emulated slow phone, 13 October 2026
+
+The author asked for the chapter to be tried on a modest device: a fresh opening, Run all, the next
+chapter's arrow, and a reload. No real phone is to hand, so a computer was set to run like one: the
+browser in a CPU cgroup held to a third of one core (`cpu.cfs_quota_us` 33000 of 100000), as a
+390-pixel touch screen, against the built site served with gzip through a server that holds every
+request to one shared bandwidth and adds a fixed latency. DevTools' own throttling was tried first
+and set aside: it slows the page's main thread and its requests, but not the Web Worker in which
+Python starts and fetches its packages, so it understated the times.
+
+| Emulated phone, Chapter 2, third of one core | Fast 4G (9 Mbps, 170 ms) | Slow 4G (1.6 Mbps, 563 ms) |
+| --- | --- | --- |
+| Opened alone, until the text shows | 11.3 s | 25.2 s |
+| First Run all, from the press until no cell waits | 51.1 s | 98.4 s |
+| The Next arrow, until Chapter 3 shows in a new tab | 9.2 s | 9.8 s |
+| A reload, until the text shows again (outputs cleared) | 7.4 s | 8.7 s |
+| Run all again after the reload (all 15 outputs back) | 40.1 s | 36.3 s |
+| Peak memory of a renderer process | 361 MB | 356 MB |
+| Error outputs, errors in the console | none | none |
+
+Chapter 2's warning says so: its visible line says a slow phone can take a minute or more, and its
+details give these times.

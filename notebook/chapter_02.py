@@ -20,9 +20,9 @@ def _(mo):
 
     You investigate it using only what the shop's platform holds, and find where that evidence stops.
 
-    1. [Find the discrepancy](#1.-Find-the-discrepancy): compare the raw orders with what the warehouse reports, and find the orders that are missing.
-    2. [What the platform records](#2.-What-the-platform-records): what object storage, the warehouse and the reporting tool record about each asset.
-    3. [Test an explanation](#3.-Test-an-explanation): rebuild `daily_sales` from the data, and see what that establishes and what it does not.
+    1. [Find the discrepancy](#1.-Find-the-discrepancy)
+    2. [What the platform records](#2.-What-the-platform-records)
+    3. [Test an explanation](#3.-Test-an-explanation)
 
     [Records made at the time](#Records-made-at-the-time) says which records would have answered; [a short check](#Check:-evidence-of-what-a-job-read) closes the chapter.
     """)
@@ -70,13 +70,15 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.callout(mo.md(r"""
-    The page runs Python in your browser, and the first time you open it on its own your browser downloads about 13 MB.
+    The page runs Python in your browser, and the first time you open it on its own your browser downloads about 13 MB. On a slow phone, running every cell the first time can take a minute or more.
 
     <details><summary>Time and memory</summary>
 
     The page downloaded less than 1 MB when opened from Chapter 1's link, in a browser that had opened Chapter 1 (measured on a computer). Chapter 1's link opens this page in a new tab. Chapter 1 stays open in its own tab and keeps its own memory. On a phone, closing Chapter 1 leaves more memory for this page.
 
     Running every cell took 10 to 12 seconds, and the page used about 420 MB of memory. If a phone runs short of memory, the browser may reload the page, and a reload loses anything you have not saved.
+
+    Measured on 13 October 2026, on a computer set to run like a slow phone with the browser held to a third of one processor core, the first time every cell ran took 51 seconds on a fast mobile network (9 Mbps) and 98 seconds on a slow one (1.6 Mbps). After a reload, the files come from the browser's store, and running every cell again took 36 to 40 seconds.
 
     </details>
     """), kind="warn")
@@ -102,8 +104,6 @@ def _(mo):
     - Can we delete `products.csv`? Does anything still read it?
     - If the checkout renames a column in `orders.jsonl`, what stops working?
     - Who should I ask about `daily_sales`?
-
-    The rows show whether Thursday's total differs from Thursday's orders. Why it differs, which files the jobs read, and who is responsible for a table depend on what the jobs do and what people decided. The rows a table holds record none of these.
     """)
     return
 
@@ -246,11 +246,11 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ### What each system records about assets, and why
+    ### The owner the warehouse records
 
-    Each of the shop's systems records what its own work needs. The warehouse keeps column names and types so that it can run a query. Object storage keeps a file's key so that it can serve the file. The reporting tool keeps the values so that it can draw the chart. The warehouse and the reporting tool also keep a little more: an owner, created times and who created the dashboard. None of it says what an asset means or how it was made.
+    Each system records what its own work needs: column types so that the warehouse can run a query, a key so that object storage can serve a file, and the values so that the reporting tool can draw a chart.
 
-    The owner the warehouse records shows how far that goes. "Who should I ask about `daily_sales`?" wants a person or a team.
+    "Who should I ask about `daily_sales`?" wants a person or a team.
     """)
     return
 
@@ -302,7 +302,7 @@ def _(mo):
     mo.md(r"""
     ## 3. Test an explanation
 
-    Nothing on the platform records how `daily_sales` was made. The usual move is to infer it: find a query over another asset that gives the same rows. The hypothesis below comes with the evidence for each part. Compare it with your guess for `daily_sales` at the end of Chapter 1.
+    The usual move is to infer how `daily_sales` was made: find a query over another asset that gives the same rows. The hypothesis below comes with the evidence for each part. Compare it with your guess for `daily_sales` at the end of Chapter 1.
 
     **`daily_sales` is made from `clean_orders`: completed orders only, `price_pence` × `quantity` added up for each day.**
 
@@ -397,11 +397,11 @@ def _(mo):
     mo.md(r"""
     ### Could have been made, or was made
 
-    The query shows how `daily_sales` **could have been** made, not how it **was** made. Three what-ifs test that difference. Each describes one of three small changes to the shop. None of them happened in the week you have read.
+    The query shows how `daily_sales` **could have been** made, not how it **was** made.
 
-    Each cell below runs the week again with one change, and prints Monday morning's records in a table. The column `the week as it ran` holds the record for the week you have read. The column `with the change` holds the record for the week with the change.
+    The difference is tested by three small changes to the shop. None of them happened in the week you have read.
 
-    For each change, ask: does a query over the week's assets still give every row of `daily_sales`, and which records show the change?
+    Each cell below runs the week again with one change. It prints Monday morning's records in three columns: `the week as it ran`, `with the change`, and `changed`, which says `yes` where the two differ.
 
     <details><summary>How the last row is found</summary>
 
@@ -416,6 +416,8 @@ def _(mo):
 def _(mo):
     mo.md(r"""
     **An analyst copies `clean_orders` every night.** The copy goes to a CSV file, `clean_orders_copy.csv`, in the bucket `shop-scratch`, every night, at 02:15, after the job that writes `clean_orders`.
+
+    Can a query that fits tell two possible sources apart?
     """)
     return
 
@@ -430,7 +432,7 @@ def _(shop, week):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The copy is a new file in object storage, `s3://shop-scratch/clean_orders_copy.csv`. The last row now lists two queries: the same query over `clean_orders` and over the copy. Every other record is the same as in the week as it ran. None of the records says which of the two the job that writes `daily_sales` reads. A query that fits is evidence for every source it fits.
+    Two records change: object storage has a new file, `s3://shop-scratch/clean_orders_copy.csv`, and the last row lists a second query that fits, over the copy. No record says which of the two the job that writes `daily_sales` reads, and a query that fits is evidence for every source it fits. Only a record of what the job read would settle it.
     """)
     return
 
@@ -439,6 +441,8 @@ def _(mo):
 def _(mo):
     mo.md(r"""
     **From Saturday, the `daily_sales` job keeps unrefunded orders.** Someone on the shop's team edits the job that writes `daily_sales`, so that from Saturday's row on, written early on Sunday 13, it keeps every order that has not been refunded, where it kept completed orders.
+
+    Does an edit to a job leave a trace in the platform's records?
     """)
     return
 
@@ -453,7 +457,7 @@ def _(shop, week):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The shop has no refunds: every order's `status` is `completed` or `cancelled`. So from Saturday every order counts, cancelled ones included. The dashboard shows £215.49 instead of £191.49 for Saturday, 2026-09-12. The table still has 7 rows and the same last-altered time. The last row says `none`. No query in the set gives the rows of `daily_sales` any more. No record on the platform says the job was edited.
+    Two records change: the dashboard shows £215.49 instead of £191.49 for Saturday 12 September, and no query in the set fits any more (the last row says `none`). Saturday changes because the shop has no refunds: every order's `status` is `completed` or `cancelled`, so from Saturday cancelled orders count too. The row count, 7, and the last-altered time do not change, and no record says the job was edited. Only a record of which version of the job's code ran each night would show it.
     """)
     return
 
@@ -462,6 +466,8 @@ def _(mo):
 def _(mo):
     mo.md(r"""
     **The `daily_sales` job fails on the last night.** Early on Monday 14, the job that writes `daily_sales` fails and writes nothing.
+
+    Does a job that fails show up as a failure?
     """)
     return
 
@@ -476,11 +482,7 @@ def _(shop, week):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The table has 6 rows, none for Sunday, and was last altered on Sunday at 02:30, a day earlier than `clean_orders` and the dashboard. The dashboard refreshed at 03:00 on Monday as usual and shows the 6 values it found. The query over `clean_orders` is still listed: it gives every row of `daily_sales`, and one row more, for Sunday.
-
-    The shortfall is visible: 6 rows where the week as it ran has 7, and six values on a dashboard titled "Sales, last 7 days". No record says that this is a failure. Seeing it takes knowing to expect 7 rows, or comparing the last-altered times.
-
-    Only a record of the failure would say that a write was due and did not happen.
+    Three records change: `daily_sales` has 6 rows, none for Sunday; it was last altered on Sunday at 02:30, a day earlier than `clean_orders`; and the dashboard shows 6 values. The dashboard still refreshed at 03:00 on Monday, and the query over `clean_orders` still fits, with one row more, for Sunday. The shortfall is there to see if you expect 7 rows or compare the last-altered times, but no record says a write was due and did not happen. Only a record of whether each night's write succeeded would.
     """)
     return
 
@@ -535,7 +537,7 @@ def _(mo):
     mo.md(r"""
     ## Records made at the time
 
-    Each question the investigation could not settle needs its own kind of record, and the platform keeps none of them. The figure below sets them side by side.
+    Each question the investigation could not settle needs its own kind of record, and the platform keeps none of them.
     """)
     return
 
@@ -549,8 +551,6 @@ def _(figures, mo, shop, week):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    A record of what the job read would have answered the analyst's copy. A record of which version of the job's code ran each night would have answered the edit. A record of whether each night's write succeeded would have answered the failed night.
-
     Information of this kind, about an asset or about the platform, is called **metadata**: what an asset is, where it came from, who is responsible for it, what its numbers mean, how it is made, and how it relates to other assets. Some of it the systems already keep for their own purposes: the names, types, counts and times you read above. They do not keep what an asset means, what it was made from, or what happened to it. Somebody has to record those. What happened, such as which tables a night's job read, has to be recorded when it happens. What a table is made from can also be read later, from the jobs' code (Chapter 6). That shows what the code says, not what the job did on a given night. A note of what a job read, written the next morning from the data, is a reconstruction, with the limits shown above.
 
     Real platforms keep more history than the shop's: query logs, table snapshots, audit trails. Those are records made at the time too, kept by the system rather than by a person, and later chapters use them where they exist.
@@ -607,7 +607,7 @@ def _(mo):
     mo.md(r"""
     ## Before Chapter 3
 
-    The platform's state answers what exists. It does not answer what happened or why. Inferring the history from the data gave an explanation that fitted. Three ordinary changes then tested it: the copy made it ambiguous, the edit made it wrong, and one failed night was left that no record names as a failure. The records that would have answered had to be made when the work was done.
+    The platform's state answers what exists. It does not answer what happened or why. Inferring the history from the data gave an explanation that fitted. Three ordinary changes then tested it: the copy made it ambiguous, the edit made it wrong, and one failed night was left that no record names as a failure.
 
     Chapter 3 starts making them: a description of each asset, kept beside the data, with what the asset means and who is responsible for it. It then asks the four questions at the start again. Chapter 6 records what was made from what, which is called lineage, and Chapter 7 records each run of a job.
     """)

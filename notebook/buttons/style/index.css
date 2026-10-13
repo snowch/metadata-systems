@@ -472,17 +472,46 @@
   color: var(--jp-error-color1);
 }
 
-@media (max-width: 420px) {
+/* A name in a total's label is set in the code face without the chip inline code has, so the three
+   labels sit on one line each and the amounts line up. */
+.jp-RenderedMarkdown .ms-stat-label code {
+  padding: 0;
+  background: none;
+  font-size: 0.95em;
+}
+
+/* On a phone the three totals are rows, each label on the left and its amount on the right: three
+   tiles side by side leave each label a third of the column, and they wrap. */
+@media (max-width: 480px) {
   .jp-RenderedMarkdown .ms-stats {
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.35rem;
   }
 
   .jp-RenderedMarkdown .ms-stat {
-    padding: 0.45rem 0.5rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    align-items: baseline;
+    column-gap: 0.75rem;
+    padding: 0.45rem 0.75rem;
+  }
+
+  .jp-RenderedMarkdown .ms-stat-label {
+    grid-row: 1 / span 2;
+    align-self: center;
+    font-size: 0.85rem;
   }
 
   .jp-RenderedMarkdown .ms-stat-value {
-    font-size: 1.2rem;
+    margin: 0;
+    font-size: 1.25rem;
+    text-align: right;
+  }
+
+  .jp-RenderedMarkdown .ms-stat .ms-muted {
+    text-align: right;
+    font-size: 0.75rem;
   }
 }
 

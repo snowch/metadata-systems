@@ -85,6 +85,10 @@ class TheWarnings(unittest.TestCase):
                 ("running every cell took 10 to 12 seconds", run),
                 ("running every cell took 10 to 12 seconds", live_run),
                 ("the page used about 420 MB of memory", memory),
+                # On an emulated slow phone (docs/notes/notebook-prototype.md, 13 October 2026).
+                ("On a slow phone, running every cell the first time can take a minute or more.", "| First Run all, from the press until no cell waits | 51.1 s | 98.4 s |"),
+                ("took 51 seconds on a fast mobile network (9 Mbps) and 98 seconds on a slow one (1.6 Mbps)", "| First Run all, from the press until no cell waits | 51.1 s | 98.4 s |"),
+                ("running every cell again took 36 to 40 seconds", "| Run all again after the reload (all 15 outputs back) | 40.1 s | 36.3 s |"),
             ],
         }
         table = {

@@ -1093,6 +1093,37 @@ numbers Haiku had put in them (the engine supplies them) and "Raw orders" restor
 the diagram's counts as the engine's; backticks out of two code comments; "This cell" to "The cell
 below" in a Markdown cell; and, as a repeat, the head's message cut from "Monday morning".
 
+## Round 22, the editing pass and the phone, 13 October 2026
+
+The author kept the structure and asked for an editing and usability pass: cut prose that
+paraphrases evidence or a summary; make each what-if answer a distinct question, show the evidence
+that changes, and state its conclusion; and try the chapter on a modest device. Then, from their
+phone, "layout needs fixing": the three totals' labels wrapped in their code chips and the amounts
+did not line up.
+
+- **Cut as repeats (mine):** the opening's description of each stage (the links stay); the
+  paragraph under the four questions, which stated the stages' findings in advance; "The figure
+  below sets them side by side"; the paragraph after the records' figure that mapped each what-if
+  to its record (each what-if now ends with its own); the closing's "The records that would have
+  answered had to be made when the work was done".
+- **Redrafted (brief BM):** stage 3's lead without restating stage 2; the owner's subsection,
+  "The owner the warehouse records", to the reason in one sentence and the turn to the owner; the
+  what-ifs' lead; each what-if with its own question (can a query that fits tell two sources
+  apart; does an edit leave a trace; does a failure show as a failure), and a result that names the
+  records that change, what stays the same, and the one record that would settle it.
+- **The what-ifs' tables:** a column `changed`, `yes` where the two weeks differ (the engine's
+  comparison; a test holds 2, 2 and 3 changed records). Changed rows are tinted; on a phone a row
+  that did not change shows its value once, "in both weeks", and one that did carries a badge,
+  which halves the tables' length there.
+- **The totals on a phone:** below 480 pixels the three tiles are rows, label left and amount
+  right, and a name in a label has no chip.
+- **The device:** `docs/notes/notebook-prototype.md`, "Chapter 2 on an emulated slow phone": a
+  third of one core and a throttled server, since DevTools' throttling misses the Web Worker that
+  runs Python. Fresh open 11 to 25 s, first Run all 51 to 98 s, the Next arrow 9 to 10 s, a reload
+  7 to 9 s with outputs cleared and all 15 back after Run all (36 to 40 s); no errors. The warning
+  now says, in its visible line, that a slow phone can take a minute or more (brief BN), and its
+  details give the times.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,

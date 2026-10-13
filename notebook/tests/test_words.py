@@ -378,7 +378,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("| which job writes it | a program | no: it names an account, not a program |")
         self.assertEqual(flat(TEXT[2]).count("| yes |"), 1)
         # "field" is kept for a file's record (Chapter 1); what a system keeps is not called one here.
-        self.says("## What each system records about assets, and why")
+        self.says("### The owner the warehouse records")
         self.assertNotIn("These fields", self.text[2])
 
     def test_the_reconstruction_and_thursday(self):
@@ -415,17 +415,17 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("Three ordinary changes then tested it")
         # The basis for "no refunds": every order is completed or cancelled.
         self.assertEqual({o["status"] for o in self.week.storage.records(shop.FILES["orders"])}, {"completed", "cancelled"})
-        self.says("The shop has no refunds: every order's `status` is `completed` or `cancelled`.")
+        self.says("the shop has no refunds: every order's `status` is `completed` or `cancelled`")
         self.assertEqual(shop.COPY, "s3://shop-scratch/clean_orders_copy.csv")
         self.says("to a CSV file, `clean_orders_copy.csv`, in the bucket `shop-scratch`, every night")
         refunds = shop.run_week(["refunds"])
         sat = {r["day"]: r["revenue_pence"] for r in refunds.warehouse.sql("SELECT * FROM daily_sales")}["2026-09-12"]
         shown = {v["day"]: v["revenue"] for v in refunds.reporting.dashboard()["values"]}["2026-09-12"]
         self.assertEqual((sat, shown), (21549, "£215.49"))
-        self.says("The dashboard shows £215.49 instead of £191.49 for Saturday, 2026-09-12.")
+        self.says("£215.49 instead of £191.49 for Saturday 12 September")
         [t] = refunds.warehouse.sql("SELECT row_count, last_altered FROM information_schema.tables WHERE table_name = 'daily_sales'")
         self.assertEqual((t["row_count"], t["last_altered"]), (7, "2026-09-14T02:30:21Z"))
-        self.says("The table still has 7 rows and the same last-altered time")
+        self.says("The row count, 7, and the last-altered time do not change")
         failed = shop.run_week(["failed"])
         tables = {r["table_name"]: r for r in failed.warehouse.sql("SELECT * FROM information_schema.tables")}
         d = failed.reporting.dashboard()
@@ -434,37 +434,51 @@ class TheWordsMatchTheEngine(unittest.TestCase):
             (6, "2026-09-13T02:30", "2026-09-14", "2026-09-14T03:00", 6),
         )
         self.says(
-            "The table has 6 rows, none for Sunday, and was last altered on Sunday at 02:30, a day earlier "
-            "than `clean_orders` and the dashboard. The dashboard refreshed at 03:00 on Monday as usual and "
-            "shows the 6 values it found."
+            "Three records change: `daily_sales` has 6 rows, none for Sunday; it was last altered on Sunday at "
+            "02:30, a day earlier than `clean_orders`; and the dashboard shows 6 values. The dashboard still "
+            "refreshed at 03:00 on Monday"
         )
         self.assertEqual(KEEP, ("all", "completed", "cancelled"))
         self.says("So `none`, in the second what-if, means none of those queries")
         # Each what-if's cell: its table's columns and rows, and what the last row lists.
         tables = {c: shop.records_beside(self.week, shop.run_week([c])) for c in ("copy", "refunds", "failed")}
-        self.assertEqual(list(tables["copy"][0]), ["record", "the week as it ran", "with the change"])
-        self.says("The column `the week as it ran` holds the record for the week you have read.")
-        self.says("The column `with the change` holds the record for the week with the change.")
+        self.assertEqual(list(tables["copy"][0]), ["record", "the week as it ran", "with the change", "changed"])
+        # Each what-if's result names the records that change, as many as the column marks.
+        marked = {c: [r["record"] for r in t if r["changed"] == "yes"] for c, t in tables.items()}
+        self.assertEqual({c: len(m) for c, m in marked.items()}, {"copy": 2, "refunds": 2, "failed": 3})
+        self.assertTrue(all(r["changed"] == ("yes" if r["the week as it ran"] != r["with the change"] else "no") for t in tables.values() for r in t))
+        self.says("Two records change: object storage has a new file")
+        self.says("Two records change: the dashboard shows £215.49 instead of £191.49 for Saturday 12 September")
+        self.says("Three records change: `daily_sales` has 6 rows, none for Sunday")
+        self.says("three columns: `the week as it ran`, `with the change`, and `changed`, which says `yes` where the two differ")
         last = {c: t[-1]["with the change"] for c, t in tables.items()}
         self.assertEqual(tables["copy"][-1]["the week as it ran"], ["clean_orders: completed orders, revenue per day"])
         self.says("for example `clean_orders: completed orders, revenue per day`, which is the query you ran above")
+        for question in (
+            "Can a query that fits tell two possible sources apart?",
+            "Does an edit to a job leave a trace in the platform's records?",
+            "Does a job that fails show up as a failure?",
+        ):
+            self.says(question)
         self.assertEqual(last["copy"], ["clean_orders: completed orders, revenue per day", f"{shop.COPY}: completed orders, revenue per day"])
-        self.says("The last row now lists two queries: the same query over `clean_orders` and over the copy.")
+        self.says("the last row lists a second query that fits, over the copy")
         # The copy is the only record that differs.
         self.assertEqual([r["record"] for r in tables["copy"] if r["the week as it ran"] != r["with the change"]], ["files in object storage", "queries that give every row of `daily_sales`"])
-        self.says("Every other record is the same as in the week as it ran.")
+        self.says("a query that fits is evidence for every source it fits")
         self.assertEqual(last["refunds"], ["none"])
-        self.says("The last row says `none`.")
+        self.says("(the last row says `none`)")
         self.assertEqual(last["failed"], ["clean_orders: completed orders, revenue per day"])
-        self.says("The query over `clean_orders` is still listed: it gives every row of `daily_sales`, and one row more, for Sunday.")
-        self.says("No record says that this is a failure. Seeing it takes knowing to expect 7 rows, or comparing the last-altered times.")
+        self.says("the query over `clean_orders` still fits, with one row more, for Sunday")
+        self.says("The shortfall is there to see if you expect 7 rows or compare the last-altered times, but no record says a write was due and did not happen.")
         self.assertEqual(failed.reporting.dashboard()["title"], "Sales, last 7 days")
         self.assertNotIn("looks normal", self.text[2])
 
-    def test_what_the_rows_can_answer(self):
-        # Under the four questions: the rows answer only whether Thursday's total differs.
-        self.says("The rows show whether Thursday's total differs from Thursday's orders.")
-        self.says("The rows a table holds record none of these.")
+    def test_the_opening_links_to_each_stage(self):
+        # The opening's list is the stages' headings as links, each to a heading the chapter has.
+        links = re.findall(r"\]\(#([^)]+)\)", CELLS[2][0])
+        headings = {re.sub(r"^#+ ", "", line).replace(" ", "-") for cell in CELLS[2] for line in cell.splitlines() if line.startswith("## ")}
+        self.assertEqual(links[:3], ["1.-Find-the-discrepancy", "2.-What-the-platform-records", "3.-Test-an-explanation"])
+        self.assertTrue(set(links) <= headings, set(links) - headings)
 
     def test_the_rule_the_week_never_tests(self):
         orders = self.week.storage.records(shop.FILES["orders"])

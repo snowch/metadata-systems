@@ -99,32 +99,52 @@ class Record(dict):
 _BESIDE_STYLE = (
     "<style>table.ms-table.ms-beside th,table.ms-table.ms-beside td{text-align:left;vertical-align:top}"
     "table.ms-table.ms-beside td:first-child{font-family:var(--jp-content-font-family,sans-serif);font-weight:600}"
+    "table.ms-table.ms-beside tr.ms-changed td{background:color-mix(in srgb,var(--jp-warn-color1,#f59e0b) 14%,transparent)}"
+    "table.ms-table.ms-beside .ms-badge{display:none}"
     "@media (max-width:640px){table.ms-table.ms-beside thead{display:none}"
-    "table.ms-table.ms-beside tr{display:block;padding:0.4rem 0;border-bottom:1px solid "
+    "table.ms-table.ms-beside tr{display:block;padding:0.4rem 0.5rem;border-bottom:1px solid "
     "color-mix(in srgb,currentColor 18%,transparent)}"
-    "table.ms-table.ms-beside td{display:block;border:0;white-space:normal;overflow-wrap:anywhere}"
+    "table.ms-table.ms-beside tr.ms-changed{background:color-mix(in srgb,var(--jp-warn-color1,#f59e0b) 14%,transparent)}"
+    "table.ms-table.ms-beside tr.ms-changed td{background:none}"
+    "table.ms-table.ms-beside td{display:block;border:0;padding:0.1rem 0;white-space:normal;overflow-wrap:anywhere}"
+    "table.ms-table.ms-beside td.ms-flag{display:none}"
+    "table.ms-table.ms-beside tr.ms-same td:nth-child(3){display:none}"
+    "table.ms-table.ms-beside .ms-badge{display:inline-block;margin-left:0.4rem;padding:0 0.4rem;border-radius:999px;"
+    "font-size:0.75em;font-weight:600;background:color-mix(in srgb,var(--jp-warn-color1,#f59e0b) 35%,transparent)}"
     "table.ms-table.ms-beside td[data-label]::before{content:attr(data-label);display:block;"
-    "font-family:var(--jp-content-font-family,sans-serif);font-style:italic;opacity:0.8}}</style>"
+    "font-family:var(--jp-content-font-family,sans-serif);font-style:italic;opacity:0.8}"
+    "table.ms-table.ms-beside tr.ms-same td[data-same]::before{content:attr(data-same)}}</style>"
 )
 
 
 class Beside(Rows):
-    """Records side by side, one per row, in columns; on a narrow screen each row stacks, with each
-    value under its column's name, so the values to compare stay on screen."""
+    """Records side by side, one per row, in columns. A column `changed` marks each row that
+    differs, which is tinted. On a narrow screen each row stacks, with each value under its
+    column's name; a row that did not change shows its value once, and one that did carries a
+    badge in place of the column."""
 
     def _repr_html_(self) -> str:
         names = list(self[0])
+        flagged = "changed" in names
         head = "".join(f"<th>{html.escape(n)}</th>" for n in names)
-        body = "".join(
-            "<tr>"
-            + "".join(
-                f'<td data-label="{html.escape(n)}">{_cell(r.get(n), self.null)}</td>' if i else f"<td>{_cell(r.get(n), self.null)}</td>"
-                for i, n in enumerate(names)
-            )
-            + "</tr>"
-            for r in self
-        )
-        return f'{_TABLE_STYLE}{_BESIDE_STYLE}<div class="ms-scroll"><table class="ms-table ms-beside"><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>'
+        body = []
+        for r in self:
+            changed = flagged and r["changed"] == "yes"
+            cls = (" class=\"ms-changed\"" if changed else " class=\"ms-same\"") if flagged else ""
+            cells = []
+            for i, n in enumerate(names):
+                value = _cell(r.get(n), self.null)
+                if i == 0:
+                    badge = '<span class="ms-badge">changed</span>' if changed else ""
+                    cells.append(f"<td>{value}{badge}</td>")
+                elif n == "changed":
+                    cells.append(f'<td class="ms-flag">{value}</td>')
+                elif i == 1 and flagged:
+                    cells.append(f'<td data-label="{html.escape(n)}" data-same="in both weeks">{value}</td>')
+                else:
+                    cells.append(f'<td data-label="{html.escape(n)}">{value}</td>')
+            body.append(f"<tr{cls}>{''.join(cells)}</tr>")
+        return f'{_TABLE_STYLE}{_BESIDE_STYLE}<div class="ms-scroll"><table class="ms-table ms-beside"><thead><tr>{head}</tr></thead><tbody>{"".join(body)}</tbody></table></div>'
 
 
 def rows_of(cursor: sqlite3.Cursor) -> Rows:

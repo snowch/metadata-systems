@@ -168,6 +168,10 @@ def _records(week: Week, target: str) -> dict[str, object]:
 
 
 def records_beside(week: Week, changed: Week, target: str = "daily_sales") -> Beside:
-    """Monday morning's records for the week as it ran, beside the same records after a changed week."""
+    """Monday morning's records for the week as it ran, beside the same records after a changed week,
+    and whether each differs."""
     before, after = _records(week, target), _records(changed, target)
-    return Beside({"record": k, "the week as it ran": before[k], "with the change": after[k]} for k in before)
+    return Beside(
+        {"record": k, "the week as it ran": before[k], "with the change": after[k], "changed": "yes" if before[k] != after[k] else "no"}
+        for k in before
+    )
