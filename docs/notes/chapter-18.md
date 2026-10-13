@@ -165,6 +165,9 @@ the requirement. The "Time and memory" warning was measured for the whole part (
 Locally, 12 October 2026, before the review's changes (`docs/notes/notebook-prototype.md`,
 "Chapters 18 to 23"): from Chapter 17's link, 11 files, 0.32 MB, in a new tab; Run all 7.8 to 8.5 s;
 peak memory 395 to 402 MB alone, 611 MB with Chapter 17 open; no error output.
+Live, 12 October 2026, published at `b15b63a`, opened alone at desktop and phone widths: Run all
+10.2 to 10.4 s; peak memory 404 to 407 MB; no error output, no console error. The warning's 9 to 12 seconds and about 400 MB
+hold.
 
 ## Known gaps
 

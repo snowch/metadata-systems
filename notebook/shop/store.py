@@ -24,6 +24,7 @@ The shapes, the counting and the rule for reading a query plan are the shop's ow
 
 from __future__ import annotations
 
+import json
 import sqlite3
 
 from .delivery import week_events
@@ -75,11 +76,8 @@ class Documents(list):
         self.read += 1
         return next((d for d in list.__iter__(self) if d.get("job") == name or d.get("dataset") == name), None)
 
-    def _repr_html_(self) -> str:
-        return Rows(
-            {"document": d.get("job") or d.get("dataset"), **{k: (", ".join(v) if isinstance(v, list) else v) for k, v in d.items() if k not in ("job", "dataset")}}
-            for d in list.__iter__(self)
-        )._repr_html_()
+    def __str__(self) -> str:
+        return "\n".join(json.dumps(d) for d in list.__iter__(self))
 
 
 def documents(week: Week) -> Documents:
@@ -114,9 +112,12 @@ class Tables:
             [(a, f, v) for a, fields in DESCRIBED.items() for f, v in fields.items()],
         )
 
-    def sql(self, query: str, **params) -> Rows:
+    def sql(self, query: str, **params) -> Rows | None:
+        """A query's rows; nothing for a statement that returns no rows, such as `CREATE INDEX`."""
         cur = self.db.execute(query, params)
-        names = [d[0] for d in cur.description or ()]
+        if cur.description is None:
+            return None
+        names = [d[0] for d in cur.description]
         return Rows(dict(zip(names, row)) for row in cur.fetchall())
 
     def plan(self, query: str, **params) -> list[str]:
@@ -212,7 +213,7 @@ class Checked(Rows):
     def _repr_html_(self) -> str:
         head = MESSAGES["summary"].format(right=self.right, total=self.total, read=self.read, unit=self.unit)
         if self.plan:
-            head += f" The query {self.plan}."
+            head += f" The query {self.plan}" + ("" if self.plan.endswith(".") else ".")
         return f"<p>{head}</p>" + super()._repr_html_()
 
 
@@ -237,6 +238,8 @@ def check(week: Week, store, answer) -> Checked:
             ok = got == jobs
             right += ok
             rows.append({"dataset": _short(d), "yours": ", ".join(map(_short, got)), "rows read": n, "": MESSAGES["right"] if ok else MESSAGES["wrong"].format(expected=", ".join(map(_short, jobs)) or "none")})
+        if ":dataset" not in answer:
+            plan = f"{plan}. {MESSAGES['no_query']}"
         return Checked(rows, right, len(want), read, "rows", plan)
     store.read = 0
     for d, jobs in want.items():

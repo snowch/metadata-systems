@@ -88,9 +88,12 @@ try {
     }, selector);
 
   const chapters = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+    27, 28,
   ];
-  for (const chapter of chapters) {
+  // SMOKE_CHAPTERS=24,25 drives only those chapters, for a quick run while writing them; CI drives all.
+  const only = (process.env.SMOKE_CHAPTERS || "").split(",").filter(Boolean).map(Number);
+  for (const chapter of chapters.filter((c) => !only.length || only.includes(c))) {
     const stem = `chapter_${String(chapter).padStart(2, "0")}`;
     await page.goto(`http://127.0.0.1:${port}/notebooks/index.html?path=${stem}.ipynb`);
     await page.waitForFunction(() => document.querySelector(".jp-MarkdownOutput h1"), null, {
@@ -421,10 +424,11 @@ try {
       );
       await (await cell.$(".jp-InputPrompt")).tap();
     };
-    const output = async (hasText) => {
+    // The output of the first code cell holding `hasText`, or of a later one, counted from 0.
+    const output = async (hasText, nth = 0) => {
       const cell = page
         .locator(".jp-CodeCell", { has: page.locator(".jp-InputArea", { hasText }) })
-        .first();
+        .nth(nth);
       await cell.scrollIntoViewIfNeeded();
       await page.waitForTimeout(300);
       return cell.locator(".jp-OutputArea").innerText();
@@ -655,6 +659,134 @@ try {
       check(
         merged.includes("warehouse, events, transformation tool, reporting tool"),
         "Chapter 22: by aliases, four references are one entity",
+      );
+    }
+    // Part VI: each piece the reader writes, typed as the reference, and the check that then passes.
+    if (chapter === 24) {
+      await rewrite(
+        "def readers_of(documents, dataset):",
+        [
+          'def readers_of(documents, dataset):\n    found = []\n    for doc in documents:\n        pass  # add doc["job"] when the document\'s "reads" lists the dataset\n    return found',
+        ],
+        [
+          'def readers_of(documents, dataset):\n    found = []\n    for doc in documents:\n        if dataset in doc.get("reads", []):\n            found.append(doc["job"])\n    return found',
+        ],
+      );
+      await run("Run below", "Chapter 24, Run below with the loop");
+      const docs = await output("shop.store.check(week24, documents, readers_of)");
+      check(
+        docs.includes("11 of 11 datasets right; 187 documents read"),
+        "Chapter 24: the loop is right, and reads 187 documents",
+      );
+      await rewrite(
+        'query = "SELECT job FROM edges"',
+        ['query = "SELECT job FROM edges"'],
+        ["query = \"SELECT job FROM edges WHERE edge = 'reads' AND dataset = :dataset\""],
+      );
+      await run("Run below", "Chapter 24, Run below with the query");
+      await rewrite(
+        "CREATE INDEX IF NOT EXISTS edges_by_job",
+        ['tables.sql("CREATE INDEX IF NOT EXISTS edges_by_job ON edges(job)")'],
+        ['tables.sql("CREATE INDEX IF NOT EXISTS edges_by_dataset ON edges(dataset)")'],
+      );
+      await run("Run below", "Chapter 24, Run below with the index");
+      const indexed = await output("shop.store.check(week24, tables, query)", 1);
+      check(
+        indexed.includes("11 of 11 datasets right; 14 rows read in all"),
+        "Chapter 24: with the index on dataset, the query reads 14 rows",
+      );
+      await rewrite(
+        "def readers_of(graph, dataset):",
+        ['def readers_of(graph, dataset):\n    return [e["job"] for e in graph.edges_at(dataset)]'],
+        [
+          'def readers_of(graph, dataset):\n    return [e["job"] for e in graph.edges_at(dataset) if e["edge"] == "reads"]',
+        ],
+      );
+      await run("Run below", "Chapter 24, Run below with the graph");
+      const graph = await output("shop.store.check(week24, shop.store.graph(week24), readers_of)");
+      check(
+        graph.includes("11 of 11 datasets right; 14 edges read"),
+        "Chapter 24: the graph is right, and reads 14 edges",
+      );
+    }
+    if (chapter === 25) {
+      await rewrite(
+        "def key(event):",
+        ["return json.dumps(event, sort_keys=True)"],
+        ['return (event["run"]["runId"], event["eventType"])'],
+      );
+      await run("Run below", "Chapter 25, Run below with the key");
+      await rewrite(
+        "def newer(event, current):",
+        ["def newer(event, current):\n    return True"],
+        ['def newer(event, current):\n    return event["eventTime"] >= current["eventTime"]'],
+      );
+      await run("Run below", "Chapter 25, Run below with newer");
+      const five = await output("shop.collector.check(week25, key, newer)");
+      check(five.includes("5 of 5 tests pass"), "Chapter 25: with key and newer, 5 of 5 pass");
+      await rewrite(
+        "def start(stored):",
+        ["def start(stored):\n    return set()"],
+        ["def start(stored):\n    return {key(event) for event in stored}"],
+      );
+      await run("Run below", "Chapter 25, Run below with start");
+      const six = await output("shop.collector.check(week25, key, newer, start)");
+      check(
+        six.includes("6 of 6 tests pass"),
+        "Chapter 25: with start, 6 of 6 pass after the restart",
+      );
+    }
+    if (chapter === 26) {
+      await rewrite(
+        "def add(edges, event):",
+        [
+          'def add(edges, event):\n    for key in shop.lineage_graph.edges_of(event):\n        edge = edges.setdefault(key, {"runs": set(), "first": event["eventTime"], "last": event["eventTime"]})\n        edge["runs"].add(event["run"]["runId"])\n        edge["last"] = event["eventTime"]',
+        ],
+        [
+          'def add(edges, event):\n    for key in shop.lineage_graph.edges_of(event):\n        edge = edges.setdefault(key, {"runs": set(), "first": event["eventTime"], "last": event["eventTime"]})\n        edge["runs"].add(event["run"]["runId"])\n        edge["first"] = min(edge["first"], event["eventTime"])\n        edge["last"] = max(edge["last"], event["eventTime"])',
+        ],
+      );
+      await run("Run below", "Chapter 26, Run below with add");
+      const three = await output("shop.lineage_graph.check(week26, add)");
+      check(three.includes("3 of 3 tests pass"), "Chapter 26: with add, 3 of 3 pass");
+    }
+    if (chapter === 27) {
+      await rewrite(
+        "def downstream(graph, asset):",
+        ["def downstream(graph, asset):\n    return shop.query.next_assets(graph, asset)"],
+        [
+          "def downstream(graph, asset):\n    found, todo = set(), [asset]\n    while todo:\n        for nxt in shop.query.next_assets(graph, todo.pop()):\n            if nxt not in found:\n                found.add(nxt)\n                todo.append(nxt)\n    return found",
+        ],
+      );
+      await run("Run below", "Chapter 27, Run below with the traversal");
+      const down = await output("shop.query.check_downstream(week27, downstream)");
+      check(down.includes("3 of 3 tests pass"), "Chapter 27: the traversal finds all three");
+      await rewrite(
+        "def owner(asset):",
+        ['def owner(asset):\n    return {"owner": shop.query.owners(asset)["account"]}'],
+        [
+          'def owner(asset):\n    return {"owner": shop.query.owners(asset)["responsible"], "meaning": "responsible"}',
+        ],
+      );
+      await run("Run below", "Chapter 27, Run below with the owner");
+      const own = await output("shop.query.check_owner(owner)");
+      check(own.includes("1 of 1 tests pass"), "Chapter 27: the owner names its meaning");
+    }
+    if (chapter === 28) {
+      await rewrite(
+        "def run_history(asset):",
+        [
+          'def run_history(asset):\n    return [r for r in shop.interface.runs() if asset in r["writes"]]',
+        ],
+        [
+          'def run_history(asset):\n    jobs = shop.interface.writers(asset)\n    return [r for r in shop.interface.runs() if r["job"] in jobs]',
+        ],
+      );
+      await run("Run below", "Chapter 28, Run below with the run history");
+      const history = await output("shop.interface.check(run_history)");
+      check(
+        history.includes("holds 7 runs"),
+        "Chapter 28: the run history holds 7 runs, the failed one among them",
       );
     }
     if (chapter === 4) {

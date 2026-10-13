@@ -170,6 +170,17 @@ The notes' section "Originality" names the obvious textbook or vendor example fo
 topic and says how this chapter's example differs (`CLAUDE.md`, "Originality and copyright").
 `notebook/tests/test_notes.py` fails a written chapter whose notes lack it.
 
+## Code the reader writes (Part VI on)
+
+A piece the reader writes is short enough for a phone: a few lines at most. Its cell starts as a
+version that runs and answers wrong, never one that fails to run, and the cell below it calls the
+shop's check, which prints one line per test with what the reader's code gave and, where it differs,
+what was expected. The engine keeps the starting version and a reference for every piece (`STUBS`
+and `REFERENCE` in the chapter's module); `notebook/tests/test_engine.py` holds each starting
+version failing its check and each reference passing it, and `notebook/jupyterlite/smoke.mjs` types
+the reference in and finds the check passing. The page says what the code must do, never the code
+itself, and says what the check shows before and after.
+
 ## The prose process
 
 `CLAUDE.md` states the rule: every string a learner reads is drafted by a Haiku subagent from a

@@ -29,7 +29,7 @@ import copy
 
 from . import openlineage
 from .delivery import Delivery, send, week_events
-from .ingest import edges, normalise, objects
+from .ingest import _utc, edges, normalise, objects
 from .platform import Rows
 from .week import Week
 
@@ -77,6 +77,35 @@ def arrivals(week: Week) -> list[tuple[str, dict]]:
     return sorted(got, key=lambda p: p[0])
 
 
+def faults(week: Week) -> Rows:
+    """The arrivals the faults touch: the broken event, each repeat, and each event held up."""
+    whole = week_events(week)
+    plain = {(e["job"]["name"], e["eventType"], e["eventTime"]) for e in whole}
+    seen: dict = {}
+    out = []
+    for arrived, ev in arrivals(week):
+        job, kind, when = ev.get("job", {}).get("name"), ev.get("eventType"), ev.get("eventTime")
+        k = (ev.get("run", {}).get("runId"), kind)
+        if when is None:
+            fault = "no eventTime"
+        elif k in seen:
+            fault = "a repeat" if when == seen[k] else "a repeat, with a new time"
+        elif (job, kind, when) in plain and _secs(arrived) - _secs(when) > 3:
+            fault = "held up"
+        else:
+            seen[k] = when
+            continue
+        seen.setdefault(k, when)
+        out.append({"arrived": arrived, "job": job, "type": kind, "event time": _utc(when) if when else None, "fault": fault})
+    return Rows(out, null="")
+
+
+def _secs(t: str) -> int:
+    from .platform import epoch
+
+    return epoch(_utc(t))
+
+
 class Collector:
     """The shop's collector, with the learner's three pieces."""
 
@@ -120,11 +149,11 @@ class Collector:
         return Rows({"job": e["job"]["name"], "type": e["eventType"], "event time": e["eventTime"]} for e in self.file)
 
 
-def run(week: Week, key, newer, start) -> Collector:
-    """The collector over the week's arrivals, restarted once at `RESTART`."""
-    c = Collector(key, newer, start)
+def run(week: Week, key, newer, start=None) -> Collector:
+    """The collector over the week's arrivals; with `start`, restarted once at `RESTART`."""
+    c = Collector(key, newer, start or (lambda stored: set()))
     for arrived, ev in arrivals(week):
-        if not c.restarted and arrived > RESTART:
+        if start is not None and not c.restarted and arrived > RESTART:
             c.restarted = True
             c.boot()
         c.receive(copy.deepcopy(ev), arrived)
@@ -145,7 +174,9 @@ class Checked(Rows):
         return f"<p>{MESSAGES['summary'].format(passed=self.passed, total=len(self))}</p>" + super()._repr_html_()
 
 
-def check(week: Week, key, newer, start) -> Checked:
+def check(week: Week, key, newer, start=None) -> Checked:
+    """The tests, over the week's arrivals; with `start`, the collector restarts once and one more
+    test asks whether the repeat after the restart was dropped."""
     c = run(week, key, newer, start)
     whole = week_events(week)
     rows = []
@@ -163,8 +194,9 @@ def check(week: Week, key, newer, start) -> Checked:
     fri = _run_of(c, "build_daily_sales", "2026-09-11")
     got = (fri or {}).get("eventType", "missing")
     test(got == "COMPLETE", MESSAGES["friday"], MESSAGES["friday_no"], got=f"`{got}`", want="`COMPLETE`")
-    after = [d for d in c.dropped if d["after restart"] and d["job"] == "remove_return"]
-    test(bool(after), MESSAGES["restart"], MESSAGES["restart_no"])
+    if start is not None:
+        after = [d for d in c.dropped if d["after restart"] and d["job"] == "remove_return"]
+        test(bool(after), MESSAGES["restart"], MESSAGES["restart_no"])
     same = edges(objects(c.file)).by_job == edges(objects(normalise(whole))).by_job
     test(same, MESSAGES["graph"], MESSAGES["graph_no"])
     return Checked(rows)
@@ -190,4 +222,4 @@ REFERENCE = {
     return {key(event) for event in stored}''',
 }
 
-__all__ = ["arrivals", "run", "check", "Collector", "STUBS", "REFERENCE", "RESTART", "FILE"]
+__all__ = ["arrivals", "faults", "run", "check", "Collector", "STUBS", "REFERENCE", "RESTART", "FILE"]

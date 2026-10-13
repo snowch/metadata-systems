@@ -111,7 +111,8 @@ class Checked(Rows):
         return f"<p>{MESSAGES['summary'].format(passed=self.passed, total=len(self))}</p>" + super()._repr_html_()
 
 
-def check(sections: list[str], run_history) -> Checked:
+def check(run_history, sections: list[str] | None = None) -> Checked:
+    """The run history of `daily_sales`; and, given `sections`, whether the page can draw each."""
     rows = []
     got = list(run_history("daily_sales"))
     jobs = set(writers("daily_sales"))
@@ -122,6 +123,8 @@ def check(sections: list[str], run_history) -> Checked:
     if any(r["job"] not in jobs for r in got):
         problems.append(MESSAGES["others"])
     rows.append({"test": (MESSAGES["runs"] if not problems else MESSAGES["runs_no"]).format(n=len(got), missing="; ".join(problems)), "passes": "no" if problems else "yes"})
+    if sections is None:
+        return Checked(rows)
     unknown = [s for s in sections if s not in SECTIONS]
     rows.append({
         "test": MESSAGES["sections"] if not unknown else MESSAGES["sections_no"].format(unknown=", ".join(f"`{u}`" for u in unknown), known=", ".join(f"`{k}`" for k in SECTIONS)),

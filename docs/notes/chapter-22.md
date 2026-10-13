@@ -107,6 +107,9 @@ map.
 Locally, 12 October 2026, before the review's changes (`docs/notes/notebook-prototype.md`,
 "Chapters 18 to 23"): from Chapter 21's link, 11 files, 0.31 MB, in a new tab; Run all 7.8 to 8.7 s;
 peak memory 388 to 394 MB alone, 608 MB with Chapter 21 open; no error output.
+Live, 12 October 2026, published at `b15b63a`, opened alone at desktop and phone widths: Run all
+9.2 to 9.4 s; peak memory 389 to 394 MB; no error output, no console error. The warning's 9 to 12 seconds and about 400 MB
+hold.
 
 ## Known gaps
 

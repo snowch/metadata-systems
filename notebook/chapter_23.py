@@ -12,7 +12,7 @@ app = marimo.App(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 22](chapter_22.ipynb)
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 22](chapter_22.ipynb) · [Next: Chapter 24](chapter_24.ipynb)
 
     # Chapter 23: Metadata at scale
 
@@ -318,7 +318,7 @@ def _(mo):
     - The limit of 1,000,000 records, the 90 days and the 4 steps are the shop's own choices.
     - The word compaction means other things in other systems. Apache Kafka's log compaction, for example, keeps at least the last record for each key and removes older ones.
 
-    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 22](chapter_22.ipynb)
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 22](chapter_22.ipynb) · [Next: Chapter 24](chapter_24.ipynb)
 
     ---
 

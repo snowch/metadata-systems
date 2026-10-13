@@ -118,6 +118,9 @@ week's variant, and a more literal heading.
 Locally, 12 October 2026, before the review's changes (`docs/notes/notebook-prototype.md`,
 "Chapters 18 to 23"): from Chapter 22's link, 11 files, 0.31 MB, in a new tab; Run all 8.1 to 8.3 s;
 peak memory 395 to 398 MB alone, 608 MB with Chapter 22 open; no error output.
+Live, 12 October 2026, published at `b15b63a`, opened alone at desktop and phone widths: Run all
+9.8 s; peak memory 400 to 404 MB; no error output, no console error. The warning's 9 to 12 seconds and about 400 MB
+hold.
 
 ## Known gaps
 

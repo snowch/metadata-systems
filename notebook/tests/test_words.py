@@ -2,7 +2,7 @@
 
 """Every sentence of the notebooks that states a fact, pinned against the engine, and the prose rules.
 
-Chapters 1 to 23 are a notebook each. Their words are their markdown cells and the labels in their
+Chapters 1 to 28 are a notebook each. Their words are their markdown cells and the labels in their
 code cells. A number in them is a number the engine produced; if the shop changes, this fails
 until the words change with it.
 """
@@ -42,6 +42,11 @@ CHAPTERS = {
     21: ROOT / "notebook" / "chapter_21.py",
     22: ROOT / "notebook" / "chapter_22.py",
     23: ROOT / "notebook" / "chapter_23.py",
+    24: ROOT / "notebook" / "chapter_24.py",
+    25: ROOT / "notebook" / "chapter_25.py",
+    26: ROOT / "notebook" / "chapter_26.py",
+    27: ROOT / "notebook" / "chapter_27.py",
+    28: ROOT / "notebook" / "chapter_28.py",
 }
 SOURCE = {chapter: path.read_text(encoding="utf-8") for chapter, path in CHAPTERS.items()}
 
@@ -224,6 +229,11 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("## Before Chapter 22", 21)
         self.says("## Before Chapter 23", 22)
         self.says("## Before Chapter 24", 23)
+        self.says("## Before Chapter 25", 24)
+        self.says("## Before Chapter 26", 25)
+        self.says("## Before Chapter 27", 26)
+        self.says("## Before Chapter 28", 27)
+        self.says("## Before Chapter 29", 28)
         self.says("Chapter 10 reads the jobs' SQL", 9)
 
     def test_each_chapter_has_its_own_title_in_its_tab(self):
@@ -256,7 +266,12 @@ class TheWordsMatchTheEngine(unittest.TestCase):
             20: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 19](chapter_19.ipynb) · [Next: Chapter 21](chapter_21.ipynb)",
             21: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 20](chapter_20.ipynb) · [Next: Chapter 22](chapter_22.ipynb)",
             22: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 21](chapter_21.ipynb) · [Next: Chapter 23](chapter_23.ipynb)",
-            23: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 22](chapter_22.ipynb)",
+            23: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 22](chapter_22.ipynb) · [Next: Chapter 24](chapter_24.ipynb)",
+            24: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 23](chapter_23.ipynb) · [Next: Chapter 25](chapter_25.ipynb)",
+            25: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 24](chapter_24.ipynb) · [Next: Chapter 26](chapter_26.ipynb)",
+            26: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 25](chapter_25.ipynb) · [Next: Chapter 27](chapter_27.ipynb)",
+            27: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 26](chapter_26.ipynb) · [Next: Chapter 28](chapter_28.ipynb)",
+            28: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 27](chapter_27.ipynb)",
         }
         for chapter, line in nav.items():
             self.assertTrue(CELLS[chapter][0].startswith(line + "\n"), chapter)
@@ -1284,6 +1299,106 @@ class TheWordsOfPartV(unittest.TestCase):
         self.assertEqual((len(S.lineage_of(found("2026-12-07T14:20:00Z"), "r-201.json")), len(S.lineage_of(found("2026-12-07T14:21:00Z"), "r-201.json"))), (1, 0))
         self.says("With 90 days, that run's events would be deleted after 14:20 on Monday 7 December.", 23)
         self.assertEqual([r["return_id"] for r in self.week.warehouse.sql("SELECT return_id FROM returns WHERE return_id = 'r-201'")], ["r-201"])
+
+
+class TheWordsOfPartVI(unittest.TestCase):
+    """Chapters 24 to 28: every number the prose states about the reader's pieces, computed again."""
+
+    def says(self, phrase: str, chapter: int) -> None:
+        self.assertIn(flat(phrase), flat(TEXT[chapter]))
+
+    @staticmethod
+    def pieces(module, which, names):
+        ns = {"shop": shop}
+        for name in names:
+            exec((module.STUBS if which == "stub" else module.REFERENCE)[name], ns)
+        return ns
+
+    def test_chapter_24(self):
+        from shop import store as S
+
+        week = shop.run_week(["returns"])
+        self.assertEqual((len(S.documents(week)), len(S.expected(week))), (17, 11))
+        stub = S.check(week, S.documents(week), self.pieces(S, "stub", ["documents"])["readers_of"])
+        ref = S.check(week, S.documents(week), self.pieces(S, "reference", ["documents"])["readers_of"])
+        self.assertEqual((stub.right, ref.right, ref.read), (3, 11, 187))
+        self.says("As it stands, the check below it finds 3 of 11 datasets right: the 3 that no program reads.", 24)
+        self.says("With the loop changed, the check finds 11 of 11 datasets right. The loop reads 187 documents: all 17 documents for each of the 11 datasets.", 24)
+        table = S.check(week, S.tables(week), self.pieces(S, "reference", ["tables"])["query"])
+        self.assertEqual((table.right, table.read), (11, 154))
+        self.says("154 rows, 14 for each of the 11 datasets", 24)
+        tables = S.tables(week)
+        exec(S.REFERENCE["index"], {"tables": tables})
+        self.assertEqual(S.check(week, tables, self.pieces(S, "reference", ["tables"])["query"]).read, 14)
+        self.says("With the index on `dataset`, the query reads 14 rows in all", 24)
+        graph = S.check(week, S.graph(week), self.pieces(S, "stub", ["graph"])["readers_of"])
+        self.assertEqual(graph.right, 6)
+        self.says("the check finds 6 of 11 right", 24)
+        self.says("What reads `clean_orders`: 17 documents, 2 rows of the table, 2 edges of the graph.", 24)
+        self.says("What `build_daily_sales` reads: 1 document, 14 rows of the table, 2 edges of the graph.", 24)
+
+    def test_chapter_25(self):
+        from shop import collector as C
+
+        week = shop.run_week(["returns"])
+        self.assertEqual(len(C.faults(week)), 5)
+        self.says("The next cell lists the 5 arrivals the faults touch", 25)
+        counts = []
+        for key, newer in (("stub", "stub"), ("reference", "stub"), ("reference", "reference")):
+            ns = {"shop": shop}
+            exec((C.STUBS if key == "stub" else C.REFERENCE)["key"], ns)
+            exec((C.STUBS if newer == "stub" else C.REFERENCE)["newer"], ns)
+            counts.append(C.check(week, ns["key"], ns["newer"]).passed)
+        self.assertEqual(counts, [2, 4, 5])
+        self.says("As the cells stand, 2 of 5 pass", 25)
+        self.says("4 of 5 pass", 25)
+        self.says("5 of 5 pass", 25)
+        ns = self.pieces(C, "reference", ["key", "newer"])
+        exec(C.STUBS["start"], ns)
+        restarted = C.run(week, ns["key"], ns["newer"], ns["start"])
+        self.assertEqual((C.check(week, ns["key"], ns["newer"], ns["start"]).passed, len(restarted.file)), (4, 69))
+        self.says("the check shows 4 of 6 passing", 25)
+        self.assertEqual(C.RESTART, "2026-09-12T16:50:20Z")
+        self.says("the collector restarts on Saturday 12 at 16:50:20", 25)
+
+    def test_chapter_26(self):
+        from shop import lineage_graph as L
+
+        week = shop.run_week(["returns", "source"])
+        self.assertEqual(len(L.stored(week)), 82)
+        self.says("82 events", 26)
+        self.assertEqual(L.check(week, self.pieces(L, "stub", ["add"])["add"]).passed, 2)
+        self.says("As `add` stands, 2 pass.", 26)
+        graph = L.build(week, self.pieces(L, "reference", ["add"])["add"])
+        rows = {r["dataset"].rsplit("/", 1)[-1]: (r["runs"], r["first"], r["last"]) for r in L.table(graph, "build_daily_sales")}
+        self.assertEqual(rows["shop.analytics.clean_orders"], (5, "2026-09-08T02:30:00Z", "2026-09-12T02:30:21Z"))
+        self.assertEqual(rows["clean_orders_copy.csv"], (2, "2026-09-13T02:30:00Z", "2026-09-14T02:30:21Z"))
+        self.says("`build_daily_sales` reads `clean_orders` in 5 runs, first at 02:30:00 on Tuesday 8 and last at 02:30:21 on Saturday 12.", 26)
+
+    def test_chapter_27(self):
+        from shop import query as Q
+
+        week = shop.run_week(list(Q.WEEK))
+        self.assertEqual(Q.check_downstream(week, self.pieces(Q, "stub", ["downstream"])["downstream"]).passed, 1)
+        ns = self.pieces(Q, "reference", ["downstream"])
+        self.assertEqual(sorted(ns["downstream"](Q.graph(week), "orders.jsonl")), ["clean_orders", "clean_orders_copy.csv", "daily_sales", "sales_dashboard"])
+        self.says("Downstream of `orders.jsonl` are `clean_orders`, `clean_orders_copy.csv`, `daily_sales` and `sales_dashboard`.", 27)
+        stale = [r["asset"] for r in shop.observe.freshness(week) if r["hours before"] > 24]
+        self.assertEqual(stale, ["daily_sales", "returns"])
+        dash = next(r for r in shop.observe.freshness(week) if r["asset"] == "sales_dashboard")
+        self.assertEqual((dash["last written"], dash["hours before"], dash["latest day"]), ("2026-09-14T03:00:09Z", 6.0, "2026-09-12"))
+        self.says("it was last written at 03:00:09 on Monday 14, 6 hours before. Its latest day is Saturday 12", 27)
+
+    def test_chapter_28(self):
+        from shop import interface as I
+
+        self.assertEqual((I.writers("daily_sales"), len(I.runs())), (["shop/build_daily_sales"], 41))
+        self.says("The file holds 41 runs in all.", 28)
+        self.assertEqual(len(self.pieces(I, "stub", ["run_history"])["run_history"]("daily_sales")), 6)
+        self.assertEqual(len(self.pieces(I, "reference", ["run_history"])["run_history"]("daily_sales")), 7)
+        self.says("The check finds 6 runs, and not Monday's.", 28)
+        self.says("The check finds 7 runs, the `FAIL` among them.", 28)
+        self.assertEqual(len(I.SECTIONS), 7)
 
 
 class TheWordsOfPartIV(unittest.TestCase):

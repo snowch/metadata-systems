@@ -377,6 +377,11 @@ chapter before's link; 9 to 12 seconds to run every cell, as the published Chapt
 10.0 to 11.2 s while the same pages took 7.9 to 9.5 s here; about 400 MB. The live measurement after
 publishing is the check on the 9 to 12 seconds.
 
+Published at `b15b63a`, after the review's changes, and measured live the same day, each opened alone
+at desktop and phone widths: ready to run in 5.2 to 6.1 s; Run all 10.2 to 10.4 s (Chapter 18), 10.4
+to 11.2 s (19), 9.8 to 10.0 s (20), 9.4 to 9.6 s (21), 9.2 to 9.4 s (22), 9.8 s (23); peak memory 389
+to 411 MB; no error output and no console error. The warning's 9 to 12 seconds and about 400 MB hold.
+
 ## Phones
 
 Nothing here measured a real phone, so the page says only what was measured and what one report

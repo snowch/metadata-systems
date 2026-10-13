@@ -133,6 +133,9 @@ key framework.
 Locally, 12 October 2026, before the review's changes (`docs/notes/notebook-prototype.md`,
 "Chapters 18 to 23"): from Chapter 18's link, 11 files, 0.31 MB, in a new tab; Run all 7.6 to 8.5 s;
 peak memory 393 to 402 MB alone, 608 MB with Chapter 18 open; no error output.
+Live, 12 October 2026, published at `b15b63a`, opened alone at desktop and phone widths: Run all
+10.4 to 11.2 s; peak memory 408 to 411 MB; no error output, no console error. The warning's 9 to 12 seconds and about 400 MB
+hold.
 
 ## Known gaps
 

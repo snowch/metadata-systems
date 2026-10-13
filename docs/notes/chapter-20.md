@@ -112,6 +112,9 @@ a disputed claim (`docs/sources.md`).
 Locally, 12 October 2026, before the review's changes (`docs/notes/notebook-prototype.md`,
 "Chapters 18 to 23"): from Chapter 19's link, 11 files, 0.31 MB, in a new tab; Run all 8.2 to 8.5 s;
 peak memory 392 to 395 MB alone, 608 MB with Chapter 19 open; no error output.
+Live, 12 October 2026, published at `b15b63a`, opened alone at desktop and phone widths: Run all
+9.8 to 10.0 s; peak memory 394 to 401 MB; no error output, no console error. The warning's 9 to 12 seconds and about 400 MB
+hold.
 
 ## Known gaps
 

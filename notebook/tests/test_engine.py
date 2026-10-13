@@ -927,9 +927,9 @@ class ThePartVIPieces(unittest.TestCase):
     def test_the_interface(self):
         from shop import interface as I
 
-        self.assertEqual(I.check(["runs"], _pieces(I, "stub", ["run_history"])["run_history"]).passed, 1)
-        self.assertEqual(I.check(["runs"], _pieces(I, "reference", ["run_history"])["run_history"]).passed, 2)
-        self.assertEqual(I.check(["runs", "lineage"], _pieces(I, "reference", ["run_history"])["run_history"]).passed, 1)
+        self.assertEqual(I.check(_pieces(I, "stub", ["run_history"])["run_history"]).passed, 0)
+        self.assertEqual(I.check(_pieces(I, "reference", ["run_history"])["run_history"], ["runs"]).passed, 2)
+        self.assertEqual(I.check(_pieces(I, "reference", ["run_history"])["run_history"], ["runs", "lineage"]).passed, 1)
 
 
 if __name__ == "__main__":

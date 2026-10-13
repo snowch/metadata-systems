@@ -262,6 +262,21 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 13 October 2026: Part VI written, the reader's code checked against the shop's
+
+Chapters 24 to 28 are written as the plan's table gives them (`docs/notes/part-6/design.md`). The
+reader writes one short piece at a time (a loop, a query, an index, a function of a few lines) in a
+cell that starts as a version that runs and answers wrong, and a check below it runs the chapter's
+tests and prints one line each. The engine keeps a stub and a reference for every piece; the tests
+hold each stub failing and each reference passing, and the smoke test types each reference in and
+finds its check passing. A notebook cannot read another's cells, so a later chapter uses an earlier
+chapter's references as the shop's, and says so. Each chapter questions a requirement its own
+material raises ("The metadata store must be fast.", "The collector must reject invalid events.",
+"Lineage must show the platform as it is now.", "The asset page must show everything about an
+asset."), and Chapter 27 the plan's, who owns each asset. The engine gained two fixes on the way:
+`delivery.send` restamps chosen events, and the failed night reads the analyst's copy under
+`source`.
+
 ### 12 October 2026: Chapters 18 to 23 written; *collector* moves to Chapter 18
 
 Part V is written: Chapters 18 to 23, each with the shop's own faults, built on an engine module
