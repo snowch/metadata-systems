@@ -484,12 +484,110 @@ Read on 13 October 2026, in SQLite's source: `src/wherecode.c` in the project's 
 - Not read: SQLite's page on `EXPLAIN QUERY PLAN` (`sqlite.org/eqp.html`), which the proxy refused.
   The course says nothing about whether the plan's wording stays the same between versions.
 
+## Read for Part VII (13 October 2026)
+
+Each fact below was read in the project's own repository at the commit named, through a shallow
+clone, for checking and not copied. Field, type and configuration names are used as names. Wider
+notes, with line numbers, are in `docs/notes/part-7/research/`.
+
+### OpenLineage (`OpenLineage/OpenLineage`, `main`, commit `60261f0b57fb1370c2c6c3cadc9f1721b6c3c3b5`)
+
+- `README.md`: Marquez "is the reference implementation of the OpenLineage API" (quoted).
+- `spec/facets/`: there is no facet for a trained model's training or evaluation; a dataset's type
+  may be given as `MODEL` among others (`DatasetTypeDatasetFacet`, 1-0-1), a dataset's version as
+  text (`DatasetVersionDatasetFacet`, 1-0-1), and its owners as a list of a `name` and an optional
+  `type` (`OwnershipDatasetFacet`, 1-0-1).
+- The Spark integration (`integration/spark/shared/.../api/naming/JobNameBuilder.java`,
+  `NameNormalizer.java`): the job name is the application's name, the executed plan's top node put
+  through the normaliser, and the output table's name with `.` made `_`; the normaliser splits words
+  at changes of case, lower-cases them and joins them with `_`.
+- The dbt integration (`integration/dbt/src/openlineage/dbt/__init__.py`;
+  `integration/common/src/openlineage/common/provider/dbt/processor.py`, `local.py`): `dbt-ol` runs
+  dbt as a child process and, at the end, reads `manifest.json` and `run_results.json` and sends the
+  events; the job namespace is `OPENLINEAGE_NAMESPACE`, else `dbt`; a model's job is its database,
+  schema and unique id without `model.`, joined with `.`; each model's run id is a new UUID made when
+  the artifacts are read.
+
+### Marquez (`MarquezProject/marquez`, `main`, commit `180f37b22387146187af1ef0279e3ee1d1ccd789`)
+
+- `api/.../db/OpenLineageDao.java`: every run event is inserted into `lineage_events`; a state is
+  taken from the event's type (`complete` to `COMPLETED`, `abort` to `ABORTED`, `fail` to `FAILED`,
+  `start` and any other type to `RUNNING`), and for an event with a type a state row is written and
+  the run's start or end is moved to it; the time used is the event's own `eventTime`; a namespace
+  made from an event gets the owner `anonymous`.
+- `api/.../db/RunDao.java`, `upsert`: on a run that exists, `current_run_state` and
+  `transitioned_at` are replaced by the incoming event's, with no comparison of times.
+- `api/src/main/resources/marquez/db/migration/`: `lineage_events` had a primary key on event time
+  and event (V17.2), dropped in V20; no later migration that names the table adds a unique key.
+- `api/.../api/OpenLineageResource.java`: a successful POST is answered 201.
+- These are Marquez's code, not its documentation; no Marquez document says what it does with a
+  repeated, late or out-of-order event.
+
+### Airflow's OpenLineage provider (`apache/airflow`, `main`, commit `7f0d50cffc61a48650590078f6832b349860322b`, provider 2.20.3)
+
+- `utils/utils.py`: a task's job name is `{dag_id}.{task_id}`; a task's run id is made from the
+  namespace, Dag, task, try number and map index, with the logical date; the producer is
+  `https://github.com/apache/airflow/tree/providers-openlineage/` and the version.
+- `conf.py`: the namespace is `[openlineage] namespace`, else `OPENLINEAGE_NAMESPACE`, else
+  `default`.
+- `plugins/adapter.py`: the job type facet says integration `AIRFLOW`, processing `BATCH`, and job
+  type `TASK` for a task, `DAG` for a Dag.
+- Airflow itself (`apache/airflow`, tag 3.3.0): the task instance table calls itself the "single
+  source of truth" for what tasks have run (quoted), is unique on Dag, task, run and map index, and
+  has a `try_number` starting at 0 (`airflow-core/src/airflow/models/taskinstance.py`, lines 543, 574,
+  641), which the scheduler raises by one as it schedules each try (`dagrun.py`, from line 2119).
+
+### Spark (`apache/spark`, tag `v4.0.0`)
+
+- `sql/catalyst/.../trees/TreeNode.scala`: a node's name is its class's simple name without a final
+  `Exec`; `sql/core/.../execution/command/commands.scala`: a command's executing node is named
+  `Execute ` and the command's name. An insert into a table kept as files runs the command
+  `InsertIntoHadoopFsRelationCommand`.
+
+### Trino's OpenLineage listener (`trinodb/trino`, `master`, commit `7a821d4a8678721f4e739dac49961fef7d67a039`)
+
+- `plugin/trino-openlineage/.../OpenLineageListenerConfig.java`: the job name format defaults to
+  `$QUERY_ID`; the query types sent by default are `ALTER_TABLE_EXECUTE`, `DELETE`, `INSERT`,
+  `MERGE`, `UPDATE` and `DATA_DEFINITION`, so a `SELECT` sends nothing unless configured.
+- `job/OpenLineageJobInterpolatedValues.java`: the format may use `$QUERY_ID`, `$SOURCE`,
+  `$CLIENT_IP` and `$USER`.
+- `OpenLineageListener.java`: `START` when a query is created, with no inputs or outputs; `COMPLETE`,
+  or `FAIL` when the query's state is `FAILED`, when it ends, with its inputs and its output.
+
+### DataHub (`datahub-project/datahub`, `master`, commit `40287ac889bf150593373fda3d57803feb904eb7`)
+
+- `metadata-models/.../common/Owner.pdl`: an owner is a URN of a `corpuser` or a `corpGroup`, with a
+  type, or a `typeUrn` naming an `ownershipType` entity; `OwnershipType.pdl`: `CUSTOM`,
+  `TECHNICAL_OWNER`, `BUSINESS_OWNER`, `DATA_STEWARD`, `NONE`, and six others marked deprecated.
+- `docs/architecture/metadata-ingestion.md`: ingestion supports push and pull; a scheduled pull runs
+  connectors (research note for Chapter 31, with the storage and search facts).
+
+### OpenMetadata (`open-metadata/OpenMetadata`, `main`, commit `18294ee884c9b10d04071c9bebdc1d00a746157a`)
+
+- `openmetadata-service/.../jdbi3/EntityRepository.java`, `validateOwners`: each owner must have a
+  type; a team must be of type `Group`; anything but a user or such a team is refused.
+- `ARCHITECTURE.md`: one Java service over a relational store and a search index; connectors in
+  Python pull and post through the same API.
+
+### Apache Atlas (`apache/atlas`, `master`, commit `ec7dc21d49f5d2f07258c4205c948a65194a0aad`)
+
+- `addons/models/0000-Area0/0010-base_model.json`: `Asset` has an optional `owner` of type `string`;
+  `DataSet` has `Asset` as its super type.
+- `docs/src/documents/HighLevelArchitecture.md`: metadata is kept in a graph (JanusGraph), with a
+  search index; integration is by REST or by messages on Kafka, which hooks send.
+
+### MLflow (`mlflow/mlflow`, `master`, commit `9d651c2f19738560f38652b3e6a5f0d51ae92711`)
+
+- `mlflow/data/digest_utils.py`: a pandas table's digest is an MD5 over a hash of its first 10,000
+  rows (its text and number columns), its row count and its column names, cut to 8 characters.
+- `mlflow/data/dataset.py`: a dataset has a name, a digest and a source; `mlflow/tracking/fluent.py`,
+  `log_input`: a context such as `training` is kept as the input's tag `mlflow.data.context`.
+
 ## Still to be read
 
 Each chapter that relies on one of these reads it first and adds an entry above:
 
-- OpenMetadata, DataHub and Apache Atlas: their documentation and source, for Chapter 31.
-- MLflow and similar experiment trackers, for Chapter 32.
+- Nothing at present: Part VII's sources are above.
 
 ## Licences of what the course ships
 

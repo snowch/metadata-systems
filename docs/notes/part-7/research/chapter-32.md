@@ -249,3 +249,10 @@ SUMMARY OF GAPS
 - OpenLineage: the statement that custom facets are allowed was not checked against `spec/OpenLineage.md` in this pass.
 - The MLflow directory tree could not be listed (GitHub API blocked), so "no dataset type for vector indexes" is not proven.
 - Nothing found records the selecting query or the derived features in any of MLflow, DVC or OpenLineage. DVC's `dvc.lock` is the only one that records the command and the params values of the producing stage.
+
+
+## Correction, 13 October 2026
+
+OpenLineage's facets (`spec/facets/`, commit `60261f0`) have no facet for training or evaluation, but
+`DatasetTypeDatasetFacet` lists `MODEL` among a dataset's types, so a trained model can be named as a
+dataset of that type. The note above that OpenLineage has nothing for ML is narrowed to that.

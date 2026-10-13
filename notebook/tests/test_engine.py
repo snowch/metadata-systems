@@ -975,5 +975,70 @@ class ThePartVIPieces(unittest.TestCase):
         self.assertNotIn("lineag", page.split("Not on this page:")[-1])
 
 
+class ThePartVIIRules(unittest.TestCase):
+    """Each real system's rule, as read (docs/sources.md, "Read for Part VII"), applied to the week."""
+
+    def test_the_reference_consumer(self):
+        from shop import consumers as K
+
+        week = shop.run_week(["returns"])
+        by_arrival = {r["run"][:9]: r for r in K.compare(week, "arrival")}
+        self.assertEqual((by_arrival["Friday 11"]["Marquez's rules"], by_arrival["Friday 11"]["your collector"]), ("RUNNING", "COMPLETE"))
+        self.assertEqual((by_arrival["Thursday "]["their end"], by_arrival["Thursday "]["its end"]), ("02:30:52", "02:30:21"))
+        self.assertEqual((by_arrival["Saturday "]["event rows"], by_arrival["Saturday "]["events it kept"]), (3, 2))
+        by_time = {r["run"][:9]: r for r in K.compare(week, "event time")}
+        self.assertEqual(by_time["Friday 11"]["Marquez's rules"], "COMPLETED")
+        self.assertEqual(by_time["Thursday "]["their end"], "02:30:52")
+        self.assertEqual([(r["events refused"], r["events stored"]) for r in K.totals(week)], [(1, 68), (1, 70)])
+        for which, passed in (("stub", 0), ("reference", 1)):
+            ns: dict = {}
+            exec((K.STUBS if which == "stub" else K.REFERENCE)["order"], ns)
+            self.assertEqual(K.check(week, ns["order"]).passed, passed, which)
+        self.assertEqual(shop.openlineage.problems(K.provider_event(week)), [])
+        self.assertEqual(K.provider_event(week)["job"]["name"], "shop_nightly.build_daily_sales")
+
+    def test_the_integrations(self):
+        from shop import integrations as I
+
+        week = shop.run_week(list(I.WEEK))
+        self.assertEqual([r["OpenLineage runs"] for r in I.airflow(week)], [1, 1, 1, 1, 1, 1, 2])
+        self.assertEqual(I.spark(), "shop_nightly.execute_insert_into_hadoop_fs_relation_command.shop_analytics_daily_sales")
+        self.assertEqual({r["events sent at"] for r in I.dbt(week)}, {"02:30:21"})
+        self.assertEqual({r["name format"]: r["jobs"] for r in I.jobs_by_format(week)}, {"$QUERY_ID": 28, "$SOURCE": 1, "$USER": 1, "$CLIENT_IP": 1})
+        for which, passed in (("stub", 0), ("reference", 2)):
+            ns: dict = {}
+            exec((I.STUBS if which == "stub" else I.REFERENCE)["trino"], ns)
+            self.assertEqual(I.check_trino(week, ns["name_format"], ns["source_of"]).passed, passed, which)
+        ns = {}
+        exec(I.STUBS["trino"].replace("$QUERY_ID", "$SOURCE"), ns)
+        merged = I.check_trino(week, ns["name_format"], ns["source_of"])
+        self.assertEqual((merged.passed, len(merged)), (1, 2))
+
+    def test_the_platforms(self):
+        from shop import platforms as P
+
+        self.assertEqual([(r["owners kept"], r["meanings told apart"]) for r in P.kept()], [(3, 2), (3, 0), (1, 0), (0, 0)])
+        for which, passed in (("stub", 1), ("reference", 2)):
+            ns: dict = {}
+            exec((P.STUBS if which == "stub" else P.REFERENCE)["types"], ns)
+            self.assertEqual(P.check(ns["types"]).passed, passed, which)
+        self.assertEqual(P.check({"account": "OWNER", "responsible": "NONE", "team": "DATA_STEWARD"}).passed, 1)
+
+    def test_the_forecast(self):
+        from shop import ml as M
+
+        week = shop.run_week(["returns"])
+        record = M.train(week)
+        self.assertEqual((record["input"]["profile"]["num_rows"], record["input"]["digest"], record["forecast_pence"]), (5, "60ba54ee", 13650))
+        self.assertEqual([(r["rows"], r["digest"]) for r in M.today(week)], [(5, "60ba54ee"), (7, "6b0727dc")])
+        cap = [r["digest"] for r in M.cap()]
+        self.assertNotEqual(cap[0], cap[1])
+        self.assertEqual(cap[0], cap[2])
+        for which, passed in (("stub", 0), ("reference", 1)):
+            ns: dict = {}
+            exec((M.STUBS if which == "stub" else M.REFERENCE)["where"], ns)
+            self.assertEqual(M.check(week, ns["where"]).passed, passed, which)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -400,6 +400,13 @@ chapter before's link; 9 to 12 seconds to run every cell, as the published Chapt
 to 11.2 s while the same pages took 7.6 to 8.7 s here; about 400 MB. The live measurement after
 publishing is the check on the 9 to 12 seconds.
 
+Published at `f0fa7d7` and measured live the same day, each opened alone at desktop and phone widths:
+ready to run in 5.3 to 6.5 s; Run all 10.0 to 11.4 s (Chapter 24), 10.2 to 10.8 s (25), 10.2 to 11.0 s
+(26), 10.2 s (27), 10.8 to 11.8 s (28); peak memory 394 to 412 MB; no error output and no console
+error. A first try at Chapter 24 on the phone stopped at 180 s waiting for the page to load, and one
+at Chapter 28 on desktop recorded a Run all of 0.6 s; both, tried twice more, gave the figures above.
+The warning's 9 to 12 seconds and about 400 MB hold.
+
 ## Phones
 
 Nothing here measured a real phone, so the page says only what was measured and what one report

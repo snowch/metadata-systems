@@ -104,6 +104,9 @@ Locally, 13 October 2026, after the review's changes (`docs/notes/notebook-proto
 open; no error output, no console error. The browser test (`notebook/jupyterlite/smoke.mjs`) types the
 references into each cell and reads the checks' lines.
 
+Live, 13 October 2026, published at `f0fa7d7`, opened alone at desktop and phone widths: Run all
+10.8 to 11.8 s; peak memory 394 to 400 MB; no error output, no console error. The warning's 9 to 12 seconds and about 400 MB hold.
+
 ## Known gaps
 
 - A program whose every run failed would not appear in `writers`, so its runs would be missing from

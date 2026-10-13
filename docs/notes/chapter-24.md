@@ -153,6 +153,9 @@ Locally, 13 October 2026, after the review's changes (`docs/notes/notebook-proto
 open; no error output, no console error. The browser test (`notebook/jupyterlite/smoke.mjs`) types the
 references into each cell and reads the checks' lines.
 
+Live, 13 October 2026, published at `f0fa7d7`, opened alone at desktop and phone widths: Run all
+10.0 to 11.4 s; peak memory 402 to 409 MB; no error output, no console error. The warning's 9 to 12 seconds and about 400 MB hold.
+
 ## Known gaps
 
 - The counts are items opened, from the plan's words and the shop's own counting; the chapter
