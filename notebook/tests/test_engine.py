@@ -982,13 +982,13 @@ class ThePartVIIRules(unittest.TestCase):
         from shop import consumers as K
 
         week = shop.run_week(["returns"])
-        by_arrival = {r["run"][:9]: r for r in K.compare(week, "arrival")}
-        self.assertEqual((by_arrival["Friday 11"]["Marquez's rules"], by_arrival["Friday 11"]["your collector"]), ("RUNNING", "COMPLETE"))
-        self.assertEqual((by_arrival["Thursday "]["their end"], by_arrival["Thursday "]["its end"]), ("02:30:52", "02:30:21"))
-        self.assertEqual((by_arrival["Saturday "]["event rows"], by_arrival["Saturday "]["events it kept"]), (3, 2))
-        by_time = {r["run"][:9]: r for r in K.compare(week, "event time")}
-        self.assertEqual(by_time["Friday 11"]["Marquez's rules"], "COMPLETED")
-        self.assertEqual(by_time["Thursday "]["their end"], "02:30:52")
+        by_arrival = {r["run"].split(", ")[1][:9]: r for r in K.compare(week, "arrival")}
+        self.assertEqual((by_arrival["Friday 11"]["Marquez's state"], by_arrival["Friday 11"]["collector's state"]), ("RUNNING", "COMPLETE"))
+        self.assertEqual((by_arrival["Thursday "]["Marquez's end"], by_arrival["Thursday "]["collector's end"]), ("02:30:52", "02:30:21"))
+        self.assertEqual((by_arrival["Saturday "]["Marquez's event rows"], by_arrival["Saturday "]["collector's events"]), (3, 2))
+        by_time = {r["run"].split(", ")[1][:9]: r for r in K.compare(week, "event time")}
+        self.assertEqual(by_time["Friday 11"]["Marquez's state"], "COMPLETED")
+        self.assertEqual(by_time["Thursday "]["Marquez's end"], "02:30:52")
         self.assertEqual([(r["events refused"], r["events stored"]) for r in K.totals(week)], [(1, 68), (1, 70)])
         for which, passed in (("stub", 0), ("reference", 1)):
             ns: dict = {}
@@ -1017,15 +1017,22 @@ class ThePartVIIRules(unittest.TestCase):
     def test_the_platforms(self):
         from shop import platforms as P
 
-        self.assertEqual([(r["owners kept"], r["owners told apart by type"]) for r in P.kept()], [(3, 0), (3, 0), (1, 0), (0, 0)])
+        self.assertEqual([(r["owners kept"], r["owners told apart by ownership type"]) for r in P.kept()], [(3, 0), (3, 0), (1, 0), (0, 0)])
         ns: dict = {}
         exec(P.REFERENCE["types"], ns)
-        self.assertEqual([r["owners told apart by type"] for r in P.kept(ns["types"])], [3, 0, 0, 0])
+        self.assertEqual([r["owners told apart by ownership type"] for r in P.kept(ns["types"])], [3, 0, 0, 0])
+        # a value not written as a typeUrn is not counted, and the check names its owner
+        wrong = {"account": "CUSTOM", "responsible": "x", "team": "urn:li:ownershipType:y"}
+        self.assertEqual(P.kept(wrong)[0]["owners told apart by ownership type"], 1)
+        self.assertIn("`etl_service`: `CUSTOM`", P.check(wrong)[0]["test"])
         for which, passed in (("stub", 1), ("reference", 2)):
             ns: dict = {}
             exec((P.STUBS if which == "stub" else P.REFERENCE)["types"], ns)
             self.assertEqual(P.check(ns["types"]).passed, passed, which)
         self.assertEqual(P.check({"account": "OWNER", "responsible": "NONE", "team": "DATA_STEWARD"}).passed, 1)
+        descriptions = {r["owner"]: r["its description"] for r in P.owners_in(ns["types"]) if r["platform"] == "DataHub"}
+        self.assertEqual(descriptions["j.marsh"], "Principal stakeholders or domain experts associated with the asset(s).")
+        self.assertIsNone(descriptions["etl_service"])
 
     def test_the_forecast(self):
         from shop import ml as M

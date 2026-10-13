@@ -33,7 +33,7 @@ COLUMNS = ("day", "revenue_pence")
 MESSAGES = {
     "summary": "{passed} of {total} tests pass.",
     "match": "Your rows ({n}) give the digest `{got}`, the one the run recorded.",
-    "match_no": "Your rows ({n}) give the digest `{got}`, not the run's `{want}`.",
+    "match_no": "Your rows ({n}) give the digest `{got}`, not the run's `{want}`; the run read {want_n} rows.",
     "where_no": "The condition could not be run: {error}.",
 }
 
@@ -89,6 +89,16 @@ def record(week: Week) -> Rows:
     return Rows({"field": k, "value": json.dumps(v) if isinstance(v, (dict, list)) else v} for k, v in rec.items())
 
 
+def version(week: Week) -> Rows:
+    """The registered version of the forecast, one field a row: it names the run, and the run names
+    its input."""
+    rec = train(week)
+    return Rows(
+        [{"field": k, "value": v} for k, v in rec["version"].items()]
+        + [{"field": "the forecast, in pence", "value": rec["forecast_pence"]}]
+    )
+
+
 def today(week: Week) -> Rows:
     """The table as it is when the question is asked, beside the run's record."""
     now = rows_at(week, ASKED_AT)
@@ -121,14 +131,15 @@ class Checked(Rows):
 
 def check(week: Week, where: str) -> Checked:
     """Whether the rows of today's `daily_sales` that meet `where` give the digest the run recorded."""
-    want = train(week)["input"]["digest"]
+    record = train(week)["input"]
+    want, want_n = record["digest"], record["profile"]["num_rows"]
     try:
         rows = [dict(r) for r in week.warehouse.sql(f"SELECT day, revenue_pence FROM daily_sales WHERE {where} ORDER BY day")]
     except Exception as e:  # the learner's condition is SQL; say what SQLite said
-        return Checked([{"test": MESSAGES["where_no"].format(error=e), "passes": "no"}])
+        return Checked([{"test": MESSAGES["where_no"].format(error=str(e).rstrip(".")), "passes": "no"}])
     got = digest(rows)
     return Checked([{
-        "test": MESSAGES["match" if got == want else "match_no"].format(n=len(rows), got=got, want=want),
+        "test": MESSAGES["match" if got == want else "match_no"].format(n=len(rows), got=got, want=want, want_n=want_n),
         "passes": "yes" if got == want else "no",
     }])
 
@@ -136,4 +147,4 @@ def check(week: Week, where: str) -> Checked:
 STUBS = {"where": "where = \"day <= '2026-09-13'\""}
 REFERENCE = {"where": "where = \"day <= '2026-09-11'\""}
 
-__all__ = ["digest", "rows_at", "train", "record", "today", "cap", "check", "STUBS", "REFERENCE", "TRAINED_AT", "ASKED_AT"]
+__all__ = ["digest", "rows_at", "train", "record", "version", "today", "cap", "check", "STUBS", "REFERENCE", "TRAINED_AT", "ASKED_AT"]

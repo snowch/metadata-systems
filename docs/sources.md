@@ -499,8 +499,13 @@ notes, with line numbers, are in `docs/notes/part-7/research/`.
   `type` (`OwnershipDatasetFacet`, 1-0-1).
 - The Spark integration (`integration/spark/shared/.../api/naming/JobNameBuilder.java`,
   `NameNormalizer.java`): the job name is the application's name, the executed plan's top node put
-  through the normaliser, and the output table's name with `.` made `_`; the normaliser splits words
-  at changes of case, lower-cases them and joins them with `_`.
+  through the normaliser, and a suffix from the output, with `.` made `_`; the normaliser splits
+  words at changes of case, lower-cases them and joins them with `_`. For an insert into a table kept
+  as files, the suffix is the last two parts of the output's path joined with `_`
+  (`InsertIntoHadoopFsRelationVisitor.jobNameSuffix`, `JobNameSuffixProvider.trimPath`); the
+  project's own test event `pysparkHadoopFSEndEvent.json` has the output `/tmp/warehouse/test` and a
+  job ending `execute_insert_into_hadoop_fs_relation_command.warehouse_target`. Where the shop's
+  table's files are kept is the shop's assumption.
 - The dbt integration (`integration/dbt/src/openlineage/dbt/__init__.py`;
   `integration/common/src/openlineage/common/provider/dbt/processor.py`, `local.py`): `dbt-ol` runs
   dbt as a child process and, at the end, reads `manifest.json` and `run_results.json` and sends the
@@ -520,8 +525,14 @@ notes, with line numbers, are in `docs/notes/part-7/research/`.
 - `api/src/main/resources/marquez/db/migration/`: `lineage_events` had a primary key on event time
   and event (V17.2), dropped in V20; no later migration that names the table adds a unique key.
 - `api/.../api/OpenLineageResource.java`: a successful POST is answered 201.
-- These are Marquez's code, not its documentation; no Marquez document says what it does with a
-  repeated, late or out-of-order event.
+- `api/.../service/models/`: only `Namespace` and `NamespaceMeta` have an owner; datasets, jobs, runs
+  and sources have none. `api/.../search/SearchConfig.java`: search is off by default
+  (`ENABLED = false`). `docs/docs/deployment/deployment.mdx`: Marquez keeps its metadata in
+  PostgreSQL; `docs/docs/quickstart/index.mdx`: its model is namespaces, sources, datasets, jobs and
+  runs, with versions.
+- These are Marquez's code, not its documentation; of the documents read (the README, the
+  CHANGELOG, `docs/docs` and the OpenAPI file), none says what it does with a repeated, late or
+  out-of-order event.
 
 ### Airflow's OpenLineage provider (`apache/airflow`, `main`, commit `7f0d50cffc61a48650590078f6832b349860322b`, provider 2.20.3)
 
@@ -530,6 +541,15 @@ notes, with line numbers, are in `docs/notes/part-7/research/`.
   `https://github.com/apache/airflow/tree/providers-openlineage/` and the version.
 - `conf.py`: the namespace is `[openlineage] namespace`, else `OPENLINEAGE_NAMESPACE`, else
   `default`.
+- `extractors/manager.py`, `extract_metadata`: a task's inputs and outputs come from the extractor
+  for its operator; if it reports none, from hooks' lineage; failing that, from the task's declared
+  `inlets` and `outlets`. A task that reports nothing by any of these sends no datasets.
+- `plugins/adapter.py`, `_build_job`: a task's job facets are those its extractor returns, with
+  `documentation`, `ownership` and `tags` when the task has them, and `jobType`; a task's run facets
+  include `parent` (with a `root`), `airflow` and `processing_engine` (research note for Chapter
+  29, section 4); the Dag's own run sends events as a job named for the Dag.
+- The version 2.20.3 is read from the provider's `__init__.py` on the main branch; at the time of
+  reading, only the tag `providers-openlineage/2.20.3rc1` exists.
 - `plugins/adapter.py`: the job type facet says integration `AIRFLOW`, processing `BATCH`, and job
   type `TASK` for a task, `DAG` for a Dag.
 - Airflow itself (`apache/airflow`, tag 3.3.0): the task instance table calls itself the "single
@@ -556,9 +576,22 @@ notes, with line numbers, are in `docs/notes/part-7/research/`.
 
 ### DataHub (`datahub-project/datahub`, `master`, commit `40287ac889bf150593373fda3d57803feb904eb7`)
 
-- `metadata-models/.../common/Owner.pdl`: an owner is a URN of a `corpuser` or a `corpGroup`, with a
-  type, or a `typeUrn` naming an `ownershipType` entity; `OwnershipType.pdl`: `CUSTOM`,
-  `TECHNICAL_OWNER`, `BUSINESS_OWNER`, `DATA_STEWARD`, `NONE`, and six others marked deprecated.
+- `metadata-models/.../common/Owner.pdl`: an owner is a URN of a `corpuser` or a `corpGroup`
+  (`urn:li:corpuser:...`, `urn:li:corpGroup:...`; a comment adds that only `corpuser` is supported in
+  the web front end), with the field `type`, an enum marked `@deprecated`, and `typeUrn`, which names
+  an `ownershipType` entity. `OwnershipType.pdl` lists `CUSTOM` (for a type that is an entity with no
+  enum value), `TECHNICAL_OWNER`, `BUSINESS_OWNER`, `DATA_STEWARD`, `NONE`, and six others marked
+  deprecated. The same file is unchanged at commit `2f2dcd4`, which the research note read.
+- `metadata-service/configuration/.../bootstrap_mcps/ownership-types.yaml`: DataHub's own ownership
+  types are entities, `urn:li:ownershipType:__system__technical_owner`, `__system__business_owner`,
+  `__system__data_steward` and `__system__none`, each with a name and a description (quoted on the
+  page: "Involved in the production, maintenance, or distribution of the asset(s).",
+  "Principal stakeholders or domain experts associated with the asset(s).", "Involved in governance
+  of the asset(s).", "No ownership type specified."). The shop's check takes any
+  `urn:li:ownershipType:` name and does not check that its entity exists.
+- `docs/architecture/metadata-serving.md`, `docs/components.md`: the primary store is a database
+  (MySQL, PostgreSQL or Cassandra), with a search index; the graph index is kept in the search engine
+  by default (`application.yaml`, `graphService`).
 - `docs/architecture/metadata-ingestion.md`: ingestion supports push and pull; a scheduled pull runs
   connectors (research note for Chapter 31, with the storage and search facts).
 
@@ -573,6 +606,8 @@ notes, with line numbers, are in `docs/notes/part-7/research/`.
 
 - `addons/models/0000-Area0/0010-base_model.json`: `Asset` has an optional `owner` of type `string`;
   `DataSet` has `Asset` as its super type.
+- `docs/src/documents/Setup/Configuration.md`: Atlas needs a search index (Solr or Elasticsearch)
+  beside its graph store.
 - `docs/src/documents/HighLevelArchitecture.md`: metadata is kept in a graph (JanusGraph), with a
   search index; integration is by REST or by messages on Kafka, which hooks send.
 
@@ -582,6 +617,13 @@ notes, with line numbers, are in `docs/notes/part-7/research/`.
   rows (its text and number columns), its row count and its column names, cut to 8 characters.
 - `mlflow/data/dataset.py`: a dataset has a name, a digest and a source; `mlflow/tracking/fluent.py`,
   `log_input`: a context such as `training` is kept as the input's tag `mlflow.data.context`.
+- The digest rule above is the one for a pandas table; for a Spark table the digest is a hash of the
+  query plan and reads no rows (`spark_dataset.py`). The dataset entity also has `source_type`, and
+  keeps `schema` and `profile` as text (`mlflow/entities/dataset.py`); a pandas table's profile has
+  `num_rows` and `num_elements`. A registered model version has the `run_id` of the run that made it
+  and a `source` (research note for Chapter 32, 1.13).
+- The shop's record keeps fewer fields than MLflow's, in a simpler form, and its digest hashes its own
+  text of each row, not pandas' hashes.
 
 ## Still to be read
 

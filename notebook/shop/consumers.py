@@ -146,9 +146,9 @@ def _run(runs: dict, job: str, day: str) -> tuple[str, dict]:
 
 
 FAULTED = (
-    ("build_daily_sales", "2026-09-10", "Thursday 10: its COMPLETE again, with a new time"),
-    ("build_daily_sales", "2026-09-11", "Friday 11: its START after its COMPLETE"),
-    ("remove_return", "2026-09-12", "Saturday 12: its COMPLETE twice"),
+    ("build_daily_sales", "2026-09-10", "build_daily_sales, Thursday 10: its COMPLETE again, with a new time"),
+    ("build_daily_sales", "2026-09-11", "build_daily_sales, Friday 11: its START after its COMPLETE"),
+    ("remove_return", "2026-09-12", "remove_return, Saturday 12: its COMPLETE twice"),
 )
 
 
@@ -161,13 +161,13 @@ def compare(week: Week, order: str = "arrival") -> Rows:
         mine = c.state.get(run_id, {})
         out.append({
             "run": what,
-            "your collector": mine.get("eventType"),
-            "its end": (mine.get("eventTime") or "")[11:19] if mine.get("eventType") == "COMPLETE" else None,
-            "events it kept": sum(e["run"]["runId"] == run_id for e in c.file),
-            "Marquez's rules": r["state"],
-            "their end": (r["ended"] or "")[11:19] or None,
-            "event rows": sum(e["run"]["runId"] == run_id for e in m.events),
-            "state rows": sum(s["run"] == run_id for s in m.states),
+            "collector's state": mine.get("eventType"),
+            "collector's end": (mine.get("eventTime") or "")[11:19] if mine.get("eventType") == "COMPLETE" else None,
+            "collector's events": sum(e["run"]["runId"] == run_id for e in c.file),
+            "Marquez's state": r["state"],
+            "Marquez's end": (r["ended"] or "")[11:19] or None,
+            "Marquez's event rows": sum(e["run"]["runId"] == run_id for e in m.events),
+            "Marquez's state rows": sum(s["run"] == run_id for s in m.states),
         })
     return Rows(out, null="")
 
@@ -195,9 +195,9 @@ def check(week: Week, order: str) -> Checked:
     if order not in ORDERS:
         return Checked([{"test": MESSAGES["order_no"].format(orders=", ".join(f'"{o}"' for o in ORDERS)), "passes": "no"}])
     friday = compare(week, order)[1]
-    same = (friday["Marquez's rules"], friday["your collector"]) == ("COMPLETED", "COMPLETE")
+    same = (friday["Marquez's state"], friday["collector's state"]) == ("COMPLETED", "COMPLETE")
     return Checked([{
-        "test": MESSAGES["friday" if same else "friday_no"].format(marquez=friday["Marquez's rules"], yours=friday["your collector"]),
+        "test": MESSAGES["friday" if same else "friday_no"].format(marquez=friday["Marquez's state"], yours=friday["collector's state"]),
         "passes": "yes" if same else "no",
     }])
 

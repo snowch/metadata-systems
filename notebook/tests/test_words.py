@@ -1755,9 +1755,9 @@ class TheWordsOfPartVII(unittest.TestCase):
         arrived = {ev["eventType"]: at for at, ev in shop.collector.arrivals(week) if ev.get("job", {}).get("name") == "build_daily_sales" and (ev.get("eventTime") or "").startswith("2026-09-11")}
         self.assertEqual(arrived["START"][11:19], "02:31:03")
         self.says("The `START` arrived at 02:31:03, after the `COMPLETE`.", 29)
-        rows = {r["run"][:9]: r for r in K.compare(week)}
-        self.assertEqual((rows["Friday 11"]["Marquez's rules"], rows["Friday 11"]["your collector"]), ("RUNNING", "COMPLETE"))
-        self.assertEqual((rows["Thursday "]["their end"], rows["Thursday "]["event rows"]), ("02:30:52", 3))
+        rows = {r["run"].split(", ")[1][:9]: r for r in K.compare(week)}
+        self.assertEqual((rows["Friday 11"]["Marquez's state"], rows["Friday 11"]["collector's state"]), ("RUNNING", "COMPLETE"))
+        self.assertEqual((rows["Thursday "]["Marquez's end"], rows["Thursday "]["Marquez's event rows"]), ("02:30:52", 3))
         self.says("Marquez's rules kept 3 event rows for the run and moved its end to 02:30:52.", 29)
         self.says("Your collector kept 2 events for the run; Marquez's rules kept 3 rows.", 29)
         self.assertEqual([r["events stored"] for r in K.totals(week)], [68, 70])
@@ -1783,10 +1783,9 @@ class TheWordsOfPartVII(unittest.TestCase):
 
         self.assertEqual([r["owners kept"] for r in P.kept()], [3, 3, 1, 0])
         self.says("DataHub and OpenMetadata keep all three. Atlas keeps one, here the first, `etl_service`. Marquez keeps none.", 31)
-        self.assertEqual(P.DATAHUB_TYPES, ("TECHNICAL_OWNER", "BUSINESS_OWNER", "DATA_STEWARD", "NONE"))
         ns: dict = {}
         exec(P.REFERENCE["types"], ns)
-        self.assertEqual(P.kept(ns["types"])[0]["owners told apart by type"], 3)
+        self.assertEqual(P.kept(ns["types"])[0]["owners told apart by ownership type"], 3)
         self.says("all 3 of DataHub's owners told apart by type", 31)
 
     def test_chapter_32(self):
