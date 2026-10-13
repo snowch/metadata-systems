@@ -121,7 +121,8 @@ modelled, stored, indexed and served. Commits: DataHub `40287ac`, OpenMetadata `
 - **The learner's change:** the type each owner gets in DataHub's payload; the check holds it to the
   enum and the entity types, and says which meaning the reader can recover.
 - **Requirement:** "Choose a metadata platform that tracks ownership." Readings: stores an owner for
-  each dataset; stores whom to ask; stores which meaning each owner holds. Each platform meets some.
+  each dataset; stores whom to ask; stores which meaning each owner holds. DataHub can meet all three, OpenMetadata and Atlas the first,
+  and Marquez none for a dataset.
 
 ## Chapter 32: Metadata for ML and AI
 

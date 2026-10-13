@@ -18,9 +18,9 @@ def _(mo):
 
     **Objectives**
 
-    - Read what four systems call a job and a run: Airflow, Spark, dbt and Trino.
-    - Find what each system's OpenLineage integration would send for the shop's `build_daily_sales`.
-    - Change the name Trino's events give a job, and find what one name format merges.
+    - Read what the OpenLineage integrations of four systems, Airflow, Spark, dbt and Trino, make an OpenLineage job and an OpenLineage run.
+    - Find what each integration would send for the shop's `build_daily_sales`.
+    - Change the name Trino's events give a job, and find which programs one name format merges.
     - Question the requirement "Capture lineage from Airflow, Spark, dbt and Trino."
     """)
     return
@@ -73,13 +73,13 @@ def _(mo):
     mo.md(r"""
     ## Four systems, four records
 
-    Suppose the shop's nightly work ran in four systems in turn: as Airflow tasks, as Spark jobs, as dbt models and as Trino queries.
+    Suppose the shop's nightly work ran in each of four systems: as Airflow tasks, as Spark jobs, as dbt models and as Trino queries.
 
     Each system keeps its own record of its work. Each has an OpenLineage integration, a part that sends OpenLineage events from that record.
 
-    As in Chapter 29, nothing runs here: each cell applies the rules the system's code states, in the version read, to the shop's week.
+    As in Chapter 29, nothing runs here. Each cell applies the rules each project's code states, in the version read, to the shop's week: Airflow 3.3.0 with its OpenLineage provider 2.20.3, Spark 4.0.0 with OpenLineage's Spark integration, dbt's files as dbt 1.11 writes them with OpenLineage's dbt integration, and Trino's OpenLineage listener.
 
-    The next cell sets out, for each system, what it calls a job and a run, where the inputs come from, and when its events are sent.
+    The next cell sets out, for each system, what its integration makes an OpenLineage job and an OpenLineage run, where it takes a job's inputs from, and when it sends the events.
     """)
     return
 
@@ -93,15 +93,17 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The four systems' jobs are four different things: a task in a Dag, a Spark action named with its plan's top node and its output table, a dbt model, and, by default, a single Trino query.
+    The four OpenLineage jobs are four different things: a task in a Dag, a Spark action, a dbt model, and, by default, a single Trino query.
 
-    The week has the returns desk, the analyst's copy from Sunday 13, and Monday 14's failed night.
+    Airflow's provider takes a task's inputs and outputs from the extractor for the task's operator, from hooks' lineage, or from the task's declared inlets and outlets. Here the shop's tasks are supposed to report theirs.
 
     In Airflow, a task instance is one task in one Dag run. The scheduler raises its `try_number` by one for each try. The shop's Dag tries a failed task once more.
 
-    Airflow's OpenLineage provider, from Chapter 29, makes each try's run id from its try number, among other values.
+    Airflow's OpenLineage provider, from Chapter 29, makes each try's run id from the namespace, the Dag, the task, the try number and the map index, with the logical date.
 
-    The next cell lists the 7 task instances of `build_daily_sales`, one for each night.
+    Early on Monday 14, `build_daily_sales` fails, as in Chapter 13.
+
+    The next cell lists the 7 task instances of `build_daily_sales`, one for each night, with the OpenLineage runs each makes. Compare the number of task instances with the number of runs.
     """)
     return
 
@@ -120,11 +122,13 @@ def _(mo):
 
     Its two tries are 2 OpenLineage runs. So the week's 7 nights give the job 8 runs in the lineage, 2 of them on Monday 14.
 
-    In Spark, a job is one action. Spark's OpenLineage integration names the job from the application's name, the top node of the plan Spark ran, and the output table.
+    In Spark, a job is one action. Spark's OpenLineage integration names its OpenLineage job from the application's name, the top node of the plan Spark ran, and the output.
 
-    For an insert into a table kept as files, the top node is `Execute InsertIntoHadoopFsRelationCommand`.
+    For an insert into a table kept as files, the top node is `Execute InsertIntoHadoopFsRelationCommand`, and the output's part of the name is the last two parts of the path the files are written to, joined with `_`.
 
-    The next cell prints the job name for an insert into `shop.analytics.daily_sales` by an application named `shop_nightly`.
+    Suppose the application is named `shop_nightly`, and the files of `daily_sales` are kept under `s3://shop-warehouse/analytics/daily_sales`. Where the files are kept is the shop's assumption.
+
+    The next cell prints the OpenLineage job name of an insert into `daily_sales`. Find the part of it that names what the job wrote.
     """)
     return
 
@@ -138,17 +142,19 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The name is `shop_nightly.execute_insert_into_hadoop_fs_relation_command.shop_analytics_daily_sales`.
+    The name is `shop_nightly.execute_insert_into_hadoop_fs_relation_command.analytics_daily_sales`.
 
-    The plan's node is written in lower case with `_` between its words, and the table's dots become `_`. A program that wrote another table would be another job.
+    The plan's node is written in lower case with `_` between its words.
+
+    `analytics_daily_sales` comes from the path, not from the table's name. A program that wrote files under another path would be another job.
 
     In dbt, the integration's wrapper runs dbt first. Then it reads the files dbt wrote, `manifest.json` and `run_results.json`, and sends every event at the end.
 
-    A model's job name is its database, schema, project and model, joined with `.`. Each reading of the files makes new run ids.
+    A model's OpenLineage job name is its database, schema, project and model, joined with `.`. Each reading of the files makes new run ids.
 
-    Suppose the shop's three warehouse jobs ran as one dbt run in the project `shop_models`.
+    Suppose the shop's three warehouse jobs ran as one dbt invocation in the project `shop_models`.
 
-    The next cell lists one night's three models, early on Sunday 13: each model's job, its `START` time, its end time, and when its events are sent.
+    The next cell lists one night's three models, early on Sunday 13: each model's job, its `START` time, its end time, and when its events are sent. Compare when each model's work happened with when its events are sent.
     """)
     return
 
@@ -162,23 +168,25 @@ def _(shop, week30):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The events of all three models are sent at 02:30:21, when the dbt run ends, or later.
+    The events of all three models are sent at 02:30:21, at the earliest, when the last model ends. The table gives that earliest time.
 
-    The `START` of `clean_customers`, at 02:00:00, is sent at least 30 minutes after it happened. These are late events of the kind Chapter 20 handled, and they are late by design.
+    The `START` of `clean_customers`, at 02:00:00, is sent at least 30 minutes after it happened. The delay is the length of the dbt invocation, here the span of the shop's nightly schedule.
+
+    These are late events of the kind Chapter 20 handled, and they are late by design.
 
     If the files are read twice, one model run gets two run ids, and Chapter 25's key of run id and event type keeps both.
 
     ## Trino's job names
 
-    Trino's listener sends `START` when a query is created, and `COMPLETE` or `FAIL` when it ends. The inputs and the output come with the second only.
+    Trino's listener sends `START` when a query is created, and `COMPLETE` or `FAIL` when it ends. The inputs and the output come with the second only. By default, a `SELECT` sends nothing.
 
-    A job's name follows the setting `openlineage-event-listener.job.name-format`. Its default is `$QUERY_ID`. The other values it can use are `$SOURCE`, the name the client gives, `$USER` and `$CLIENT_IP`.
+    A job's name follows the setting `openlineage-event-listener.job.name-format`. Its default is `$QUERY_ID`, the query's id, so each query is its own job. The other values it can use are `$SOURCE`, the name the client gives, `$USER` and `$CLIENT_IP`. The format can combine these values with fixed text; the cell here takes one value.
 
-    By default, a `SELECT` sends nothing.
+    Suppose each of the shop's four nightly programs ran as one query a night, all from clients with the same source, `shop-nightly`, the same user, `etl_service`, and the same address, `10.0.0.5`.
 
-    Suppose each of the shop's four nightly jobs ran as one query a night, from one client whose source is `shop-nightly`.
+    The shop's lineage wants one job for the 7 runs of `build_daily_sales`, holding no other program's runs.
 
-    Before you read on, write in the next cell how many jobs the 7 nightly queries of `build_daily_sales` make in Trino's events, with the default name format.
+    Before you read on, write in the next cell how many jobs the 7 queries of `build_daily_sales` would make with the name format `$SOURCE`, and whose runs those jobs would hold.
     """)
     return
 
@@ -186,7 +194,7 @@ def _(mo):
 @app.cell
 def _():
     expected_jobs = """
-How many jobs will the 7 nightly queries of build_daily_sales make in Trino's events?
+With the name format $SOURCE, how many jobs will the 7 queries of build_daily_sales make, and whose runs will those jobs hold?
 ........
 """
     return
@@ -210,6 +218,26 @@ def _(name_format, shop, source_of, week30):
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The cell above the check holds `name_format`, `"$QUERY_ID"`, and `source_of`, the source each program's client gives.
+
+    As it stands, the check finds 7 jobs: each query is its own job, named by its id.
+
+    Change `name_format` to `"$SOURCE"`. Select the cell and press **Run below**.
+
+    The check then finds 1 job for the 7 runs, and that job also holds the runs of the other three programs.
+
+    Compare this with what you wrote.
+
+    Then give each program its own source in `source_of`, and press **Run below** again. Both tests pass: one job, holding the runs of `build_daily_sales` only.
+
+    The next cell counts the jobs each name format makes from the week's 28 nightly queries, with the sources in your cell.
+    """)
+    return
+
+
 @app.cell
 def _(shop, source_of, week30):
     shop.integrations.jobs_by_format(week30, source_of)
@@ -219,21 +247,15 @@ def _(shop, source_of, week30):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The check finds 7 jobs: each query is its own job, named by its id.
+    With a source for each program, the 28 nightly queries make 28 jobs under `$QUERY_ID`, one for each query. `$SOURCE` makes 4, one for each program.
 
-    Over the four programs, the 28 nightly queries make 28 jobs, as the table below the check lists.
+    `$USER` and `$CLIENT_IP` each make 1 job. All four programs share the user `etl_service` and the address `10.0.0.5`, so neither value can tell the programs apart.
 
-    Compare this with what you wrote.
+    Suppose the analyst's copy from Sunday 13 were made in Trino: a `SELECT` on `clean_orders` whose result a client saves as a file.
 
-    The cell above the check holds `name_format` and `source_of`, the source each program's client gives.
+    By default the `SELECT` sends no events, so the read of `clean_orders` would be missing.
 
-    Change `name_format` to `"$SOURCE"`. Select the cell and press **Run below**. The 7 runs make 1 job, but the check shows that job also holds the runs of the other three programs: too many runs merged, as in Chapter 22.
-
-    Then give each program its own source in `source_of`, and press **Run below** again. Both tests pass: one job, holding the runs of `build_daily_sales` only.
-
-    The listener can name a job only from those four values, so a job's name depends on how each client is set up.
-
-    The analyst's copy is a `SELECT` whose result a client saves as a file. By default it sends nothing, so the edge to `clean_orders_copy.csv` would be missing.
+    The file is not a Trino table, so the write of `clean_orders_copy.csv` would be missing even if the `SELECT` sent its events.
     """)
     return
 
@@ -274,10 +296,10 @@ What does "capture lineage from Airflow, Spark, dbt and Trino" mean here?
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    It could mean three things. Each item says what it needs:
+    "Capture lineage from Airflow, Spark, dbt and Trino" could mean three things. Each item says what it needs:
 
-    - by each system's own job (a task, an action and its table, a model, a query): it needs nothing more, and gives four kinds of job, each with its own name.
-    - by the shop's programs, as Part II meant a job: it needs a rule that maps each system's names to the program, as Chapter 22's aliases did, because none of the four systems' default names is the program's name.
+    - by each system's own OpenLineage jobs (a task, a Spark action and its output, a model, a query): it needs nothing more, and gives four kinds of job, each named its own way. It also gets jobs the cells here leave out: the Dag's own job, and the job dbt's integration sends for the whole invocation;
+    - by the shop's programs, as Part II meant a job: it needs a rule that maps each system's job names to the program, as Chapter 22's aliases mapped two names of one dataset to one, because none of the four systems' default names is the program's name;
     - by the datasets each system reads and writes, whatever the jobs are called: it needs each system to name the same dataset the same way (Chapter 12), and it misses what a system does not send, such as Trino's `SELECT`.
 
     The requirement does not say which it means.
@@ -290,11 +312,11 @@ def _(mo):
     mo.md(r"""
     ## Before Chapter 31
 
-    Airflow made a retried task two OpenLineage runs. Spark's job name held the plan's top node and the output table. dbt sent each night's events after the run, `START`s included. Trino named a job by its query by default, and one shared source merged four programs.
-
-    The page could not show the four systems themselves: each result is a system's rules, as its code states them, applied here.
+    Airflow made a retried task two OpenLineage runs. Spark's job name held the plan's top node and the last two parts of the output's path. dbt's integration sent each night's events after dbt finished, `START`s included. Trino named a job by its query's id by default, and one shared source merged four programs into one job.
 
     Chapter 31 compares four metadata platforms that receive this kind of metadata.
+
+    Three questions:
 
     - What does each system on your platform call a job?
     - Which of your systems send their events late by design?
@@ -302,9 +324,10 @@ def _(mo):
 
     ### How this differs from a real platform
 
-    - Each result applies the rules as each project's code states them in the version read. The systems also send facets the cells leave out.
-    - The Dag's second try, the dbt project, the Trino client's sources and the query ids are the shop's assumptions.
+    - Each result applies the rules as each project's code states them in the version read. The integrations also send facets the cells leave out, and jobs: the Dag's own job, and dbt's job for the whole invocation.
+    - The Dag's second try, the tasks reporting their inputs and outputs, where the files of `daily_sales` are kept, the dbt project, the Trino clients' sources, user and address, and the query ids are the shop's assumptions.
     - The Spark job name assumes an insert into a table kept as files. Another kind of write has another top node.
+    - Trino's name format can combine its values with fixed text. The cell takes one value.
 
     [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 29](chapter_29.ipynb) · [Next: Chapter 31](chapter_31.ipynb)
 

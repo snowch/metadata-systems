@@ -1758,10 +1758,10 @@ class TheWordsOfPartVII(unittest.TestCase):
         rows = {r["run"].split(", ")[1][:9]: r for r in K.compare(week)}
         self.assertEqual((rows["Friday 11"]["Marquez's state"], rows["Friday 11"]["collector's state"]), ("RUNNING", "COMPLETE"))
         self.assertEqual((rows["Thursday "]["Marquez's end"], rows["Thursday "]["Marquez's event rows"]), ("02:30:52", 3))
-        self.says("Marquez's rules kept 3 event rows for the run and moved its end to 02:30:52.", 29)
-        self.says("Your collector kept 2 events for the run; Marquez's rules kept 3 rows.", 29)
+        self.says("Marquez's rules stored 3 event rows for the run and moved its end to 02:30:52.", 29)
+        self.says("Your collector stored 2 events for the run; Marquez's rules stored 3 rows.", 29)
         self.assertEqual([r["events stored"] for r in K.totals(week)], [68, 70])
-        self.says("Your collector stored 68 events, and Marquez's rules kept 70.", 29)
+        self.says("Your collector stored 68 events, and Marquez's rules stored 70.", 29)
 
     def test_chapter_30(self):
         from shop import integrations as I
@@ -1776,7 +1776,7 @@ class TheWordsOfPartVII(unittest.TestCase):
         counts = {r["name format"]: r["jobs"] for r in I.jobs_by_format(week)}
         self.assertEqual(counts["$QUERY_ID"], 28)
         self.says("the 28 nightly queries make 28 jobs", 30)
-        self.says("The check finds 7 jobs", 30)
+        self.assertIn("the check finds 7 jobs", flat(TEXT[30]).lower())
 
     def test_chapter_31(self):
         from shop import platforms as P
@@ -1786,7 +1786,7 @@ class TheWordsOfPartVII(unittest.TestCase):
         ns: dict = {}
         exec(P.REFERENCE["types"], ns)
         self.assertEqual(P.kept(ns["types"])[0]["owners told apart by ownership type"], 3)
-        self.says("all 3 of DataHub's owners told apart by type", 31)
+        self.says("all 3 of DataHub's owners told apart by ownership type", 31)
 
     def test_chapter_32(self):
         from shop import ml as M
@@ -1794,8 +1794,11 @@ class TheWordsOfPartVII(unittest.TestCase):
         week = shop.run_week(["returns"])
         record = M.train(week)
         self.assertEqual(record["forecast_pence"], 13650)
-        self.says("It comes to 13650 pence.", 32)
-        self.says("The record has 5 rows and the digest `60ba54ee`. The table has 7 rows and the digest `6b0727dc`.", 32)
+        version = {r["field"]: r["value"] for r in M.version(week)}
+        self.assertEqual((version["name"], version["version"], version["the forecast, in pence"]), ("next_day_revenue", 1, 13650))
+        self.assertEqual(version["run_id"], record["run"]["run_id"])
+        self.says("version 1 of the model `next_day_revenue`", 32)
+        self.says("The record counts 5 rows and holds the digest `60ba54ee`. `daily_sales` has 7 rows and gives the digest `6b0727dc`.", 32)
         self.assertEqual([(r["rows"], r["digest"]) for r in M.today(week)], [(5, "60ba54ee"), (7, "6b0727dc")])
         cap = [r["digest"] for r in M.cap()]
         self.assertEqual(cap, ["b54985ab", "ebf8f1e4", "b54985ab"])

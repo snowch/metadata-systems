@@ -826,8 +826,14 @@ try {
     if (chapter === 31) {
       await rewrite(
         "types = {",
-        ['"account": "urn:li:ownershipType:__system__technical_owner"', '"responsible": "urn:li:ownershipType:__system__technical_owner"'],
-        ['"account": "urn:li:ownershipType:warehouse_account"', '"responsible": "urn:li:ownershipType:__system__business_owner"'],
+        [
+          '"account": "urn:li:ownershipType:__system__technical_owner"',
+          '"responsible": "urn:li:ownershipType:__system__technical_owner"',
+        ],
+        [
+          '"account": "urn:li:ownershipType:warehouse_account"',
+          '"responsible": "urn:li:ownershipType:__system__business_owner"',
+        ],
       );
       await run("Run below", "Chapter 31, Run below with the types");
       const types = await output("shop.platforms.check(types)");

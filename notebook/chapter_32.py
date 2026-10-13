@@ -73,13 +73,13 @@ def _(mo):
     mo.md(r"""
     ## A forecast and its record
 
-    On Saturday 12 at 09:00 the shop trains a forecast of the next day's revenue: the mean of the last 3 days in `daily_sales`. It comes to 13650 pence.
+    On Saturday 12 at 09:00 the shop trains a forecast of the next day's revenue. The run reads all the rows `daily_sales` holds then, 5, and takes the mean of the last 3 days.
 
-    The run is recorded with the fields MLflow, an experiment tracker, keeps for a run's input: its `name`, `digest`, `source`, `schema` and `profile`, and the context `training`.
+    MLflow is an experiment tracker. It records each training run, the data the run read and the model it made.
 
-    The forecast is registered as version 1 of `next_day_revenue`, and the version names the run that made it.
+    As in Chapters 29 to 31, MLflow does not run here. Each cell applies MLflow's rules, as its code states them in the version read, to the shop's run.
 
-    The next cell lists the record of the run's input, one field on each row.
+    The next cell lists the record of the run's input, one field on each row. The fields are the ones MLflow keeps for a dataset a run reads: `name`, `digest`, `source`, `schema` and `profile`, with the context `training`. MLflow keeps one more, `source_type`, which the shop's record leaves out.
     """)
     return
 
@@ -94,15 +94,33 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The digest is a short fingerprint of the rows. MLflow computes it from the first 10,000 rows, the number of rows and the column names, through MD5, and keeps 8 characters.
+    `source` names where the data is kept: the warehouse table `shop.analytics.daily_sales`. It holds no rows.
 
-    The shop computes its digest the same way from its own rows. It is the shop's value, not MLflow's, because MLflow reads the rows with a library the shop does not use.
+    The digest is a short fingerprint of the rows. For a table held as a pandas table, MLflow computes it from the first 10,000 rows, the number of rows and the column names, through MD5, and keeps 8 characters.
 
-    The profile holds the number of rows: 5.
+    The shop computes its digest from the same three things. It is the shop's value, not MLflow's, because MLflow reads the rows with a library the shop does not use.
 
+    `profile` holds the number of rows: 5.
+
+    The forecast is registered as version 1 of the model `next_day_revenue`. The next cell lists the version. Its `run_id` names the run that made it, so the model leads to the run, and the run to the record of its input.
+    """)
+    return
+
+
+@app.cell
+def _(shop, week32):
+    shop.ml.version(week32)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     On Monday 14 at 09:00, Jo Marsh asks which rows the forecast was trained on.
 
-    Before you read on, write in the next cell whether the run's record can tell you.
+    The record holds no rows: a name, where the data is kept, a digest and a count.
+
+    Before you read on, write in the next cell whether `daily_sales`, read on Monday 14 at 09:00, will give the digest the run recorded, and what that would tell you.
     """)
     return
 
@@ -110,7 +128,7 @@ def _(mo):
 @app.cell
 def _():
     expected_rows = """
-Can the run's record tell you which rows the forecast was trained on?
+Will daily_sales on Monday 14 at 09:00 give the digest the run recorded?
 ........
 """
     return
@@ -125,19 +143,21 @@ def _(shop, week32):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The cell above sets the run's record beside `daily_sales` on Monday 14 at 09:00. The record has 5 rows and the digest `60ba54ee`. The table has 7 rows and the digest `6b0727dc`.
+    The record counts 5 rows and holds the digest `60ba54ee`. `daily_sales` has 7 rows and gives the digest `6b0727dc`.
 
-    The record lists no rows. It holds a name, a digest and a count. The digests differ, so the table has changed since the run.
+    The digests differ, so `daily_sales` has changed since the run.
 
     Compare this with what you wrote.
 
-    Each night's run of `build_daily_sales` adds one row, for the day before, and leaves the other rows as they are. So the rows the forecast read may still be in the table.
+    Each night's run of `build_daily_sales` adds one row, for the day before, and leaves the other rows as they are. So the rows the run read may still be in `daily_sales`.
 
-    The record can test that guess: the right rows give the same digest.
+    The record can test that guess: the same rows give the same digest.
 
     The next cell holds `where`, a condition on the rows of `daily_sales`. As it stands, `day <= '2026-09-13'` keeps all 7.
 
-    Change the date so that the condition keeps the rows the table held on Saturday 12 at 09:00. Select the cell and press **Run below**. The check below it computes the digest of the rows your condition keeps.
+    Change the date so that the condition keeps the rows `daily_sales` held on Saturday 12 at 09:00. Select the cell and press **Run below**.
+
+    The check below it computes the digest of the rows your condition keeps, and compares it with the run's.
     """)
     return
 
@@ -161,11 +181,13 @@ def _(mo):
 
     A match is strong evidence, not proof: with 8 characters, other rows could give the same digest, though the chance is small.
 
+    The match relied on `daily_sales` only gaining rows. Had a row the run read been changed or deleted since, no condition would give the run's digest, and the record could not show which row changed or what it held.
+
     ## What a digest reads
 
-    The digest reads only the first 10,000 rows, with the row count.
+    The digest reads the first 10,000 rows, the number of rows and the column names. A row added anywhere changes the number of rows, so it changes the digest.
 
-    The next cell takes a table of 10,001 rows made for this cell, and changes one row at a time by 1 penny.
+    The next cell takes a table of 10,001 rows made for this cell, and changes one value at a time, in place, by 1 penny.
     """)
     return
 
@@ -181,7 +203,7 @@ def _(mo):
     mo.md(r"""
     Changing the first row changes the digest, from `b54985ab` to `ebf8f1e4`. Changing row 10,001, the last, leaves it at `b54985ab`.
 
-    A digest shows a change only within the rows it reads.
+    A value changed in place after row 10,000 leaves the digest as it was: the number of rows, the column names and the first 10,000 rows are all unchanged.
     """)
     return
 
@@ -222,13 +244,15 @@ What does "record the training data" mean here?
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    It could mean three things. Each item says what it needs:
+    "Record the training data of the model" could mean three things. Each item says what it needs:
 
-    - the snapshot the forecast read: a version or a time of the table, and a table that keeps its earlier states, as the table formats in Chapter 2's closing note do;
-    - the query that chose the rows: its text and when it ran. The same text run on Monday reads 7 rows, not 5;
-    - the features computed from the rows: the code that computed them and the values it gave, here the last 3 days' revenue.
+    - the snapshot the run read: a version or a time of `daily_sales`, and a table that keeps its earlier states, as the table formats in Chapter 2's closing note do;
+    - the query that chose the rows: its text and when it ran. The run read every row `daily_sales` held at 09:00 on Saturday 12; the same read on Monday 14 gives 7 rows, not 5;
+    - the features computed from the rows: the code that computed them and the values it gave, here the revenue of the last 3 days.
 
-    The tracker's record meets a narrower reading: which table, and whether it has changed since. The requirement does not say which it means.
+    This record meets none of the three. It names `daily_sales`, and its digest and count show whether the rows are still as the run read them. MLflow can also keep text with a run, such as a query, which this record does not.
+
+    The requirement does not say which it means.
     """)
     return
 
@@ -238,15 +262,15 @@ def _(mo):
     mo.md(r"""
     ## Before Chapter 33
 
-    The run's record held a name, a digest and a count, not the rows. The digest showed the table had changed since the run, and a guess about the rows could be tested against it.
+    The run's record held a name, a digest and a count, not the rows. The digest showed that `daily_sales` had changed since the run. A guess about the rows could be tested against it because `daily_sales` only gained rows.
 
-    A digest that reads the first 10,000 rows did not change when a later row did.
+    A value changed in place after row 10,000 did not change the digest.
 
-    The page could not show the evaluation of the forecast, where it was used, or what it predicted: each would need its own record.
+    The evaluation of the forecast, where it was used and what it predicted would each need its own record, as would embeddings, vector indexes, retrieval and generated artefacts. None of them is shown here.
 
     Part VII ends here. Chapter 33 asks you to build the whole thing on a second platform you have not seen.
 
-    Ask three questions:
+    Three questions:
 
     - Which version of the data did your last training run read?
     - Could you rebuild that data from what your tracker recorded?
@@ -254,9 +278,12 @@ def _(mo):
 
     ### How this differs from a real platform
 
+    - The cells apply MLflow's rules as its code states them in the version read.
     - The forecast is a mean of 3 numbers, made so that there is a run to record. A real training run reads far more rows, and its record holds more: settings, measures of how well it did, and the version of its code.
-    - The shop's digest follows MLflow's rule, but it is not MLflow's value.
-    - OpenLineage has no facet for training or evaluation. A dataset's type may be `MODEL`, so the forecast can be named as a dataset a run writes.
+    - The shop's record keeps fewer fields than MLflow's: it leaves out `source_type`, and holds `schema` and `profile` in a simpler form of its own.
+    - The shop's digest follows MLflow's rule for a pandas table, but it is not MLflow's value. For a Spark table, MLflow's digest comes from the query plan and reads no rows.
+    - In OpenLineage, the run's input would be `daily_sales` as an input dataset, as in Chapter 8. OpenLineage's facet for a dataset's version holds the version as free text, with no meaning defined for it.
+    - OpenLineage has no facet for training or evaluation. Its facet for a dataset's type lists `MODEL` among its examples, so a run could name the forecast as a dataset it writes; the specification does not define what that means.
 
     [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 31](chapter_31.ipynb)
 

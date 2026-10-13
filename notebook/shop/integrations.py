@@ -53,12 +53,13 @@ MESSAGES = {
 
 
 def rules() -> Rows:
-    """What each system calls a job and a run, where the inputs come from, and when it sends."""
+    """What each system's integration makes an OpenLineage job and run, where it takes the inputs
+    from, and when it sends."""
     return Rows([
-        {"system": "Airflow", "its job": "a task in a Dag", "a run": "a try of a task instance", "inputs from": "what each task's operator reports", "sent": "as each try starts and ends"},
-        {"system": "Spark", "its job": "an action, named with its plan's top node and output table", "a run": "one execution", "inputs from": "the query plan", "sent": "as the execution starts and ends"},
-        {"system": "dbt", "its job": "a model", "a run": "one reading of the files dbt wrote", "inputs from": "the manifest's parents of the model", "sent": "after dbt has finished"},
-        {"system": "Trino", "its job": "a query, by default", "a run": "one query", "inputs from": "the tables the query names", "sent": "as the query is created and ends"},
+        {"system": "Airflow", "OpenLineage job": "a task in a Dag", "OpenLineage run": "a try of a task instance", "inputs from": "the operator's extractor, hooks' lineage, or the task's declared inlets and outlets", "sent": "as each try starts and ends"},
+        {"system": "Spark", "OpenLineage job": "a Spark action, named from its plan's top node and its output", "OpenLineage run": "one execution", "inputs from": "the query plan", "sent": "as the execution starts and ends"},
+        {"system": "dbt", "OpenLineage job": "a model", "OpenLineage run": "one reading of the files dbt wrote", "inputs from": "the manifest's parents of the model", "sent": "after dbt has finished"},
+        {"system": "Trino", "OpenLineage job": "a query, named by its id unless set", "OpenLineage run": "one query", "inputs from": "the tables the query names", "sent": "as the query is created and ends"},
     ])
 
 

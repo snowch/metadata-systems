@@ -7,15 +7,19 @@ A working note. Written on 13 October 2026 with Chapters 29, 31 and 32 (`noteboo
 The shop's nightly work, imagined in four systems, over the week with the returns desk, the
 analyst's copy and Monday's failed night. The reader:
 
-- reads what each system calls a job and a run, where its inputs come from and when it sends;
+- reads what each system's integration makes an OpenLineage job and run, where it takes the inputs
+  from and when it sends;
 - reads Airflow's 7 task instances of `build_daily_sales`: Monday's failed twice, `try_number` 2,
   2 OpenLineage runs, so 8 in all;
 - reads Spark's job name for an insert into `daily_sales`
-  (`shop_nightly.execute_insert_into_hadoop_fs_relation_command.shop_analytics_daily_sales`);
-- reads one night's dbt run: three models' events all sent at 02:30:21 or later;
-- predicts how many jobs Trino's events make of the 7 nightly queries; finds 7 (28 for four
-  programs); changes the name format to `$SOURCE` and finds one job holding four programs' runs; gives
-  each program its own source; 2 of 2;
+  (`shop_nightly.execute_insert_into_hadoop_fs_relation_command.analytics_daily_sales`, its last
+  part from the path the files are written to);
+- reads one night's dbt run: three models' events all sent at 02:30:21 at the earliest;
+- predicts how many jobs, and whose runs, the 7 nightly queries of `build_daily_sales` make in
+  Trino's events with the name format `$SOURCE` and one shared source; sees 7 jobs under the default;
+  changes the name format and finds one job holding four programs' runs; gives each program its own
+  source; 2 of 2; then counts each format's jobs (28, 4, 1, 1) and finds the shared user and address
+  cannot tell the programs apart;
 - questions "Capture lineage from Airflow, Spark, dbt and Trino."
 
 ## What was built for it
@@ -34,8 +38,10 @@ analyst's copy and Monday's failed night. The reader:
 ### `rules`, `airflow`, `spark`, `dbt`
 
 - **Role:** inspect, each
-- **Serves:** where does each system's metadata come from? Its own job and run, and what its
-  integration sends for the shop's `build_daily_sales`.
+- **Serves:** where does each system's metadata come from? What its integration makes a job and a
+  run, and what it sends for the shop's `build_daily_sales`. The page puts a comparison in front of
+  the Airflow table (task instances against runs), the Spark name (the part naming the output) and
+  the dbt table (when the work happened against when its events are sent).
 - **Why now:** the Trino prediction is reasoned from the rule set out in the same way.
 
 ### `trino-jobs`
@@ -45,13 +51,19 @@ analyst's copy and Monday's failed night. The reader:
   name format makes it: one job per query by default, one job for every program with a shared
   source.
 - **Known before:** Chapter 12's identity; Chapter 22's over-merge.
-- **Driving question:** how many jobs do the 7 nightly queries of `build_daily_sales` make?
-- **The action:** write the prediction; read the check; change `name_format`; then `source_of`.
+- **Driving question:** with the name format `$SOURCE` and one source shared by the four programs,
+  how many jobs do the 7 nightly queries of `build_daily_sales` make, and whose runs do they hold?
+  (Moved here by the review: the count under the default followed from the stated default.)
+- **The action:** write the prediction; read the baseline check (7 jobs under `$QUERY_ID`); change
+  `name_format`; then `source_of`; then read each format's count.
 - **Why the action:** each change shows one consequence of the format.
-- **Evidence:** 7 jobs; then 1 job with four programs' runs; then 1 job with its own runs.
-- **Consequence:** a job's name in an integration's events is a setting, not a fact about the work.
-- **Predictable:** yes, from the default the page states.
-- **Gives nothing away:** the cell asks for a count; the rule is stated, the count is not.
+- **Evidence:** 7 jobs; then 1 job with four programs' runs; then 1 job with its own runs; 28, 4, 1
+  and 1 jobs by format.
+- **Consequence:** a job's name in an integration's events is a setting, not a fact about the work,
+  and a value every program shares cannot separate them.
+- **Predictable:** yes, by reasoning from the shared source the page states; the merge is not stated.
+- **Gives nothing away:** the cell asks for a count and whose runs; the baseline check below it
+  answers only the default. The format counts print under the change instructions.
 - **Not knowing:** fair.
 - **Next question:** which meaning of "capture lineage" does the shop want?
 
