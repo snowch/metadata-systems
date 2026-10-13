@@ -662,3 +662,23 @@ Each chapter that relies on one of these reads it first and adds an entry above:
   License 1.1, through the `@fontsource` packages.
 - The course's icon: drawn for the course in `scripts/icons.mjs`, a label tag on the course's
   accent, copyright Christopher Snow like its code. It copies no icon set.
+
+## Read for Part VIII (13 October 2026)
+
+Read in the OpenLineage repository (`OpenLineage/OpenLineage`, `main`, commit
+`60261f0b57fb1370c2c6c3cadc9f1721b6c3c3b5`), for checking and not copied, for Chapter 33.
+
+- `spec/facets/LifecycleStateChangeDatasetFacet.json` (1-0-1): a dataset facet whose
+  `lifecycleStateChange` is one of `ALTER`, `CREATE`, `DROP`, `OVERWRITE`, `RENAME` and `TRUNCATE`,
+  with a `previousIdentifier` for a rename. `website/docs/spec/object-model.md` describes it as
+  capturing "the lifecycle states of the Dataset" (quoted), and the facet's documentation page shows
+  it on an output. The chapter says it describes a change a run makes to a dataset, and that the
+  ferry, whose functions are started by changes the gates make, records the starting change in a
+  facet of its own.
+- `spec/facets/DatasetVersionDatasetFacet.json` (1-0-1): a dataset's version as the string
+  `datasetVersion` (also read for Chapter 8); `object-model.md` describes it as the dataset version
+  "when versioning is defined by the data store" (quoted).
+- The specification does not define what a run started by a delete names as its input. The ferry's
+  choice, the version removed, is labelled as the ferry's on the page.
+- The ferry, its object storage, functions, scheduler and every delivery rule are the course's own;
+  no real system is described.

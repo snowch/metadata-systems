@@ -17,7 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = {
-    chapter: (ROOT / "notebook" / f"chapter_{chapter:02d}.py").read_text(encoding="utf-8") for chapter in range(1, 33)
+    chapter: (ROOT / "notebook" / f"chapter_{chapter:02d}.py").read_text(encoding="utf-8") for chapter in range(1, 34)
 }
 BUTTONS = ROOT / "notebook" / "buttons"
 LABELS = json.loads((BUTTONS / "buttons.json").read_text(encoding="utf-8"))
@@ -141,11 +141,12 @@ class TheBoxes(unittest.TestCase):
 
     def test_each_chapter_opens_with_a_warning_and_the_steps(self):
         # From Chapter 2, one box more, for the requirement the chapter questions, its words quoted;
-        # it comes where the requirement arrives, in the opening of Chapters 4, 5 and 8.
+        # it comes where the requirement arrives, in the opening of Chapters 4, 5 and 8. Chapter 33
+        # questions three of the ferry's requirements, each before building to it (docs/plan.md).
         for chapter, source in SOURCE.items():
             kinds = re.findall(r'\bkind="(\w+)"\)', source)
             self.assertEqual([k for k in kinds if k != "neutral"], ["warn", "info"], chapter)
-            self.assertEqual(kinds.count("neutral"), 1 if chapter > 1 else 0, chapter)
+            self.assertEqual(kinds.count("neutral"), 3 if chapter == 33 else (1 if chapter > 1 else 0), chapter)
             for text in re.findall(r'mo\.callout\(mo\.md\(r"""((?:(?!""").)*)"""\), kind="neutral"\)', source, re.S):
                 self.assertRegex(text.strip(), r'^[^\n]* "[^"]+"$', chapter)
             [steps] = re.findall(r'mo\.callout\(mo\.md\(r"""(.*?)"""\), kind="info"\)', source, re.S)

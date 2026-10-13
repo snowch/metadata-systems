@@ -51,6 +51,7 @@ CHAPTERS = {
     30: ROOT / "notebook" / "chapter_30.py",
     31: ROOT / "notebook" / "chapter_31.py",
     32: ROOT / "notebook" / "chapter_32.py",
+    33: ROOT / "notebook" / "chapter_33.py",
 }
 SOURCE = {chapter: path.read_text(encoding="utf-8") for chapter, path in CHAPTERS.items()}
 
@@ -238,6 +239,10 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("## Before Chapter 27", 26)
         self.says("## Before Chapter 28", 27)
         self.says("## Before Chapter 29", 28)
+        self.says("## Before Chapter 30", 29)
+        self.says("## Before Chapter 31", 30)
+        self.says("## Before Chapter 32", 31)
+        self.says("## Before Chapter 33", 32)
         self.says("Chapter 10 reads the jobs' SQL", 9)
 
     def test_each_chapter_has_its_own_title_in_its_tab(self):
@@ -279,7 +284,8 @@ class TheWordsMatchTheEngine(unittest.TestCase):
             29: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 28](chapter_28.ipynb) · [Next: Chapter 30](chapter_30.ipynb)",
             30: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 29](chapter_29.ipynb) · [Next: Chapter 31](chapter_31.ipynb)",
             31: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 30](chapter_30.ipynb) · [Next: Chapter 32](chapter_32.ipynb)",
-            32: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 31](chapter_31.ipynb)",
+            32: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 31](chapter_31.ipynb) · [Next: Chapter 33](chapter_33.ipynb)",
+            33: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 32](chapter_32.ipynb)",
         }
         for chapter, line in nav.items():
             self.assertTrue(CELLS[chapter][0].startswith(line + "\n"), chapter)
@@ -1803,6 +1809,49 @@ class TheWordsOfPartVII(unittest.TestCase):
         cap = [r["digest"] for r in M.cap()]
         self.assertEqual(cap, ["b54985ab", "ebf8f1e4", "b54985ab"])
         self.says("Changing the first row changes the digest, from `b54985ab` to `ebf8f1e4`. Changing row 10,001, the last, leaves it at `b54985ab`.", 32)
+
+    def test_chapter_33(self):
+        from shop import ferry as F
+
+        f = F.run()
+        ns: dict = {"shop": shop}
+        for which in ("stub", "reference"):
+            for name, code in (F.STUBS if which == "stub" else F.REFERENCE).items():
+                exec(code, ns)
+                ns[f"{which}_{name}"] = ns[name]
+        log = f.functions.log("s3://ferry-gates/mainland/2026-09-22/1730")
+        self.assertEqual([r["started"][11:] for r in log], ["17:31:02Z", "17:31:02Z", "07:05:02Z"])
+        self.says("gate 1's batch at 17:31:02 on Tuesday, gate 2's at 17:31:02, and gate 2's again at 07:05:02 on Wednesday", 33)
+        self.assertEqual(F.check_inputs(f, ns["stub_inputs"]).passed, 1)
+        self.says("As `inputs` stands, 1 of 3 tests passes.", 33)
+        [deleted] = [c for c in f.changes if c["change"] == "deleted"]
+        self.says(f"The delete's event names the test batch with the version `{deleted['previous']}`", 33)
+        c = F.collect(F.events(f, ns["reference_inputs"]))
+        g = F.graph(c)
+        edges = {(r["job"], r["edge"]): r for r in F.edges(g)}
+        self.assertEqual((edges[("load_scans", "reads")]["dataset"], edges[("load_scans", "reads")]["runs"]), ("s3://ferry-gates/... (37 batches)", 38))
+        self.says("`load_scans` read 37 batches in 38 runs. `drop_scans` read 1 batch.", 33)
+        self.assertEqual(len(f.storage.ls("s3://ferry-gates/")), 36)
+        rows = [(r["sailing_loads"], r["counted on board"]) for r in F.compare_counts(f, "2026-09-24", "island")]
+        self.assertEqual(rows, [(31, 31), (14, 24), (10, 17)])
+        self.says("`sailing_loads` counts 10 and 7 fewer than the harbour master.", 33)
+        self.assertEqual([(r["job"], r["runs"], r["FAIL"]) for r in F.run_states(c)], [("build_loads", 3, 0), ("drop_scans", 1, 0), ("load_scans", 38, 0), ("send_report", 3, 0)])
+        self.says("Every run finished: 38 runs of `load_scans`, 1 of `drop_scans`, and 3 each of `build_loads` and `send_report`. None failed.", 33)
+        self.assertEqual(F.check_suspect(c, ns["stub_suspect"]).passed, 1)
+        self.says("As `suspect` stands, 1 of 2 tests passes", 33)
+        last = F.fields(c, "island", "gate-2")[-2:]
+        self.assertEqual([(r["started"][11:19], r["scans read"], r["rows written"]) for r in last], [("14:31:02", 10, 0), ("19:31:02", 7, 0)])
+        self.says("`load_scans` read 10 scans and 7 scans from them and wrote 0 rows", 33)
+        trace = F.trace(f, c, "2026-09-22 mainland 17:30")
+        self.assertEqual([(r["passengers"], r["version"]) for r in trace[1:4]], [(21, "4a6121574c55"), (14, "15da88b56abc"), (17, "f0ff6ad37438")])
+        self.says("That run counted gate 1's batch, 21 scans, and gate 2's first version, `15da88b56abc`, 14 scans.", 33)
+        self.says("Gate 2's second version, `f0ff6ad37438`, with 17 scans", 33)
+        self.assertEqual((trace[0]["passengers"], trace[-1]["passengers"]), (35, 38))
+        made = [r["still counts the test scans"] for r in F.made_from_test(f, g)]
+        self.assertEqual(made, ["no", "yes", "yes"])
+        report = {r["sailing"]: r["passengers"] for r in f.report("2026-09-23")}
+        self.assertEqual(report["2026-09-23 island 19:30"], "22")
+        self.says("the report shows 22 passengers on Wednesday's 19:30 from the island, and the harbour master counted 17", 33)
 
 
 if __name__ == "__main__":

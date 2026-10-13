@@ -21,7 +21,7 @@ from .data import ARRIVAL, DAYS
 from .infer import cleaning_rules_that_fit, day_gap, queries_that_rebuild
 from .platform import pounds
 from .graph import compare_with_code, graph
-from . import aliases, cause, claims, collector, columns, consumers, delivery, identity, impact, ingest, integrations, interface, lineage_graph, ml, observe, openlineage, platforms, provenance, quality, query, scale, schemas, store
+from . import aliases, cause, claims, collector, columns, consumers, delivery, ferry, identity, impact, ingest, integrations, interface, lineage_graph, ml, observe, openlineage, platforms, provenance, quality, query, scale, schemas, store
 from .records import model, owners, records, typed_records
 from .runs import event_fields, events, lineage, readings, runs
 from .week import CHANGES, COPY, FILES, NIGHTS, Week, reads_and_writes, repository, run_week, timeline

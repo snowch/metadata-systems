@@ -89,7 +89,7 @@ try {
 
   const chapters = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
-    27, 28, 29, 30, 31, 32,
+    27, 28, 29, 30, 31, 32, 33,
   ];
   // SMOKE_CHAPTERS=24,25 drives only those chapters, for a quick run while writing them; CI drives all.
   const only = (process.env.SMOKE_CHAPTERS || "").split(",").filter(Boolean).map(Number);
@@ -333,7 +333,8 @@ try {
     );
     const requirement = named("ms-box-requirement");
     check(
-      requirement.length === (chapter > 1 ? 1 : 0) &&
+      // Chapter 33 questions three of the ferry's requirements, each before building to it.
+      requirement.length === (chapter === 33 ? 3 : chapter > 1 ? 1 : 0) &&
         requirement.every((r) => boxes.filter((b) => b.edge === r.edge).length === 1),
       `Chapter ${chapter}: ${chapter > 1 ? "the requirement is a box in a colour of its own" : "no requirement box"}`,
     );
@@ -847,6 +848,28 @@ try {
         digest.includes("1 of 1 tests pass"),
         "Chapter 32: the rows up to Friday 11 give the run's digest",
       );
+    }
+    if (chapter === 33) {
+      await rewrite(
+        "def inputs(change):",
+        [
+          'def inputs(change):\n    batch = {"namespace": change["bucket"], "name": change["key"]}\n    if change["change"] == "deleted":\n        return []\n    return [batch]',
+        ],
+        [
+          'def inputs(change):\n    batch = {"namespace": change["bucket"], "name": change["key"]}\n    if change["change"] == "deleted":\n        batch["facets"] = {"version": shop.ferry.version_facet(change["previous"])}\n    else:\n        batch["facets"] = {"version": shop.ferry.version_facet(change["version"])}\n    return [batch]',
+        ],
+      );
+      await run("Run below", "Chapter 33, Run below with inputs");
+      const inputs = await output("shop.ferry.check_inputs(platform, inputs)");
+      check(inputs.includes("3 of 3 tests pass"), "Chapter 33: each run names the version it read");
+      await rewrite(
+        "def suspect(run):",
+        ['def suspect(run):\n    return run["state"] == "FAIL"'],
+        ['def suspect(run):\n    return run["scans_read"] > 0 and run["rows_written"] == 0'],
+      );
+      await run("Run below", "Chapter 33, Run below with suspect");
+      const suspect = await output("shop.ferry.check_suspect(collected, suspect)");
+      check(suspect.includes("2 of 2 tests pass"), "Chapter 33: Thursday's two runs, and no other");
     }
     if (chapter === 4) {
       await rewrite(

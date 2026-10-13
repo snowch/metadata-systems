@@ -12,7 +12,7 @@ app = marimo.App(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 31](chapter_31.ipynb)
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 31](chapter_31.ipynb) · [Next: Chapter 33](chapter_33.ipynb)
 
     # Chapter 32: Metadata for ML and AI
 
@@ -285,7 +285,7 @@ def _(mo):
     - In OpenLineage, the run's input would be `daily_sales` as an input dataset, as in Chapter 8. OpenLineage's facet for a dataset's version holds the version as free text, with no meaning defined for it.
     - OpenLineage has no facet for training or evaluation. Its facet for a dataset's type lists `MODEL` among its examples, so a run could name the forecast as a dataset it writes; the specification does not define what that means.
 
-    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 31](chapter_31.ipynb)
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 31](chapter_31.ipynb) · [Next: Chapter 33](chapter_33.ipynb)
 
     ---
 

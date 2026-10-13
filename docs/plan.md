@@ -262,6 +262,20 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 13 October 2026: Chapter 33 written; the course complete
+
+The author passed plan checkpoint 5 ("Pls go") with no change asked, and the course's convention
+that answer cells print below a prediction stays. Chapter 33 is written as the plan's table gives it
+(`docs/notes/part-8/design.md`): the reader joins the data team of an island ferry, a platform built
+on object storage whose changes start functions, with scheduled jobs and tables over the results,
+and answers three of its operations manager's messages. They instrument its functions so that each
+run names the batch and the version it read, deletes included; send its events through Part VI's
+collector and graph; diagnose a loss that failed no run, from the runs' own counts and the batches'
+fields; trace a figure to the versions its run counted; and find what still counts a deleted batch.
+The chapter questions three of the ferry's requirements, each before building to it, so it has three
+requirement boxes where every other chapter has one. The ferry and everything about its platform
+are the course's own; no product, place or company is named.
+
 ### 13 October 2026: Part VII written, real systems' rules applied to the shop's week
 
 Chapters 29 to 32 are written as the plan's table gives them (`docs/notes/part-7/design.md`). None of

@@ -1050,5 +1050,72 @@ class ThePartVIIRules(unittest.TestCase):
             self.assertEqual(M.check(week, ns["where"]).passed, passed, which)
 
 
+class TheFerry(unittest.TestCase):
+    """Chapter 33's second platform: its three days, its records, and the learner's two pieces."""
+
+    @classmethod
+    def setUpClass(cls):
+        from shop import ferry as F
+
+        cls.F = F
+        cls.f = F.run()
+        cls.pieces = {}
+        for which, src in (("stub", F.STUBS), ("reference", F.REFERENCE)):
+            for name, code in src.items():
+                ns: dict = {"shop": shop}
+                exec(code, ns)
+                cls.pieces[(which, name)] = ns[name]
+        cls.c = F.collect(F.events(cls.f, cls.pieces[("reference", "inputs")]))
+        cls.g = F.graph(cls.c)
+
+    def test_the_three_days(self):
+        F, f = self.F, self.f
+        self.assertEqual([r["rows"] for r in f.warehouse.tables()], [18, 475, 18])
+        self.assertEqual(len(f.changes), 39)
+        self.assertEqual([c["change"] for c in f.changes].count("overwritten"), 1)
+        self.assertEqual([c["change"] for c in f.changes].count("deleted"), 1)
+        self.assertEqual(len(F.events(f, self.pieces[("reference", "inputs")])), 90)
+        self.assertEqual((len(self.c.file), len(self.c.refused), len(self.c.dropped)), (90, 0, 0))
+        log = f.functions.log("s3://ferry-gates/mainland/2026-09-22/1730")
+        self.assertEqual([(r["started"], r["object"][-12:]) for r in log], [("2026-09-22T17:31:02Z", "gate-1.jsonl"), ("2026-09-22T17:31:02Z", "gate-2.jsonl"), ("2026-09-23T07:05:02Z", "gate-2.jsonl")])
+        self.assertEqual([r["started"] for r in f.scheduler.runs("build_loads")], ["2026-09-23T01:00:00Z", "2026-09-24T01:00:00Z", "2026-09-25T01:00:00Z"])
+
+    def test_the_inputs(self):
+        F, f = self.F, self.f
+        self.assertEqual(F.check_inputs(f, self.pieces[("stub", "inputs")]).passed, 1)
+        self.assertEqual(F.check_inputs(f, self.pieces[("reference", "inputs")]).passed, 3)
+        stub = [r["test"] for r in F.check_inputs(f, self.pieces[("stub", "inputs")])]
+        self.assertIn("38 of 38 runs", stub[1])
+        self.assertIn("names nothing", stub[2])
+        for ev in F.events(f, self.pieces[("reference", "inputs")]):
+            self.assertEqual(shop.openlineage.problems(ev), [])
+
+    def test_the_silent_loss(self):
+        F, f, c = self.F, self.f, self.c
+        self.assertEqual([(r["sailing_loads"], r["counted on board"]) for r in F.compare_counts(f, "2026-09-24", "island")], [(31, 31), (14, 24), (10, 17)])
+        self.assertEqual({r["state"] for r in F.runs(c)}, {"COMPLETE"})
+        self.assertEqual(F.check_suspect(c, self.pieces[("stub", "suspect")]).passed, 1)
+        self.assertEqual(F.check_suspect(c, self.pieces[("reference", "suspect")]).passed, 2)
+        crude = F.check_suspect(c, lambda r: r["rows_written"] < r["scans_read"])
+        self.assertEqual(crude.passed, 1)
+        self.assertEqual(crude[1]["test"], "Also flagged: Wednesday's 12:30 from the mainland, gate 1.")
+        rows = F.fields(c, "island", "gate-2")
+        self.assertEqual([(r["fields"], r["scans read"], r["rows written"]) for r in rows[-3:]], [("fare, scanned_at, ticket", 13, 13), ("fare, scan_time, ticket", 10, 0), ("fare, scan_time, ticket", 7, 0)])
+
+    def test_the_trace(self):
+        F, f = self.F, self.f
+        rows = F.trace(f, self.c, "2026-09-22 mainland 17:30")
+        self.assertEqual([r["passengers"] for r in rows], [35, 21, 14, 17, 38])
+        self.assertEqual(rows[2]["version"], f.storage.versions("s3://ferry-gates/mainland/2026-09-22/1730/gate-2")[0]["version"])
+        stub = F.trace(f, F.collect(F.events(f, self.pieces[("stub", "inputs")])), "2026-09-22 mainland 17:30")
+        self.assertEqual({r["version"] for r in stub[1:4]}, {"not recorded"})
+
+    def test_the_test_batch(self):
+        F, f = self.F, self.f
+        self.assertEqual([(r["dataset"], r["still counts the test scans"]) for r in F.made_from_test(f, self.g)], [("boardings", "no"), ("sailing_loads", "yes"), ("loads-2026-09-23.csv", "yes")])
+        self.assertEqual([r["passengers"] for r in f.report("2026-09-23") if r["sailing"] == "2026-09-23 island 19:30"], ["22"])
+        self.assertEqual([r["counted on board"] for r in F.harbour_counts("2026-09-23", "island")][2], 17)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -163,3 +163,29 @@ def figure(body: str, caption: str) -> str:
     parts = escape(caption).split("`")
     shown = "".join(f"<code>{p}</code>" if i % 2 else p for i, p in enumerate(parts))
     return f'<figure class="ms-figure"><figcaption>{shown}</figcaption>{body}</figure>'
+
+
+# Chapter 33's second platform: four systems where the shop had three. The labels are drafted by the
+# prose process (docs/notes/part-8/briefs/), and the figure draws no arrow from one asset to another:
+# the ferry's platform records which change starts which function, not what a function or a job writes.
+FERRY_FLOWS = ("a change starts a function", "what they write is not recorded", "reads and writes not recorded")
+
+
+def ferry_platform(f) -> str:
+    """The ferry's four systems, with what each holds now, and a count of each kind of part."""
+    batches = len(f.storage.ls("s3://ferry-gates/"))
+    reports = len(f.storage.ls("s3://ferry-reports/"))
+    systems = [
+        ("Object storage", "bucket", [("ferry-gates", f"{batches} batches"), ("ferry-reports", f"{reports} reports")]),
+        ("Functions", "function", [("load_scans", "function"), ("drop_scans", "function")]),
+        ("Warehouse", "table", [(t, "table") for t in ("sailings", "boardings", "sailing_loads")]),
+        ("Scheduler", "job", [("build_loads", "job"), ("send_report", "job")]),
+    ]
+    cells = []
+    for i, (name, _, parts) in enumerate(systems):
+        items = "".join(f'<li><code>{escape(a)}</code><span class="ms-kind">{escape(k)}</span></li>' for a, k in parts)
+        cells.append(f'<div class="ms-system"><h4>{escape(name)}</h4><ul>{items}</ul></div>')
+        if i < len(systems) - 1:
+            cells.append(f'<div class="ms-flow">{escape(FERRY_FLOWS[i])}<span class="ms-right">&nbsp;&rarr;</span></div>')
+    tally = " + ".join(f"{len(parts)} {kind}s" for _, kind, parts in systems)
+    return f'<div class="ms-fig"><div class="ms-systems ms-four">{"".join(cells)}</div><div class="ms-tally">{escape(tally)}</div></div>'

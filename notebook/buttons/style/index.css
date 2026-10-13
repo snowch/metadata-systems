@@ -265,6 +265,10 @@
   align-items: stretch;
 }
 
+.jp-RenderedMarkdown .ms-systems.ms-four {
+  grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+}
+
 .jp-RenderedMarkdown .ms-system {
   padding: 0.6rem 0.75rem;
   border: 1px solid color-mix(in srgb, var(--jp-content-font-color1) 30%, transparent);
@@ -312,7 +316,8 @@
 }
 
 @media (max-width: 640px) {
-  .jp-RenderedMarkdown .ms-systems {
+  .jp-RenderedMarkdown .ms-systems,
+  .jp-RenderedMarkdown .ms-systems.ms-four {
     grid-template-columns: 1fr;
   }
 
