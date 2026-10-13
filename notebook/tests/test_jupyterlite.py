@@ -48,9 +48,11 @@ class TheButtons(unittest.TestCase):
                 self.assertNotIn(words, source, part)
             self.assertIn("press **Run all**, at the top of the page", source, part)
 
-    def test_the_menu_of_changes_is_the_only_menu_the_texts_name(self):
-        self.assertIn("Choose a change to the shop from the menu below.", SOURCE[2])
-        self.assertNotIn("menu", SOURCE[1].replace("dropdown", ""))
+    def test_no_text_names_a_menu(self):
+        # Chapter 2's what-ifs are plain cells: no chapter has a control to choose from.
+        for part, source in SOURCE.items():
+            self.assertNotIn("menu", source, part)
+            self.assertNotIn("mo.ui.", source, part)
 
     def test_the_build_adds_the_row_to_the_site(self):
         build = (ROOT / "notebook" / "jupyterlite" / "build.sh").read_text(encoding="utf-8")

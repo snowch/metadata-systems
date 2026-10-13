@@ -21,10 +21,10 @@ trap 'rm -rf "$work"' EXIT
 rm -rf "$here/static/pyodide"
 python3 "$here/fetch_pyodide.py" "$here/static/pyodide"
 
-# The three packages the notebook installs from the site: the shop's platform, and ipywidgets with
-# the one dependency the kernel does not already have.
+# The packages the site serves: the shop's platform, which the notebook installs, and comm, which
+# the Pyodide kernel installs when it starts and which Pyodide does not ship.
 python3 "$here/make_wheel.py" "$work/wheels"
-python3 -m pip download --quiet --no-deps --dest "$work/wheels" "ipywidgets==8.1.9" "comm==0.2.3"
+python3 -m pip download --quiet --no-deps --dest "$work/wheels" "comm==0.2.3"
 
 # The notebooks, from the source files; each runs once here, in CPython, as a check.
 python3 "$here/build_ipynb.py" "$work/content" --check

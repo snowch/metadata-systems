@@ -96,6 +96,37 @@ class Record(dict):
         return ("text/html", self._repr_html_())
 
 
+_BESIDE_STYLE = (
+    "<style>table.ms-table.ms-beside th,table.ms-table.ms-beside td{text-align:left;vertical-align:top}"
+    "table.ms-table.ms-beside td:first-child{font-family:var(--jp-content-font-family,sans-serif);font-weight:600}"
+    "@media (max-width:640px){table.ms-table.ms-beside thead{display:none}"
+    "table.ms-table.ms-beside tr{display:block;padding:0.4rem 0;border-bottom:1px solid "
+    "color-mix(in srgb,currentColor 18%,transparent)}"
+    "table.ms-table.ms-beside td{display:block;border:0;white-space:normal;overflow-wrap:anywhere}"
+    "table.ms-table.ms-beside td[data-label]::before{content:attr(data-label);display:block;"
+    "font-family:var(--jp-content-font-family,sans-serif);font-style:italic;opacity:0.8}}</style>"
+)
+
+
+class Beside(Rows):
+    """Records side by side, one per row, in columns; on a narrow screen each row stacks, with each
+    value under its column's name, so the values to compare stay on screen."""
+
+    def _repr_html_(self) -> str:
+        names = list(self[0])
+        head = "".join(f"<th>{html.escape(n)}</th>" for n in names)
+        body = "".join(
+            "<tr>"
+            + "".join(
+                f'<td data-label="{html.escape(n)}">{_cell(r.get(n), self.null)}</td>' if i else f"<td>{_cell(r.get(n), self.null)}</td>"
+                for i, n in enumerate(names)
+            )
+            + "</tr>"
+            for r in self
+        )
+        return f'{_TABLE_STYLE}{_BESIDE_STYLE}<div class="ms-scroll"><table class="ms-table ms-beside"><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>'
+
+
 def rows_of(cursor: sqlite3.Cursor) -> Rows:
     """A query's rows as dictionaries, keyed by column name."""
     names = [d[0] for d in cursor.description or ()]

@@ -42,7 +42,7 @@ jobs:
       - name: The engine's facts and the chapter's words
         run: python -m unittest discover -s notebook/tests -t notebook -v
 
-      - name: Install JupyterLite, its Pyodide kernel and the widgets
+      - name: Install JupyterLite and its Pyodide kernel
         run: pip install -r notebook/jupyterlite/requirements.txt
 
       - name: Build the chapters as a JupyterLite site

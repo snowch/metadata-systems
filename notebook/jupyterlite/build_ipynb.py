@@ -10,8 +10,7 @@ cell, with the same prose and the same visible code:
 
 - the setup cells, at the foot of a source file, move to the top, since Jupyter runs from the top,
   with the install of the packages the page bundles;
-- the control (the menu of changes) becomes an ipywidget; a figure shown with
-  `mo.Html` is drawn here, from the shop's week, into a Markdown cell (notebook/shop/figures.py);
+- a figure shown with `mo.Html` is drawn here, from the shop's week, into a Markdown cell (notebook/shop/figures.py);
   a column of outputs is `display`; a callout (the warning, and
   the steps for running and saving the page) is a box, a div the course's stylesheet draws.
 
@@ -78,19 +77,16 @@ CHAPTERS = {
     33: (HERE.parent / "chapter_33.py", "chapter_33.ipynb"),
 }
 
-# Jupyter runs from the top: these come first. In the browser the three packages the page bundles
-# are installed from the site itself, without the dependencies the kernel already has (IPython,
-# traitlets) or does not need (ipywidgets' front-end package); run here, at build time, they are
-# already importable.
+# Jupyter runs from the top: these come first. In the browser the shop's package is installed from
+# the site itself; run here, at build time, it is already importable.
 SETUP = [
     """import sys
 
 if sys.platform == "emscripten":
     import piplite
 
-    await piplite.install(["comm", "ipywidgets", "shop"], deps=False)""",
-    """import ipywidgets as widgets
-from IPython.display import HTML, display
+    await piplite.install(["shop"], deps=False)""",
+    """from IPython.display import HTML, display
 
 import shop""",
     """week = shop.run_week()
@@ -129,33 +125,6 @@ def box(name: str, text: str) -> str:
     return f'<div class="ms-box {name}">\n\n{text}\n\n</div>'
 
 
-def code_font(text: str) -> str:
-    """A label's `names` in the code font, as Markdown would set them, in HTML."""
-    parts = text.split("`")
-    return "".join(f"<code>{p}</code>" if i % 2 else p for i, p in enumerate(parts))
-
-
-def inline(text: str) -> str:
-    """A sentence's Markdown `names` and **button labels** as HTML, for a lead a widget shows."""
-    parts = code_font(text).split("**")
-    return "".join(f"<strong>{p}</strong>" if i % 2 else p for i, p in enumerate(parts))
-
-
-def menu(stmts: list[ast.stmt]) -> str:
-    """The menu of changes: its lead, its label, and a dropdown of the same options."""
-    call = find(stmts, "dropdown")
-    options = ast.literal_eval(keyword(call, "options"))
-    label = ast.literal_eval(keyword(call, "label"))
-    default = ast.literal_eval(keyword(call, "value"))
-    lead = ast.literal_eval(find(stmts, "md").args[0])
-    return f"""change = widgets.Dropdown(
-    options={list(options.items())!r},
-    value={options[default]!r},
-    layout=widgets.Layout(width="100%"),
-)
-display(HTML({"<p>" + inline(lead) + "</p><p>" + inline(label) + "</p>"!r}), change)"""
-
-
 def build(chapter: int) -> nbformat.NotebookNode:
     """One chapter's Jupyter notebook."""
     source = CHAPTERS[chapter][0].read_text(encoding="utf-8")
@@ -185,8 +154,6 @@ def build(chapter: int) -> nbformat.NotebookNode:
                 setup_at = len(out)
         elif "import marimo as mo" in code or "week = shop.run_week()" in code:
             continue  # the setup, which Jupyter runs first (SETUP)
-        elif "mo.ui.dropdown(" in code:
-            out.append(nbformat.v4.new_code_cell(menu(stmts), metadata=HIDDEN))
         elif len(stmts) == 1 and isinstance(first, ast.Expr) and is_call(first.value, "Html"):
             # A figure: drawn here from the shop's week and written into a Markdown cell, so it
             # shows before anything runs.
@@ -220,7 +187,7 @@ def check(nb: nbformat.NotebookNode) -> None:
     that raises stops the build.
 
     The page itself ships without outputs. JupyterLite opens a notebook as untrusted, and an
-    untrusted notebook's saved HTML is shown with its styles stripped and its widgets as text, so
+    untrusted notebook's saved HTML is shown with its styles stripped, so
     every figure would look broken until the reader ran the notebook; signing it does not help,
     since the signature lives in the signing machine's database, not in the file."""
     import copy

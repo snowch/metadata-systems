@@ -18,7 +18,7 @@ platform grows. `store` is Part VI's first piece: the week's metadata in four sh
 """
 
 from .data import ARRIVAL, DAYS
-from .infer import cleaning_rules_that_fit, day_gap, queries_that_rebuild
+from .infer import cleaning_rules_that_fit, day_gap, queries_that_rebuild, records_beside
 from .platform import pounds
 from .graph import compare_with_code, graph
 from . import aliases, cause, claims, collector, columns, consumers, delivery, ferry, identity, impact, ingest, integrations, interface, lineage_graph, ml, observe, openlineage, platforms, provenance, quality, query, scale, schemas, store

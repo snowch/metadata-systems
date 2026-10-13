@@ -99,6 +99,32 @@ content tests fail a figure without a block or with a question unanswered.
   shop's management sees each morning.
 
 
+### `what-ifs` (three cells, each printing `shop.records_beside`)
+
+- **Kind:** an experiment, run three times.
+- **What the learner should learn:** a query that rebuilds `daily_sales` shows how it could have
+  been made, not how it was; a second source, an edit and a failed night each leave the platform's
+  records unable to say which, or that anything changed.
+- **What they know before:** the query over `clean_orders` gives every row (the cell above), and
+  the records each system keeps (earlier sections).
+- **The question:** for each change, does a query over the week's assets still give every row of
+  `daily_sales`, and which records show the change?
+- **What they do:** run each cell, then compare its two columns row by row.
+- **Why the action is needed:** the change happens only in a week run again; the records beside the
+  week as it ran are the only way to see what the change left behind.
+- **Evidence:** the copy adds a file and a second fitting query and changes nothing else; the edit
+  changes Saturday's dashboard value and leaves no fitting query, with the same row count and times;
+  the failure leaves 6 rows and a last-altered time a day older than `clean_orders`'s.
+- **How it changes their understanding:** a fit is evidence for every source it fits; no record
+  says the job was edited; a failure shows only by comparing times.
+- **Could they predict it:** partly: the copy's second fit, yes; that nothing records the edit,
+  only by running it.
+- **Does an option give it away:** there are no options; the result paragraph comes after each cell.
+- **Is "I don't know yet" right:** yes, for which source the job reads after the copy, and the
+  page says so.
+- **The next question:** what would have to be recorded at the time ("Records made at the time").
+- **Really an experiment:** yes: a change made, its consequence observed against the week as it ran.
+
 ## Requirements
 
 The chapter questions "Every table must have an owner." in prose, not in a figure. The
@@ -914,6 +940,22 @@ the menu does with the one chosen, and gives each change its maker and its time:
 Sunday 13; the job failing early on Monday 14. Every fact landed; placed as written. The author was
 reading a copy of the chapter saved in their browser, so the earlier redraft had not reached them.
 At the author's request, "could have been" and "was" in its first two sentences are in bold.
+
+## The what-ifs as plain cells, 13 October 2026
+
+The author found Reconstruction too long and the menu of changes awkward. Driven in a browser on the
+published page, the menu worked only if the reader chose a change, selected the first cell below it
+and pressed Run below; choosing alone changed nothing on screen, and the result was spread over four
+cells with nothing beside it to compare. Every later chapter runs a changed week in a plain cell
+(`shop.run_week(["copy"])`), so Chapter 2 now does the same. Reconstruction ends at the comparison
+with the reader's guess. A new section, "How `daily_sales` could have been made, and how it was
+made", gives each what-if one cell, `shop.records_beside(week, shop.run_week([...]))`, which prints
+Monday morning's records for the week as it ran beside the same records with the change, and a
+short result after it. The menu, its four cells and the paragraph explaining the query list's
+columns are gone; the build no longer bundles ipywidgets (it keeps `comm`, which the Pyodide kernel installs when it starts). Brief
+`chapter-02/briefs/round-21/BJ-three-what-ifs.md`, draft under `drafts/round-21/`; every fact and
+every kept phrase landed; placed as written, less one cut of mine: the list of the records, which
+the table's first column repeats.
 
 ## Known gaps
 

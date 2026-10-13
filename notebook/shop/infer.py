@@ -15,7 +15,7 @@ import sqlite3
 from collections import Counter
 
 from .data import ORDER_FIELDS
-from .platform import Rows, stage
+from .platform import Beside, Rows, stage
 from .week import Week
 
 KEEP = ("all", "completed", "cancelled")
@@ -141,3 +141,33 @@ def day_gap(week: Week, day: str) -> dict:
         "left_ids": [o["order_id"] for o in left],
         "left_pence": sum(o["price_pence"] * o["quantity"] for o in left),
     }
+
+
+def _records(week: Week, target: str) -> dict[str, object]:
+    """What the platform records on Monday morning that bears on how `target` was made."""
+
+    def altered(table: str) -> str:
+        rows = week.warehouse.sql("SELECT last_altered FROM information_schema.tables WHERE table_name = :t", t=table)
+        return rows[0]["last_altered"]
+
+    count = week.warehouse.sql("SELECT row_count FROM information_schema.tables WHERE table_name = :t", t=target)
+    board = week.reporting.dashboard("sales_dashboard")
+    fitting = queries_that_rebuild(week, target, fit="covers")
+    return {
+        "files in object storage": [r["key"] for r in week.storage.ls()],
+        "`clean_orders`: last_altered": altered("clean_orders"),
+        f"`{target}`: row_count": count[0]["row_count"],
+        f"`{target}`: last_altered": altered(target),
+        "dashboard: last_refreshed": board["last_refreshed"],
+        "dashboard: values": [f"{v['day']}: {v['revenue']}" for v in board["values"]],
+        f"queries that give every row of `{target}`": [
+            f"{q['source']}: {q['keep']} orders, {q['measure']} per {q['per']}" for q in fitting
+        ]
+        or ["none"],
+    }
+
+
+def records_beside(week: Week, changed: Week, target: str = "daily_sales") -> Beside:
+    """Monday morning's records for the week as it ran, beside the same records after a changed week."""
+    before, after = _records(week, target), _records(changed, target)
+    return Beside({"record": k, "the week as it ran": before[k], "with the change": after[k]} for k in before)

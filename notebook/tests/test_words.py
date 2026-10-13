@@ -398,8 +398,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         sat = {r["day"]: r["revenue_pence"] for r in refunds.warehouse.sql("SELECT * FROM daily_sales")}["2026-09-12"]
         shown = {v["day"]: v["revenue"] for v in refunds.reporting.dashboard()["values"]}["2026-09-12"]
         self.assertEqual((sat, shown), (21549, "£215.49"))
-        self.says("becomes 21549 instead of 19149, in pence")
-        self.says("£215.49 instead of £191.49")
+        self.says("The dashboard shows £215.49 instead of £191.49 for Saturday, 2026-09-12.")
         [t] = refunds.warehouse.sql("SELECT row_count, last_altered FROM information_schema.tables WHERE table_name = 'daily_sales'")
         self.assertEqual((t["row_count"], t["last_altered"]), (7, "2026-09-14T02:30:21Z"))
         self.says("The table still has 7 rows and the same last-altered time")
@@ -416,15 +415,24 @@ class TheWordsMatchTheEngine(unittest.TestCase):
             "shows the 6 values it found."
         )
         self.assertEqual(KEEP, ("all", "completed", "cancelled"))
-        self.says(
-            "\"No simple query over the week's assets reproduces it\" means none of the simple queries "
-            "the menu's last cell tries."
-        )
-        # What the menu's last cell lists for each change, and the columns the text names.
-        counts = [len(shop.queries_that_rebuild(shop.run_week(c), "daily_sales", fit="covers")) for c in ([], ["copy"], ["refunds"], ["failed"])]
-        self.assertEqual(counts, [1, 2, 0, 1])
-        self.assertEqual(set(shop.queries_that_rebuild(self.week)[0]), {"source", "keep", "measure", "per", "sql"})
-        self.says("`source` names the asset it reads; `keep` says which orders it keeps (all, completed or cancelled)")
+        self.says("So `none`, in the second what-if, means none of those queries")
+        # Each what-if's cell: its table's columns and rows, and what the last row lists.
+        tables = {c: shop.records_beside(self.week, shop.run_week([c])) for c in ("copy", "refunds", "failed")}
+        self.assertEqual(list(tables["copy"][0]), ["record", "the week as it ran", "with the change"])
+        self.says("The column `the week as it ran` holds the record for the week you have read.")
+        self.says("The column `with the change` holds the record for the week with the change.")
+        last = {c: t[-1]["with the change"] for c, t in tables.items()}
+        self.assertEqual(tables["copy"][-1]["the week as it ran"], ["clean_orders: completed orders, revenue per day"])
+        self.says("for example `clean_orders: completed orders, revenue per day`, which is the query you ran above")
+        self.assertEqual(last["copy"], ["clean_orders: completed orders, revenue per day", f"{shop.COPY}: completed orders, revenue per day"])
+        self.says("The last row now lists two queries: the same query over `clean_orders` and over the copy.")
+        # The copy is the only record that differs.
+        self.assertEqual([r["record"] for r in tables["copy"] if r["the week as it ran"] != r["with the change"]], ["files in object storage", "queries that give every row of `daily_sales`"])
+        self.says("Every other record is the same as in the week as it ran.")
+        self.assertEqual(last["refunds"], ["none"])
+        self.says("The last row says `none`.")
+        self.assertEqual(last["failed"], ["clean_orders: completed orders, revenue per day"])
+        self.says("The query over `clean_orders` is still listed: it gives every row of `daily_sales`, and one row more, for Sunday.")
         self.says("Each record is normal on its own. The gap shows only when you compare the last-altered times.")
 
     def test_what_the_rows_can_answer(self):
@@ -1591,25 +1599,20 @@ class TheWordsOfChapter13(unittest.TestCase):
 
 
 class TheWordsAboutThePage(unittest.TestCase):
-    """The menu of changes offers the engine's changes. Each page's warning states what was measured
+    """Chapter 2's what-ifs run the engine's changes. Each page's warning states what was measured
     on the pages; test_jupyterlite.py checks it against docs/notes/notebook-prototype.md."""
 
-    def test_the_menu_offers_the_engines_changes(self):
-        [menu] = [
-            n
-            for n in ast.walk(ast.parse(SOURCE[2]))
-            if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr == "dropdown"
-        ]
-        options = ast.literal_eval(next(k.value for k in menu.keywords if k.arg == "options"))
-        self.assertEqual(list(options.values()), [[], ["copy"], ["refunds"], ["failed"]])
-        self.assertEqual([c for v in options.values() for c in v], list(shop.CHANGES[:3]))
+    def test_the_what_ifs_run_the_engines_changes(self):
+        runs = re.findall(r'^    (\w+) = shop\.run_week\(\[(.*?)\]\)\n    shop\.records_beside\(week, (\w+)\)$', SOURCE[2], re.M)
+        self.assertEqual([ast.literal_eval(c) for _, c, _ in runs], list(shop.CHANGES[:3]))
+        self.assertTrue(all(a == b for a, _, b in runs))
+        bold = re.findall(r"^    \*\*(.+?)\*\* ", SOURCE[2], re.M)
         self.assertEqual(
-            list(options),
+            bold[-3:],
             [
-                "The shop stays as it is",
-                "An analyst copies clean_orders every night",
-                "From Saturday, the daily_sales job keeps unrefunded orders",
-                "The daily_sales job fails on the last night",
+                "An analyst copies `clean_orders` every night.",
+                "From Saturday, the `daily_sales` job keeps unrefunded orders.",
+                "The `daily_sales` job fails on the last night.",
             ],
         )
 

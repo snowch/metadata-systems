@@ -642,10 +642,11 @@ Each chapter that relies on one of these reads it first and adds an entry above:
 - The course's own code and text: copyright Christopher Snow (`CLAUDE.md`).
 - Every npm dependency the front page includes (React and React DOM, MIT; the typefaces below):
   checked by `scripts/licences.mjs` against a list of open licences on every `npm run check`.
-- The chapters' notebooks: JupyterLite, JupyterLab, Jupyter Notebook and the widgets' front
-  end (BSD-3-Clause), the Pyodide kernel (BSD-3-Clause) and Pyodide (as below); every wheel it
-  bundles is checked by `notebook/licences.py` on every build (22 on 10 October 2026, among them
-  IPython, traitlets, jedi, ipywidgets and comm, under BSD, MIT, Apache-2.0 and MPL-2.0).
+- The chapters' notebooks: JupyterLite, JupyterLab and Jupyter Notebook (BSD-3-Clause), the
+  Pyodide kernel (BSD-3-Clause) and Pyodide (as below); every wheel it bundles is checked by
+  `notebook/licences.py` on every build (21 on 13 October 2026, among them IPython, traitlets, jedi
+  and comm, which the kernel installs when it starts, under BSD, MIT, Apache-2.0 and MPL-2.0). Since
+  13 October 2026 no chapter has a widget, and the site no longer bundles ipywidgets.
 - The notebooks' row of buttons (`notebook/buttons/`): the course's own code, built with
   `@jupyter/builder` (BSD-3-Clause); what the build adds to the site bundles the runtimes of
   `css-loader` and `style-loader` (MIT), listed in the built extension's

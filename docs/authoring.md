@@ -24,8 +24,7 @@ the chapter diffable and lets the tests read every sentence. `notebook/jupyterli
 turns it into `chapter_NN.ipynb`, cell by cell, and stops on anything it does not know how to
 carry over: a markdown cell (`mo.md`) is a markdown cell; a figure (`mo.Html`, from
 `notebook/shop/figures.py`) is drawn by the build from the shop's week into a Markdown cell, so it
-shows before anything runs; a control (`mo.ui.dropdown`,
-`mo.ui.text_area`) is an ipywidget; the setup cells at the foot of the file move to the top. A new
+shows before anything runs; the setup cells at the foot of the file move to the top. A new
 chapter is added to `CHAPTERS` in `build_ipynb.py`, in `notebook/tests/test_words.py`, and to
 `NOTEBOOKS` in `content/plan/notebooks.ts`, which the front page reads.
 
