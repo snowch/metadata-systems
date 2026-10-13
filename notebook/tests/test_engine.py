@@ -1087,6 +1087,8 @@ class TheFerry(unittest.TestCase):
         stub = [r["test"] for r in F.check_inputs(f, self.pieces[("stub", "inputs")])]
         self.assertIn("38 of 38 runs", stub[1])
         self.assertIn("names nothing", stub[2])
+        wrong = lambda c: [{"namespace": c["bucket"], "name": c["key"], "facets": {"version": F.version_facet(c["previous"] or c["version"])}}]
+        self.assertIn("1 of 38 runs started by a create or an overwrite name a version, but not the one they read", F.check_inputs(f, wrong)[1]["test"])
         for ev in F.events(f, self.pieces[("reference", "inputs")]):
             self.assertEqual(shop.openlineage.problems(ev), [])
 
@@ -1112,7 +1114,11 @@ class TheFerry(unittest.TestCase):
 
     def test_the_test_batch(self):
         F, f = self.F, self.f
-        self.assertEqual([(r["dataset"], r["still counts the test scans"]) for r in F.made_from_test(f, self.g)], [("boardings", "no"), ("sailing_loads", "yes"), ("loads-2026-09-23.csv", "yes")])
+        made = F.made_from_test(f, self.g)
+        self.assertEqual([(r["dataset"], r["passengers on 2026-09-23 island 19:30"], r["still counts the test scans"]) for r in made], [
+            ("boardings", 17, "no"), ("sailing_loads", 22, "yes"), ("loads-2026-09-22.csv", None, "no"), ("loads-2026-09-23.csv", 22, "yes"), ("loads-2026-09-24.csv", None, "no"),
+        ])
+        self.assertEqual({r["counted on board"] for r in made}, {17})
         self.assertEqual([r["passengers"] for r in f.report("2026-09-23") if r["sailing"] == "2026-09-23 island 19:30"], ["22"])
         self.assertEqual([r["counted on board"] for r in F.harbour_counts("2026-09-23", "island")][2], 17)
 

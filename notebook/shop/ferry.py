@@ -91,9 +91,11 @@ MESSAGES = {
     "valid": "Every event passes Chapter 8's check.",
     "valid_no": "{n} events break the rules Chapter 8's check tests, the first at `{where}`.",
     "versions": "Each run started by a create or an overwrite names the version of the batch it read.",
-    "versions_no": "{n} of {total} runs started by a create or an overwrite do not name the version of the batch they read.",
+    "versions_none": "{n} of {total} runs started by a create or an overwrite name no version of the batch they read: a version goes in the batch's `facets`, as `\"version\": shop.ferry.version_facet(...)`.",
+    "versions_wrong": "{n} of {total} runs started by a create or an overwrite name a version, but not the one they read, `change[\"version\"]`.",
+    "versions_batch": "{n} of {total} runs started by a create or an overwrite name no input with the batch's bucket and key.",
     "deleted": "The run started by the delete of the test batch names the batch and the version it removed.",
-    "deleted_no": "The run started by the delete of the test batch names {got}; the version it removed is `{want}`.",
+    "deleted_no": "The run started by the delete of the test batch names {got}; the version it removed is `{want}`, `change[\"previous\"]`.",
     "nothing": "nothing",
     "thursday": "Both of Thursday's runs on the island's gate 2 after noon are flagged.",
     "thursday_no": "{n} of Thursday's 2 runs on the island's gate 2 after noon are flagged.",
@@ -102,6 +104,7 @@ MESSAGES = {
     "error": "`{name}` raised {error}.",
     "not_recorded": "not recorded",
     "still": "yes",
+    "no_row": "no row for it",
     "gone": "no",
 }
 
@@ -430,17 +433,25 @@ def check_inputs(f: Ferry, inputs) -> Checked:
         "passes": "no" if broken else "yes",
     }]
     loads = [c for c in f.changes if c["change"] != "deleted"]
-    missing = [c for c in loads if _version_of(inputs(change_record(c)), c["key"]) != c["version"]]
-    rows.append({
-        "test": MESSAGES["versions"] if not missing else MESSAGES["versions_no"].format(n=len(missing), total=len(loads)),
-        "passes": "no" if missing else "yes",
-    })
+    got = {id(c): _version_of(inputs(change_record(c)), c["key"]) for c in loads}
+    no_batch = [c for c in loads if got[id(c)] is None]
+    no_version = [c for c in loads if got[id(c)] == MESSAGES["not_recorded"]]
+    wrong = [c for c in loads if got[id(c)] not in (None, MESSAGES["not_recorded"], c["version"])]
+    if no_batch:
+        test = MESSAGES["versions_batch"].format(n=len(no_batch), total=len(loads))
+    elif no_version:
+        test = MESSAGES["versions_none"].format(n=len(no_version), total=len(loads))
+    elif wrong:
+        test = MESSAGES["versions_wrong"].format(n=len(wrong), total=len(loads))
+    else:
+        test = MESSAGES["versions"]
+    rows.append({"test": test, "passes": "no" if no_batch or no_version or wrong else "yes"})
     [delete] = [c for c in f.changes if c["change"] == "deleted"]
     got = _version_of(inputs(change_record(delete)), delete["key"])
     ok = got == delete["previous"]
     rows.append({
         "test": MESSAGES["deleted"] if ok else MESSAGES["deleted_no"].format(
-            got=MESSAGES["nothing"] if got is None else (f"the batch, with its version {got}" if got == MESSAGES["not_recorded"] else f"the batch, with the version `{got}`"),
+            got=MESSAGES["nothing"] if got is None else ("the batch with no version" if got == MESSAGES["not_recorded"] else f"the batch with the version `{got}`"),
             want=delete["previous"],
         ),
         "passes": "yes" if ok else "no",
@@ -616,30 +627,31 @@ def downstream(g: dict, start: str) -> list[str]:
 
 
 def made_from_test(f: Ferry, g: dict) -> Rows:
-    """Everything downstream of the test batch in the graph, and whether each still counts its scans."""
+    """Every dataset downstream of the test batch in the graph: what each holds now for the test
+    batch's sailing, beside the harbour master's count, and whether it still counts the test scans."""
     start = f"{GATES_BUCKET}/{TEST_KEY}"
     sailing = _sailing_of(TEST_KEY)
-    day = sailing.split()[0]
-    out = []
+    day, harbour, _ = sailing.split()
+    counted = next(r["counted on board"] for r in harbour_counts(day, harbour) if r["sailing"] == sailing)
     order = lambda d: (0 if short(d) == "boardings" else 1 if short(d) == "sailing_loads" else 2, d)
+    out = []
     for d in sorted(downstream(g, start), key=order):
         name = short(d)
         if name == "boardings":
-            still = f.warehouse.sql("SELECT COUNT(*) AS n FROM boardings WHERE batch = :b", b=TEST_KEY)[0]["n"] > 0
+            held = f.warehouse.sql("SELECT COUNT(*) AS n FROM boardings WHERE sailing = :s", s=sailing)[0]["n"]
         elif name == "sailing_loads":
-            row = f.warehouse.sql("SELECT passengers FROM sailing_loads WHERE sailing = :s", s=sailing)[0]["passengers"]
-            still = row != sum(r["counted on board"] for r in harbour_counts(day, sailing.split()[1]) if r["sailing"] == sailing)
-        elif name.startswith("loads-"):
+            held = f.warehouse.sql("SELECT passengers FROM sailing_loads WHERE sailing = :s", s=sailing)[0]["passengers"]
+        else:
             text = f.storage.read_text(f"{REPORTS_BUCKET}/{name}")
             line = next((l for l in text.splitlines() if l.startswith(sailing + ",")), None)
-            if line is None:
-                continue
-            counted = sum(r["counted on board"] for r in harbour_counts(day, sailing.split()[1]) if r["sailing"] == sailing)
-            still = int(line.split(",")[1]) != counted
-        else:
-            continue
-        out.append({"dataset": name, "still counts the test scans": MESSAGES["still"] if still else MESSAGES["gone"]})
-    return Rows(out)
+            held = int(line.split(",")[1]) if line else None
+        out.append({
+            "dataset": name,
+            f"passengers on {sailing}": held,
+            "counted on board": counted,
+            "still counts the test scans": MESSAGES["still"] if held is not None and held != counted else MESSAGES["gone"],
+        })
+    return Rows(out, null=MESSAGES["no_row"])
 
 
 STUBS = {

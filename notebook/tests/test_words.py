@@ -1848,7 +1848,7 @@ class TheWordsOfPartVII(unittest.TestCase):
         self.says("Gate 2's second version, `f0ff6ad37438`, with 17 scans", 33)
         self.assertEqual((trace[0]["passengers"], trace[-1]["passengers"]), (35, 38))
         made = [r["still counts the test scans"] for r in F.made_from_test(f, g)]
-        self.assertEqual(made, ["no", "yes", "yes"])
+        self.assertEqual(made, ["no", "yes", "no", "yes", "no"])
         report = {r["sailing"]: r["passengers"] for r in f.report("2026-09-23")}
         self.assertEqual(report["2026-09-23 island 19:30"], "22")
         self.says("the report shows 22 passengers on Wednesday's 19:30 from the island, and the harbour master counted 17", 33)
