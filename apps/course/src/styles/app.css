@@ -323,7 +323,7 @@ details.part {
 }
 details.part > summary {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   gap: var(--space-1) var(--space-3);
   padding: var(--space-2) 0;
@@ -332,15 +332,6 @@ details.part > summary {
 }
 details.part > summary::before {
   color: var(--accent);
-}
-/* On a phone the count goes under the part's name, in the name's column. */
-@media (max-width: 36rem) {
-  details.part > summary {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-  details.part > summary .meta {
-    grid-column: 2;
-  }
 }
 .part-heading {
   font-size: var(--text-md);

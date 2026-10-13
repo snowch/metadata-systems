@@ -59,18 +59,10 @@ export function FrontPage() {
       <p className="contents-note">{STRINGS.contentsNote}</p>
       {PARTS.map((title, i) => {
         const chapters = chaptersOf(i + 1);
-        const count = chapters.filter((c) => NOTEBOOKS.has(c.number)).length;
         return (
           <details key={title} className="part" open={i === 0}>
             <summary>
               <span className="part-heading">{fill(STRINGS.part, { number: i + 1, title })}</span>
-              <span className="meta">
-                {count > 0
-                  ? fill(STRINGS.cover.partCount.some, { written: count, total: chapters.length })
-                  : chapters.length === 1
-                    ? STRINGS.cover.partCount.noneOne
-                    : fill(STRINGS.cover.partCount.none, { total: chapters.length })}
-              </span>
             </summary>
             <ol className="chapter-list">
               {chapters.map((c) => {
