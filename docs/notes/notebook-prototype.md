@@ -407,6 +407,22 @@ error. A first try at Chapter 24 on the phone stopped at 180 s waiting for the p
 at Chapter 28 on desktop recorded a Run all of 0.6 s; both, tried twice more, gave the figures above.
 The warning's 9 to 12 seconds and about 400 MB hold.
 
+## Chapters 29 to 32
+
+Measured 13 October 2026 as Chapters 24 to 28 were, on the built site served locally, before the
+outside review. The link followed is the chapter text's own "Next" link.
+
+| | Chapter 29 | Chapter 30 | Chapter 31 | Chapter 32 |
+| --- | --- | --- | --- | --- |
+| Opened from the chapter before's link, after it ran | 11 files, 0.32 MB, in a new tab | 11 files, 0.32 MB, in a new tab | 11 files, 0.31 MB, in a new tab | 11 files, 0.31 MB, in a new tab |
+| Run all, from the press until no cell waits (desktop, phone, from the link) | 8.6 to 8.8 s | 8.4 to 8.8 s | 8.7 to 8.9 s | 8.7 to 9.5 s |
+| Peak memory of a renderer process, opened alone | 392 to 399 MB | 394 to 404 MB | 391 to 399 MB | 390 to 401 MB |
+| Peak memory, with the chapter before open in its own tab | 617 MB | 610 MB | 615 MB | 614 MB |
+| Cells with an error output; console errors from the page | none | none | none | none |
+
+Each warning states what Chapters 24 to 28 state, and the live measurement after publishing is the
+check on its 9 to 12 seconds.
+
 ## Phones
 
 Nothing here measured a real phone, so the page says only what was measured and what one report

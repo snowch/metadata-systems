@@ -56,7 +56,7 @@ def rules() -> Rows:
     return Rows([
         {"system": "Airflow", "its job": "a task in a Dag", "a run": "a try of a task instance", "inputs from": "what each task's operator reports", "sent": "as each try starts and ends"},
         {"system": "Spark", "its job": "an action, named with its plan's top node and output table", "a run": "one execution", "inputs from": "the query plan", "sent": "as the execution starts and ends"},
-        {"system": "dbt", "its job": "a model", "a run": "one reading of the artifacts", "inputs from": "the manifest's parents of the model", "sent": "after dbt has finished"},
+        {"system": "dbt", "its job": "a model", "a run": "one reading of the files dbt wrote", "inputs from": "the manifest's parents of the model", "sent": "after dbt has finished"},
         {"system": "Trino", "its job": "a query, by default", "a run": "one query", "inputs from": "the tables the query names", "sent": "as the query is created and ends"},
     ])
 

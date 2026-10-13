@@ -67,7 +67,7 @@ def _stored(platform: str, types: dict) -> list[dict]:
 
 
 PLATFORMS = ("DataHub", "OpenMetadata", "Apache Atlas", "Marquez")
-EXAMPLE_TYPES = {"account": "TECHNICAL_OWNER", "responsible": "BUSINESS_OWNER", "team": "TECHNICAL_OWNER"}
+EXAMPLE_TYPES = {"account": "TECHNICAL_OWNER", "responsible": "TECHNICAL_OWNER", "team": "TECHNICAL_OWNER"}  # as the learner's cell starts
 
 
 def owners_in(types: dict | None = None) -> Rows:
@@ -85,14 +85,16 @@ def owners_in(types: dict | None = None) -> Rows:
 
 
 def kept(types: dict | None = None) -> Rows:
-    """For each platform: how many of the three owners it keeps, and how many meanings a reader can
-    tell apart from what it keeps."""
+    """For each platform: how many of the three owners it keeps, and how many of those a reader can
+    tell from the others by their type."""
     types = types or EXAMPLE_TYPES
     out = []
     for platform in PLATFORMS:
         stored = _stored(platform, types)
         typed = [st["type"] for st in stored if st["type"]]
-        out.append({"platform": platform, "owners kept": len(stored), "meanings told apart": len(set(typed)) if len(typed) > 1 else 0})
+        # an owner can be told from the others only by a type no other owner has
+        apart = sum(1 for t in typed if typed.count(t) == 1) if len(stored) > 1 else 0
+        out.append({"platform": platform, "owners kept": len(stored), "owners told apart by type": apart})
     return Rows(out)
 
 

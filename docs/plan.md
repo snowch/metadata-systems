@@ -262,6 +262,18 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 13 October 2026: Part VII written, real systems' rules applied to the shop's week
+
+Chapters 29 to 32 are written as the plan's table gives them (`docs/notes/part-7/design.md`). None of
+the real systems runs in the page. Each chapter applies a rule that a system's code or documentation
+states, read at a named commit and recorded in `docs/sources.md` ("Read for Part VII"), to the shop's
+own week, and the page says whose rule it is: the names Airflow's OpenLineage provider gives, the
+order in which Marquez's code applies run events (29); each system's job, run and timing, and Trino's
+job name format (30); each platform's rule for an owner (31); and a digest in MLflow's manner for a
+forecast's training data (32). The reader changes one setting per chapter, with a check below it.
+Each chapter questions the plan's requirement for it. Part VII ends at plan checkpoint 5, the
+author's review, before Chapter 33.
+
 ### 13 October 2026: Part VI written, the reader's code checked against the shop's
 
 Chapters 24 to 28 are written as the plan's table gives them (`docs/notes/part-6/design.md`). The

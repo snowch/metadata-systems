@@ -47,6 +47,10 @@ CHAPTERS = {
     26: ROOT / "notebook" / "chapter_26.py",
     27: ROOT / "notebook" / "chapter_27.py",
     28: ROOT / "notebook" / "chapter_28.py",
+    29: ROOT / "notebook" / "chapter_29.py",
+    30: ROOT / "notebook" / "chapter_30.py",
+    31: ROOT / "notebook" / "chapter_31.py",
+    32: ROOT / "notebook" / "chapter_32.py",
 }
 SOURCE = {chapter: path.read_text(encoding="utf-8") for chapter, path in CHAPTERS.items()}
 
@@ -271,7 +275,11 @@ class TheWordsMatchTheEngine(unittest.TestCase):
             25: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 24](chapter_24.ipynb) · [Next: Chapter 26](chapter_26.ipynb)",
             26: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 25](chapter_25.ipynb) · [Next: Chapter 27](chapter_27.ipynb)",
             27: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 26](chapter_26.ipynb) · [Next: Chapter 28](chapter_28.ipynb)",
-            28: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 27](chapter_27.ipynb)",
+            28: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 27](chapter_27.ipynb) · [Next: Chapter 29](chapter_29.ipynb)",
+            29: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 28](chapter_28.ipynb) · [Next: Chapter 30](chapter_30.ipynb)",
+            30: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 29](chapter_29.ipynb) · [Next: Chapter 31](chapter_31.ipynb)",
+            31: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 30](chapter_30.ipynb) · [Next: Chapter 32](chapter_32.ipynb)",
+            32: "[Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 31](chapter_31.ipynb)",
         }
         for chapter, line in nav.items():
             self.assertTrue(CELLS[chapter][0].startswith(line + "\n"), chapter)
@@ -1728,6 +1736,71 @@ class TheWordsKeepTheRules(unittest.TestCase):
             if re.search(rf"\b{re.escape(term)}", closing.sub("", re.sub(r"\]\([^)]*\)", "]", t)), re.I)
         ]
         self.assertEqual(found, [])
+
+
+class TheWordsOfPartVII(unittest.TestCase):
+    """Chapters 29 to 32: every number the prose states about the real systems' rules, computed again."""
+
+    def says(self, phrase: str, chapter: int) -> None:
+        self.assertIn(flat(phrase), flat(TEXT[chapter]))
+
+    def test_chapter_29(self):
+        from shop import consumers as K
+
+        week = shop.run_week(["returns"])
+        names = {r["the shop's job"]: r["the provider's job"] for r in K.provider(week)}
+        self.assertEqual(names["shop/build_daily_sales"], "default/shop_nightly.build_daily_sales")
+        self.says("the job is `shop_nightly.build_daily_sales`, not `build_daily_sales`", 29)
+        self.says("Marquez \"the reference implementation of the OpenLineage API\"", 29)
+        arrived = {ev["eventType"]: at for at, ev in shop.collector.arrivals(week) if ev.get("job", {}).get("name") == "build_daily_sales" and (ev.get("eventTime") or "").startswith("2026-09-11")}
+        self.assertEqual(arrived["START"][11:19], "02:31:03")
+        self.says("The `START` arrived at 02:31:03, after the `COMPLETE`.", 29)
+        rows = {r["run"][:9]: r for r in K.compare(week)}
+        self.assertEqual((rows["Friday 11"]["Marquez's rules"], rows["Friday 11"]["your collector"]), ("RUNNING", "COMPLETE"))
+        self.assertEqual((rows["Thursday "]["their end"], rows["Thursday "]["event rows"]), ("02:30:52", 3))
+        self.says("Marquez's rules kept 3 event rows for the run and moved its end to 02:30:52.", 29)
+        self.says("Your collector kept 2 events for the run; Marquez's rules kept 3 rows.", 29)
+        self.assertEqual([r["events stored"] for r in K.totals(week)], [68, 70])
+        self.says("Your collector stored 68 events, and Marquez's rules kept 70.", 29)
+
+    def test_chapter_30(self):
+        from shop import integrations as I
+
+        week = shop.run_week(list(I.WEEK))
+        self.assertEqual(sum(r["OpenLineage runs"] for r in I.airflow(week)), 8)
+        self.says("So the week's 7 nights give the job 8 runs in the lineage, 2 of them on Monday 14.", 30)
+        self.says(I.spark(), 30)
+        self.assertEqual([r["START time"] for r in I.dbt(week)][0], "02:00:00")
+        self.assertEqual({r["events sent at"] for r in I.dbt(week)}, {"02:30:21"})
+        self.says("The events of all three models are sent at 02:30:21", 30)
+        counts = {r["name format"]: r["jobs"] for r in I.jobs_by_format(week)}
+        self.assertEqual(counts["$QUERY_ID"], 28)
+        self.says("the 28 nightly queries make 28 jobs", 30)
+        self.says("The check finds 7 jobs", 30)
+
+    def test_chapter_31(self):
+        from shop import platforms as P
+
+        self.assertEqual([r["owners kept"] for r in P.kept()], [3, 3, 1, 0])
+        self.says("DataHub and OpenMetadata keep all three. Atlas keeps one, here the first, `etl_service`. Marquez keeps none.", 31)
+        self.assertEqual(P.DATAHUB_TYPES, ("TECHNICAL_OWNER", "BUSINESS_OWNER", "DATA_STEWARD", "NONE"))
+        ns: dict = {}
+        exec(P.REFERENCE["types"], ns)
+        self.assertEqual(P.kept(ns["types"])[0]["owners told apart by type"], 3)
+        self.says("all 3 of DataHub's owners told apart by type", 31)
+
+    def test_chapter_32(self):
+        from shop import ml as M
+
+        week = shop.run_week(["returns"])
+        record = M.train(week)
+        self.assertEqual(record["forecast_pence"], 13650)
+        self.says("It comes to 13650 pence.", 32)
+        self.says("The record has 5 rows and the digest `60ba54ee`. The table has 7 rows and the digest `6b0727dc`.", 32)
+        self.assertEqual([(r["rows"], r["digest"]) for r in M.today(week)], [(5, "60ba54ee"), (7, "6b0727dc")])
+        cap = [r["digest"] for r in M.cap()]
+        self.assertEqual(cap, ["b54985ab", "ebf8f1e4", "b54985ab"])
+        self.says("Changing the first row changes the digest, from `b54985ab` to `ebf8f1e4`. Changing row 10,001, the last, leaves it at `b54985ab`.", 32)
 
 
 if __name__ == "__main__":

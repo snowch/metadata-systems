@@ -89,7 +89,7 @@ try {
 
   const chapters = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
-    27, 28,
+    27, 28, 29, 30, 31, 32,
   ];
   // SMOKE_CHAPTERS=24,25 drives only those chapters, for a quick run while writing them; CI drives all.
   const only = (process.env.SMOKE_CHAPTERS || "").split(",").filter(Boolean).map(Number);
@@ -787,6 +787,59 @@ try {
       check(
         history.includes("holds each of its 7 runs once"),
         "Chapter 28: the run history holds 7 runs, the failed one among them",
+      );
+    }
+    if (chapter === 29) {
+      await rewrite('order = "arrival"', ['order = "arrival"'], ['order = "event time"']);
+      await run("Run below", "Chapter 29, Run below with the order");
+      const friday = await output("shop.consumers.check(week29, order)");
+      check(
+        friday.includes("1 of 1 tests pass"),
+        "Chapter 29: in event-time order, Friday 11's run agrees",
+      );
+    }
+    if (chapter === 30) {
+      await rewrite(
+        'name_format = "$QUERY_ID"',
+        [
+          'name_format = "$QUERY_ID"',
+          '"build_clean_customers": "shop-nightly"',
+          '"build_clean_orders": "shop-nightly"',
+          '"build_daily_sales": "shop-nightly"',
+          '"refresh_dashboard": "shop-nightly"',
+        ],
+        [
+          'name_format = "$SOURCE"',
+          '"build_clean_customers": "clean-customers"',
+          '"build_clean_orders": "clean-orders"',
+          '"build_daily_sales": "daily-sales"',
+          '"refresh_dashboard": "dashboard"',
+        ],
+      );
+      await run("Run below", "Chapter 30, Run below with the name format");
+      const jobs = await output("shop.integrations.check_trino(week30, name_format, source_of)");
+      check(
+        jobs.includes("2 of 2 tests pass"),
+        "Chapter 30: one job for build_daily_sales, its runs only",
+      );
+    }
+    if (chapter === 31) {
+      await rewrite(
+        "types = {",
+        ['"account": "TECHNICAL_OWNER"', '"responsible": "TECHNICAL_OWNER"'],
+        ['"account": "urn:li:ownershipType:warehouse_account"', '"responsible": "BUSINESS_OWNER"'],
+      );
+      await run("Run below", "Chapter 31, Run below with the types");
+      const types = await output("shop.platforms.check(types)");
+      check(types.includes("2 of 2 tests pass"), "Chapter 31: three owners, three types");
+    }
+    if (chapter === 32) {
+      await rewrite("where = ", ["2026-09-13"], ["2026-09-11"]);
+      await run("Run below", "Chapter 32, Run below with the condition");
+      const digest = await output("shop.ml.check(week32, where)");
+      check(
+        digest.includes("1 of 1 tests pass"),
+        "Chapter 32: the rows up to Friday 11 give the run's digest",
       );
     }
     if (chapter === 4) {

@@ -1,0 +1,147 @@
+# Brief P29: Chapter 29, OpenLineage in practice
+
+Read `docs/style.md`, then `docs/notes/part-7/briefs/common.md`. Write
+`docs/notes/part-7/drafts/P29.md` with these slots, in this order: A, B, C, D, DD, E, F, RH, G, GG,
+H, Z. Terms: none new. Write "Marquez's rules" for what the cells apply, never "Marquez did".
+
+## A
+
+A list of four objectives:
+
+- See the names a real producer, Airflow's OpenLineage provider, gives the shop's nightly jobs.
+- Send the week's events, with Part V's faults, through Marquez's rules and through your collector,
+  and compare what each holds.
+- Change the order in which the events arrive, and find which differences that removes.
+- Question the requirement "Use the reference consumer."
+
+## B
+
+- The heading `### A real producer`.
+- Parts II to VI built the shop's own producers, its collector and its graph. Real producers and
+  consumers of OpenLineage events follow rules of their own.
+- None of them runs on this page. Each cell applies a system's rule, as its code states it in the
+  version read, to the shop's week.
+- Suppose the shop's four nightly jobs ran as tasks of one Airflow Dag, `shop_nightly`, and sent
+  their events through Airflow's OpenLineage provider, version 2.20.3.
+- The provider names each task's job `{dag_id}.{task_id}`. It takes the job's namespace from its
+  settings, and uses `default` when none is set.
+- The next cell lists the shop's four nightly jobs as the shop names them and as the provider would,
+  with the parent the provider gives each.
+
+## C
+
+- Every name differs: the namespace is `default`, not `shop`, and the job is
+  `shop_nightly.build_daily_sales`, not `build_daily_sales`.
+- The shop's lineage would take the provider's four jobs as four new programs. Chapter 12 compared
+  names this way, and Chapter 22 joined two names with an alias.
+- The next cell shows the `START` of the run early on Friday 11 of `build_daily_sales` as the
+  provider would send it. A list of what differs from the shop's own event:
+  - `producer` is the provider's address;
+  - the facet `parent` names the Dag's run, in the job `default/shop_nightly`;
+  - the facet `jobType` gives `AIRFLOW`, `BATCH` and `TASK`.
+- The datasets keep the shop's names: the provider takes them from what each task reports.
+- The cell after it runs Chapter 8's check on the event.
+
+## D
+
+- The event breaks none of the rules Chapter 8's check tests.
+- The heading `### The reference consumer`.
+- OpenLineage's own README calls Marquez "the reference implementation of the OpenLineage API".
+  Quote these words exactly, in double quotes.
+- Marquez's rules for a run's events, as its code states them. A list:
+  - it refuses an event with no `eventTime`;
+  - it keeps every event it takes as a row, and nothing makes a row unique;
+  - for each event with a type, it writes a state row and sets the run's current state from that
+    event, in the order it takes the events, without comparing their times;
+  - `COMPLETE` gives the state `COMPLETED`, `FAIL` gives `FAILED`, and `START` gives `RUNNING`, as
+    does any type it does not know;
+  - `COMPLETE`, `ABORT` or `FAIL` moves the run's end time to the event's own time.
+- The next two cells send Chapter 25's arrivals, Part V's faults included, to your collector (the
+  shop's versions of your three pieces from Chapter 25) and through Marquez's rules, in the order the
+  events arrived.
+- The run early on Friday 11 of `build_daily_sales` sent its `START` at 02:30:00 and its `COMPLETE`
+  at 02:30:21. The `START` arrived at 02:31:03, after the `COMPLETE`.
+- Before you read on, write in the next cell which state Marquez's rules hold for that run after
+  every arrival.
+
+## DD
+
+- The question: which state will Marquez's rules hold for the run early on Friday 11?
+
+## E
+
+- Friday 11: your collector holds `COMPLETE`, and Marquez's rules hold `RUNNING`. The late `START`
+  was the last event taken, so it set the state.
+- Compare this with what you wrote.
+- Thursday 10: the run's `COMPLETE` arrived again with a new time. Your collector dropped the repeat
+  and kept the end at 02:30:21. Marquez's rules kept 3 event rows for the run and moved its end to
+  02:30:52.
+- Saturday 12: `remove_return`'s `COMPLETE` arrived twice. Your collector kept 2 events for the run;
+  Marquez's rules kept 3 rows.
+- Over the week, both refused the developer's event with no `eventTime`. Your collector stored 68
+  events; Marquez's rules stored 70.
+- The next cell holds `order`, the order in which the events reach Marquez's rules and your
+  collector: `"arrival"`.
+- Change it to `"event time"`: a buffer then holds the week's events and sends them sorted by their
+  event time, Chapter 20's rule. Select the cell and press **Run below**.
+- The check below asks whether Friday 11's run is in the same state in both.
+
+## F
+
+- With `"event time"`, the check passes: the run early on Friday 11 is `COMPLETED` by Marquez's
+  rules and `COMPLETE` in your collector.
+- The run early on Thursday 10 still ends at 02:30:52 by Marquez's rules: sorting does not drop a
+  repeat with a new time. Saturday's repeat is still 3 rows.
+- Putting events in order and dropping repeats are two separate jobs.
+- The buffer here sorted the whole week before sending anything. A real one can hold events only for
+  a while, and an event later than that still arrives out of order.
+
+## RH
+
+- The heading `### Using the reference consumer`.
+
+## G
+
+- Before you read on, write in the next cell what "use the reference consumer" means to you here.
+
+## GG
+
+- The question: what does "use the reference consumer" mean here?
+
+## H
+
+A list, then one sentence.
+
+- "Use the reference consumer" could mean three things. A list; each item says what it needs:
+  - use Marquez, the consumer the OpenLineage project names as its reference implementation: it
+    needs nothing more, and the shop would hold Friday 11's run as `RUNNING` unless something sorts
+    the events first;
+  - use a consumer that does what the specification requires: the OpenLineage specification says
+    nothing about repeats, late events or order, so Marquez's rules and your collector both meet it;
+  - check your own consumer against the reference: it needs a way to decide which is right where
+    they differ, and for Friday 11 that is a choice about order the specification leaves open.
+- The requirement does not say which it means.
+
+## Z
+
+- The heading `### Before Chapter 30`.
+- The provider gave the shop's jobs new names in a new namespace, so its events would start new
+  programs in the shop's lineage.
+- By Marquez's rules, a late `START` left a finished run `RUNNING`, and a repeat with a new time
+  moved the run's end. Your collector kept `COMPLETE` and the first end time.
+- Sorting the events by event time fixed the state, not the repeat.
+- The page could not show Marquez itself: each result is Marquez's rules, as its code states them,
+  applied here.
+- Chapter 30 looks at where four systems' metadata comes from: Airflow, Spark, dbt and Trino.
+- Three questions, as a list:
+  - Which consumer takes your events, and in what order does it apply them?
+  - What does it do with an event it has taken before?
+  - Which of your jobs would a new scheduler rename?
+- The heading `### How this differs from a real platform`, then a list:
+  - The cells apply the rules as Marquez's code states them in the version read. Marquez also keeps
+    versions of jobs and datasets, facets and more, which the cells leave out.
+  - The provider's run ids here are the shop's own, made from the values the provider uses.
+  - No Marquez document says what it does with a repeated, late or out-of-order event: the rules
+    here are its code's.
+  - The OpenLineage specification says nothing about what a consumer does with a repeat or a late
+    event.

@@ -12,7 +12,7 @@ app = marimo.App(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 27](chapter_27.ipynb)
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 27](chapter_27.ipynb) · [Next: Chapter 29](chapter_29.ipynb)
 
     # Chapter 28: Build the metadata interface
 
@@ -249,7 +249,7 @@ def _(mo):
     - The shop's page is drawn in these cells, for one asset at a time, from a file read whole. A real catalogue's page reads a store that changes as events arrive.
     - The shop's failed run sends a `FAIL` with no output (Chapter 8). That is the shop's choice: in the OpenLineage specification, any run event may list outputs, a `FAIL` among them, and none must.
 
-    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 27](chapter_27.ipynb)
+    [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 27](chapter_27.ipynb) · [Next: Chapter 29](chapter_29.ipynb)
 
     ---
 

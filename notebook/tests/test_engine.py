@@ -1017,7 +1017,10 @@ class ThePartVIIRules(unittest.TestCase):
     def test_the_platforms(self):
         from shop import platforms as P
 
-        self.assertEqual([(r["owners kept"], r["meanings told apart"]) for r in P.kept()], [(3, 2), (3, 0), (1, 0), (0, 0)])
+        self.assertEqual([(r["owners kept"], r["owners told apart by type"]) for r in P.kept()], [(3, 0), (3, 0), (1, 0), (0, 0)])
+        ns: dict = {}
+        exec(P.REFERENCE["types"], ns)
+        self.assertEqual([r["owners told apart by type"] for r in P.kept(ns["types"])], [3, 0, 0, 0])
         for which, passed in (("stub", 1), ("reference", 2)):
             ns: dict = {}
             exec((P.STUBS if which == "stub" else P.REFERENCE)["types"], ns)
