@@ -335,7 +335,9 @@ try {
     check(
       // Chapter 33 questions three of the ferry's requirements, each before building to it.
       requirement.length === (chapter === 33 ? 3 : chapter > 1 ? 1 : 0) &&
-        requirement.every((r) => boxes.filter((b) => b.edge === r.edge).length === 1),
+        requirement.every(
+          (r) => boxes.filter((b) => b.edge === r.edge).length === requirement.length,
+        ),
       `Chapter ${chapter}: ${chapter > 1 ? "the requirement is a box in a colour of its own" : "no requirement box"}`,
     );
     if (chapter === 1) {

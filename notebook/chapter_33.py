@@ -37,7 +37,7 @@ def _(mo):
 
     The page downloaded less than 1 MB when opened from Chapter 32's link, in a browser that had opened and run Chapter 32 (measured on a computer). Chapter 32's link opens this page in a new tab. Chapter 32 stays open in its own tab and keeps its own memory. On a phone, closing Chapter 32 leaves more memory for this page.
 
-    Running every cell took 9 to 12 seconds, and the page used about 400 MB of memory. If a phone runs short of memory, the browser may reload the page, and a reload loses anything you have not saved.
+    Running every cell took 9 to 12 seconds, and the page used about 410 MB of memory. If a phone runs short of memory, the browser may reload the page, and a reload loses anything you have not saved.
 
     </details>
     """), kind="warn")
