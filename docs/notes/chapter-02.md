@@ -907,6 +907,13 @@ draft under `drafts/round-19/`; every fact landed. Cut by me as repeats: the dra
 menu below applies one change at a time.", and the first sentence of the menu's own text, which asked
 the same question.
 
+The author then asked who made the changes, and when. Nobody did: they are what-ifs. Brief
+`chapter-02/briefs/round-20/BI-who-and-when.md` (draft under `drafts/round-20/`) says so, says what
+the menu does with the one chosen, and gives each change its maker and its time: an analyst's copy at
+02:15 every night; someone on the shop's team editing the job from Saturday's row on, written early on
+Sunday 13; the job failing early on Monday 14. Every fact landed; placed as written. The author was
+reading a copy of the chapter saved in their browser, so the earlier redraft had not reached them.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,
