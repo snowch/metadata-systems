@@ -95,10 +95,15 @@ storage, warehouse, reporting = week.storage, week.warehouse, week.reporting""",
 
 
 def lines_of(source: str, stmts: list[ast.stmt]) -> str:
-    """The statements' source as they stand in the source file, less the four spaces marimo
-    indents a cell's body by. A line with less indent is inside a string (the handover note's
-    lines start at the margin) and is kept as it is."""
-    lines = source.splitlines()[stmts[0].lineno - 1 : stmts[-1].end_lineno]
+    """The statements' source as they stand in the source file, with any comment above the first,
+    less the four spaces marimo indents a cell's body by. A line with less indent is inside a string
+    (a note a reader writes starts at the margin) and is kept as it is."""
+    lines = source.splitlines()
+    start = stmts[0].lineno - 1
+    # A comment above a cell's first statement belongs to the cell.
+    while start > 0 and lines[start - 1].strip().startswith("#"):
+        start -= 1
+    lines = lines[start : stmts[-1].end_lineno]
     return "\n".join(line[4:] if line.startswith("    ") else line for line in lines)
 
 
@@ -117,7 +122,7 @@ def find(stmts: list[ast.stmt], attr: str) -> ast.Call:
 # A callout's kind, and the class the course's stylesheet (notebook/buttons/style/index.css) gives
 # its box: the warning, the steps for running the page, and the requirement a chapter questions. A
 # kind not listed here stops the build.
-BOXES = {"warn": "ms-box-warning", "info": "ms-box-steps", "neutral": "ms-box-requirement"}
+BOXES = {"warn": "ms-box-warning", "info": "ms-box-steps", "neutral": "ms-box-requirement", "success": "ms-box-finding"}
 
 
 def box(name: str, text: str) -> str:

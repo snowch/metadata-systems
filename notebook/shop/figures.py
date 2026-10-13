@@ -165,6 +165,92 @@ def figure(body: str, caption: str) -> str:
     return f'<figure class="ms-figure"><figcaption>{shown}</figcaption>{body}</figure>'
 
 
+# Chapter 2's figures for its investigation. Their words are drafted by the prose process
+# (docs/notes/chapter-02/briefs/round-22/); every number in them is the engine's.
+
+def _thursday(week: Week, day: str) -> tuple[int, int]:
+    """A day's total of the raw orders, and that day's row in `daily_sales`, in pence."""
+    from .week import FILES
+
+    raw = sum(o["price_pence"] * o["quantity"] for o in week.storage.records(FILES["orders"]) if o["ordered_at"].startswith(day))
+    [row] = week.warehouse.sql("SELECT revenue_pence FROM daily_sales WHERE day = :d", d=day)
+    return raw, row["revenue_pence"]
+
+
+def totals(week: Week, labels: tuple[str, str, str], day: str = "2026-09-10") -> str:
+    """Three totals side by side: a day's raw orders, its row in `daily_sales`, and the difference."""
+    from .platform import pounds
+
+    raw, table = _thursday(week, day)
+    tiles = []
+    for label, pence, cls in zip(labels, (raw, table, raw - table), ("", "", " ms-stat-gap")):
+        tiles.append(
+            f'<div class="ms-stat{cls}"><div class="ms-stat-label">{_named(label)}</div>'
+            f'<div class="ms-stat-value">{pounds(pence)}</div><div class="ms-muted">{pence} pence</div></div>'
+        )
+    return f'<div class="ms-fig ms-stats">{"".join(tiles)}</div>'
+
+
+def _named(text: str) -> str:
+    """Escapes a label, and sets a name written in backticks in the code font."""
+    parts = escape(text).split("`")
+    return "".join(f"<code>{p}</code>" if i % 2 else p for i, p in enumerate(parts))
+
+
+def inferred(week: Week, labels: dict[str, str]) -> str:
+    """The reconstruction as a link from one table to another, drawn dashed: inferred, not recorded.
+
+    It draws the only query that rebuilds `daily_sales` exactly, and the two tables' row counts."""
+    from .infer import queries_that_rebuild
+
+    [query] = queries_that_rebuild(week)
+    counts = {
+        t: week.warehouse.sql(f"SELECT COUNT(*) AS n FROM {t}")[0]["n"] for t in (query["source"], "daily_sales")
+    }
+    node = lambda name, under: (
+        f'<div class="ms-system ms-node"><code>{escape(name)}</code><div class="ms-muted">{_named(under)}</div></div>'
+    )
+    return (
+        f'<div class="ms-fig"><div class="ms-link">'
+        f'{node(query["source"], labels["from"].format(rows=counts[query["source"]]))}'
+        f'<div class="ms-inferred"><span>{_named(labels["step"])}</span>'
+        f'<span class="ms-tag">{_named(labels["fit"].format(rows=counts["daily_sales"]))}</span></div>'
+        f'{node("daily_sales", labels["to"].format(rows=counts["daily_sales"]))}'
+        f'</div><div class="ms-muted ms-recorded">{_named(labels["recorded"])}</div></div>'
+    )
+
+
+def three_records(week: Week, copied: Week, heads: tuple[str, str, str], rows: list[tuple[str, str, str]]) -> str:
+    """For `daily_sales`: each question, what the platform holds, and the record that would answer it.
+
+    The middle column's numbers are the warehouse's own: its columns, rows, last-altered time and
+    owner. The sources a query fits come from the week with the analyst's copy."""
+    from .infer import queries_that_rebuild
+
+    [t] = week.warehouse.sql("SELECT * FROM information_schema.tables WHERE table_name = 'daily_sales'")
+    columns = len(week.warehouse.sql("SELECT column_name FROM information_schema.columns WHERE table_name = 'daily_sales'"))
+    altered = datetime.strptime(t["last_altered"], "%Y-%m-%dT%H:%M:%SZ")
+    sources = [q["source"] for q in queries_that_rebuild(copied)]
+    assert sources[0] == "clean_orders" and sources[1].endswith("clean_orders_copy.csv"), sources
+    fill = {
+        "columns": columns,
+        "rows": t["row_count"],
+        "time": f"{altered:%H:%M} {_day_label(t['last_altered'][:10])}",
+        "owner": t["table_owner"],
+    }
+    head = "".join(f"<th>{escape(h)}</th>" for h in heads)
+    body = "".join(
+        "<tr>"
+        + "".join(
+            f'<td>{"" if i == 0 else f"<span class=\"ms-cell-label\">{escape(h)}</span>"}{_named(c.format(**fill))}</td>'
+            for i, (h, c) in enumerate(zip(heads, row))
+        )
+        + "</tr>"
+        for row in rows
+    )
+    return f'<div class="ms-fig"><table class="ms-records"><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>'
+
+
 # Chapter 33's second platform: four systems where the shop had three. The labels are drafted by the
 # prose process (docs/notes/part-8/briefs/) and say only what the page has told the reader; the figure
 # draws no arrow from one asset to another, and leaves what the platform records to the chapter's cells.

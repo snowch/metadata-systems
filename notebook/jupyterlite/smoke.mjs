@@ -10,7 +10,8 @@
 // the warning and the steps for running the page are boxes, and from Chapter 2 the requirement the
 // chapter questions is one too, in a colour of its own; in Chapter 1 a printed file keeps one
 // record per line, scrolling inside its box, and the page never scrolls sideways. In Chapter 2, Run
-// below from a selected cell does the same. In Chapter 3 the reader's record, typed in, passes its
+// below from a selected cell does the same, the opening's links reach their stages, and the check's
+// answers open with their feedback. In Chapter 3 the reader's record, typed in, passes its
 // check, and in Chapter 4 the merge, typed in, leaves the model's check 3 problems; in Chapters 10
 // to 22 each chapter's change to a cell gives its result. A browser set to dark gets the dark
 // theme, and one set to light the light. The page logs no error, and the notebooks' earlier names
@@ -331,6 +332,10 @@ try {
         boxes.every((b) => b.tinted),
       `Chapter ${chapter}: the warning and the steps are boxes (${boxes.map((b) => b.name).join("; ")})`,
     );
+    check(
+      named("ms-box-finding").length === (chapter === 2 ? 3 : 0),
+      `Chapter ${chapter}: ${chapter === 2 ? "three boxes of findings" : "no box of findings"}`,
+    );
     const requirement = named("ms-box-requirement");
     check(
       // Chapter 33 questions three of the ferry's requirements, each before building to it.
@@ -395,10 +400,63 @@ try {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.waitForTimeout(300);
     if (chapter === 2) {
-      const day = page.locator(".jp-CodeCell", { hasText: 'day = "2026-09-10"' }).first();
-      await day.scrollIntoViewIfNeeded();
-      await day.locator(".jp-InputPrompt").tap();
-      await run("Run below", "Chapter 2, Run below from the day's cell");
+      const copy = page.locator(".jp-CodeCell", { hasText: 'shop.run_week(["copy"])' }).first();
+      await copy.scrollIntoViewIfNeeded();
+      await copy.locator(".jp-InputPrompt").tap();
+      await run("Run below", "Chapter 2, Run below from the first what-if");
+      // The opening's links to the stages scroll the notebook to each stage's heading, below the
+      // row of buttons.
+      const outer = page.locator(".jp-WindowedPanel-outer");
+      await outer.evaluate((o) => (o.scrollTop = 0));
+      await page.waitForTimeout(300);
+      for (const [link, heading] of [
+        ["Test an explanation", "3. Test an explanation"],
+        ["a short check", "Check: evidence of what a job read"],
+      ]) {
+        await outer.evaluate((o) => (o.scrollTop = 0));
+        await page.waitForTimeout(300);
+        await page.locator(".jp-RenderedMarkdown a", { hasText: link }).first().tap();
+        await page.waitForTimeout(1500);
+        const top = await page.evaluate((heading) => {
+          const h = [...document.querySelectorAll(".jp-RenderedMarkdown h2")].find((e) =>
+            e.textContent.startsWith(heading),
+          );
+          const bar = document.querySelector(".ms-Buttons").getBoundingClientRect().bottom;
+          return h ? { top: h.getBoundingClientRect().top, bar, height: innerHeight } : null;
+        }, heading);
+        check(
+          top !== null && top.top >= top.bar && top.top < top.height,
+          `Chapter 2: the link "${link}" scrolls to its heading (${JSON.stringify(top)})`,
+        );
+      }
+      // The check: every answer looks the same until opened; a wrong one says why and asks for
+      // another, and the one that holds shows the chapter's point.
+      const answers = page.locator("details.ms-choice");
+      check((await answers.count()) === 3, "Chapter 2: the check has three answers");
+      const shown = async (i) => {
+        const a = answers.nth(i);
+        await a.locator("summary").scrollIntoViewIfNeeded();
+        await a.locator("summary").tap();
+        await page.waitForTimeout(200);
+        return a.evaluate((d) => ({
+          open: d.open,
+          text: d.innerText,
+          tall: d.querySelector("summary").getBoundingClientRect().height,
+        }));
+      };
+      const a = await shown(0);
+      check(
+        a.open && a.text.includes("Try another answer.") && a.tall >= 44,
+        "Chapter 2: answer A opens, says why it falls short, and asks for another",
+      );
+      const c = await shown(2);
+      const point = await answers.nth(2).locator(".ms-takeaway").isVisible();
+      check(
+        c.open &&
+          point &&
+          c.text.includes("Recorded execution events provide evidence of a particular run."),
+        "Chapter 2: answer C opens and shows the chapter's point",
+      );
     }
     // Chapters 3 to 5 ask the reader to change a cell and press Run below: the record's dots in
     // Chapter 3, two spellings in Chapter 4, a direction in Chapter 5. Typed as a reader would.

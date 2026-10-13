@@ -148,7 +148,9 @@ class TheBoxes(unittest.TestCase):
         # questions three of the ferry's requirements, each before building to it (docs/plan.md).
         for chapter, source in SOURCE.items():
             kinds = re.findall(r'\bkind="(\w+)"\)', source)
-            self.assertEqual([k for k in kinds if k != "neutral"], ["warn", "info"], chapter)
+            # Chapter 2's boxes of findings (kind "success") follow its investigations.
+            self.assertEqual([k for k in kinds if k not in ("neutral", "success")], ["warn", "info"], chapter)
+            self.assertEqual(kinds.count("success"), 3 if chapter == 2 else 0, chapter)
             self.assertEqual(kinds.count("neutral"), 3 if chapter == 33 else (1 if chapter > 1 else 0), chapter)
             for text in re.findall(r'mo\.callout\(mo\.md\(r"""((?:(?!""").)*)"""\), kind="neutral"\)', source, re.S):
                 self.assertRegex(text.strip(), r'^[^\n]* "[^"]+"$', chapter)

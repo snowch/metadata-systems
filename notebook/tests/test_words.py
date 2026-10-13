@@ -58,7 +58,8 @@ SOURCE = {chapter: path.read_text(encoding="utf-8") for chapter, path in CHAPTER
 
 def markdown_cells(chapter: int) -> list[str]:
     """The text of every `mo.md(...)` cell of a chapter, in the notebook's order, with the text of
-    each requirement's box (a callout of the kind "neutral"), which reads as part of the chapter."""
+    each requirement's box (a callout of the kind "neutral") and each box of findings (the kind
+    "success", Chapter 2's), which read as part of the chapter."""
     out = []
     for node in ast.parse(SOURCE[chapter]).body:
         if not isinstance(node, ast.FunctionDef):
@@ -69,7 +70,7 @@ def markdown_cells(chapter: int) -> list[str]:
                 isinstance(call, ast.Call)
                 and isinstance(call.func, ast.Attribute)
                 and call.func.attr == "callout"
-                and any(k.arg == "kind" and getattr(k.value, "value", None) == "neutral" for k in call.keywords)
+                and any(k.arg == "kind" and getattr(k.value, "value", None) in ("neutral", "success") for k in call.keywords)
             ):
                 call = call.args[0]
             if (
@@ -125,7 +126,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertIn("the head of the shop sends you a message: \"Thursday's revenue looks wrong.\"", first)
         self.assertIn("you first need to know what the platform holds and what happens on it each night", first)
         self.assertEqual(CELLS[1][-2], "[Chapter 2](chapter_02.ipynb) goes back to the head of the shop's message and starts with Thursday's revenue.")
-        self.says("The head of the shop has sent you a message", 2)
+        self.says("The head of the shop has sent you one line: \"Thursday's revenue looks wrong.\"", 2)
         self.says("You cannot see the export, the jobs, when they are due to run, or any note anybody kept.", 1)
 
     def test_the_three_systems(self):
@@ -302,10 +303,12 @@ class TheWordsMatchTheEngine(unittest.TestCase):
             raw[o["ordered_at"][:10]] = raw.get(o["ordered_at"][:10], 0) + o["price_pence"] * o["quantity"]
         daily = {r["day"]: r["revenue_pence"] for r in self.w.sql("SELECT * FROM daily_sales")}
         self.assertEqual((raw["2026-09-10"], daily["2026-09-10"]), (20550, 5150))
-        self.says("Thursday's orders in `orders.jsonl` add up to 20550 pence")
-        self.says("`daily_sales` says 5150 for Thursday, and the dashboard shows £51.50")
+        # The three totals are a figure the engine draws: each amount in pounds and in pence.
         self.assertEqual(raw["2026-09-10"] - daily["2026-09-10"], 15400)
-        self.says("The two totals differ by 15400 pence, £154.00.")
+        drawn = figures.totals(self.week, ("a", "b", "c"))
+        for shown in ("£205.50", "20550 pence", "£51.50", "5150 pence", "£154.00", "15400 pence"):
+            self.assertIn(shown, drawn)
+        self.assertIn("figures.totals(week,", SOURCE[2])
         # The orders clean_orders lacks on Thursday, which the new cell lists: all of them have no
         # customer id, and together they are the whole gap.
         kept = {r["order_id"] for r in self.w.sql("SELECT order_id FROM clean_orders")}
@@ -314,30 +317,38 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertEqual([o["order_id"] for o in lacking], [7021, 7023, 7025])
         self.assertTrue(all(o["customer_id"] is None for o in lacking))
         self.assertEqual(sum(o["price_pence"] * o["quantity"] for o in lacking), 15400)
-        self.says("Orders 7021, 7023 and 7025 have no customer id. Together they are worth 15400 pence, the whole of Thursday's gap.")
-        self.assertIn("AND order_id NOT IN (SELECT order_id FROM clean_orders)", SOURCE[2])
+        # Across the whole week, only Thursday's three are missing from clean_orders.
+        week = [o for o in self.week.storage.records(shop.FILES["orders"]) if o["order_id"] not in kept]
+        self.assertEqual(week, lacking)
+        self.assertIn("WHERE order_id NOT IN (SELECT order_id FROM clean_orders)", SOURCE[2])
+        self.says("Across the whole week, 3 orders in `orders.jsonl` are missing from `clean_orders`: 7021, 7023 and 7025.")
+        self.says("All three are Thursday's, and none has a customer id. Together they are worth 15400 pence, the whole of Thursday's gap.")
+        self.says("no order from those days is missing from `clean_orders`")
         same = [d for d in shop.DAYS if raw[d] == daily[d]]
         self.assertEqual(same, ["2026-09-07", "2026-09-11", "2026-09-13"])
         self.says(
             "On Monday, Friday and Sunday the raw orders add up to the day's row in `daily_sales`. "
             "On Tuesday, Wednesday, Thursday and Saturday they do not."
         )
-        self.assertIn('day = "2026-09-10"', SOURCE[2])
 
     def test_the_record_of_daily_sales(self):
         [t] = self.w.sql("SELECT * FROM information_schema.tables WHERE table_name = 'daily_sales'")
         cols = [c["column_name"] for c in self.w.sql("SELECT column_name FROM information_schema.columns WHERE table_name = 'daily_sales'")]
         self.assertEqual(cols, ["day", "revenue_pence"])
         self.assertEqual((t["row_count"], t["created"][:10], t["last_altered"][:16], t["table_owner"]), (7, "2026-09-01", "2026-09-14T02:30", "etl_service"))
+        types = [c["data_type"] for c in self.w.sql("SELECT data_type FROM information_schema.columns WHERE table_name = 'daily_sales'")]
+        self.assertEqual((types, t["bytes"], t["created"][11:16]), (["DATE", "INTEGER"], 794, "10:20"))
         self.says(
-            "The cells showed the two columns of `daily_sales`, `day` and `revenue_pence`, with their types. "
-            "They also showed 7 rows, a size in bytes, a created time of 1 September, and a last-altered time "
-            "of 02:30 on Monday 14 September. The warehouse lists `etl_service` as the owner."
+            "For `daily_sales`, the warehouse holds two columns, `day` (DATE) and `revenue_pence` (INTEGER), 7 rows, "
+            "a size of 794 bytes, a created time of 10:20 on 1 September, a last-altered time of 02:30 on Monday "
+            "14 September, and an owner, `etl_service`."
         )
+        d = self.week.reporting.dashboard()
+        self.assertEqual((d["created_by"], d["last_refreshed"][:16]), ("j.marsh", "2026-09-14T03:00"))
+        self.says("who created it (`j.marsh`) and when, when it last refreshed (03:00 on Monday 14 September)")
         # The record is shown before it is described: the cells come first.
-        holds = SOURCE[2][SOURCE[2].index("## What the platform holds"):]
-        self.assertLess(holds.index("FROM information_schema.columns"), holds.index("The cells showed"))
-        self.says("two column names, a row count, a size, two times and an account")
+        holds = SOURCE[2][SOURCE[2].index("## 2. What the platform records"):]
+        self.assertLess(holds.index("FROM information_schema.columns"), holds.index("**Established.**"))
 
     def test_the_file_formats(self):
         self.assertTrue(shop.FILES["orders"].endswith("orders.jsonl") and shop.FILES["customers"].endswith("customers.jsonl"))
@@ -349,9 +360,8 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         keys = [r["key"] for r in self.week.storage.ls("s3://shop-raw/")]
         self.assertIn("s3://shop-raw/orders.jsonl", keys)
         self.assertEqual(set(self.week.storage.ls("s3://shop-raw/")[0]), {"key", "size_bytes", "last_modified"})
-        self.says("Object storage records three things about a file: its key, its size in bytes and when it was last modified.")
-        self.says("A key is the file's full name, such as `s3://shop-raw/orders.jsonl`, where `shop-raw` is the bucket")
-        self.says("the dashboard's title, who created it and when, when it last refreshed, and the values it shows")
+        self.says("Object storage holds each file's key, size in bytes and last-modified time.")
+        self.says("The reporting tool holds the dashboard's title, who created it")
 
     def test_the_owner_and_the_programs(self):
         owners = {r["table_owner"] for r in self.w.sql("SELECT table_owner FROM information_schema.tables")}
@@ -363,8 +373,8 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         # that "Who should I ask?" has an answer; the warehouse meets it as written before anyone acts.
         self.says('Data teams often adopt a rule so that every table has someone to ask about it: "Every table must have an owner."')
         self.says("You adopt the rule for the shop's platform.")
-        self.says("The warehouse already records an owner for every table, so the rule is met, and you did nothing to make it so.")
-        self.says("so you still do not know whom to ask.")
+        self.says("The rule is met as written, and you did nothing to meet it.")
+        self.says("so you still do not know whom to ask about `daily_sales`.")
         self.assertNotIn("head of the shop's requirement is: \"Every table", self.text[2])
         self.says("The warehouse records `etl_service` as the owner of all three tables, in the column `table_owner` of `information_schema.tables`.")
         # The readings of the requirement, each against what the warehouse records: the account it
@@ -383,9 +393,25 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("It prints `True`: the query gives all 7 rows of `daily_sales`, Thursday's 5150 pence included.")
         gap = shop.day_gap(self.week, "2026-09-10")
         self.assertEqual((gap["left"], gap["left_pence"]), (3, 15400))
-        # The reader writes a guess before the query runs; the page says why Thursday matches.
-        self.says("Thursday matches because `clean_orders` does not hold Thursday's three orders with no customer id")
-        self.says("`clean_orders` also holds 2 cancelled orders.")
+        # The query accounts for every day's gap: Tuesday's and Saturday's are the cancelled orders
+        # clean_orders keeps, Wednesday's the export's second copy of order 7015.
+        raw = {}
+        for o in self.week.storage.records(shop.FILES["orders"]):
+            raw[o["ordered_at"][:10]] = raw.get(o["ordered_at"][:10], 0) + o["price_pence"] * o["quantity"]
+        daily = {r["day"]: r["revenue_pence"] for r in self.w.sql("SELECT * FROM daily_sales")}
+        cancelled = self.w.sql("SELECT order_id, date(ordered_at) AS day, price_pence * quantity AS pence FROM clean_orders WHERE status = 'cancelled'")
+        self.assertEqual([(c["order_id"], c["day"], c["pence"]) for c in cancelled], [(7009, "2026-09-08", 2999), (7037, "2026-09-12", 2400)])
+        self.assertEqual((raw["2026-09-08"] - daily["2026-09-08"], raw["2026-09-12"] - daily["2026-09-12"]), (2999, 2400))
+        self.says("`clean_orders` also holds 2 cancelled orders: 7009, on Tuesday, worth 2999 pence, and 7037, on Saturday, worth 2400 pence.")
+        copies = [o for o in self.week.storage.records(shop.FILES["orders"]) if o["order_id"] == 7015]
+        self.assertEqual((len(copies), copies[0]["ordered_at"][:10], copies[0]["price_pence"] * copies[0]["quantity"]), (2, "2026-09-09", 4500))
+        self.assertEqual(len(self.w.sql("SELECT * FROM clean_orders WHERE order_id = 7015")), 1)
+        self.assertEqual(raw["2026-09-09"] - daily["2026-09-09"], 4500)
+        self.says("`orders.jsonl` holds order 7015, placed on Wednesday, twice. `clean_orders` holds it once, so Wednesday's gap is its second copy, worth 4500 pence.")
+        # The diagram of the hypothesis draws the engine's one fitting query and its tables' rows.
+        drawn = figures.inferred(self.week, {"from": "{rows}", "step": "s", "fit": "{rows}", "to": "{rows}", "recorded": "r"})
+        self.assertIn("<code>clean_orders</code><div class=\"ms-muted\">44</div>", drawn)
+        self.assertEqual(len(self.w.sql("SELECT * FROM clean_orders")), 44)
 
     def test_the_three_changes(self):
         # Chapter 2's three; Chapter 3 adds a fourth, `column`.
@@ -438,7 +464,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
     def test_what_the_rows_can_answer(self):
         # Under the four questions: the rows answer only whether Thursday's total differs.
         self.says("The rows show whether Thursday's total differs from Thursday's orders.")
-        self.says("The rows a table holds today record none of these.")
+        self.says("The rows a table holds record none of these.")
 
     def test_the_rule_the_week_never_tests(self):
         orders = self.week.storage.records(shop.FILES["orders"])
@@ -1667,8 +1693,10 @@ class TheWordsKeepTheRules(unittest.TestCase):
         chapter = [re.sub(r"\]\([^)]*\)", "]", c) for c in CELLS[1] + CELLS[2]]
         first = lambda word: next(i for i, c in enumerate(chapter) if re.search(rf"\b{word}", c, re.I))
         records = next(i for i, c in enumerate(chapter) if c.startswith("## Records made at the time"))
+        after = next(i for i, c in enumerate(chapter) if i > records and c.startswith("## "))
         self.assertGreaterEqual(records, len(CELLS[1]))
-        self.assertEqual(first("metadata"), records)
+        self.assertTrue(records <= first("metadata") < after, (records, first("metadata"), after))
+        self.assertIn("is called **metadata**", chapter[first("metadata")])
         self.assertTrue(chapter[first("asset")].startswith("An asset is one thing the platform holds"))
         self.assertLess(first("asset"), len(CELLS[1]))
         # Chapter 3 introduces "descriptive", "operational" and "schema" where it sets the reader's
@@ -1736,13 +1764,23 @@ class TheWordsKeepTheRules(unittest.TestCase):
         closing = re.compile(r"Chapter 3 starts making them:[^\n]*")
         [preview] = closing.findall(TEXT[2])
         self.assertEqual((len(re.findall(r"\blineage\b", preview)), len(re.findall(r"\beach run of a job\b", preview))), (1, 1))
+        # A third, at the author's decision of 13 October 2026: Chapter 2's closing check uses the
+        # author's own words for its answers and its point ("schema", "event", a "run" of a job), and
+        # its figure of the records that would have answered names lineage as Chapter 6's word, once.
+        # Both come after the chapter's own term, metadata, and nowhere else in the chapter.
+        check = re.compile(r"## Check: evidence of what a job read.*?(?=\n## |\Z)", re.S)
+        [quiz] = check.findall(TEXT[2])
+        self.assertIn("Recorded execution events provide evidence of a particular run.", quiz)
+        label = "(Chapter 6 calls this lineage)"
+        self.assertEqual(SOURCE[2].count(label), 1)
+        exempt = lambda t: closing.sub("", check.sub("", t)).replace(label, "")
         found = [
             (chapter, term, t[:60])
             for chapter in CHAPTERS
             for term, home in terms.items()
             if home > chapter and term != "run"
             for t in self.learner_text(chapter)
-            if re.search(rf"\b{re.escape(term)}", closing.sub("", re.sub(r"\]\([^)]*\)", "]", t)), re.I)
+            if re.search(rf"\b{re.escape(term)}", exempt(re.sub(r"\]\([^)]*\)", "]", t)), re.I)
         ]
         self.assertEqual(found, [])
 

@@ -33,11 +33,24 @@ chapter is added to `CHAPTERS` in `build_ipynb.py`, in `notebook/tests/test_word
   name, then gives the heading `# Chapter N: {title}`, the plan's title, and the objectives.
 - Then two boxes (`mo.callout`, which the build turns into a box the course's stylesheet in
   `notebook/buttons/style/` draws): the warning about the download and the memory a phone has
-  (`kind="warn"`), then the steps for running and saving the page (`kind="info"`). Nothing else
-  in a chapter is a box: the story is broken up by its figures, headings and cells.
+  (`kind="warn"`), then the steps for running and saving the page (`kind="info"`). Besides the
+  requirement a chapter questions (`kind="neutral"`), the only other box is a box of findings
+  (`kind="success"`), which Chapter 2 sets after each of its three investigations: what the
+  evidence established beside what it did not, as two paragraphs in `<div class="ms-found">` and
+  `<div class="ms-open">`, side by side on a wide screen. It goes only where a reader needs the
+  line drawn, never after every cell. Otherwise the story is broken up by its figures, headings
+  and cells.
+- A chapter may close with a short check of the kind Chapter 2 has: a scenario, then each answer as
+  `<details class="ms-choice"><summary>A. ...</summary> feedback </details>` in a Markdown cell.
+  It needs no code and no widget; every answer looks the same until opened, a wrong one says why
+  and asks for another, and the one that holds ends with the point in a `<div class="ms-takeaway">`.
+- A link from the opening to a section is the heading's text with its spaces as hyphens
+  (`[Test an explanation](#3.-Test-an-explanation)`): JupyterLite scrolls the notebook to it, even
+  when the heading is far below; the smoke test follows two of Chapter 2's.
 - Every section is a `## ` heading that names its subject, never the reader's activity.
 - The last section closes with what the chapter's experiments showed and could not show, then
-  reflective questions, and names the next chapter; the last cell repeats the links.
+  reflective questions (Chapter 2 has its check in their place), and names the next chapter; the
+  last cell repeats the links.
 - A query in a code cell that the reader sees is written over several lines, one clause per line
   (SELECT, FROM, WHERE, GROUP BY, ORDER BY), in a triple-quoted string, so a phone shows it whole
   without scrolling sideways. A query of one short clause, such as `SELECT * FROM daily_sales`,

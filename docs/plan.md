@@ -104,7 +104,7 @@ records about it.
 | Ch | Title | The learner builds | Central experiment | What breaks | Introduces |
 | --- | --- | --- | --- | --- | --- |
 | 1 | The shop and its platform | nothing yet: storage is all there is | a tour, in a notebook: the shop's files, the warehouse's tables, the dashboard and the nights, with the head of the shop's one line in front of it, and a guess, written down, at which asset each table is made from | nothing: the chapter shows what the platform holds, and what it does not show: the programs, when they are due to run, and any notes | asset |
-| 2 | The invisible data system | nothing yet: storage is all there is | an essay in a notebook: a query over `clean_orders` reproduces `daily_sales` and explains Thursday, and three changes show what that does and does not establish | an analyst's copy makes two sources fit; an edited program leaves nothing that fits and no trace; a failed night leaves the dashboard looking up to date over a table a day behind | metadata |
+| 2 | The invisible data system | nothing yet: storage is all there is | an investigation in three stages, each closed by what it established and what it did not: find the discrepancy (Thursday's three orders); read what each system records; test an explanation, a query over `clean_orders` that reproduces `daily_sales` and every day's gap, against three changes that show what it does and does not establish. A short check closes it | an analyst's copy makes two sources fit; an edited program leaves nothing that fits and no trace; a failed night leaves the dashboard looking up to date over a table a day behind | metadata |
 | 3 | What is metadata? | descriptive records for the shop's assets: meaning, owner, columns with their meaning and unit | ask Chapter 2's questions again of storage plus the records, and see which become answerable | a column in `products` that names a person is data about the business, not a record about the file; a record nobody updates goes stale while storage moves on | descriptive, operational, schema |
 | 4 | Metadata as a model | entity types, attributes, identifiers and relationship types; the records checked against them | merge two records that spell the same owner differently | a reference to an entity that does not exist; a fact the model has no type for | entity, attribute, identifier, dataset |
 | 5 | Metadata as a graph | the model as nodes and edges; traversals | predict what a traversal returns, then run it | a traversal that follows the wrong kind of edge and returns half the shop | graph, node, edge, traversal |
@@ -261,6 +261,21 @@ The author reviews the course at five checkpoints:
 5. Before Chapter 33.
 
 ## Decisions since the brief
+
+### 13 October 2026: Chapter 2 as an investigation in three stages
+
+At the author's request, with a mock-up as a design reference, Chapter 2 is reorganised for
+practising data engineers: an opening that states the problem and links to three stages (find the
+discrepancy; what the platform records; test an explanation); the head's Thursday as three totals
+drawn by the engine; a box of findings, established beside not established, after each stage; the
+reconstruction drawn as a dashed, inferred link; the records that would have answered as one table
+of questions; and, in place of the handover note and the reflective questions, a three-answer
+check whose answers open to say why each holds or not. The day-by-day cells that asked the reader
+to change a date and press Run below, the reader's guess cell (the guess is now compared with
+Chapter 1's), and explanations of SQL, `information_schema`, keys and buckets are gone. The check
+uses the author's words, "schema", "event" and a "run" of a job, and its figure names lineage as
+Chapter 6's word: a scoped exemption to the term gate, which `test_words.py` holds to those places.
+`docs/notes/chapter-02.md`, "Round 22", has the audit and the design.
 
 ### 13 October 2026: Chapter 33 written; the course complete
 

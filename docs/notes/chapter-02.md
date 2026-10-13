@@ -125,6 +125,60 @@ content tests fail a figure without a block or with a question unanswered.
 - **The next question:** what would have to be recorded at the time ("Records made at the time").
 - **Really an experiment:** yes: a change made, its consequence observed against the week as it ran.
 
+### `totals` (round 22)
+
+- **Kind:** a figure of the shop's data, `figures.totals`: Thursday's raw orders, its row in
+  `daily_sales`, and the difference, in pounds and pence, the difference in the theme's error colour.
+- **Serves:** the head's question in numbers the reader can hold: £205.50 against £51.50, £154.00
+  short. Every amount is the engine's.
+- **Why now:** it opens stage 1, where the discrepancy is the thing to explain; the cells below
+  show the other days and the missing orders.
+
+### `inferred` (round 22)
+
+- **Kind:** a diagram, `figures.inferred`: `clean_orders` to `daily_sales` by a dashed arrow, the
+  query's step on it, tagged inferred, with each table's row count and "no system records this
+  link" under it.
+- **Serves:** the first relation the chapter draws between two assets, after the reader's query
+  has fitted, drawn so it cannot be mistaken for a recorded one. It draws the engine's one query
+  that rebuilds `daily_sales` exactly.
+- **Why now:** straight after `True`, and before the what-ifs show what the inference cannot hold.
+
+### `three_records` (round 22)
+
+- **Kind:** a figure of the shop's data, `figures.three_records`: for `daily_sales`, each question
+  the investigation left open, what the platform holds, and the record that would answer it. The
+  middle column's numbers are the warehouse's; the sources that fit come from the week with the
+  analyst's copy.
+- **Serves:** the three kinds of record (what an asset is; what was made from what; what each run
+  did) side by side with the evidence that each is missing, before the word metadata names them.
+- **Why now:** it opens "Records made at the time", after all three investigations.
+
+### The check (round 22)
+
+- **Kind:** an experiment of one decision, three answers in `<details>` elements.
+- **What the learner should learn:** to rank evidence of what a past run read: a record made at the
+  time beats the current state and a matching reconstruction, and is itself only as complete as
+  its instrumentation.
+- **What they know before:** the whole chapter: the records each system keeps; the reconstruction
+  that fitted; the copy that fitted too; the edit no query fitted; the failed night.
+- **The question:** which of three pieces of evidence is the strongest evidence of which inputs one
+  run of a job read?
+- **What they do:** open an answer; a wrong one says why and asks for another; they may open all.
+- **Why the action is needed:** a choice commits the reader before the reason is shown.
+- **Evidence:** each answer's feedback ties it to the chapter's own result: A to the copy, where
+  every record stayed the same; B to the copy and the edit; C to what a record made at the time
+  holds, and what it cannot.
+- **How it changes their understanding, a wrong answer's included:** B, the likeliest wrong answer
+  after a chapter spent on a query, is answered with the two what-ifs that defeated it.
+- **Could they predict it:** yes, from the chapter; the check is to apply it, not to discover it.
+- **Does an option give it away:** C names the fields of a run record, which the reader has not yet
+  met as a structure; that is the author's wording, and the point is the kind of evidence.
+- **Is "I don't know yet" right:** no: the chapter has shown enough to rank them.
+- **The next question:** what Chapter 3 records first: a description of each asset.
+- **Really an experiment:** a check of understanding, the only one in the chapter, replacing the
+  free-text handover note and the reflective questions at the author's request.
+
 ## Requirements
 
 The chapter questions "Every table must have an owner." in prose, not in a figure. The
@@ -171,13 +225,17 @@ change has one line, the first sentence of its paragraph as it stood. No sentenc
 The obvious example for a first investigation of a data platform is a tour of a data catalogue's
 screens over a ready-made sample project, such as dbt's jaffle shop, with its documentation and
 its dependency diagram already generated for the reader. This chapter is a first morning told as
-an essay: the learner is handed an undocumented platform and one line from the head of the shop,
+an investigation in three stages: the learner is handed an undocumented platform and one line from the head of the shop,
 and every conclusion is drawn from the shop's own data, which the notebook's cells show. The
 chapter's spine is the gap between a reconstruction that fits and the truth: the rebuild is
 evidence, and the copy, the edit and the failed night each break that evidence in a way the data
 alone cannot repair. The shop, a bicycle-parts retailer, its data, its Thursday incident and its
 programs are invented for the course. (Until 11 October 2026 this note was the chapter page's
-`originalityNote`; it moved here when the notebook became the only version.)
+`originalityNote`; it moved here when the notebook became the only version.) The obvious check at
+the end of such a chapter asks for definitions (what is lineage, what is a schema); this one asks
+the reader to rank three pieces of evidence, and answers each with the chapter's own results: the
+copy that fitted, the edit that left nothing to fit, the failed night that looked normal. Its
+scenario and its point are the author's (round 22).
 
 ## What was built for it
 
@@ -956,6 +1014,65 @@ columns are gone; the build no longer bundles ipywidgets (it keeps `comm`, which
 `chapter-02/briefs/round-21/BJ-three-what-ifs.md`, draft under `drafts/round-21/`; every fact and
 every kept phrase landed; placed as written, less one cut of mine: the list of the records, which
 the table's first column repeats.
+
+## Round 22: an investigation in three stages, 13 October 2026
+
+The author asked for the chapter to serve practising data engineers: a focused investigation with
+less scaffolding, the evidence and conclusions easy to find, presented after a mock-up's design
+(a clear opening, three stages, prominent totals, findings set apart, diagrams where they clarify,
+and a real multiple-choice check in place of the open reflection). The mock-up is the author's
+own; its code was not reused, and its per-order amounts (£48, £62, £44) were not the shop's (7021
+is £77.00, 7023 £45.00, 7025 £32.00), so none of its numbers were taken.
+
+The audit, element by element (kept, combined, cut):
+
+- **Objectives list:** replaced by the problem in one line and the three stages as links to their
+  headings, and links to "Records made at the time" and the check.
+- **Monday morning, the map, the dashboard, the warning, the steps:** kept; the head's message is
+  quoted once, in the opening.
+- **The four questions:** kept (Chapters 3 and 6 refer to them); the paragraph under them cut to
+  three sentences.
+- **Thursday:** the stated totals became the `totals` figure. The cell that summed one day with an
+  editable date, the cell that read that day's row, and the instruction to press Run below after
+  changing it are cut: the comparison of every day shows the same evidence. The `files=` argument
+  moved from the prose into a comment in the cell. The missing-orders query now spans the whole
+  week, which shows the further fact that only Thursday's three orders are missing from
+  `clean_orders`. A box of findings closes the stage.
+- **What the platform holds:** the four cells kept together under one line; the explanations of
+  `information_schema`, of a key and of a bucket cut (the reader knows them); the paragraph that
+  restated the cells' outputs and the one that said none of it is history became one box of
+  findings. The owner exercise and its table are kept whole; the paragraph after the table, which
+  restated it, cut to two sentences.
+- **Reconstruction:** the reader's guess cell is cut; the guess is compared with Chapter 1's. The
+  hypothesis and its evidence kept, shorter; the explanation of `True` and `False` became a comment
+  in the cell. The result now accounts for every day's gap, from the engine: Tuesday's and
+  Saturday's are the cancelled orders 7009 (2999 pence) and 7037 (2400 pence), Wednesday's the
+  export's second copy of order 7015 (4500 pence). The `inferred` figure and a box of findings
+  follow.
+- **The what-ifs:** kept as round 21 made them; their lead shortened, and how the last row is found
+  folded into a `<details>`.
+- **A rule the week never tests:** kept; its explanation now comes before the two cells and its
+  result after (the count cell reads the file itself, since the day's cells that loaded it are
+  gone).
+- **Records made at the time:** the bulleted three kinds of record became the `three_records`
+  figure; the metadata definition (which Chapter 3 relies on) and the note on real platforms kept.
+- **The handover:** cut: an open writing exercise that restated "Records made at the time".
+- **Before Chapter 3:** the summary and the next chapters kept; the reflective questions cut, the
+  check now before it.
+
+Built for it: three figures in `notebook/shop/figures.py`; a box kind (`success`, the box of
+findings) in the build; styles for the totals, the box of findings, the dashed link, the stacked
+table and the check's answers in `notebook/buttons/style/index.css`, each in the theme's colours;
+and a fix to the build, which dropped a comment above a cell's first statement (no other chapter
+had one; their notebooks are unchanged). The term gate's exemption for the check's words is in
+`test_words.py`; the smoke test follows two of the opening's links, counts the boxes of findings,
+and opens answers A and C.
+
+Prose: briefs `chapter-02/briefs/round-22/` (BK-common, BK-a, BK-b), drafts under
+`drafts/round-22/`. Every fact and every kept phrase landed. Mine: the figures' labels without the
+numbers Haiku had put in them (the engine supplies them) and "Raw orders" restored to the first;
+the diagram's counts as the engine's; backticks out of two code comments; "This cell" to "The cell
+below" in a Markdown cell; and, as a repeat, the head's message cut from "Monday morning".
 
 ## Known gaps
 

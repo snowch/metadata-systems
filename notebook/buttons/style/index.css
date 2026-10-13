@@ -409,3 +409,253 @@
   padding: 8px 0;
   cursor: pointer;
 }
+
+/* Chapter 2's investigation (docs/notes/chapter-02.md, round 22). Each part takes its colours from
+   the theme, so it reads in the light and the dark theme alike.
+
+   A box of findings: what the evidence established, beside what it did not, side by side on a
+   wide screen and one above the other on a phone. */
+.jp-RenderedMarkdown .ms-box-finding {
+  --ms-box-colour: var(--jp-success-color1);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.5rem 1.25rem;
+}
+
+.jp-RenderedMarkdown .ms-box-finding .ms-open {
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--jp-warn-color1);
+}
+
+.jp-RenderedMarkdown .ms-box-finding p {
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .jp-RenderedMarkdown .ms-box-finding {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Three totals side by side, the difference marked in the theme's error colour. */
+.jp-RenderedMarkdown .ms-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.jp-RenderedMarkdown .ms-stat {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--jp-content-font-color1) 30%, transparent);
+  border-radius: 8px;
+}
+
+.jp-RenderedMarkdown .ms-stat-label {
+  font-size: 0.8rem;
+  color: var(--jp-content-font-color2);
+}
+
+.jp-RenderedMarkdown .ms-stat-value {
+  margin: 0.15rem 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.jp-RenderedMarkdown .ms-stat-gap {
+  border-color: var(--jp-error-color1);
+  background: color-mix(in srgb, var(--jp-error-color1) 10%, transparent);
+}
+
+.jp-RenderedMarkdown .ms-stat-gap .ms-stat-value {
+  color: var(--jp-error-color1);
+}
+
+@media (max-width: 420px) {
+  .jp-RenderedMarkdown .ms-stats {
+    gap: 0.35rem;
+  }
+
+  .jp-RenderedMarkdown .ms-stat {
+    padding: 0.45rem 0.5rem;
+  }
+
+  .jp-RenderedMarkdown .ms-stat-value {
+    font-size: 1.2rem;
+  }
+}
+
+/* An inferred link from one table to another: a dashed arrow, never the solid line of a recorded
+   one. Across on a wide screen; down on a phone. */
+.jp-RenderedMarkdown .ms-link {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.jp-RenderedMarkdown .ms-node {
+  text-align: center;
+}
+
+.jp-RenderedMarkdown .ms-inferred {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.75rem 0;
+  border-top: 2px dashed color-mix(in srgb, var(--jp-content-font-color1) 55%, transparent);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.jp-RenderedMarkdown .ms-inferred::after {
+  content: "\25B6";
+  position: absolute;
+  top: -0.72rem;
+  right: -0.3rem;
+  font-size: 0.8rem;
+  color: color-mix(in srgb, var(--jp-content-font-color1) 55%, transparent);
+}
+
+.jp-RenderedMarkdown .ms-tag {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: color-mix(in srgb, var(--jp-warn-color1) 20%, transparent);
+}
+
+.jp-RenderedMarkdown .ms-recorded {
+  margin-top: 0.6rem;
+}
+
+@media (max-width: 640px) {
+  .jp-RenderedMarkdown .ms-link {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .jp-RenderedMarkdown .ms-inferred {
+    align-items: flex-start;
+    margin-left: 1.25rem;
+    padding: 0.4rem 0 0.9rem 0.9rem;
+    border-top: 0;
+    border-left: 2px dashed color-mix(in srgb, var(--jp-content-font-color1) 55%, transparent);
+    text-align: left;
+  }
+
+  .jp-RenderedMarkdown .ms-inferred::after {
+    content: "\25BC";
+    top: auto;
+    right: auto;
+    bottom: -0.55rem;
+    left: -0.42rem;
+  }
+}
+
+/* A table of questions and records: columns on a wide screen; on a phone each row stacks, with
+   each cell under its column's name, which a wide screen hides (its heading says it). A Markdown
+   cell drops data attributes, so the name is a span in the cell. */
+.jp-RenderedMarkdown table.ms-records .ms-cell-label {
+  display: none;
+}
+
+.jp-RenderedMarkdown table.ms-records {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.jp-RenderedMarkdown table.ms-records th,
+.jp-RenderedMarkdown table.ms-records td {
+  padding: 0.45rem 0.5rem;
+  text-align: left;
+  vertical-align: top;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--jp-content-font-color1) 18%, transparent);
+}
+
+.jp-RenderedMarkdown table.ms-records tbody tr:nth-child(odd) {
+  background: none;
+}
+
+.jp-RenderedMarkdown table.ms-records td:first-child {
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .jp-RenderedMarkdown table.ms-records thead {
+    display: none;
+  }
+
+  .jp-RenderedMarkdown table.ms-records tr {
+    display: block;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--jp-content-font-color1) 18%, transparent);
+  }
+
+  .jp-RenderedMarkdown table.ms-records td {
+    display: block;
+    padding: 0.15rem 0;
+    border: 0;
+  }
+
+  .jp-RenderedMarkdown table.ms-records .ms-cell-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--jp-content-font-color2);
+  }
+}
+
+/* The check's answers: each a box the reader opens, which shows whether it holds and why. All look
+   the same until opened. A summary is at least 44 pixels tall, to tap on a phone. */
+.jp-RenderedMarkdown details.ms-choice {
+  margin: 0.5rem 0;
+  padding: 0 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--jp-content-font-color1) 30%, transparent);
+  border-radius: 8px;
+}
+
+.jp-RenderedMarkdown details.ms-choice > summary {
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 0.65rem 0;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.jp-RenderedMarkdown details.ms-choice[open] {
+  background: color-mix(in srgb, var(--jp-brand-color1) 6%, transparent);
+}
+
+.jp-RenderedMarkdown details.ms-choice[open] > summary {
+  border-bottom: 1px solid color-mix(in srgb, var(--jp-content-font-color1) 18%, transparent);
+}
+
+.jp-RenderedMarkdown details.ms-choice > summary:focus-visible {
+  outline: 2px solid var(--jp-brand-color1);
+  outline-offset: 2px;
+}
+
+.jp-RenderedMarkdown details.ms-choice > :last-child {
+  margin-bottom: 0.8rem;
+}
+
+/* The point the check leads to, set apart inside the answer that holds. */
+.jp-RenderedMarkdown .ms-takeaway {
+  margin-top: 0.6rem;
+  padding: 0.5rem 0.8rem;
+  border-left: 4px solid var(--jp-brand-color1);
+  background: color-mix(in srgb, var(--jp-brand-color1) 10%, transparent);
+}
+
+.jp-RenderedMarkdown .ms-takeaway p {
+  margin: 0;
+}
+
+/* Chapter 2's links to its stages scroll the notebook to a heading: the heading stops below the
+   row of buttons, not under it. */
+.jp-RenderedMarkdown h2 {
+  scroll-margin-top: 1rem;
+}
