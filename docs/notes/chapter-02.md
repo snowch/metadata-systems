@@ -1068,7 +1068,26 @@ had one; their notebooks are unchanged). The term gate's exemption for the check
 `test_words.py`; the smoke test follows two of the opening's links, counts the boxes of findings,
 and opens answers A and C.
 
-Prose: briefs `chapter-02/briefs/round-22/` (BK-common, BK-a, BK-b), drafts under
+The review (another model; `chapter-02/review/round-22/`, findings and the sceptic's verdicts): 15
+findings, 8 held in part or whole and 7 over-called. Fixed through brief BL: the failed night no
+longer called "normal" (the records show the shortfall; none names it a failure); the metadata
+paragraph names the kinds of record and says what a table is made from can also be read from the
+code, not only recorded at the time; "a system records what its own work needs and nothing more"
+replaced by the true, narrower claim; two cells now show the cancelled orders and the order written
+twice before the text says what they explain; the check's scenario no longer implies the engineer
+holds all three pieces of evidence; stage 2's box states what the records are, not every value; a
+repeat in stage 2 and the closing's list of what a run record holds cut. Mine: the basis for "no
+refunds" (every order's status is completed or cancelled), "your guess for `daily_sales`", and
+"Each also keeps" narrowed to the two systems it is true of.
+
+The smoke test found the opening's links unreliable on a phone: JupyterLite scrolls a fragment
+link by its estimate of the heights of cells it has not drawn, so the heading landed a screen away,
+differently each time. The row of buttons' extension now handles such a link itself
+(`followLinks` in `notebook/buttons/index.js`): it finds the heading's cell, scrolls to it, and
+corrects the view until the heading stays 8 pixels below its top (measured at 390, 820 and 1280
+pixels, before and after Run all).
+
+Prose: briefs `chapter-02/briefs/round-22/` (BK-common, BK-a, BK-b, BL), drafts under
 `drafts/round-22/`. Every fact and every kept phrase landed. Mine: the figures' labels without the
 numbers Haiku had put in them (the engine supplies them) and "Raw orders" restored to the first;
 the diagram's counts as the engine's; backticks out of two code comments; "This cell" to "The cell

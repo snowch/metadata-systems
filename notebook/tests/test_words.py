@@ -336,16 +336,10 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         cols = [c["column_name"] for c in self.w.sql("SELECT column_name FROM information_schema.columns WHERE table_name = 'daily_sales'")]
         self.assertEqual(cols, ["day", "revenue_pence"])
         self.assertEqual((t["row_count"], t["created"][:10], t["last_altered"][:16], t["table_owner"]), (7, "2026-09-01", "2026-09-14T02:30", "etl_service"))
-        types = [c["data_type"] for c in self.w.sql("SELECT data_type FROM information_schema.columns WHERE table_name = 'daily_sales'")]
-        self.assertEqual((types, t["bytes"], t["created"][11:16]), (["DATE", "INTEGER"], 794, "10:20"))
         self.says(
-            "For `daily_sales`, the warehouse holds two columns, `day` (DATE) and `revenue_pence` (INTEGER), 7 rows, "
-            "a size of 794 bytes, a created time of 10:20 on 1 September, a last-altered time of 02:30 on Monday "
-            "14 September, and an owner, `etl_service`."
+            "The record for `daily_sales` gives its columns and their types, 7 rows, a size, when it was created, "
+            "a last-altered time of 02:30 on Monday 14 September, and an owner, `etl_service`."
         )
-        d = self.week.reporting.dashboard()
-        self.assertEqual((d["created_by"], d["last_refreshed"][:16]), ("j.marsh", "2026-09-14T03:00"))
-        self.says("who created it (`j.marsh`) and when, when it last refreshed (03:00 on Monday 14 September)")
         # The record is shown before it is described: the cells come first.
         holds = SOURCE[2][SOURCE[2].index("## 2. What the platform records"):]
         self.assertLess(holds.index("FROM information_schema.columns"), holds.index("**Established.**"))
@@ -360,8 +354,8 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         keys = [r["key"] for r in self.week.storage.ls("s3://shop-raw/")]
         self.assertIn("s3://shop-raw/orders.jsonl", keys)
         self.assertEqual(set(self.week.storage.ls("s3://shop-raw/")[0]), {"key", "size_bytes", "last_modified"})
-        self.says("Object storage holds each file's key, size in bytes and last-modified time.")
-        self.says("The reporting tool holds the dashboard's title, who created it")
+        self.says("Each file's record gives its key, size and last-modified time.")
+        self.says("The dashboard's record gives its title, who created it, when it last refreshed and the values it shows.")
 
     def test_the_owner_and_the_programs(self):
         owners = {r["table_owner"] for r in self.w.sql("SELECT table_owner FROM information_schema.tables")}
@@ -373,7 +367,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         # that "Who should I ask?" has an answer; the warehouse meets it as written before anyone acts.
         self.says('Data teams often adopt a rule so that every table has someone to ask about it: "Every table must have an owner."')
         self.says("You adopt the rule for the shop's platform.")
-        self.says("The rule is met as written, and you did nothing to meet it.")
+        self.says("The rule is met as written: the warehouse fills in an owner for every table by itself.")
         self.says("so you still do not know whom to ask about `daily_sales`.")
         self.assertNotIn("head of the shop's requirement is: \"Every table", self.text[2])
         self.says("The warehouse records `etl_service` as the owner of all three tables, in the column `table_owner` of `information_schema.tables`.")
@@ -402,12 +396,13 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         cancelled = self.w.sql("SELECT order_id, date(ordered_at) AS day, price_pence * quantity AS pence FROM clean_orders WHERE status = 'cancelled'")
         self.assertEqual([(c["order_id"], c["day"], c["pence"]) for c in cancelled], [(7009, "2026-09-08", 2999), (7037, "2026-09-12", 2400)])
         self.assertEqual((raw["2026-09-08"] - daily["2026-09-08"], raw["2026-09-12"] - daily["2026-09-12"]), (2999, 2400))
-        self.says("`clean_orders` also holds 2 cancelled orders: 7009, on Tuesday, worth 2999 pence, and 7037, on Saturday, worth 2400 pence.")
+        self.says("`clean_orders` holds 2 cancelled orders, 7009 on Tuesday, worth 2999 pence, and 7037 on Saturday, worth 2400 pence.")
+        self.assertIn("HAVING COUNT(*) > 1", SOURCE[2])
         copies = [o for o in self.week.storage.records(shop.FILES["orders"]) if o["order_id"] == 7015]
         self.assertEqual((len(copies), copies[0]["ordered_at"][:10], copies[0]["price_pence"] * copies[0]["quantity"]), (2, "2026-09-09", 4500))
         self.assertEqual(len(self.w.sql("SELECT * FROM clean_orders WHERE order_id = 7015")), 1)
         self.assertEqual(raw["2026-09-09"] - daily["2026-09-09"], 4500)
-        self.says("`orders.jsonl` holds order 7015, placed on Wednesday, twice. `clean_orders` holds it once, so Wednesday's gap is its second copy, worth 4500 pence.")
+        self.says("`orders.jsonl` holds order 7015, placed on Wednesday, twice, and `clean_orders` holds it once, so Wednesday's gap is its second copy, worth 4500 pence.")
         # The diagram of the hypothesis draws the engine's one fitting query and its tables' rows.
         drawn = figures.inferred(self.week, {"from": "{rows}", "step": "s", "fit": "{rows}", "to": "{rows}", "recorded": "r"})
         self.assertIn("<code>clean_orders</code><div class=\"ms-muted\">44</div>", drawn)
@@ -417,7 +412,10 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         # Chapter 2's three; Chapter 3 adds a fourth, `column`.
         self.assertEqual(shop.CHANGES[:3], ("copy", "refunds", "failed"))
         self.says("three small changes to the shop")
-        self.says("three ordinary changes")
+        self.says("Three ordinary changes then tested it")
+        # The basis for "no refunds": every order is completed or cancelled.
+        self.assertEqual({o["status"] for o in self.week.storage.records(shop.FILES["orders"])}, {"completed", "cancelled"})
+        self.says("The shop has no refunds: every order's `status` is `completed` or `cancelled`.")
         self.assertEqual(shop.COPY, "s3://shop-scratch/clean_orders_copy.csv")
         self.says("to a CSV file, `clean_orders_copy.csv`, in the bucket `shop-scratch`, every night")
         refunds = shop.run_week(["refunds"])
@@ -459,7 +457,9 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("The last row says `none`.")
         self.assertEqual(last["failed"], ["clean_orders: completed orders, revenue per day"])
         self.says("The query over `clean_orders` is still listed: it gives every row of `daily_sales`, and one row more, for Sunday.")
-        self.says("Each record is normal on its own. The gap shows only when you compare the last-altered times.")
+        self.says("No record says that this is a failure. Seeing it takes knowing to expect 7 rows, or comparing the last-altered times.")
+        self.assertEqual(failed.reporting.dashboard()["title"], "Sales, last 7 days")
+        self.assertNotIn("looks normal", self.text[2])
 
     def test_what_the_rows_can_answer(self):
         # Under the four questions: the rows answer only whether Thursday's total differs.

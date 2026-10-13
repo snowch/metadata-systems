@@ -24,6 +24,9 @@
 // contents, which opens in a new tab too. Below 500 pixels the arrows show without their chapters'
 // numbers, below 600 the contents link shows as an icon, and below 390 not at all, so that the row
 // fits 360 pixels (style/index.css); the chapter's text links to the contents at its top and end.
+//
+// A link in the text to one of the notebook's own headings scrolls the notebook to that heading
+// (followLinks, below), where JupyterLab's own handling lands it a screen away in a long notebook.
 
 import { NotebookActions, INotebookTracker } from "@jupyterlab/notebook";
 import { Widget } from "@lumino/widgets";
@@ -167,6 +170,68 @@ function contents() {
 
 // The notebooks' names until 11 October 2026, when the two parts of Chapter 1 became Chapters 1 and
 // 2, and the names they have now.
+/** A heading's address in a link, as JupyterLab writes it: its words with each space a hyphen. */
+const anchor = (text) =>
+  text
+    .replace(/\u00b6$/, "")
+    .trim()
+    .replace(/ /g, "-");
+
+/** Links in the text to a heading of the same notebook (Chapter 2's to its stages). JupyterLab
+    scrolls to one by its estimate of the height of the cells it has not drawn, so in a long
+    notebook the heading lands far from the top of the view, and not twice in the same place. This
+    finds the heading's cell from the notebook's own text, scrolls to it, and, as the cells around it
+    are drawn and change height, moves the view until the heading stays just below its top. */
+function followLinks(notebook) {
+  notebook.node.addEventListener(
+    "click",
+    (event) => {
+      const link = event.target.closest?.('.jp-RenderedMarkdown a[href^="#"]');
+      if (!link) return;
+      const id = decodeURIComponent(link.getAttribute("href").slice(1));
+      const index = notebook.widgets.findIndex(
+        (cell) =>
+          cell.model.type === "markdown" &&
+          cell.model.sharedModel
+            .getSource()
+            .split("\n")
+            .some((line) => /^#{1,6} /.test(line) && anchor(line.replace(/^#{1,6} /, "")) === id),
+      );
+      if (index < 0) return;
+      event.preventDefault();
+      event.stopPropagation();
+      goTo(notebook, index, id).catch((reason) => console.error("link", reason));
+    },
+    true,
+  );
+}
+
+async function goTo(notebook, index, id) {
+  const outer = notebook.node.classList.contains("jp-WindowedPanel-outer")
+    ? notebook.node
+    : (notebook.node.querySelector(".jp-WindowedPanel-outer") ?? notebook.node);
+  const pause = () => new Promise((resolve) => setTimeout(resolve, 80));
+  await notebook.scrollToItem(index, "start");
+  let still = 0;
+  for (let i = 0; i < 40 && still < 3; i += 1) {
+    await pause();
+    const cell = notebook.widgets[index];
+    const heading = [...cell.node.querySelectorAll("h1, h2, h3, h4, h5, h6")].find(
+      (h) => anchor(h.textContent) === id,
+    );
+    if (!heading) {
+      await notebook.scrollToItem(index, "start");
+      continue;
+    }
+    const off = heading.getBoundingClientRect().top - outer.getBoundingClientRect().top - 8;
+    if (Math.abs(off) <= 2) still += 1;
+    else {
+      still = 0;
+      outer.scrollTop += off;
+    }
+  }
+}
+
 const MOVED = {
   "chapter_01_part_1.ipynb": "chapter_01.ipynb",
   "chapter_01_part_2.ipynb": "chapter_02.ipynb",
@@ -187,13 +252,14 @@ function followMove(app) {
 export default {
   id: "ms-notebook-buttons:row",
   description:
-    "Adds a row of large Run all, Run below and Save buttons above every notebook's cells, with arrows to the chapters either side, hides the menu bar and the notebook's toolbar, and sends the notebooks' earlier names to their chapters.",
+    "Adds a row of large Run all, Run below and Save buttons above every notebook's cells, with arrows to the chapters either side, hides the menu bar and the notebook's toolbar, scrolls to a heading the text links to, and sends the notebooks' earlier names to their chapters.",
   autoStart: true,
   requires: [INotebookTracker],
   activate(app, tracker) {
     followMove(app);
     const add = (panel) => {
       panel.toolbar.setHidden(true);
+      followLinks(panel.content);
       const widget = row(app, panel);
       panel.contentHeader.addWidget(widget);
       panel.context.ready

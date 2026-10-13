@@ -241,7 +241,7 @@ try {
       return { figures: [...found.values()], stubs };
     });
     check(
-      figures.figures.length === ({ 1: 3, 2: 2, 7: 2 }[chapter] ?? 1) &&
+      figures.figures.length === ({ 1: 3, 2: 5, 7: 2 }[chapter] ?? 1) &&
         figures.figures.every((f) => f.shown && f.image !== false) &&
         figures.stubs === 0,
       `Chapter ${chapter}: its ${figures.figures.length} figures show before anything runs, with no code cell`,

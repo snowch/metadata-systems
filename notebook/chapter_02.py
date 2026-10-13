@@ -232,11 +232,11 @@ def _(mo):
     mo.callout(mo.md(r"""
     <div class="ms-found">
 
-    **Established.** Each record describes an asset as it is this morning. For `daily_sales`, the warehouse holds two columns, `day` (DATE) and `revenue_pence` (INTEGER), 7 rows, a size of 794 bytes, a created time of 10:20 on 1 September, a last-altered time of 02:30 on Monday 14 September, and an owner, `etl_service`. Object storage holds each file's key, size in bytes and last-modified time. The reporting tool holds the dashboard's title, who created it (`j.marsh`) and when, when it last refreshed (03:00 on Monday 14 September), and the values it shows.
+    **Established.** Each record describes an asset as it is this morning. The record for `daily_sales` gives its columns and their types, 7 rows, a size, when it was created, a last-altered time of 02:30 on Monday 14 September, and an owner, `etl_service`. Each file's record gives its key, size and last-modified time. The dashboard's record gives its title, who created it, when it last refreshed and the values it shows.
 
     </div><div class="ms-open">
 
-    **Not established.** Which job wrote any of these assets, what the job read, which version of its code ran, what the rows were the day before, or who decided the rules that shaped them. None of the three systems records how an asset came to be as it is.
+    **Not established.** Which job wrote any of these assets, what the job read, which version of its code ran, what the rows were the day before, or who decided the rules that shaped them.
 
     </div>
     """), kind="success")
@@ -248,7 +248,7 @@ def _(mo):
     mo.md(r"""
     ### What each system records about assets, and why
 
-    Each of the shop's systems records the things about an asset that its own work needs. The warehouse keeps column names and types so that it can run a query. Object storage keeps a file's key so that it can serve the file. The reporting tool keeps the values so that it can draw the chart. In the shop's platform, a system records what its own work needs and nothing more. The questions you want answered are not its work.
+    Each of the shop's systems records what its own work needs. The warehouse keeps column names and types so that it can run a query. Object storage keeps a file's key so that it can serve the file. The reporting tool keeps the values so that it can draw the chart. The warehouse and the reporting tool also keep a little more: an owner, created times and who created the dashboard. None of it says what an asset means or how it was made.
 
     The owner the warehouse records shows how far that goes. "Who should I ask about `daily_sales`?" wants a person or a team.
     """)
@@ -292,7 +292,7 @@ def _(mo):
     | which job writes it | a program | no: it names an account, not a program |
     | which account controls it in the warehouse | an account | yes |
 
-    The rule is met as written, and you did nothing to meet it. The owner it found answers only the last reading, which account controls the table, so you still do not know whom to ask about `daily_sales`.
+    The rule is met as written: the warehouse fills in an owner for every table by itself. The owner it found answers only the last reading, which account controls the table, so you still do not know whom to ask about `daily_sales`.
     """)
     return
 
@@ -302,7 +302,7 @@ def _(mo):
     mo.md(r"""
     ## 3. Test an explanation
 
-    Nothing on the platform records how `daily_sales` was made. The usual move is to infer it: find a query over another asset that gives the same rows. The hypothesis below comes with the evidence for each part. Compare it with the guess you wrote at the end of Chapter 1.
+    Nothing on the platform records how `daily_sales` was made. The usual move is to infer it: find a query over another asset that gives the same rows. The hypothesis below comes with the evidence for each part. Compare it with your guess for `daily_sales` at the end of Chapter 1.
 
     **`daily_sales` is made from `clean_orders`: completed orders only, `price_pence` × `quantity` added up for each day.**
 
@@ -333,13 +333,39 @@ def _(mo):
     mo.md(r"""
     It prints `True`: the query gives all 7 rows of `daily_sales`, Thursday's 5150 pence included.
 
-    The query also accounts for the other three days' gaps.
+    The query also explains the other three days that differ. The two cells below list the cancelled orders that `clean_orders` holds, and the orders that `orders.jsonl` holds more than once.
+    """)
+    return
 
-    `clean_orders` also holds 2 cancelled orders: 7009, on Tuesday, worth 2999 pence, and 7037, on Saturday, worth 2400 pence.
 
-    The query leaves them out, and so does `daily_sales`: they are Tuesday's and Saturday's gaps.
+@app.cell
+def _(warehouse):
+    warehouse.sql("""
+        SELECT order_id, date(ordered_at) AS day, status, price_pence * quantity AS pence
+        FROM clean_orders
+        WHERE status = 'cancelled'
+    """)
+    return
 
-    `orders.jsonl` holds order 7015, placed on Wednesday, twice. `clean_orders` holds it once, so Wednesday's gap is its second copy, worth 4500 pence.
+
+@app.cell
+def _(warehouse):
+    warehouse.sql(
+        """
+        SELECT order_id, date(ordered_at) AS day, COUNT(*) AS copies
+        FROM raw_orders
+        GROUP BY order_id
+        HAVING COUNT(*) > 1
+        """,
+        files={"raw_orders": "s3://shop-raw/orders.jsonl"},
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    `clean_orders` holds 2 cancelled orders, 7009 on Tuesday, worth 2999 pence, and 7037 on Saturday, worth 2400 pence. The query leaves them out, and so does `daily_sales`: they are Tuesday's and Saturday's gaps. `orders.jsonl` holds order 7015, placed on Wednesday, twice, and `clean_orders` holds it once, so Wednesday's gap is its second copy, worth 4500 pence.
     """)
     return
 
@@ -427,7 +453,7 @@ def _(shop, week):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The shop has no refunds, so from Saturday every order counts, cancelled ones included. The dashboard shows £215.49 instead of £191.49 for Saturday, 2026-09-12. The table still has 7 rows and the same last-altered time. The last row says `none`. No query in the set gives the rows of `daily_sales` any more. No record on the platform says the job was edited.
+    The shop has no refunds: every order's `status` is `completed` or `cancelled`. So from Saturday every order counts, cancelled ones included. The dashboard shows £215.49 instead of £191.49 for Saturday, 2026-09-12. The table still has 7 rows and the same last-altered time. The last row says `none`. No query in the set gives the rows of `daily_sales` any more. No record on the platform says the job was edited.
     """)
     return
 
@@ -450,7 +476,11 @@ def _(shop, week):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The table has 6 rows, none for Sunday, and was last altered on Sunday at 02:30, a day earlier than `clean_orders` and the dashboard. The dashboard refreshed at 03:00 on Monday as usual and shows the 6 values it found. The query over `clean_orders` is still listed: it gives every row of `daily_sales`, and one row more, for Sunday. Each record is normal on its own. The gap shows only when you compare the last-altered times. Only a record of the failure would say that a write was due and did not happen.
+    The table has 6 rows, none for Sunday, and was last altered on Sunday at 02:30, a day earlier than `clean_orders` and the dashboard. The dashboard refreshed at 03:00 on Monday as usual and shows the 6 values it found. The query over `clean_orders` is still listed: it gives every row of `daily_sales`, and one row more, for Sunday.
+
+    The shortfall is visible: 6 rows where the week as it ran has 7, and six values on a dashboard titled "Sales, last 7 days". No record says that this is a failure. Seeing it takes knowing to expect 7 rows, or comparing the last-altered times.
+
+    Only a record of the failure would say that a write was due and did not happen.
     """)
     return
 
@@ -512,7 +542,7 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(figures, mo, shop, week):
-    mo.Html(figures.figure(figures.three_records(week, shop.run_week(["copy"]), ('The question', 'What the platform holds', 'The record that would answer it'), [('What is `daily_sales`, and whom do I ask?', '{columns} columns, {rows} rows, last altered {time}; owner `{owner}`, an account', 'A description of the asset: what it means, who is responsible for it.'), ('What is it made from?', "Nothing; a query over `clean_orders` fits, and with the analyst's copy, one over the copy fits too", 'A record of what was made from what (Chapter 6 calls this lineage).'), ("What did each night's job do?", 'Nothing; after a failed night, each record looks normal', 'A record of each time a job ran: its code version, inputs, output, time, and whether it succeeded (Chapter 7).')]), 'For `daily_sales`, each question beside what the platform holds and the record that would answer it.'))
+    mo.Html(figures.figure(figures.three_records(week, shop.run_week(["copy"]), ('The question', 'What the platform holds', 'The record that would answer it'), [('What is `daily_sales`, and whom do I ask?', '{columns} columns, {rows} rows, last altered {time}; owner `{owner}`, an account', 'A description of the asset: what it means, who is responsible for it.'), ('What is it made from?', "Nothing; a query over `clean_orders` fits, and with the analyst's copy, one over the copy fits too", 'A record of what was made from what (Chapter 6 calls this lineage).'), ("What did each night's job do?", 'Nothing; no record of the job. Failed night: a missing row, older last-altered time.', 'A record of each time a job ran: its code version, inputs, output, time, and whether it succeeded (Chapter 7).')]), 'For `daily_sales`, each question beside what the platform holds and the record that would answer it.'))
     return
 
 
@@ -521,7 +551,7 @@ def _(mo):
     mo.md(r"""
     A record of what the job read would have answered the analyst's copy. A record of which version of the job's code ran each night would have answered the edit. A record of whether each night's write succeeded would have answered the failed night.
 
-    Information of this kind, about an asset or about the platform, is called **metadata**: what an asset is, where it came from, who is responsible for it, what its numbers mean, how it is made, and how it relates to other assets. Some of it the systems already keep for their own purposes: the names, types, counts and times you read above. The systems do not keep what an asset means, what happened to it or what it was made from; somebody has to record those, and the second and third have to be recorded when the thing happens. A note of what a job read, written the next morning from the data, is a reconstruction, with the limits shown above.
+    Information of this kind, about an asset or about the platform, is called **metadata**: what an asset is, where it came from, who is responsible for it, what its numbers mean, how it is made, and how it relates to other assets. Some of it the systems already keep for their own purposes: the names, types, counts and times you read above. They do not keep what an asset means, what it was made from, or what happened to it. Somebody has to record those. What happened, such as which tables a night's job read, has to be recorded when it happens. What a table is made from can also be read later, from the jobs' code (Chapter 6). That shows what the code says, not what the job did on a given night. A note of what a job read, written the next morning from the data, is a reconstruction, with the limits shown above.
 
     Real platforms keep more history than the shop's: query logs, table snapshots, audit trails. Those are records made at the time too, kept by the system rather than by a person, and later chapters use them where they exist.
     """)
@@ -535,7 +565,7 @@ def _(mo):
 
     A data engineer wants to know which inputs one particular run of a job read.
 
-    They have three pieces of evidence. Which is the strongest evidence of what that run read?
+    Consider three pieces of evidence they could have. Which is the strongest evidence of what that run read?
 
     Open an answer to see whether it holds; you can open the others after.
 
@@ -577,9 +607,9 @@ def _(mo):
     mo.md(r"""
     ## Before Chapter 3
 
-    The platform's state answers what exists. It does not answer what happened or why. Inferring the history from the data gave an explanation that fitted, and three ordinary changes made it ambiguous, made it wrong, or left a failed night looking like a normal one. The records that would have answered had to be made when the work was done.
+    The platform's state answers what exists. It does not answer what happened or why. Inferring the history from the data gave an explanation that fitted. Three ordinary changes then tested it: the copy made it ambiguous, the edit made it wrong, and one failed night was left that no record names as a failure. The records that would have answered had to be made when the work was done.
 
-    Chapter 3 starts making them: a description of each asset, kept beside the data, with what the asset means and who is responsible for it. It then asks the four questions at the start again, to see which of them that record answers. Chapter 6 records what was made from what, which is called lineage. Chapter 7 records each run of a job: when it started and ended, which version of its code ran, what it read and wrote, and whether it succeeded.
+    Chapter 3 starts making them: a description of each asset, kept beside the data, with what the asset means and who is responsible for it. It then asks the four questions at the start again. Chapter 6 records what was made from what, which is called lineage, and Chapter 7 records each run of a job.
     """)
     return
 
