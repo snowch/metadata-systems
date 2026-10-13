@@ -1,6 +1,6 @@
 ## BI
 
-The query shows how `daily_sales` could have been made. It does not show how it was made. To see the difference, try three what-ifs: three small changes to the shop. Nobody made these changes. None of them happened in the week you have read so far.
+The query shows how `daily_sales` **could have been** made. It does not show how it **was** made. To see the difference, try three what-ifs: three small changes to the shop. Nobody made these changes. None of them happened in the week you have read so far.
 
 You choose one from the menu below. The page runs the shop's week again as if that change had happened, and the cells under the menu show the platform on Monday morning.
 

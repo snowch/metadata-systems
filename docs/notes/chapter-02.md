@@ -913,6 +913,7 @@ the menu does with the one chosen, and gives each change its maker and its time:
 02:15 every night; someone on the shop's team editing the job from Saturday's row on, written early on
 Sunday 13; the job failing early on Monday 14. Every fact landed; placed as written. The author was
 reading a copy of the chapter saved in their browser, so the earlier redraft had not reached them.
+At the author's request, "could have been" and "was" in its first two sentences are in bold.
 
 ## Known gaps
 
