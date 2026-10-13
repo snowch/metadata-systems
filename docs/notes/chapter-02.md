@@ -891,6 +891,9 @@ orders `clean_orders` lacks. The last reason says what the guess assumes without
 cancelled orders are left out. The query's result then confirms that part, and the paragraph after
 it already says so. Brief `chapter-02/briefs/round-18/BF-the-guess-tested.md`, draft under
 `drafts/round-18/`; every fact landed, nothing added, placed as written.
+The author then asked to drop the code block's wide gap and to set the guess in bold, with the reasons
+beneath it: the guess is now one bold line, `daily_sales`: made from ..., because:, at the text's
+margin, and the list of reasons sits indented under it. The words are unchanged.
 
 ## Known gaps
 

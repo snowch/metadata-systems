@@ -2,9 +2,7 @@
 
 The cell below tests one guess, written in the same form as the line in your cell.
 
-```
-daily_sales:     made from clean_orders, completed orders only, price_pence × quantity added up for each day, because
-```
+**`daily_sales`: made from `clean_orders`, completed orders only, `price_pence` × `quantity` added up for each day, because:**
 
 - `daily_sales` has two columns, `day` and `revenue_pence`: one total in pence for each day.
 - Each order in `clean_orders` has a price in pence, `price_pence`, a quantity, `quantity`, and the time it was placed, `ordered_at`.
