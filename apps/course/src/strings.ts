@@ -27,7 +27,7 @@ export const STRINGS = {
   contents: "Contents",
   // Under "Contents": what opening a chapter does (brief AY).
   contentsNote:
-    "Each written chapter opens as a notebook, a page where you run the chapter's Python code in your browser; the first time you open one, your browser downloads about 13 MB.",
+    "Each chapter opens as a notebook, a page where you run the chapter's Python code in your browser; the first time you open one, your browser downloads about 13 MB.",
   part: "Part {number}: {title}",
   chapter: "{number}. {title}",
   toWrite: "Still to be written",
