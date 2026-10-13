@@ -878,6 +878,20 @@ pointed "how far that goes" at the requirement; the brief's sentences were resto
 table's single "yes" and its two rows that carry the verdict are pinned by `test_words`. A callout was
 not used: on these pages a box means the page's instructions or its warning.
 
+## The guess the reconstruction tests, stated, 13 October 2026
+
+The author asked whether the page should say which guess the reconstruction's query tests, and
+why. It should: the paragraph before the query said what the query does, step by step, but not as a
+guess the reader could set beside the line they had just written, nor what made that guess worth
+testing. The paragraph now gives the guess in the same form as the reader's line
+(`daily_sales: made from clean_orders, completed orders only, price_pence × quantity added up for
+each day, because`), then its reasons as a list, each one something the page or Chapter 1 showed:
+the two columns of `daily_sales`, the fields of an order, and Thursday's gap being exactly the three
+orders `clean_orders` lacks. The last reason says what the guess assumes without evidence: that
+cancelled orders are left out. The query's result then confirms that part, and the paragraph after
+it already says so. Brief `chapter-02/briefs/round-18/BF-the-guess-tested.md`, draft under
+`drafts/round-18/`; every fact landed, nothing added, placed as written.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,

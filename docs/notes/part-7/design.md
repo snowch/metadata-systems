@@ -147,6 +147,24 @@ and a registered version that names the run (MLflow's fields, read at `9d651c2`)
   from it (the code and the values). The tracker's record meets "which table, and whether it
   changed".
 
+## As built
+
+What the review changed from the design above (each chapter's note, "The review", has the rest):
+
+- **Chapter 29.** The prediction asks for Friday's state once all events have arrived. The
+  printed event is the shop's with the provider's names and facets put in, and the facets it lacks
+  and loses are named.
+- **Chapter 30.** Spark's job name ends in the output's path. The prediction is the shared-source
+  case under `$SOURCE`, not the default's count, which the stated default settled; a count of each
+  format's jobs follows the change.
+- **Chapter 31.** DataHub's ownership type is written as a `typeUrn`, not the deprecated enum; the
+  check holds the form and the difference, not that a type exists. DataHub can meet all three
+  readings, OpenMetadata and Atlas the first, Marquez none for a dataset.
+- **Chapter 32.** The forecast is trained on Saturday 12 and the question asked on Monday 14. The
+  prediction asks whether Monday's `daily_sales` gives the recorded digest; the model's version is
+  shown; the digest's blind spot is a value changed in place past row 10,000, not any later row.
+  This record meets none of the three readings.
+
 ## Checkpoint
 
 Plan checkpoint 5, the author's review, comes before Chapter 33. Part VII ends there.
