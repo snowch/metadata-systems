@@ -16,6 +16,13 @@ def _(mo):
 
     # Chapter 2: The invisible data system
 
+    **Objectives**
+
+    - Compare each day's raw orders in `orders.jsonl` with `daily_sales`, and find which orders Thursday's total leaves out.
+    - Read what each of the shop's systems records about an asset, and find what those records do not say: which job wrote the asset, and what it read.
+    - Question the requirement "Every table must have an owner."
+    - Test an explanation of how `daily_sales` is made, and find what a query that rebuilds `daily_sales` cannot show.
+
     The head of the shop has sent you one line: "Thursday's revenue looks wrong."
 
     You investigate it using only what the shop's platform holds, and find where that evidence stops.
@@ -279,11 +286,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ### The owner the warehouse records
-
-    Each system records what its own work needs: column types so that the warehouse can run a query, a key so that object storage can serve a file, and the values so that the reporting tool can draw a chart.
-
-    "Who should I ask about `daily_sales`?" wants a person or a team.
+    ## "Every table must have an owner."
     """)
     return
 
@@ -291,7 +294,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.callout(mo.md(r"""
-    Data teams often adopt a rule so that every table has someone to ask about it: "Every table must have an owner."
+    The head of the shop sends a second message: "Every table must have an owner. Who owns `daily_sales`?"
     """), kind="neutral")
     return
 
@@ -299,7 +302,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    You adopt the rule for the shop's platform. The cell below lists the owner the warehouse records for each table.
+    The warehouse has a column that looks like the answer. The cell below reads it.
     """)
     return
 
@@ -316,20 +319,7 @@ def _(warehouse):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The warehouse records `etl_service` as the owner of all three tables, in the column `table_owner` of `information_schema.tables`. The name looks like an account a program logs in as, and the warehouse records nothing more about it.
-
-    The word "owner" in the rule has four readings: each row of the table is one reading, asking a different question that needs a different thing recorded.
-
-    | One reading of "owner" | What that reading needs | Does `etl_service` answer that reading? |
-    | --- | --- | --- |
-    | who is responsible for the table | a person | no |
-    | which team is responsible for it | a team | no |
-    | which job writes it | a program | no: it names an account, not a program |
-    | which account controls it in the warehouse | an account | yes |
-
-    The rule is met as written: the warehouse fills in an owner for every table by itself. The owner it found answers only the last reading, which account controls the table, so you still do not know whom to ask about `daily_sales`.
-
-    The rule asked for "an owner" and did not say which reading it wanted. So you rewrite your rule to say what it is for: someone to ask about the table.
+    The warehouse records `etl_service` in `table_owner` for all three tables. `etl_service` is the account the shop's four nightly programs log in as. So the requirement is met as written: every table has an owner.
     """)
     return
 
@@ -337,7 +327,39 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.callout(mo.md(r"""
-    Your rule, rewritten: "Every table must name whom to ask about it, and the account that controls it in the warehouse does not count."
+    In the cell below, write what you would send the head, and what you take "owner" to mean; the readings follow the cell.
+    """), kind="info")
+    return
+
+
+@app.cell
+def _():
+    reading = """
+What would you send the head?
+........
+What do you take "owner" to mean?
+........
+"""
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    - As written, `as_written`: the table has a value in `table_owner`. `etl_service` meets it.
+    - A person to ask, `a_person`: a named member of staff. Nothing records one.
+    - A team that answers for it, `a_team`: a named team. Nothing records one.
+    - The job that writes it, `the_job`: a program. `etl_service` is the account a program logs in as, not the program.
+
+    A requirement as written is met by whatever the platform already holds. Each reading of it asks for a different thing to be recorded. Your work is to say which reading was meant, and to record what that reading needs.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    The reading the head wanted: `a_person` or `a_team`. The account that controls a table in the warehouse does not meet it. The requirement becomes "Every table must name whom to ask about it."
     """), kind="neutral")
     return
 
@@ -345,7 +367,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Nothing on the shop's platform meets this rule yet, because no system records whom to ask about a table.
+    Nothing on the shop's platform meets this yet, because no system records whom to ask about a table.
     """)
     return
 

@@ -181,6 +181,15 @@ content tests fail a figure without a block or with a question unanswered.
 
 ## Requirements
 
+Since 14 October 2026 (the section "The owner requirement in Chapter 4's form", below): the head of
+the shop's "Every table must have an owner.", questioned in prose and a `reading` cell, with no
+figure. (1) As written: every table has an owner. (2) What it might mean: `as_written`,
+`a_person`, `a_team`, `the_job`. (3) What each needs: a value in `table_owner`; a named member of
+staff; a named team; a program. (4) What the platform records: `etl_service`, an account the
+programs log in as, in every table. (5) Met as written, and by no other reading; the head's
+question ("Who owns `daily_sales`?") wanted `a_person` or `a_team`, which nothing records. The
+paragraphs below are the history.
+
 The chapter questions "Every table must have an owner." in prose, not in a figure. The
 construction states what the field holds (`etl_service`, the account all four programs log in
 as), the question that record answers (which account controls the table) and the question it
@@ -1188,6 +1197,41 @@ query's label took. The arrow is now an element of its own between the label and
 of equal height, so it runs level with the middle of the two tables at every width (measured within
 a pixel at 680, 900 and 1280 pixels); on a phone the link still runs down between the stacked
 tables.
+
+## The owner requirement in Chapter 4's form, 14 October 2026
+
+At the author's request (a brief in nine points), the section that followed section 2's findings
+was rebuilt. It replaces "The owner the warehouse records", the rule data teams adopt, the readings'
+table and the rewritten rule (the three entries above of the same day). Now:
+
+1. Heading `## "Every table must have an owner."`, the requirement in quotes as Chapter 4's
+   heading is. The brief asked for `## Question the requirement "..."` to match the objectives'
+   wording; that wording stays in the Objectives, since a heading names the subject, not the
+   reader's activity (`CLAUDE.md`, "Voice"), and no chapter's heading uses it.
+2. A requirement box: the head of the shop's second message, "Every table must have an owner. Who
+   owns `daily_sales`?" (the author's words), then "The warehouse has a column that looks like the
+   answer. The cell below reads it." (the author's words).
+3. The `table_owner` query, unchanged, then BU2: `etl_service` in every table, the account the four
+   nightly programs log in as (`notebook/shop/week.py`), so the requirement is met as written.
+4. An action box (BU3) and a `reading` cell in Chapter 4's form: "What would you send the head?",
+   "What do you take "owner" to mean?".
+5. The readings as a list in Chapter 4's form, in the author's words: `as_written`, `a_person`,
+   `a_team`, `the_job`. Chapter 8's ownership facet ("which of Chapter 2's readings of "owner" it
+   answers") still reads correctly.
+6. The method, once (BU4).
+7. A requirement box with the reading the head wanted, in the author's words, its sentences
+   reordered so that it ends with the requirement quoted, as every requirement box does (the
+   test in `test_jupyterlite.py`): "The reading the head wanted: `a_person` or `a_team`. The
+   account that controls a table in the warehouse does not meet it. The requirement becomes
+   "Every table must name whom to ask about it."" Then "Nothing on the shop's platform meets this
+   yet, because no system records whom to ask about a table."
+8. Objectives (BU1) after the title, with "Question the requirement "Every table must have an
+   owner."".
+
+Brief and draft: `briefs/round-23/BU.md`, `drafts/round-23/BU.md`. The draft's BU3 said "one
+owner", Chapter 4's phrase; "one" was dropped. Follow-ups for a later pass, from the author's
+brief: Chapter 3 to say `responsible` is the field Chapter 2's chosen reading needs; Chapter 4's
+"Each asset has one owner." to refer back to `a_person` and `a_team` by name.
 
 ## Known gaps
 

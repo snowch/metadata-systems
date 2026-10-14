@@ -374,22 +374,23 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertEqual((owners, len(programs)), ({"etl_service"}, 4))
         tables = self.w.sql("SELECT table_name FROM information_schema.tables")
         self.assertEqual(len(tables), 3)
-        # The rule is one data teams often adopt (docs/sources.md), which the data engineer adopts so
-        # that "Who should I ask?" has an answer; the warehouse meets it as written before anyone acts.
-        self.says('Data teams often adopt a rule so that every table has someone to ask about it: "Every table must have an owner."')
-        self.says("You adopt the rule for the shop's platform.")
-        self.says("The rule is met as written: the warehouse fills in an owner for every table by itself.")
-        self.says("so you still do not know whom to ask about `daily_sales`.")
-        self.assertNotIn("head of the shop's requirement is: \"Every table", self.text[2])
-        self.says("The warehouse records `etl_service` as the owner of all three tables, in the column `table_owner` of `information_schema.tables`.")
-        # The readings of the requirement, each against what the warehouse records: the account it
-        # names answers only which account controls the table. Its owner is one account for every
-        # table, which four programs share, so it names no person, team or job.
-        self.says("| which account controls it in the warehouse | an account | yes |")
-        self.says("| which job writes it | a program | no: it names an account, not a program |")
-        self.assertEqual(flat(TEXT[2]).count("| yes |"), 1)
-        # "field" is kept for a file's record (Chapter 1); what a system keeps is not called one here.
-        self.says("### The owner the warehouse records")
+        # Since 14 October 2026, at the author's request, the head of the shop sends the requirement
+        # (as in Chapters 3 and 4), the warehouse meets it as written, the reader writes what they
+        # would send before the readings, and the readings are named as Chapter 4 names its own;
+        # Chapter 8 refers back to them ("Chapter 2's readings of \"owner\"").
+        self.says('The head of the shop sends a second message: "Every table must have an owner. Who owns `daily_sales`?"')
+        self.says("So the requirement is met as written: every table has an owner.")
+        self.says("`etl_service` is the account the shop's four nightly programs log in as.")
+        self.says("- As written, `as_written`: the table has a value in `table_owner`. `etl_service` meets it.")
+        self.says("- A person to ask, `a_person`: a named member of staff. Nothing records one.")
+        self.says("- A team that answers for it, `a_team`: a named team. Nothing records one.")
+        self.says("- The job that writes it, `the_job`: a program. `etl_service` is the account a program logs in as, not the program.")
+        self.says('The requirement becomes "Every table must name whom to ask about it."')
+        self.says('- Question the requirement "Every table must have an owner."')
+        self.says('## "Every table must have an owner."')
+        self.assertIn('What do you take "owner" to mean?', SOURCE[2])
+        # No table of the readings: a list, as in Chapter 4.
+        self.assertNotIn("| One reading of", SOURCE[2])
         self.assertNotIn("These fields", self.text[2])
 
     def test_the_reconstruction_and_thursday(self):

@@ -195,7 +195,7 @@ class TheBoxes(unittest.TestCase):
             kinds = re.findall(r'\bkind="(\w+)"\)', source)
             # Chapter 2's boxes of findings (kind "success") follow its investigations.
             # Chapter 2 also puts each other thing the reader does in a box of the steps' kind.
-            self.assertEqual([k for k in kinds if k not in ("neutral", "success")], ["warn"] + ["info"] * (4 if chapter == 2 else 1), chapter)
+            self.assertEqual([k for k in kinds if k not in ("neutral", "success")], ["warn"] + ["info"] * (5 if chapter == 2 else 1), chapter)
             self.assertEqual(kinds.count("success"), 3 if chapter == 2 else 0, chapter)
             # Chapter 2 rewrites its rule, after the readings, to say what it is for: a second box.
             self.assertEqual(kinds.count("neutral"), 3 if chapter == 33 else 2 if chapter == 2 else (1 if chapter > 1 else 0), chapter)

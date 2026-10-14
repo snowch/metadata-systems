@@ -193,7 +193,7 @@ and its notes say which (`CLAUDE.md`, "Question the requirement").
 | Ch | A requirement that sounds settled | What it could be asking |
 | --- | --- | --- |
 | 1 | none: the chapter tours what the platform holds, and leaves its first requirement to Chapter 2 | |
-| 2 | "Every table must have an owner." (questioned in the prose) | who is responsible for it; which team is; which job writes it; which account controls it in the warehouse |
+| 2 | "Every table must have an owner." (the head's, questioned in the prose) | as written, `as_written`: a value in `table_owner`; a person to ask, `a_person`; a team that answers for it, `a_team`; the job that writes it, `the_job` |
 | 3 | "Every column must have a description." | what the column means; its unit; where its values come from; whether it may be empty. A description that repeats the column's name meets it as written |
 | 4 | "Each asset has one owner." | one person, one team, or one identifier for an owner two records spell differently |
 | 5 | "Show everything related to `daily_sales`." | what it is made from; what reads it; who is responsible for it; where it is kept. Each is a different kind of edge |
@@ -261,6 +261,20 @@ The author reviews the course at five checkpoints:
 5. Before Chapter 33.
 
 ## Decisions since the brief
+
+### 14 October 2026: Chapter 2's owner requirement, questioned as Chapters 3 and 4 question theirs
+
+At the author's request. The requirement is the head of the shop's again, sent as a second
+message ("Every table must have an owner. Who owns `daily_sales`?"), as Chapters 3 and 4 open
+theirs, in place of a rule data teams adopt. The section follows Chapter 4's form: the warehouse's
+`table_owner` read; the requirement met as written by `etl_service`, the account the nightly
+programs log in as; a cell where the reader writes what they would send the head and what they
+take "owner" to mean; the readings as a named list (`as_written`, `a_person`, `a_team`,
+`the_job`), which Chapter 8's ownership facet refers back to; the method said once, as this is its
+first appearance; and the reading the head wanted, `a_person` or `a_team`, in a requirement box:
+"Every table must name whom to ask about it." The chapter gains Objectives, as Chapters 1 and 3 to
+5 have. The section's heading is the requirement in quotes, as Chapter 4's is, not "Question the
+requirement", which is an objective's wording and would name the reader's activity.
 
 ### 14 October 2026: an updated chapter replaces an older saved copy
 
