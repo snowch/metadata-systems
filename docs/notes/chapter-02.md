@@ -1161,6 +1161,15 @@ exercise away and leave Chapter 3's record short of the learner's own rule. Word
 (`briefs/round-23/BS.md`, `drafts/round-23/BS.md`); "you" and "your" added to the draft's first
 paragraph, which had dropped them.
 
+## The readings' table as alternatives, 14 October 2026
+
+The author found that the table of what "owner" could mean read as if all four rows were
+requirements. A sentence above it now says the word has four readings, one per row, each a
+different question needing a different record, and its headings say so: "One reading of
+"owner"", "What that reading needs", "Does `etl_service` answer that reading?". The sentence
+after the table no longer repeats "a word with four meanings". Words from brief BT
+(`briefs/round-23/BT.md`, `drafts/round-23/BT.md`).
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,

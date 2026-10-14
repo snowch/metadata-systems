@@ -312,7 +312,9 @@ def _(mo):
     mo.md(r"""
     The warehouse records `etl_service` as the owner of all three tables, in the column `table_owner` of `information_schema.tables`. The name looks like an account a program logs in as, and the warehouse records nothing more about it.
 
-    | What the rule could mean | What it needs | Does `etl_service` answer it? |
+    The word "owner" in the rule has four readings: each row of the table is one reading, asking a different question that needs a different thing recorded.
+
+    | One reading of "owner" | What that reading needs | Does `etl_service` answer that reading? |
     | --- | --- | --- |
     | who is responsible for the table | a person | no |
     | which team is responsible for it | a team | no |
@@ -321,7 +323,7 @@ def _(mo):
 
     The rule is met as written: the warehouse fills in an owner for every table by itself. The owner it found answers only the last reading, which account controls the table, so you still do not know whom to ask about `daily_sales`.
 
-    The rule asked for "an owner", a word with four meanings, and did not say which one it wanted. So you rewrite your rule to say what it is for: someone to ask about the table.
+    The rule asked for "an owner" and did not say which reading it wanted. So you rewrite your rule to say what it is for: someone to ask about the table.
     """)
     return
 
