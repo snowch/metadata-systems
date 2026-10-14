@@ -326,14 +326,12 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("no order from those days is missing from `clean_orders`")
         same = [d for d in shop.DAYS if raw[d] == daily[d]]
         self.assertEqual(same, ["2026-09-07", "2026-09-11", "2026-09-13"])
-        # The tables show each day's weekday, as the text names days: the chapter's expression gives
-        # the calendar's.
-        weekday = "substr('SunMonTueWedThuFriSat', 1 + 3 * strftime('%w', d.day), 3) AS weekday"
-        self.assertIn(weekday, SOURCE[2])
-        shown = self.w.sql(f"SELECT d.day, {weekday} FROM daily_sales AS d ORDER BY d.day")
+        # Every table shows a date with its weekday, as the text names days: the calendar's.
+        drawn = self.w.sql("SELECT day FROM daily_sales ORDER BY day")._repr_html_()
         from datetime import date
-        self.assertEqual([r["weekday"] for r in shown], [date.fromisoformat(d).strftime("%a") for d in shop.DAYS])
-        self.assertEqual([r["weekday"] for r in shown if r["day"] in same], ["Mon", "Fri", "Sun"])
+        for d in shop.DAYS:
+            self.assertIn(f'{d}<span class="ms-wd">({date.fromisoformat(d).strftime("%a")})</span>', drawn)
+        self.assertEqual([date.fromisoformat(d).strftime("%a") for d in same], ["Mon", "Fri", "Sun"])
         self.says(
             "On Monday, Friday and Sunday the raw orders add up to the day's row in `daily_sales`. "
             "On Tuesday, Wednesday, Thursday and Saturday they do not."

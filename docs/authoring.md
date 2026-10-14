@@ -44,6 +44,10 @@ chapter is added to `CHAPTERS` in `build_ipynb.py`, in `notebook/tests/test_word
   `<details class="ms-choice"><summary>A. ...</summary> feedback </details>` in a Markdown cell.
   It needs no code and no widget; every answer looks the same until opened, a wrong one says why
   and asks for another, and the one that holds ends with the point in a `<div class="ms-takeaway">`.
+- A table shows each date with its weekday after it (`2026-09-10 (Thu)`): the engine's tables do
+  this for every date that stands as a word, so a chapter's text may name the shop's days freely.
+  Printed raw data (a file's lines, an event's JSON) stays as the system holds it; where the text
+  names a day beside it, give the date too.
 - A link from the opening to a section is the heading's text with its spaces as hyphens
   (`[Test an explanation](#3.-Test-an-explanation)`): JupyterLite scrolls the notebook to it, even
   when the heading is far below; the smoke test follows two of Chapter 2's.

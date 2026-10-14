@@ -135,8 +135,7 @@ def _(warehouse):
     # files= reads orders.jsonl from object storage as raw_orders.
     warehouse.sql(
         """
-        SELECT d.day, substr('SunMonTueWedThuFriSat', 1 + 3 * strftime('%w', d.day), 3) AS weekday,
-               r.raw_orders_pence, d.revenue_pence,
+        SELECT d.day, r.raw_orders_pence, d.revenue_pence,
                CASE WHEN r.raw_orders_pence = d.revenue_pence THEN 'same' ELSE 'different' END AS compared
         FROM daily_sales AS d
         JOIN (
@@ -342,9 +341,7 @@ def _(mo):
 @app.cell
 def _(warehouse):
     warehouse.sql("""
-        SELECT order_id, date(ordered_at) AS day,
-               substr('SunMonTueWedThuFriSat', 1 + 3 * strftime('%w', ordered_at), 3) AS weekday,
-               status, price_pence * quantity AS pence
+        SELECT order_id, date(ordered_at) AS day, status, price_pence * quantity AS pence
         FROM clean_orders
         WHERE status = 'cancelled'
     """)
@@ -355,9 +352,7 @@ def _(warehouse):
 def _(warehouse):
     warehouse.sql(
         """
-        SELECT order_id, date(ordered_at) AS day,
-               substr('SunMonTueWedThuFriSat', 1 + 3 * strftime('%w', ordered_at), 3) AS weekday,
-               COUNT(*) AS copies
+        SELECT order_id, date(ordered_at) AS day, COUNT(*) AS copies
         FROM raw_orders
         GROUP BY order_id
         HAVING COUNT(*) > 1

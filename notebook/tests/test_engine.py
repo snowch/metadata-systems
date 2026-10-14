@@ -1125,3 +1125,16 @@ class TheFerry(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TheTablesShowWeekdays(unittest.TestCase):
+    """A table shows a date or a time with its weekday, muted, and leaves other text alone."""
+
+    def test_dates_and_times_carry_their_weekday(self):
+        from shop.platform import Rows
+
+        drawn = Rows([{"a": "2026-09-10", "b": "2026-09-14T02:30:21Z", "c": "s3://ferry-gates/x/2026-09-23/0930", "d": 7}])._repr_html_()
+        self.assertIn('2026-09-10<span class="ms-wd">(Thu)</span>', drawn)
+        self.assertIn('2026-09-14T02:30:21Z<span class="ms-wd">(Mon)</span>', drawn)
+        self.assertIn("2026-09-23/0930</td>", drawn)
+        self.assertEqual(drawn.count("ms-wd\">"), 2)

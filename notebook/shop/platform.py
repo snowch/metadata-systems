@@ -48,7 +48,14 @@ _TABLE_STYLE = (
     ".ms-table th,.ms-table td{padding:0.2rem 0.6rem;border-bottom:1px solid "
     "color-mix(in srgb,currentColor 18%,transparent);text-align:left;white-space:nowrap}"
     ".ms-table td{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}"
-    ".ms-table th{font-weight:600}.ms-scroll{overflow-x:auto;max-width:100%}</style>"
+    ".ms-table th{font-weight:600}.ms-scroll{overflow-x:auto;max-width:100%}"
+    ".ms-table .ms-wd{margin-left:0.35em;opacity:0.65}</style>"
+)
+
+# A date or a time standing as a word of its own: 2026-09-10, 2026-09-10T02:30:21Z, "2026-09-22
+# mainland 17:30", "... on 2026-09-24.". Not one inside a path or a name (s3://.../2026-09-22/1730).
+_DATE = re.compile(
+    r"(?<![\w/:.-])(\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})?)?)(?![\w/-]|\.\d)"
 )
 
 
@@ -57,12 +64,34 @@ def _code(text: str) -> str:
     return re.sub(r"`([^`]+)`", r"<code>\1</code>", html.escape(text))
 
 
+def _value(value) -> str:
+    """A value as a table shows it. Each date or time in it carries its day of the week after it,
+    muted, since the chapters name the shop's days (Thursday's revenue, the failed night on Monday)
+    and a table shows dates: 2026-09-10 (Thu). The day is the date's as written, in UTC like every
+    time."""
+    shown = _code(str(value))
+    if not isinstance(value, str):
+        return shown
+
+    def mark(m: re.Match) -> str:
+        try:
+            day = datetime.strptime(m.group(1)[:10], "%Y-%m-%d").strftime("%a")
+        except ValueError:
+            return m.group(0)
+        return f'{m.group(1)}<span class="ms-wd">({day})</span>'
+
+    return _DATE.sub(mark, shown)
+
+
 def _cell(value, null: str) -> str:
     if value is None:
         return f"<em>{null}</em>"
     if isinstance(value, list):
-        return "<br>".join(_code(", ".join(f"{k}: {v}" for k, v in x.items()) if isinstance(x, dict) else str(x)) for x in value)
-    return _code(str(value))
+        return "<br>".join(
+            ", ".join(f"{_code(str(k))}: {_value(v)}" for k, v in x.items()) if isinstance(x, dict) else _value(x)
+            for x in value
+        )
+    return _value(value)
 
 
 class Rows(list):
@@ -77,7 +106,7 @@ class Rows(list):
         if not self:
             return f"<em>{html.escape(self.empty)}</em>"
         names = list(self[0])
-        head = "".join(f"<th>{html.escape(n)}</th>" for n in names)
+        head = "".join(f"<th>{_value(n)}</th>" for n in names)
         body = "".join("<tr>" + "".join(f"<td>{_cell(r.get(n), self.null)}</td>" for n in names) + "</tr>" for r in self)
         return f'{_TABLE_STYLE}<div class="ms-scroll"><table class="ms-table"><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>'
 
@@ -126,7 +155,7 @@ class Beside(Rows):
     def _repr_html_(self) -> str:
         names = list(self[0])
         flagged = "changed" in names
-        head = "".join(f"<th>{html.escape(n)}</th>" for n in names)
+        head = "".join(f"<th>{_value(n)}</th>" for n in names)
         body = []
         for r in self:
             changed = flagged and r["changed"] == "yes"

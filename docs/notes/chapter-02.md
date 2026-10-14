@@ -1131,10 +1131,9 @@ did not line up.
 
 The author noticed that the text names days (Monday, Friday and Sunday; Tuesday's cancelled order;
 Saturday 12 September) while the tables showed only dates, so the reader had to work out the
-weekday. The comparison of every day, and the cells listing the cancelled orders and the order
-written twice, now have a column `weekday` (`substr('SunMonTueWedThuFriSat', 1 + 3 *
-strftime('%w', ...), 3)`, which a test holds to the calendar); the what-ifs' tables show each time
-and each dashboard value with its weekday after it, `2026-09-12 (Sat)`.
+weekday. First fixed here with a `weekday` column in three queries; then, at the author's request
+to check every chapter, made a rule of the engine's tables for the whole course
+(`docs/plan.md`, 14 October 2026), and the columns came out again.
 
 ## Known gaps
 

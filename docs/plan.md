@@ -262,6 +262,19 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 14 October 2026: every date in a table shows its weekday
+
+The chapters tell the shop's week by its days (Thursday's revenue, the failed night on Monday, the
+ferry's Tuesday 17:30) while the tables showed ISO dates, so a reader had to work out which date
+was which day. An audit of every chapter (each notebook run, each text cell that names a day
+without its date set beside the outputs around it) found such places in most of them. The engine's
+tables (`Rows`, `Record` and `Beside` in `notebook/shop/platform.py`, which every chapter's tables
+use) now show each date or time that stands as a word of its own with its weekday after it, muted:
+`2026-09-10 (Thu)`, in cells and in column headings. A date inside a path or a file name
+(`s3://ferry-gates/mainland/2026-09-22/1730`, `loads-2026-09-22.csv`) is left alone, and so is
+printed raw data (a file's lines, an event's JSON), which shows what the system holds. After the
+change the audit finds only those.
+
 ### 13 October 2026: Python starts as a chapter opens
 
 At the author's request, after Chapter 2 was tried on an emulated slow phone (a third of one core,
