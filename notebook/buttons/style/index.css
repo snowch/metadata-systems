@@ -811,3 +811,14 @@
 .jp-RenderedMarkdown h2 {
   scroll-margin-top: 1rem;
 }
+
+/* A heading of the fourth level in the text (not inside a figure): Chapter 2's three changes to the
+   shop, each a small section of its own. A rule above it and space before it keep each change and
+   its result apart from the next. */
+.jp-RenderedMarkdown > h4 {
+  margin-top: 1.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--jp-border-color2);
+  font-size: 1.1rem;
+  scroll-margin-top: 1rem;
+}

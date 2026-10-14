@@ -1259,6 +1259,16 @@ ends "Your rule becomes "Every table must name whom to ask about it."". Brief BW
 23); "The head of the shop sends a second message:" added to the draft, which had dropped who
 sends it.
 
+## The three changes apart, 14 October 2026
+
+The author found the three changes under "Could have been made, or was made" ran together: each
+opened with a bold sentence inside a paragraph. Each opener is now a heading of the fourth level,
+its words as they stood without the full stop ("An analyst copies `clean_orders` every night", "From
+Saturday, the `daily_sales` job keeps unrefunded orders", "The `daily_sales` job fails on the last
+night"), drawn with a rule above it and space before it (`.jp-RenderedMarkdown > h4`; no other
+chapter has one). No words changed. The test that the what-ifs run the engine's changes now reads
+the three headings.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,

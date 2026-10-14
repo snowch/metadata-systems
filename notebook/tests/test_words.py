@@ -1664,13 +1664,14 @@ class TheWordsAboutThePage(unittest.TestCase):
         runs = re.findall(r'^    (\w+) = shop\.run_week\(\[(.*?)\]\)\n    shop\.records_beside\(week, (\w+)\)$', SOURCE[2], re.M)
         self.assertEqual([ast.literal_eval(c) for _, c, _ in runs], list(shop.CHANGES[:3]))
         self.assertTrue(all(a == b for a, _, b in runs))
-        bold = re.findall(r"^    \*\*(.+?)\*\* ", SOURCE[2], re.M)
+        # Each change has a heading of its own, so that the three stay apart on the page.
+        headings = re.findall(r"^    #### (.+)$", SOURCE[2], re.M)
         self.assertEqual(
-            bold[-3:],
+            headings,
             [
-                "An analyst copies `clean_orders` every night.",
-                "From Saturday, the `daily_sales` job keeps unrefunded orders.",
-                "The `daily_sales` job fails on the last night.",
+                "An analyst copies `clean_orders` every night",
+                "From Saturday, the `daily_sales` job keeps unrefunded orders",
+                "The `daily_sales` job fails on the last night",
             ],
         )
 
