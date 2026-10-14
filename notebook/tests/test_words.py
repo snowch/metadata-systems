@@ -348,7 +348,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
             "a last-altered time of 02:30 on Monday 14 September, and an owner, `etl_service`."
         )
         # The record is shown before it is described: the cells come first.
-        holds = SOURCE[2][SOURCE[2].index("## 2. What the platform records"):]
+        holds = SOURCE[2][SOURCE[2].index("## 2. What the platform records about its assets"):]
         self.assertLess(holds.index("FROM information_schema.columns"), holds.index("**Established**"))
 
     def test_the_file_formats(self):
@@ -487,7 +487,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         # The opening's list is the stages' headings as links, each to a heading the chapter has.
         links = re.findall(r"\]\(#([^)]+)\)", CELLS[2][0])
         headings = {re.sub(r"^#+ ", "", line).replace(" ", "-") for cell in CELLS[2] for line in cell.splitlines() if line.startswith("## ")}
-        self.assertEqual(links[:3], ["1.-Find-the-discrepancy", "2.-What-the-platform-records", "3.-Test-an-explanation"])
+        self.assertEqual(links[:3], ["1.-Find-the-discrepancy", "2.-What-the-platform-records-about-its-assets", "3.-Test-an-explanation"])
         self.assertTrue(set(links) <= headings, set(links) - headings)
 
     def test_the_rule_the_week_never_tests(self):

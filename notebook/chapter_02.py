@@ -21,7 +21,7 @@ def _(mo):
     You investigate it using only what the shop's platform holds, and find where that evidence stops.
 
     1. [Find the discrepancy](#1.-Find-the-discrepancy)
-    2. [What the platform records](#2.-What-the-platform-records)
+    2. [What the platform records about its assets](#2.-What-the-platform-records-about-its-assets)
     3. [Test an explanation](#3.-Test-an-explanation)
 
     [Records made at the time](#Records-made-at-the-time) says which records would have answered; [a short check](#Check:-evidence-of-what-a-job-read) closes the chapter.
@@ -196,9 +196,11 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## 2. What the platform records
+    ## 2. What the platform records about its assets
 
-    The cells read each system's own record of its assets: the warehouse's `information_schema` for `daily_sales`, the listing of the bucket `shop-raw`, and the reporting tool's record of `sales_dashboard`.
+    Section 1 read the shop's data: the orders in `orders.jsonl`, and the rows of `clean_orders` and `daily_sales`. Besides that data, each system keeps records about the assets it holds: a record describes the file, the table or the dashboard, and is not an order or a day's revenue.
+
+    The cells below read three of these records: the warehouse's `information_schema` for `daily_sales` (the table, then its columns), the listing of the bucket `shop-raw`, and the reporting tool's record of `sales_dashboard`. As you read them, look for whether any record says which job made `daily_sales`, or what that job read.
     """)
     return
 
@@ -576,7 +578,7 @@ def _(figures, mo, shop, week):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Information of this kind, about an asset or about the platform, is called **metadata**: what an asset is, where it came from, who is responsible for it, what its numbers mean, how it is made, and how it relates to other assets. Some of it the systems already keep for their own purposes: the names, types, counts and times you read above. They do not keep what an asset means, what it was made from, or what happened to it. Somebody has to record those. What happened, such as which tables a night's job read, has to be recorded when it happens. What a table is made from can also be read later, from the jobs' code (Chapter 6). That shows what the code says, not what the job did on a given night. A note of what a job read, written the next morning from the data, is a reconstruction, with the limits shown above.
+    Information of this kind, about an asset or about the platform, is called **metadata**: what an asset is, where it came from, who is responsible for it, what its numbers mean, how it is made, and how it relates to other assets. Some of it the systems already keep for their own purposes: the names, types, counts and times you read in section 2, [What the platform records about its assets](#2.-What-the-platform-records-about-its-assets). They do not keep what an asset means, what it was made from, or what happened to it. Somebody has to record those. What happened, such as which tables a night's job read, has to be recorded when it happens. What a table is made from can also be read later, from the jobs' code (Chapter 6). That shows what the code says, not what the job did on a given night. A note of what a job read, written the next morning from the data, is a reconstruction, with the limits shown above.
 
     Real platforms keep more history than the shop's: query logs, table snapshots, audit trails. Those are records made at the time too, kept by the system rather than by a person, and later chapters use them where they exist.
     """)

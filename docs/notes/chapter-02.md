@@ -1135,6 +1135,18 @@ weekday. First fixed here with a `weekday` column in three queries; then, at the
 to check every chapter, made a rule of the engine's tables for the whole course
 (`docs/plan.md`, 14 October 2026), and the columns came out again.
 
+## The shop's data and the records about it, 14 October 2026
+
+The author asked that section 2 make clearer that the platform holds more than the shop's business
+data. Its heading is now "2. What the platform records about its assets", and its lead says that
+section 1 read the shop's data (the orders, the rows of `clean_orders` and `daily_sales`), that each
+system also keeps records about the assets it holds, which describe a file, a table or a dashboard
+rather than an order, and what to look for in them. The word *metadata* still arrives only in
+"Records made at the time", whose sentence about what the systems already keep now links back to
+section 2 by its heading instead of saying "above". Words from brief BR (`briefs/round-23/BR.md`,
+`drafts/round-23/BR.md`); the draft carried every fact, and only its paragraph breaks and the
+heading as a link were changed.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,
