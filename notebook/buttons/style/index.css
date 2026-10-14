@@ -235,8 +235,9 @@
 
 /* The chapters' boxes (notebook/jupyterlite/build_ipynb.py writes them as a div in a Markdown
    cell): the warning about the download and the memory a phone has, the steps for running and
-   saving the page, and the requirement a chapter questions. Each keeps the page's own text colour and tints its background with a theme
-   colour, so it reads in the light and the dark theme alike. */
+   saving the page, and the requirement a chapter questions, which has an icon too. Each keeps the
+   page's own text colour and tints its background with a theme colour, so it reads in the light
+   and the dark theme alike. */
 
 .jp-RenderedMarkdown .ms-box {
   margin: 0 0 var(--jp-content-heading-margin-bottom, 1em);
@@ -267,6 +268,25 @@
    light and the dark theme alike. */
 .jp-RenderedMarkdown .ms-box-requirement {
   --ms-box-colour: #8a63d2;
+  position: relative;
+  padding-left: 44px;
+}
+
+/* Its icon, in its colour: Material Symbols' "rule" (outlined, weight 400), a list with a tick and
+   a cross, from @material-symbols/svg-400 0.48.0, by Google, under the Apache License 2.0
+   (https://www.apache.org/licenses/LICENSE-2.0; docs/sources.md). It sits beside the first line,
+   and is drawn with the box's colour through it, so it follows the theme as the box does. */
+.jp-RenderedMarkdown .ms-box-requirement::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 11px;
+  width: 20px;
+  height: 20px;
+  background-color: var(--ms-box-colour);
+  --ms-rule-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='m576-160-42-42 111-111-111-111 42-42 111 111 111-111 42 42-111 111 111 111-42 42-111-111-111 111Zm83-374L517-676l42-42 100 99 179-179 42 43-221 221ZM80-290v-60h360v60H80Zm0-320v-60h360v60H80Z'/%3E%3C/svg%3E");
+  -webkit-mask: var(--ms-rule-icon) center / contain no-repeat;
+  mask: var(--ms-rule-icon) center / contain no-repeat;
 }
 
 /* What a cell prints keeps its own lines: a JSON Lines file shows one record per line, as it is

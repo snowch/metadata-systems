@@ -9,16 +9,17 @@
 // of what Python is doing until the run ends, when the notice says every cell has run; Run all runs every
 // visible code cell, with no error in any output, and leaves the notebook where it was scrolled;
 // the warning and the steps for running the page are boxes, and from Chapter 2 the requirement the
-// chapter questions is one too, in a colour of its own; in Chapter 1 a printed file keeps one
-// record per line, scrolling inside its box, and the page never scrolls sideways. In Chapter 2, Run
-// below from a selected cell does the same, the opening's links reach their stages, and the check's
-// answers open with their feedback. In Chapter 3 the reader's record, typed in, passes its
-// check, and in Chapter 4 the merge, typed in, leaves the model's check 3 problems; in Chapters 10
-// to 22 each chapter's change to a cell gives its result. A browser set to dark gets the dark
-// theme, and one set to light the light. The page logs no error; a copy the reader saved before the
-// chapter was updated gives way to the published chapter, and is kept under another name if the
-// reader changed a cell; and the notebooks' earlier names lead to their chapters. The notebook
-// workflow runs it after the build, with Playwright from the course's dependencies.
+// chapter questions is one too, in a colour of its own and with its icon; in Chapter 1 a printed
+// file keeps one record per line, scrolling inside its box, and the page never scrolls sideways.
+// In Chapter 2, Run below from a selected cell does the same, the opening's links reach their
+// stages, and the check's answers open with their feedback. In Chapter 3 the reader's record,
+// typed in, passes its check, and in Chapter 4 the merge, typed in, leaves the model's check 3
+// problems; in Chapters 10 to 22 each chapter's change to a cell gives its result. A browser set
+// to dark gets the dark theme, and one set to light the light. The page logs no error; a copy the
+// reader saved before the chapter was updated gives way to the published chapter, and is kept
+// under another name if the reader changed a cell; and the notebooks' earlier names lead to their
+// chapters. The notebook workflow runs it after the build, with Playwright from the course's
+// dependencies.
 //
 //   node notebook/jupyterlite/smoke.mjs SITE_DIR
 
@@ -353,6 +354,7 @@ try {
             name: b.className.replace("ms-box ", ""),
             tinted: style.backgroundColor !== "rgba(0, 0, 0, 0)",
             edge: style.borderLeftColor,
+            icon: /svg/.test(getComputedStyle(b, "::before").maskImage ?? ""),
           });
         }
       }
@@ -376,8 +378,9 @@ try {
       requirement.length === (chapter === 33 ? 3 : chapter > 1 ? 1 : 0) &&
         requirement.every(
           (r) => boxes.filter((b) => b.edge === r.edge).length === requirement.length,
-        ),
-      `Chapter ${chapter}: ${chapter > 1 ? "the requirement is a box in a colour of its own" : "no requirement box"}`,
+        ) &&
+        boxes.every((b) => b.icon === (b.name === "ms-box-requirement")),
+      `Chapter ${chapter}: ${chapter > 1 ? "the requirement is a box in a colour of its own, with its icon" : "no requirement box"}`,
     );
     if (chapter === 1) {
       // A printed file keeps one record per line: the line scrolls inside its box, and the page

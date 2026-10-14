@@ -166,7 +166,8 @@ requirement"). Look for one in every chapter: `docs/plan.md` lists a candidate f
 
 - **State the requirement in words**, as somebody at the shop would write it, in one sentence that
   quotes it, in a box of its own: a callout of the kind `"neutral"`, which the build draws as the
-  requirement's box, in a colour no other box uses. One per chapter, where the requirement arrives;
+  requirement's box, in a colour no other box uses and with an icon of its own (Material Symbols'
+  "rule"; `docs/sources.md`). One per chapter, where the requirement arrives;
   a heading straight above it names the section's subject and does not repeat the requirement's
   words. `notebook/tests/test_jupyterlite.py` and `smoke.mjs` check that each chapter from 2 has
   one.
