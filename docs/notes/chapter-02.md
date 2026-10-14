@@ -1147,6 +1147,20 @@ section 2 by its heading instead of saying "above". Words from brief BR (`briefs
 `drafts/round-23/BR.md`); the draft carried every fact, and only its paragraph breaks and the
 heading as a link were changed.
 
+## The rule rewritten, 14 October 2026
+
+The author asked whether the rule should be updated after the readings' table, to define the
+owners that are needed. After the table the learner now rewrites their rule to say what it is
+for, in a second requirement box: "Every table must name whom to ask about it, and the account
+that controls it in the warehouse does not count." A sentence after it says nothing on the platform
+meets it yet. The rewrite stops at the rule's own purpose, someone to ask, and deliberately does
+not split the owner into a person and a team: Chapter 3 answers the rule with one field,
+`responsible` (who to ask), and Chapter 4 questions "Each asset has one owner." by its readings
+(one person, one team, one owner however spelt). Defining the kinds of owner here would give that
+exercise away and leave Chapter 3's record short of the learner's own rule. Words from brief BS
+(`briefs/round-23/BS.md`, `drafts/round-23/BS.md`); "you" and "your" added to the draft's first
+paragraph, which had dropped them.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,

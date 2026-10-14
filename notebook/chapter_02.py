@@ -320,6 +320,24 @@ def _(mo):
     | which account controls it in the warehouse | an account | yes |
 
     The rule is met as written: the warehouse fills in an owner for every table by itself. The owner it found answers only the last reading, which account controls the table, so you still do not know whom to ask about `daily_sales`.
+
+    The rule asked for "an owner", a word with four meanings, and did not say which one it wanted. So you rewrite your rule to say what it is for: someone to ask about the table.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Your rule, rewritten: "Every table must name whom to ask about it, and the account that controls it in the warehouse does not count."
+    """), kind="neutral")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Nothing on the shop's platform meets this rule yet, because no system records whom to ask about a table.
     """)
     return
 

@@ -375,7 +375,8 @@ try {
     const requirement = named("ms-box-requirement");
     check(
       // Chapter 33 questions three of the ferry's requirements, each before building to it.
-      requirement.length === (chapter === 33 ? 3 : chapter > 1 ? 1 : 0) &&
+      // Chapter 2 rewrites its rule after the readings, in a second box.
+      requirement.length === (chapter === 33 ? 3 : chapter === 2 ? 2 : chapter > 1 ? 1 : 0) &&
         requirement.every(
           (r) => boxes.filter((b) => b.edge === r.edge).length === requirement.length,
         ) &&
