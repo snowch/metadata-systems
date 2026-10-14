@@ -265,14 +265,16 @@ The author reviews the course at five checkpoints:
 ### 14 October 2026: Chapter 2's owner requirement, questioned as Chapters 3 and 4 question theirs
 
 At the author's request. The requirement is the head of the shop's again, sent as a second
-message ("Every table must have an owner. Who owns `daily_sales`?"), as Chapters 3 and 4 open
+message ("Every table must have an owner. Who owns `daily_sales`? When a number looks wrong, as
+Thursday's did, I need to know whom to ask."), as Chapters 3 and 4 open
 theirs, in place of a rule data teams adopt. The section follows Chapter 4's form: the warehouse's
 `table_owner` read; the requirement met as written by `etl_service`, the account the nightly
 programs log in as; a cell where the reader writes what they would send the head and what they
 take "owner" to mean; the readings as a named list (`as_written`, `a_person`, `a_team`,
 `the_job`), which Chapter 8's ownership facet refers back to; the method said once, as this is its
-first appearance; and the reading the head wanted, `a_person` or `a_team`, in a requirement box:
-"Every table must name whom to ask about it." The chapter gains Objectives, as Chapters 1 and 3 to
+first appearance; and, in a requirement box, the reading the head's stated reason needs (someone
+to ask when a number looks wrong, as Thursday's did): `a_person` or `a_team`, "Every table must
+name whom to ask about it." The chapter gains Objectives, as Chapters 1 and 3 to
 5 have. The section's heading is the requirement in quotes, as Chapter 4's is, not "Question the
 requirement", which is an objective's wording and would name the reader's activity.
 

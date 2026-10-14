@@ -187,7 +187,8 @@ figure. (1) As written: every table has an owner. (2) What it might mean: `as_wr
 `a_person`, `a_team`, `the_job`. (3) What each needs: a value in `table_owner`; a named member of
 staff; a named team; a program. (4) What the platform records: `etl_service`, an account the
 programs log in as, in every table. (5) Met as written, and by no other reading; the head's
-question ("Who owns `daily_sales`?") wanted `a_person` or `a_team`, which nothing records. The
+stated reason (someone to ask when a number looks wrong, as Thursday's did) needs `a_person` or
+`a_team`, which nothing records. The
 paragraphs below are the history.
 
 The chapter questions "Every table must have an owner." in prose, not in a figure. The
@@ -1232,6 +1233,17 @@ Brief and draft: `briefs/round-23/BU.md`, `drafts/round-23/BU.md`. The draft's B
 owner", Chapter 4's phrase; "one" was dropped. Follow-ups for a later pass, from the author's
 brief: Chapter 3 to say `responsible` is the field Chapter 2's chosen reading needs; Chapter 4's
 "Each asset has one owner." to refer back to `a_person` and `a_team` by name.
+
+## The head's reason, 14 October 2026
+
+The author asked of the closing box ("The reading the head wanted: `a_person` or `a_team`") when
+the head said this, and why the head would ask about tables at all. The head never said it: the
+page asserted the head's intent from "Who owns `daily_sales`?", which is as open as "owner". The
+head's message now gives the reason: "When a number looks wrong, as Thursday's did, I need to know
+whom to ask." That ties the requirement to the morning's first message, and the closing box derives
+the reading from the head's words ("The head's reason is a number that looks wrong, ... So the
+answer has to be a person or a team: `a_person` or `a_team`."), not from a guess at what the head
+wanted. Brief BV, draft BV (round 23).
 
 ## Known gaps
 

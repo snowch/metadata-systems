@@ -378,7 +378,11 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         # (as in Chapters 3 and 4), the warehouse meets it as written, the reader writes what they
         # would send before the readings, and the readings are named as Chapter 4 names its own;
         # Chapter 8 refers back to them ("Chapter 2's readings of \"owner\"").
-        self.says('The head of the shop sends a second message: "Every table must have an owner. Who owns `daily_sales`?"')
+        # The head gives the reason, so that the reading the section closes on follows from the
+        # head's own words, not from a guess at what the head wanted.
+        self.says('The head of the shop sends a second message: "Every table must have an owner. Who owns `daily_sales`? When a number looks wrong, as Thursday\'s did, I need to know whom to ask."')
+        self.says("So the answer has to be a person or a team: `a_person` or `a_team`.")
+        self.assertNotIn("The reading the head wanted", SOURCE[2])
         self.says("So the requirement is met as written: every table has an owner.")
         self.says("`etl_service` is the account the shop's four nightly programs log in as.")
         self.says("- As written, `as_written`: the table has a value in `table_owner`. `etl_service` meets it.")

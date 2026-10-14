@@ -294,7 +294,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.callout(mo.md(r"""
-    The head of the shop sends a second message: "Every table must have an owner. Who owns `daily_sales`?"
+    The head of the shop sends a second message: "Every table must have an owner. Who owns `daily_sales`? When a number looks wrong, as Thursday's did, I need to know whom to ask."
     """), kind="neutral")
     return
 
@@ -359,7 +359,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.callout(mo.md(r"""
-    The reading the head wanted: `a_person` or `a_team`. The account that controls a table in the warehouse does not meet it. The requirement becomes "Every table must name whom to ask about it."
+    The head's reason is a number that looks wrong, and the head needs someone to ask about it. So the answer has to be a person or a team: `a_person` or `a_team`. The warehouse's owner, `etl_service`, is an account, and an account does not meet that reading. The requirement becomes "Every table must name whom to ask about it."
     """), kind="neutral")
     return
 
