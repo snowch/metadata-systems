@@ -15,9 +15,10 @@
 // answers open with their feedback. In Chapter 3 the reader's record, typed in, passes its
 // check, and in Chapter 4 the merge, typed in, leaves the model's check 3 problems; in Chapters 10
 // to 22 each chapter's change to a cell gives its result. A browser set to dark gets the dark
-// theme, and one set to light the light. The page logs no error, and the notebooks' earlier names
-// lead to their chapters. The notebook workflow runs it after the build, with Playwright from the
-// course's dependencies.
+// theme, and one set to light the light. The page logs no error; a copy the reader saved before the
+// chapter was updated gives way to the published chapter, and is kept under another name if the
+// reader changed a cell; and the notebooks' earlier names lead to their chapters. The notebook
+// workflow runs it after the build, with Playwright from the course's dependencies.
 //
 //   node notebook/jupyterlite/smoke.mjs SITE_DIR
 
@@ -998,6 +999,90 @@ try {
       `a browser set to ${scheme} gets the ${scheme} theme`,
     );
     await other.close();
+  }
+  // A copy the reader saved before the chapter was updated gives way to the published chapter. The
+  // test saves Chapter 1, then rewrites the copy in the browser's storage as an older one would be.
+  {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const reader = await context.newPage();
+    const opened = async () => {
+      await reader.waitForSelector(".jp-Notebook .jp-Cell", { timeout: 120_000 });
+      await reader.waitForTimeout(3_000);
+    };
+    // Runs a change on JupyterLite's stored files (the database is named after the site's path)
+    // and returns what it gives: a new copy of Chapter 1 to store, under `put`, and a result.
+    const stored = (change) =>
+      reader.evaluate(async (change) => {
+        const { name } = (await indexedDB.databases()).find((d) =>
+          d.name.startsWith("JupyterLite Storage"),
+        );
+        const db = await new Promise((resolve) => {
+          const request = indexedDB.open(name);
+          request.onsuccess = () => resolve(request.result);
+        });
+        const files = db.transaction("files", "readwrite").objectStore("files");
+        const ask = (request) =>
+          new Promise((resolve) => (request.onsuccess = () => resolve(request.result)));
+        const keys = await ask(files.getAllKeys());
+        const items = Object.fromEntries(
+          await Promise.all(keys.map(async (key) => [key, await ask(files.get(key))])),
+        );
+        const out = new Function("items", "keys", change)(items, keys);
+        if (out?.put) await ask(files.put(out.put, "chapter_01.ipynb"));
+        db.close();
+        return out?.result;
+      }, change);
+    const save = async () => {
+      await reader.click('button[data-action="save"]');
+      await reader.waitForTimeout(1_500);
+    };
+    const said = async () => {
+      const seen = new Set();
+      for (let i = 0; i < 20; i += 1) {
+        const text = await reader.evaluate(
+          () => document.querySelector(".ms-Status:not([hidden])")?.textContent,
+        );
+        if (text) seen.add(text);
+        await reader.waitForTimeout(200);
+      }
+      return [...seen];
+    };
+    const copy = "chapter_01 (your copy).ipynb";
+    await reader.goto(`http://127.0.0.1:${port}/notebooks/index.html?path=chapter_01.ipynb`);
+    await opened();
+    await save();
+    // An older copy with no change of the reader's is replaced, and nothing is kept.
+    await stored(`items["chapter_01.ipynb"].content.metadata.ms.version = "older";
+      return { put: items["chapter_01.ipynb"] };`);
+    await reader.reload();
+    await opened();
+    check(
+      (await said()).includes(notices.updated) &&
+        (await stored("return { result: keys.length };")) === 0,
+      "an older saved copy with no change of the reader's gives way to the published chapter",
+    );
+    // An older copy with a changed cell is kept under another name, which the notice links.
+    await save();
+    await stored(`const nb = items["chapter_01.ipynb"].content;
+      nb.metadata.ms.version = "older";
+      nb.cells.find((cell) => cell.cell_type === "code").source = "# the reader's change";
+      return { put: items["chapter_01.ipynb"] };`);
+    await reader.reload();
+    await opened();
+    const kept = notices.kept.replace("{copy}", copy);
+    const words = await said();
+    const link = await reader.evaluate(() => document.querySelector(".ms-Status a")?.textContent);
+    const left = await stored(
+      `return { result: [keys, JSON.stringify(items[${JSON.stringify(copy)}]?.content)] };`,
+    );
+    check(
+      words.includes(kept) &&
+        link === copy &&
+        JSON.stringify(left[0]) === JSON.stringify([copy]) &&
+        left[1].includes("# the reader's change"),
+      "an older saved copy with a change of the reader's is kept under another name, and the chapter is the published one",
+    );
+    await context.close();
   }
   // The notebooks' earlier names lead to their chapters. Each is looked up first, which can log
   // that the file is missing, so this comes after the check for errors.

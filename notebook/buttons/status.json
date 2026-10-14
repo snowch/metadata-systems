@@ -3,5 +3,7 @@
   "ready": "Python is ready.",
   "waiting": "Python is still starting. Cells run when it is ready.",
   "running": "{done} of {total} cells have run",
-  "done": "Every cell has run."
+  "done": "Every cell has run.",
+  "updated": "The page now shows the chapter's new version.",
+  "kept": "The page now shows the chapter's new version. Your saved copy, with your changes, is kept as {copy}."
 }

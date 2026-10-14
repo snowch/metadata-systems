@@ -56,14 +56,35 @@ class TheButtons(unittest.TestCase):
 
     def test_the_notice_has_its_words_and_keeps_the_rules(self):
         words = json.loads((BUTTONS / "status.json").read_text(encoding="utf-8"))
-        self.assertEqual(set(words), {"starting", "ready", "waiting", "running", "done"})
+        self.assertEqual(set(words), {"starting", "ready", "waiting", "running", "done", "updated", "kept"})
         self.assertIn("{done}", words["running"])
         self.assertIn("{total}", words["running"])
-        for text in words.values():
+        self.assertEqual(words["kept"].count("{copy}"), 1)
+        for key, text in words.items():
             self.assertNotIn("\u2014", text)
-            self.assertLessEqual(len(text), 60)
+            # The kept copy's notice names a file, and stays up for longer (index.js, update).
+            self.assertLessEqual(len(text), 110 if key == "kept" else 60, key)
         script = (BUTTONS / "index.js").read_text(encoding="utf-8")
         self.assertIn('node.setAttribute("role", "status")', script)
+
+    def test_a_saved_copy_gives_way_to_an_updated_chapter(self):
+        # The build stamps each notebook with its version and the hash of its cells; the extension
+        # compares the version with the published chapter's and hashes a saved copy's cells the
+        # same way, to tell whether the reader changed one. smoke.mjs drives both cases.
+        build = (ROOT / "notebook" / "jupyterlite" / "build_ipynb.py").read_text(encoding="utf-8")
+        script = (BUTTONS / "index.js").read_text(encoding="utf-8")
+        self.assertIn('nb.metadata["ms"] = stamp(nb)', build)
+        self.assertIn('return "".join(f"{cell[\'cell_type\']}\\n{\'\'.join(cell[\'source\'])}\\0" for cell in cells)', build)
+        self.assertIn('`${cell.cell_type}\\n${[].concat(cell.source).join("")}\\0`', script)
+        self.assertIn('hexdigest()[:16]', build)
+        self.assertIn(".slice(0, 16)", script)
+        self.assertIn('cache: "no-cache"', script)
+        # The steps say what happens to a saved copy when the chapter is updated.
+        for part, source in SOURCE.items():
+            self.assertNotIn("even after the chapter is updated", source, part)
+            if "press **Save**" in source:
+                self.assertIn("When the chapter is updated, the page shows the new version instead.", source, part)
+                self.assertIn('your copy is kept under the chapter\'s name with "(your copy)" added', source, part)
 
     def test_the_setup_cells_are_marked_for_the_warm_up(self):
         build = (ROOT / "notebook" / "jupyterlite" / "build_ipynb.py").read_text(encoding="utf-8")

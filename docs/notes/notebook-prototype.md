@@ -158,7 +158,8 @@ It is `notebook/jupyterlite/`, published at `/jupyterlite/` beside the marimo no
   say so.
 - A saved notebook survives a reload, in the browser's storage, and, as JupyterLite's
   documentation says, a reader's saved copy is shown instead of the published one even after the
-  chapter is updated.
+  chapter is updated. (Since 14 October 2026 the row of buttons' extension opens the updated
+  chapter instead: "An updated chapter and a reader's saved copy", below.)
 
 ## The chapter in two parts
 
@@ -703,3 +704,34 @@ starting. Cells run when it is ready." if Run all is pressed before then, then c
 pressed at once: 52.5 s, as before; after 45 s of reading: 4.4 s. The smoke test checks, in every
 chapter, that a run disables only the run buttons, that the notice shows, and that it ends saying
 every cell has run.
+
+### An updated chapter and a reader's saved copy
+
+JupyterLite 0.8.6's contents (`BrowserStorageDrive.get` in `@jupyterlite/contents`) return the
+copy kept in the browser's IndexedDB whenever there is one, and the published file only when there
+is not. JupyterLab saves on Save, on Ctrl+S and, by default, every two minutes, so a reader who ran
+a chapter for a few minutes kept a copy, and from then on saw that copy, never the chapter's
+corrections. GitHub Pages also lets a browser keep the published file for ten minutes.
+
+- The build stamps each notebook's metadata with `ms.version`, the first 16 hexadecimal digits of
+  the SHA-256 of the whole notebook as written, and `ms.sources`, the same of its cells' types and
+  sources (`stamp` in `notebook/jupyterlite/build_ipynb.py`).
+- As a chapter opens, the extension (`update` in `notebook/buttons/index.js`) fetches the published
+  file with `cache: "no-cache"`, past the browser's cache, and compares its version with the open
+  notebook's. If they differ, the open notebook is a saved copy, or an old file the browser kept.
+- A saved copy whose cells hash to its own `ms.sources` holds no change of the reader's, only
+  outputs, and is dropped. One whose cells hash to something else, or one with no stamp (saved
+  before 14 October 2026), is saved first as `chapter_NN (your copy).ipynb` (then `(your copy 2)`
+  and so on). The stored copy is then deleted and the document reverted, so the page shows the
+  published chapter, as for a reader who never saved it.
+- The notice says "The page now shows the chapter's new version." for five seconds, or, with a
+  copy kept, also names the copy, as a link that opens it in a new tab, for ten. The steps in every
+  chapter say what happens and link the list of files in this browser (the site's `tree/` page),
+  where kept copies are listed and open.
+- Run all and the warm-up wait for the check, which may replace the cells.
+- Verified at 390 pixels with Chapter 1, saving and then rewriting the stored copy in IndexedDB as
+  an older one would be: an older copy with no change gave way with the short notice and left
+  nothing stored; one with a changed cell was kept, with the change, as `chapter_01 (your
+  copy).ipynb` and linked from the notice; one without a stamp was kept as `(your copy 2)`; the
+  `tree/` page listed both; no console error. The smoke test checks the first two cases.
+- The words are Haiku's, from `docs/notes/saved-copies/brief.md` (`draft.md`).

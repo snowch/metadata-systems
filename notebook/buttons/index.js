@@ -30,9 +30,13 @@
 // As the page opens, Python is started on the chapter's hidden setup cells (warmUp, below), so that
 // on a slow phone the reader does not wait for it after pressing Run all.
 //
+// As a chapter opens, the published chapter is opened in place of a copy the reader saved before it
+// was updated (update, below); a copy with changes of the reader's is kept under another name.
+//
 // A link in the text to one of the notebook's own headings scrolls the notebook to that heading
 // (followLinks, below), where JupyterLab's own handling lands it a screen away in a long notebook.
 
+import { PageConfig, URLExt } from "@jupyterlab/coreutils";
 import { NotebookActions, INotebookTracker } from "@jupyterlab/notebook";
 import { Widget } from "@lumino/widgets";
 import labels from "./buttons.json";
@@ -89,10 +93,11 @@ function notice(panel) {
   return {
     show(text, { busy = false, briefly = false } = {}) {
       clearTimeout(timer);
-      node.textContent = text;
+      node.replaceChildren(...[].concat(text));
       node.classList.toggle("ms-Status-busy", busy);
       node.hidden = false;
-      if (briefly) timer = setTimeout(() => (node.hidden = true), 3000);
+      if (briefly)
+        timer = setTimeout(() => (node.hidden = true), briefly === true ? 3000 : briefly);
     },
     hide() {
       clearTimeout(timer);
@@ -121,6 +126,8 @@ async function run(panel, state, start) {
   NotebookActions.executed.connect(count);
   state.runs += 1;
   try {
+    // A run waits for the check for a newer chapter, which may replace the notebook's cells.
+    await state.checked;
     const promise = start();
     // The cells the action runs: every code cell, or those from the selected one down.
     const from = state.lastAction === "runAll" ? 0 : Math.max(0, before);
@@ -262,6 +269,7 @@ function contents() {
 async function warmUp(panel, state) {
   state.notice.show(words.starting, { busy: true });
   await panel.context.ready;
+  await state.checked;
   await panel.sessionContext.ready;
   const kernel = panel.sessionContext.session?.kernel;
   if (!kernel) return state.notice.hide();
@@ -341,6 +349,84 @@ async function goTo(notebook, index, id) {
   }
 }
 
+/** The notebook's cells as one text, as the build hashes them (build_ipynb.py, cells_text). */
+const sourcesOf = (cells) =>
+  cells.map((cell) => `${cell.cell_type}\n${[].concat(cell.source).join("")}\0`).join("");
+
+/** The first 16 hexadecimal digits of a text's SHA-256, as the build writes them. */
+async function digest(text) {
+  const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(bytes), (b) => b.toString(16).padStart(2, "0"))
+    .join("")
+    .slice(0, 16);
+}
+
+/** A name for the reader's copy that no file has yet: "chapter_02 (your copy).ipynb", then
+    "chapter_02 (your copy 2).ipynb", and so on. */
+async function freeName(contents, path) {
+  const stem = path.replace(/\.ipynb$/, "");
+  for (let n = 1; ; n += 1) {
+    const name = `${stem} (your copy${n > 1 ? ` ${n}` : ""}).ipynb`;
+    const taken = await contents.get(name, { content: false }).then(
+      () => true,
+      () => false,
+    );
+    if (!taken) return name;
+  }
+}
+
+/** Opens the published chapter when it is newer than the one the page shows. JupyterLite keeps a
+    notebook the reader saved in the browser (autosave included), and shows that copy instead of the
+    published chapter, even after the chapter is updated; a browser may also hold the published
+    file for a while. So, as the notebook opens, this fetches the published chapter, past the
+    browser's cache, and compares the versions the build stamps in both (build_ipynb.py, stamp). If
+    they differ, the reader's copy is set aside and the published chapter is opened in its place.
+    A copy in which the reader changed any cell, or one saved before the stamp existed, is kept
+    first under another name, and the notice says which; a copy with no change of the reader's is
+    only outputs, which a run makes again. */
+async function update(app, panel, state) {
+  await panel.context.ready;
+  const path = panel.context.path;
+  if (!CHAPTER.test(path)) return;
+  const response = await fetch(URLExt.join(PageConfig.getBaseUrl(), "files", path), {
+    cache: "no-cache",
+  });
+  if (!response.ok) return;
+  const published = (await response.json()).metadata?.ms?.version;
+  const shown = panel.context.model.getMetadata("ms")?.version;
+  if (!published || published === shown) return;
+  const contents = app.serviceManager.contents;
+  const storage = await contents.defaultDrive.storage;
+  const saved = await storage?.getItem(path);
+  let copy = null;
+  if (saved?.content?.cells) {
+    const own = saved.content.metadata?.ms?.sources;
+    if (own !== (await digest(sourcesOf(saved.content.cells)))) {
+      copy = await freeName(contents, path);
+      await contents.save(copy, { type: "notebook", format: "json", content: saved.content });
+    }
+    await contents.delete(path);
+  }
+  await panel.context.revert();
+  if (copy) {
+    // The copy's name is a link that opens it in a new tab, as the arrows open their chapters.
+    const link = document.createElement("a");
+    link.href = `${window.location.pathname}?path=${encodeURIComponent(copy)}`;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.textContent = copy;
+    const [before, after] = words.kept.split("{copy}");
+    state.notice.show([before, link, after], { briefly: 10_000 });
+  } else state.notice.show(words.updated, { briefly: 5_000 });
+  // The notice goes back to Python starting, unless Python is ready or a run has begun by then.
+  setTimeout(
+    () => {
+      if (!state.ready && !state.runs) state.notice.show(words.starting, { busy: true });
+    },
+    copy ? 10_000 : 5_000,
+  );
+}
+
 const MOVED = {
   "chapter_01_part_1.ipynb": "chapter_01.ipynb",
   "chapter_01_part_2.ipynb": "chapter_02.ipynb",
@@ -361,7 +447,7 @@ function followMove(app) {
 export default {
   id: "ms-notebook-buttons:row",
   description:
-    "Adds a row of large Run all, Run below and Save buttons above every notebook's cells, with arrows to the chapters either side, hides the menu bar and the notebook's toolbar, starts Python on the chapter's setup as it opens, scrolls to a heading the text links to, and sends the notebooks' earlier names to their chapters.",
+    "Adds a row of large Run all, Run below and Save buttons above every notebook's cells, with arrows to the chapters either side, hides the menu bar and the notebook's toolbar, opens the published chapter in place of an older saved copy, starts Python on the chapter's setup as it opens, scrolls to a heading the text links to, and sends the notebooks' earlier names to their chapters.",
   autoStart: true,
   requires: [INotebookTracker],
   activate(app, tracker) {
@@ -370,6 +456,7 @@ export default {
       panel.toolbar.setHidden(true);
       followLinks(panel.content);
       const state = { notice: notice(panel), ready: false, runs: 0, lastAction: null };
+      state.checked = update(app, panel, state).catch((reason) => console.error("update", reason));
       states.set(panel, state);
       const widget = row(app, panel, state);
       panel.contentHeader.addWidget(widget);

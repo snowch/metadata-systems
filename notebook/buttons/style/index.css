@@ -202,6 +202,14 @@
   pointer-events: none;
 }
 
+/* The name of a reader's kept copy (index.js, update): a link, which takes taps. */
+.ms-Status a {
+  color: inherit;
+  text-decoration: underline;
+  overflow-wrap: anywhere;
+  pointer-events: auto;
+}
+
 .ms-Status[hidden] {
   display: none;
 }

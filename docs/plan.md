@@ -262,6 +262,18 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 14 October 2026: an updated chapter replaces an older saved copy
+
+At the author's request. JupyterLite keeps a notebook the reader saved (or that saved itself) in the
+browser, and showed that copy instead of the published chapter even after the chapter was updated,
+so a reader who had once saved a chapter never saw a correction. The build now stamps each notebook
+with its version and the hash of its cells, and the row of buttons' extension compares the version
+with the published chapter's as the page opens. If the chapter is newer, the page opens it. A saved
+copy in which the reader changed a cell, or one saved before the stamp, is first kept under the
+chapter's name with "(your copy)" added, and the notice links it; a copy with no change of the
+reader's held only outputs, which a run makes again. Each chapter's steps say so
+(`docs/notes/notebook-prototype.md`).
+
 ### 14 October 2026: every date in a table shows its weekday
 
 The chapters tell the shop's week by its days (Thursday's revenue, the failed night on Monday, the

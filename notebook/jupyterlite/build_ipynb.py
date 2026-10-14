@@ -22,6 +22,7 @@ Usage: python3 build_ipynb.py OUT_DIR [--check]
 """
 
 import ast
+import hashlib
 import sys
 import textwrap
 from pathlib import Path
@@ -181,7 +182,27 @@ def build(chapter: int) -> nbformat.NotebookNode:
         "kernelspec": {"name": "python", "display_name": "Python (Pyodide)", "language": "python"},
         "language_info": {"name": "python"},
     }
+    nb.metadata["ms"] = stamp(nb)
     return nb
+
+
+def digest(text: str) -> str:
+    """The first 16 hexadecimal digits of the text's SHA-256."""
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
+
+
+def cells_text(cells: list) -> str:
+    """The notebook's cells as one text, each its type, a line break, its source and a NUL: the
+    text the row of buttons' extension hashes too (notebook/buttons/index.js, sourcesOf)."""
+    return "".join(f"{cell['cell_type']}\n{''.join(cell['source'])}\0" for cell in cells)
+
+
+def stamp(nb: nbformat.NotebookNode) -> dict[str, str]:
+    """The chapter's version, which changes whenever anything in the published notebook does, and
+    the hash of its cells as published. A reader's saved copy keeps both, so the extension can tell
+    that the chapter has been updated since, and whether the reader changed any cell
+    (notebook/buttons/index.js, update)."""
+    return {"version": digest(nbformat.writes(nb)), "sources": digest(cells_text(nb.cells))}
 
 
 def build_all() -> dict[str, nbformat.NotebookNode]:
