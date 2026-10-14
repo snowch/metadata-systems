@@ -378,10 +378,13 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         # (as in Chapters 3 and 4), the warehouse meets it as written, the reader writes what they
         # would send before the readings, and the readings are named as Chapter 4 names its own;
         # Chapter 8 refers back to them ("Chapter 2's readings of \"owner\"").
-        # The head gives the reason, so that the reading the section closes on follows from the
-        # head's own words, not from a guess at what the head wanted.
-        self.says('The head of the shop sends a second message: "Every table must have an owner. Who owns `daily_sales`? When a number looks wrong, as Thursday\'s did, I need to know whom to ask."')
-        self.says("So the answer has to be a person or a team: `a_person` or `a_team`.")
+        # The head asks in the shop's terms, about the dashboard's numbers, and you write the rule
+        # about tables: a shop's head does not name the warehouse's tables. The reading the section
+        # closes on follows from the head's words, not from a guess at what the head wanted.
+        self.says('The head of the shop sends a second message: "When a number on the dashboard looks wrong, as Thursday\'s did, I need to know whom to ask about it."')
+        self.says('You turn the head\'s request into a rule for the shop\'s platform: "Every table must have an owner."')
+        self.says("Someone to ask about a wrong number is a person or a team, so the owner has to be `a_person` or `a_team`.")
+        self.says('Your rule becomes "Every table must name whom to ask about it."')
         self.assertNotIn("The reading the head wanted", SOURCE[2])
         self.says("So the requirement is met as written: every table has an owner.")
         self.says("`etl_service` is the account the shop's four nightly programs log in as.")
@@ -389,7 +392,6 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("- A person to ask, `a_person`: a named member of staff. Nothing records one.")
         self.says("- A team that answers for it, `a_team`: a named team. Nothing records one.")
         self.says("- The job that writes it, `the_job`: a program. `etl_service` is the account a program logs in as, not the program.")
-        self.says('The requirement becomes "Every table must name whom to ask about it."')
         self.says('- Question the requirement "Every table must have an owner."')
         self.says('## "Every table must have an owner."')
         self.assertIn('What do you take "owner" to mean?', SOURCE[2])

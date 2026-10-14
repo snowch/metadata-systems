@@ -181,13 +181,14 @@ content tests fail a figure without a block or with a question unanswered.
 
 ## Requirements
 
-Since 14 October 2026 (the section "The owner requirement in Chapter 4's form", below): the head of
-the shop's "Every table must have an owner.", questioned in prose and a `reading` cell, with no
-figure. (1) As written: every table has an owner. (2) What it might mean: `as_written`,
+Since 14 October 2026 (the sections "The owner requirement in Chapter 4's form" and "The head asks,
+you write the rule", below): "Every table must have an owner.", the rule you write from the head's
+request for whom to ask when a dashboard number looks wrong, questioned in prose and a `reading`
+cell, with no figure. (1) As written: every table has an owner. (2) What it might mean: `as_written`,
 `a_person`, `a_team`, `the_job`. (3) What each needs: a value in `table_owner`; a named member of
 staff; a named team; a program. (4) What the platform records: `etl_service`, an account the
 programs log in as, in every table. (5) Met as written, and by no other reading; the head's
-stated reason (someone to ask when a number looks wrong, as Thursday's did) needs `a_person` or
+request (someone to ask when a number looks wrong, as Thursday's did) needs `a_person` or
 `a_team`, which nothing records. The
 paragraphs below are the history.
 
@@ -1244,6 +1245,19 @@ whom to ask." That ties the requirement to the morning's first message, and the 
 the reading from the head's words ("The head's reason is a number that looks wrong, ... So the
 answer has to be a person or a team: `a_person` or `a_team`."), not from a guess at what the head
 wanted. Brief BV, draft BV (round 23).
+
+## The head asks, you write the rule, 14 October 2026
+
+The author asked whether the head of the shop would really care about implementation details: the
+head's message named tables and `daily_sales`. It no longer does. The head writes, in the shop's
+terms: "When a number on the dashboard looks wrong, as Thursday's did, I need to know whom to ask
+about it." You turn that into the rule, in the requirement box: "Every table must have an owner."
+This is the 12 October decision again (a rule about tables is a data engineer's), now with the
+head's request as its source, so that the gap between what the head needed and what the rule's
+words say is the learner's own. The closing box derives the reading from the head's request and
+ends "Your rule becomes "Every table must name whom to ask about it."". Brief BW, draft BW (round
+23); "The head of the shop sends a second message:" added to the draft, which had dropped who
+sends it.
 
 ## Known gaps
 
