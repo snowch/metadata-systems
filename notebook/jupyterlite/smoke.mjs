@@ -1036,17 +1036,24 @@ try {
       await reader.click('button[data-action="save"]');
       await reader.waitForTimeout(1_500);
     };
-    const said = async () => {
-      const seen = new Set();
-      for (let i = 0; i < 20; i += 1) {
-        const text = await reader.evaluate(
-          () => document.querySelector(".ms-Status:not([hidden])")?.textContent,
+    // Waits for the notice to say the text, and returns it with its link's words: the notice is up
+    // for five or ten seconds, from a moment that depends on the machine.
+    const says = (text) =>
+      reader
+        .waitForFunction(
+          (text) => {
+            const node = document.querySelector(".ms-Status:not([hidden])");
+            return (
+              node?.textContent === text && { link: node.querySelector("a")?.textContent ?? null }
+            );
+          },
+          text,
+          { timeout: 60_000 },
+        )
+        .then(
+          (handle) => handle.jsonValue(),
+          () => null,
         );
-        if (text) seen.add(text);
-        await reader.waitForTimeout(200);
-      }
-      return [...seen];
-    };
     const copy = "chapter_01 (your copy).ipynb";
     await reader.goto(`http://127.0.0.1:${port}/notebooks/index.html?path=chapter_01.ipynb`);
     await opened();
@@ -1055,11 +1062,12 @@ try {
     await stored(`items["chapter_01.ipynb"].content.metadata.ms.version = "older";
       return { put: items["chapter_01.ipynb"] };`);
     await reader.reload();
+    const updated = await says(notices.updated);
     await opened();
+    const none = await stored("return { result: keys };");
     check(
-      (await said()).includes(notices.updated) &&
-        (await stored("return { result: keys.length };")) === 0,
-      "an older saved copy with no change of the reader's gives way to the published chapter",
+      updated !== null && none.length === 0,
+      `an older saved copy with no change of the reader's gives way to the published chapter (${JSON.stringify({ notice: updated !== null, stored: none })})`,
     );
     // An older copy with a changed cell is kept under another name, which the notice links.
     await save();
@@ -1068,19 +1076,23 @@ try {
       nb.cells.find((cell) => cell.cell_type === "code").source = "# the reader's change";
       return { put: items["chapter_01.ipynb"] };`);
     await reader.reload();
+    const words = notices.kept.replace("{copy}", copy);
+    const kept = await says(words);
+    // The notice stays up for ten seconds, whenever Python is ready.
+    await reader.waitForTimeout(4_000);
+    const stays = await reader.evaluate(
+      () => document.querySelector(".ms-Status:not([hidden])")?.textContent ?? null,
+    );
     await opened();
-    const kept = notices.kept.replace("{copy}", copy);
-    const words = await said();
-    const link = await reader.evaluate(() => document.querySelector(".ms-Status a")?.textContent);
-    const left = await stored(
-      `return { result: [keys, JSON.stringify(items[${JSON.stringify(copy)}]?.content)] };`,
+    const [keys, content] = await stored(
+      `return { result: [keys, JSON.stringify(items[${JSON.stringify(copy)}]?.content ?? null)] };`,
     );
     check(
-      words.includes(kept) &&
-        link === copy &&
-        JSON.stringify(left[0]) === JSON.stringify([copy]) &&
-        left[1].includes("# the reader's change"),
-      "an older saved copy with a change of the reader's is kept under another name, and the chapter is the published one",
+      kept?.link === copy &&
+        stays === words &&
+        JSON.stringify(keys) === JSON.stringify([copy]) &&
+        content.includes("# the reader's change"),
+      `an older saved copy with a change of the reader's is kept under another name, and the chapter is the published one (${JSON.stringify({ link: kept?.link ?? null, stays: stays === words, stored: keys, change: content.includes("# the reader's change") })})`,
     );
     await context.close();
   }

@@ -283,8 +283,10 @@ async function warmUp(panel, state) {
   if (code && !state.runs)
     await kernel.requestExecute({ code, silent: true, store_history: false }).done;
   state.ready = true;
-  // Once the reader has run anything, the notice is the run's.
-  if (!state.runs) state.notice.show(words.ready, { briefly: true });
+  // Once the reader has run anything, the notice is the run's; and a notice that the chapter was
+  // updated stays up for its time (update, below).
+  if (!state.runs && Date.now() >= state.noticeUntil)
+    state.notice.show(words.ready, { briefly: true });
 }
 
 /** A heading's address in a link, as JupyterLab writes it: its words with each space a hyphen. */
@@ -393,8 +395,8 @@ async function update(app, panel, state) {
   });
   if (!response.ok) return;
   const published = (await response.json()).metadata?.ms?.version;
-  const shown = panel.context.model.getMetadata("ms")?.version;
-  if (!published || published === shown) return;
+  const open = panel.context.model.getMetadata("ms")?.version;
+  if (!published || published === open) return;
   const contents = app.serviceManager.contents;
   const storage = await contents.defaultDrive.storage;
   const saved = await storage?.getItem(path);
@@ -408,6 +410,8 @@ async function update(app, panel, state) {
     await contents.delete(path);
   }
   await panel.context.revert();
+  const shown = copy ? 10_000 : 5_000;
+  state.noticeUntil = Date.now() + shown;
   if (copy) {
     // The copy's name is a link that opens it in a new tab, as the arrows open their chapters.
     const link = document.createElement("a");
@@ -416,15 +420,12 @@ async function update(app, panel, state) {
     link.rel = "noopener";
     link.textContent = copy;
     const [before, after] = words.kept.split("{copy}");
-    state.notice.show([before, link, after], { briefly: 10_000 });
-  } else state.notice.show(words.updated, { briefly: 5_000 });
+    state.notice.show([before, link, after], { briefly: shown });
+  } else state.notice.show(words.updated, { briefly: shown });
   // The notice goes back to Python starting, unless Python is ready or a run has begun by then.
-  setTimeout(
-    () => {
-      if (!state.ready && !state.runs) state.notice.show(words.starting, { busy: true });
-    },
-    copy ? 10_000 : 5_000,
-  );
+  setTimeout(() => {
+    if (!state.ready && !state.runs) state.notice.show(words.starting, { busy: true });
+  }, shown);
 }
 
 const MOVED = {
@@ -455,7 +456,13 @@ export default {
     const add = (panel) => {
       panel.toolbar.setHidden(true);
       followLinks(panel.content);
-      const state = { notice: notice(panel), ready: false, runs: 0, lastAction: null };
+      const state = {
+        notice: notice(panel),
+        ready: false,
+        runs: 0,
+        lastAction: null,
+        noticeUntil: 0,
+      };
       state.checked = update(app, panel, state).catch((reason) => console.error("update", reason));
       states.set(panel, state);
       const widget = row(app, panel, state);

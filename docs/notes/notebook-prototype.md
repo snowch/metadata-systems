@@ -725,7 +725,10 @@ corrections. GitHub Pages also lets a browser keep the published file for ten mi
   and so on). The stored copy is then deleted and the document reverted, so the page shows the
   published chapter, as for a reader who never saved it.
 - The notice says "The page now shows the chapter's new version." for five seconds, or, with a
-  copy kept, also names the copy, as a link that opens it in a new tab, for ten. The steps in every
+  copy kept, also names the copy, as a link that opens it in a new tab, for ten. "Python is ready."
+  does not cut it short: in CI, where Python is ready sooner, it did, and the smoke test's check of
+  the link failed (measured here: the kept notice showed at 1.7 s, "Python is ready." replaced it at
+  10.5 s; on a faster machine, sooner). The smoke test now checks the notice is still up 4 s on. The steps in every
   chapter say what happens and link the list of files in this browser (the site's `tree/` page),
   where kept copies are listed and open.
 - Run all and the warm-up wait for the check, which may replace the cells.
