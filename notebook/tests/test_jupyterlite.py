@@ -54,6 +54,17 @@ class TheButtons(unittest.TestCase):
             self.assertNotIn("menu", source, part)
             self.assertNotIn("mo.ui.", source, part)
 
+    def test_the_notice_has_its_words_and_keeps_the_rules(self):
+        words = json.loads((BUTTONS / "status.json").read_text(encoding="utf-8"))
+        self.assertEqual(set(words), {"starting", "ready", "waiting", "running", "done"})
+        self.assertIn("{done}", words["running"])
+        self.assertIn("{total}", words["running"])
+        for text in words.values():
+            self.assertNotIn("\u2014", text)
+            self.assertLessEqual(len(text), 60)
+        script = (BUTTONS / "index.js").read_text(encoding="utf-8")
+        self.assertIn('node.setAttribute("role", "status")', script)
+
     def test_the_setup_cells_are_marked_for_the_warm_up(self):
         build = (ROOT / "notebook" / "jupyterlite" / "build_ipynb.py").read_text(encoding="utf-8")
         script = (BUTTONS / "index.js").read_text(encoding="utf-8")

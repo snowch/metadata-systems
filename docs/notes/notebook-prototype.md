@@ -691,3 +691,15 @@ the page showed and after 45 seconds of reading:
 
 A press during the warm-up waits for it; no run gave an error. Every chapter has the warm-up: the
 setup cells are the same in each.
+
+### Run all looked stuck: a notice of what Python is doing
+
+Pressed as soon as the page showed, on the emulated phone (fast network), Run all left all 15 cells
+waiting and every button disabled for 52 seconds, then finished them in two. Nothing was wrong, but
+nothing said so. Measured again with the notice (`notice` and `run` in `notebook/buttons/index.js`):
+it reads "Python is starting in the browser." from the moment the page opens, "Python is still
+starting. Cells run when it is ready." if Run all is pressed before then, then counts the cells
+("10 of 15 cells have run"), and ends "Every cell has run."; Save stays usable throughout. Run all
+pressed at once: 52.5 s, as before; after 45 s of reading: 4.4 s. The smoke test checks, in every
+chapter, that a run disables only the run buttons, that the notice shows, and that it ends saying
+every cell has run.

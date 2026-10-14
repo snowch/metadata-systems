@@ -272,6 +272,14 @@ a reader who reads the opening first finds Python ready (4.5 seconds after 45 se
 the faster network). No cell runs and no output appears until the reader presses a button, as the
 steps box says. Chapter 2's warning tells the reader that reading first shortens the wait.
 
+The author then found Run all "blocking": pressed before Python was ready, every cell sat waiting
+and every button was disabled, with nothing on the page to say why, for most of a minute on a slow
+phone. A notice at the foot of the screen now says what Python is doing from the moment the page
+opens (starting, ready, how many of the cells have run, done), as a status for screen readers too;
+a run disables only Run all and Run below, so Save stays usable. Its words are in
+`notebook/buttons/status.json`. A run started before Python is up does the setup itself, and the
+warm-up stands aside rather than repeat it.
+
 ### 13 October 2026: Chapter 2 as an investigation in three stages
 
 At the author's request, with a mock-up as a design reference, Chapter 2 is reorganised for

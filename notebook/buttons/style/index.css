@@ -177,6 +177,54 @@
   }
 }
 
+/* The notice at the foot of the screen (index.js, notice): what Python is doing. It floats over the
+   page without moving it, lets taps through, and takes the theme's inverse colours so it stands out
+   in the light and the dark theme alike. */
+.ms-Status {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 1000;
+  width: fit-content;
+  max-width: calc(100% - 32px);
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-family: var(--jp-ui-font-family);
+  font-size: 14px;
+  line-height: 1.35;
+  text-align: center;
+  color: var(--jp-ui-inverse-font-color0);
+  background: var(--jp-inverse-layout-color1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+
+.ms-Status[hidden] {
+  display: none;
+}
+
+.ms-Status.ms-Status-busy::before {
+  content: "";
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  margin-right: 8px;
+  vertical-align: -1px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: ms-Buttons-spin 0.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ms-Status.ms-Status-busy::before {
+    animation: none;
+  }
+}
+
 /* The chapters' boxes (notebook/jupyterlite/build_ipynb.py writes them as a div in a Markdown
    cell): the warning about the download and the memory a phone has, the steps for running and
    saving the page, and the requirement a chapter questions. Each keeps the page's own text colour and tints its background with a theme

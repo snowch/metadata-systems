@@ -1,0 +1,7 @@
+{
+  "starting": "Python is starting in the browser.",
+  "ready": "Python is ready.",
+  "waiting": "Python is still starting. Cells run when it is ready.",
+  "running": "{done} of {total} cells have run",
+  "done": "Every cell has run."
+}

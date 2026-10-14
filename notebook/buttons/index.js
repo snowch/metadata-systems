@@ -12,9 +12,11 @@
 // with the selection kept, and Run all first selects a cell that starts in view: JupyterLab
 // scrolls to the selected cell after a run only when it is out of view.
 //
-// With the toolbar hidden, nothing else on the page shows that Python is busy, and on a phone the
-// first run waits several seconds for Python to start. So while a button's work is under way, the
-// row's buttons are disabled and the pressed one shows a spinner (style/index.css).
+// With the toolbar hidden, nothing else on the page shows that Python is busy, and on a phone Python
+// takes most of a minute to start. So while a run is under way, Run all and Run below are disabled
+// (Save stays usable) and the pressed one shows a spinner; and a notice at the foot of the screen
+// says what Python is doing, from the moment the page opens: starting, ready, or how many cells
+// have run (its words are in status.json).
 //
 // At the row's right end, an arrow to the chapter before and one to the chapter after. The row
 // stays in view while the cells scroll, and the links the chapter's text gives are at its top and
@@ -34,6 +36,7 @@
 import { NotebookActions, INotebookTracker } from "@jupyterlab/notebook";
 import { Widget } from "@lumino/widgets";
 import labels from "./buttons.json";
+import words from "./status.json";
 
 // How much of a cell must show for JupyterLab not to scroll to it, in pixels: its notebook's
 // scroll-down threshold, half a cell margin and one line.
@@ -48,8 +51,12 @@ function cellInView(notebook) {
   });
 }
 
+/** Each notebook panel's state: its notice, whether Python is ready, and the last run asked for. */
+const states = new WeakMap();
+
 const actions = {
   runAll(panel) {
+    states.get(panel).lastAction = "runAll";
     const notebook = panel.content;
     notebook.mode = "command";
     const index = cellInView(notebook);
@@ -57,6 +64,7 @@ const actions = {
     return NotebookActions.runCells(notebook, notebook.widgets, panel.sessionContext);
   },
   runBelow(panel) {
+    states.get(panel).lastAction = "runBelow";
     const notebook = panel.content;
     const below = notebook.widgets.slice(Math.max(0, notebook.activeCellIndex));
     return NotebookActions.runCells(notebook, below, panel.sessionContext);
@@ -66,8 +74,72 @@ const actions = {
   },
 };
 
+/** A notice at the foot of the screen that says what Python is doing: starting, ready, how many
+    cells have run. On a phone Python takes most of a minute to start, and a press of Run all before
+    then waits for it; without the notice, the page looks stuck. It is a status for screen readers
+    too, and lets taps through to the page beneath it. */
+function notice(panel) {
+  const node = document.createElement("div");
+  node.className = "ms-Status";
+  node.setAttribute("role", "status");
+  node.setAttribute("aria-live", "polite");
+  node.hidden = true;
+  panel.node.append(node);
+  let timer;
+  return {
+    show(text, { busy = false, briefly = false } = {}) {
+      clearTimeout(timer);
+      node.textContent = text;
+      node.classList.toggle("ms-Status-busy", busy);
+      node.hidden = false;
+      if (briefly) timer = setTimeout(() => (node.hidden = true), 3000);
+    },
+    hide() {
+      clearTimeout(timer);
+      node.hidden = true;
+    },
+  };
+}
+
+/** A cell the notice counts: a code cell the reader sees, not one of the hidden setup cells. */
+const counted = (cell) => cell.model.type === "code" && !cell.model.getMetadata("ms")?.setup;
+
+/** Runs cells with the notice counting them: a press before Python is ready says the cells will
+    run when it is. */
+async function run(panel, state, start) {
+  const notebook = panel.content;
+  const before = notebook.activeCellIndex;
+  let done = 0;
+  let total = 0;
+  const count = (_, { notebook: ran, cell }) => {
+    if (ran !== notebook || !counted(cell)) return;
+    done += 1;
+    state.notice.show(words.running.replace("{done}", done).replace("{total}", total), {
+      busy: true,
+    });
+  };
+  NotebookActions.executed.connect(count);
+  state.runs += 1;
+  try {
+    const promise = start();
+    // The cells the action runs: every code cell, or those from the selected one down.
+    const from = state.lastAction === "runAll" ? 0 : Math.max(0, before);
+    total = notebook.widgets.slice(from).filter(counted).length;
+    if (!state.ready) state.notice.show(words.waiting, { busy: true });
+    else
+      state.notice.show(words.running.replace("{done}", 0).replace("{total}", total), {
+        busy: true,
+      });
+    await promise;
+    state.ready = true;
+    state.notice.show(words.done, { briefly: true });
+  } finally {
+    NotebookActions.executed.disconnect(count);
+  }
+}
+
 /** The row of buttons for one notebook. */
-function row(app, panel) {
+function row(app, panel, state) {
   const widget = new Widget();
   widget.addClass("ms-Buttons");
   const buttons = [];
@@ -76,6 +148,7 @@ function row(app, panel) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "ms-Buttons-button";
+    button.dataset.action = action;
     button.textContent = label;
     button.addEventListener("pointerdown", (event) => {
       pointer = event.pointerType;
@@ -86,15 +159,20 @@ function row(app, panel) {
       if (pointer === "mouse") event.preventDefault();
     });
     button.addEventListener("click", async () => {
-      for (const b of buttons) b.disabled = true;
+      // A run disables the two run buttons, since a second run would collide with it; Save stays
+      // usable. Saving disables only itself.
+      const runs = action !== "save";
+      const held = runs ? buttons.filter((b) => b.dataset.action !== "save") : [button];
+      for (const b of held) b.disabled = true;
       button.setAttribute("aria-busy", "true");
       try {
-        await actions[action](panel, app);
+        if (runs) await run(panel, state, () => actions[action](panel, app));
+        else await actions[action](panel, app);
       } catch (reason) {
         console.error(label, reason);
       } finally {
         button.removeAttribute("aria-busy");
-        for (const b of buttons) b.disabled = false;
+        for (const b of held) b.disabled = false;
       }
     });
     buttons.push(button);
@@ -178,20 +256,27 @@ function contents() {
     week) wait for Run all, and on a slow phone they take most of a minute. This sends their code
     to Python as soon as it is up, silently: no cell runs, nothing is printed and no cell's count
     changes. When the reader presses Run all, the setup cells run again, now in a moment, and a
-    press before the warm-up ends waits for it. A notebook without marked setup cells (one a
+    press before the warm-up ends waits for it; a press before Python is even up runs the setup
+    itself, and the warm-up stands aside. A notebook without marked setup cells (one a
     reader saved before the mark existed) is left as it is. */
-async function warmUp(panel) {
+async function warmUp(panel, state) {
+  state.notice.show(words.starting, { busy: true });
   await panel.context.ready;
   await panel.sessionContext.ready;
   const kernel = panel.sessionContext.session?.kernel;
-  if (!kernel) return;
+  if (!kernel) return state.notice.hide();
   const code = panel.content.widgets
     .filter((cell) => cell.model.type === "code" && cell.model.getMetadata("ms")?.setup)
     .map((cell) => cell.model.sharedModel.getSource())
     .join("\n\n");
-  if (!code) return;
   await kernel.info;
-  await kernel.requestExecute({ code, silent: true, store_history: false }).done;
+  // A run the reader started before Python was up queued its cells first, and they do the setup
+  // themselves: the warm-up would only repeat it after them.
+  if (code && !state.runs)
+    await kernel.requestExecute({ code, silent: true, store_history: false }).done;
+  state.ready = true;
+  // Once the reader has run anything, the notice is the run's.
+  if (!state.runs) state.notice.show(words.ready, { briefly: true });
 }
 
 /** A heading's address in a link, as JupyterLab writes it: its words with each space a hyphen. */
@@ -284,12 +369,18 @@ export default {
     const add = (panel) => {
       panel.toolbar.setHidden(true);
       followLinks(panel.content);
-      const widget = row(app, panel);
+      const state = { notice: notice(panel), ready: false, runs: 0, lastAction: null };
+      states.set(panel, state);
+      const widget = row(app, panel, state);
       panel.contentHeader.addWidget(widget);
       panel.context.ready
         .then(() => arrows(app, panel, widget))
         .catch((reason) => console.error("arrows", reason));
-      warmUp(panel).catch((reason) => console.error("warm-up", reason));
+      warmUp(panel, state).catch((reason) => {
+        state.ready = true;
+        state.notice.hide();
+        console.error("warm-up", reason);
+      });
       // The menu bar's area in Jupyter Notebook's page, which its zen mode hides the same way.
       app.shell.menu?.setHidden(true);
     };

@@ -5,7 +5,8 @@
 // bar and the notebook's toolbar are hidden; the row shows the labels buttons.json gives, each
 // button at least 44 pixels tall, and arrows to the chapters either side, which open in a new tab,
 // the row fitting 360 pixels, with a link to the contents between them from 390 pixels wide; a
-// press disables the row and marks the pressed button busy until the run ends; Run all runs every
+// press disables Run all and Run below, not Save, marks the pressed button busy and shows the notice
+// of what Python is doing until the run ends, when the notice says every cell has run; Run all runs every
 // visible code cell, with no error in any output, and leaves the notebook where it was scrolled;
 // the warning and the steps for running the page are boxes, and from Chapter 2 the requirement the
 // chapter questions is one too, in a colour of its own; in Chapter 1 a printed file keeps one
@@ -23,6 +24,11 @@
 import { spawn } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { chromium } from "playwright";
+
+// The notice's words (notebook/buttons/status.json).
+const notices = JSON.parse(
+  readFileSync(new URL("../buttons/status.json", import.meta.url), "utf8"),
+);
 
 const site = process.argv[2];
 const port = 8765;
@@ -70,9 +76,22 @@ try {
     const busy = await page.evaluate((label) => {
       const row = [...document.querySelectorAll(".ms-Buttons-button")];
       const pressed = row.find((b) => b.textContent === label);
-      return row.every((b) => b.disabled) && pressed?.getAttribute("aria-busy") === "true";
+      const runs = row.filter((b) => b.dataset.action !== "save");
+      const save = row.find((b) => b.dataset.action === "save");
+      const notice = document.querySelector(".ms-Status");
+      return (
+        runs.every((b) => b.disabled) &&
+        !save.disabled &&
+        pressed?.getAttribute("aria-busy") === "true" &&
+        !!notice &&
+        !notice.hidden &&
+        notice.getAttribute("role") === "status"
+      );
     }, label);
-    check(busy, `${what}: the row is disabled and the button busy while it runs`);
+    check(
+      busy,
+      `${what}: the run buttons are disabled, Save is not, the button is busy and the notice says so`,
+    );
     await page.waitForFunction(
       () =>
         !document.querySelector(".ms-Buttons-button[aria-busy], .ms-Buttons-button:disabled") &&
@@ -81,6 +100,8 @@ try {
       { timeout: 120_000, polling: 200 },
     );
     check((await scrolled()) === before, `${what}: the notebook stays where it was scrolled`);
+    const said = await page.evaluate(() => document.querySelector(".ms-Status")?.textContent);
+    check(said === notices.done, `${what}: the notice says every cell has run ("${said}")`);
   };
   const shown = (selector) =>
     page.evaluate((selector) => {
