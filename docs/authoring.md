@@ -33,8 +33,12 @@ chapter is added to `CHAPTERS` in `build_ipynb.py`, in `notebook/tests/test_word
   name, then gives the heading `# Chapter N: {title}`, the plan's title, and the objectives.
 - Then two boxes (`mo.callout`, which the build turns into a box the course's stylesheet in
   `notebook/buttons/style/` draws): the warning about the download and the memory a phone has
-  (`kind="warn"`), then the steps for running and saving the page (`kind="info"`). Besides the
-  requirement a chapter questions (`kind="neutral"`), the only other box is a box of findings
+  (`kind="warn"`), then the steps for running and saving the page (`kind="info"`). A blue box of
+  that kind, with its "touch_app" icon, means something the reader does; since 14 October 2026
+  Chapter 2 also puts each thing it asks the reader to look for, compare or open in one, the
+  sentence moved as it stood (the other chapters still give theirs in the prose). The requirement a
+  chapter questions has a box of its own (`kind="neutral"`, purple, with the "rule" icon). The only
+  other box is a box of findings
   (`kind="success"`), which Chapter 2 sets after each of its three investigations: what the
   evidence established beside what it did not, as two paragraphs in `<div class="ms-found">` and
   `<div class="ms-open">`, side by side on a wide screen. It goes only where a reader needs the

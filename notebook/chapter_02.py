@@ -205,9 +205,15 @@ def _(mo):
     - The warehouse's `information_schema` for `daily_sales` (the table, then its columns).
     - The listing of the bucket `shop-raw`.
     - The reporting tool's record of `sales_dashboard`.
-
-    As you read them, look for whether any record says which job made `daily_sales`, or what that job read.
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    As you read them, look for whether any record says which job made `daily_sales`, or what that job read.
+    """), kind="info")
     return
 
 
@@ -349,8 +355,22 @@ def _(mo):
     mo.md(r"""
     ## 3. Test an explanation
 
-    The usual move is to infer how `daily_sales` was made: find a query over another asset that gives the same rows. The hypothesis below comes with the evidence for each part. Compare it with your guess for `daily_sales` at the end of Chapter 1.
+    The usual move is to infer how `daily_sales` was made: find a query over another asset that gives the same rows. The hypothesis below comes with the evidence for each part.
+    """)
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Compare it with your guess for `daily_sales` at the end of Chapter 1.
+    """), kind="info")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     **`daily_sales` is made from `clean_orders`: completed orders only, `price_pence` × `quantity` added up for each day.**
 
     - `daily_sales` has two columns, `day` and `revenue_pence`: one total in pence per day.
@@ -619,9 +639,21 @@ def _(mo):
     A data engineer wants to know which inputs one particular run of a job read.
 
     Consider three pieces of evidence they could have. Which is the strongest evidence of what that run read?
+    """)
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
     Open an answer to see whether it holds; you can open the others after.
+    """), kind="info")
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     <details class="ms-choice"><summary>A. The current table schema and its last-modified timestamp.</summary>
 
     Not the strongest. A schema and a last-modified time describe the table as it is now. The time says when the table last changed, not what the job that wrote it read. With the analyst's copy, every one of these records stayed the same, whichever file the job read.

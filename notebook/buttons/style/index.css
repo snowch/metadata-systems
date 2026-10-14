@@ -235,9 +235,9 @@
 
 /* The chapters' boxes (notebook/jupyterlite/build_ipynb.py writes them as a div in a Markdown
    cell): the warning about the download and the memory a phone has, the steps for running and
-   saving the page, and the requirement a chapter questions, which has an icon too. Each keeps the
-   page's own text colour and tints its background with a theme colour, so it reads in the light
-   and the dark theme alike. */
+   saving the page and anything else the reader does, and the requirement a chapter questions,
+   both with an icon; and Chapter 2's findings. Each keeps the page's own text colour and tints its
+   background with a theme colour, so it reads in the light and the dark theme alike. */
 
 .jp-RenderedMarkdown .ms-box {
   margin: 0 0 var(--jp-content-heading-margin-bottom, 1em);
@@ -259,8 +259,11 @@
   --ms-box-colour: var(--jp-warn-color1);
 }
 
+/* Something the reader does: the steps for running and saving the page, and in Chapter 2 each
+   thing to look for, compare or open. */
 .jp-RenderedMarkdown .ms-box-steps {
   --ms-box-colour: var(--jp-brand-color1);
+  --ms-box-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M445-80q-29 0-56-12t-45-35L127-403l21-23q14-15 34.5-18.5T221-438l99 53v-365q0-12.75 8.68-21.38 8.67-8.62 21.5-8.62 12.82 0 21.32 8.62 8.5 8.63 8.5 21.38v465l-144-77 156 198q10 12 23.76 18 13.76 6 29.24 6h205q38 0 64-26t26-64v-170q0-25.5-17.25-42.75T680-460H460v-60h219.65q50.14 0 85.25 35 35.1 35 35.1 85v170q0 63-43.5 106.5T650-80H445ZM203-665q-11.07-18.75-17.04-40.49-5.96-21.74-5.96-44.76 0-70.75 49.5-120.25T350-920q71 0 120.5 49.74t49.5 120.3q0 22.96-5.96 44.62Q508.07-683.68 497-665l-52-30q7-12 11-26t4-29.48Q460-796 427.88-828q-32.12-32-78-32T272-827.92q-32 32.09-32 77.92 0 15 4 29t11 26l-52 30Zm285 335Z'/%3E%3C/svg%3E");
 }
 
 /* The requirement a chapter questions, in a colour of its own, the same in every chapter, so that
@@ -268,14 +271,21 @@
    light and the dark theme alike. */
 .jp-RenderedMarkdown .ms-box-requirement {
   --ms-box-colour: #8a63d2;
+  --ms-box-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='m576-160-42-42 111-111-111-111 42-42 111 111 111-111 42 42-111 111 111 111-42 42-111-111-111 111Zm83-374L517-676l42-42 100 99 179-179 42 43-221 221ZM80-290v-60h360v60H80Zm0-320v-60h360v60H80Z'/%3E%3C/svg%3E");
+}
+
+/* Their icons, in the box's colour, beside the first line, drawn with the box's colour through
+   them so they follow the theme as the box does: Material Symbols' "touch_app" for something the
+   reader does, and "rule", a list with a tick and a cross, for a requirement (outlined, weight
+   400), from @material-symbols/svg-400 0.48.0, by Google, under the Apache License 2.0
+   (https://www.apache.org/licenses/LICENSE-2.0; docs/sources.md). */
+.jp-RenderedMarkdown .ms-box-steps,
+.jp-RenderedMarkdown .ms-box-requirement {
   position: relative;
   padding-left: 44px;
 }
 
-/* Its icon, in its colour: Material Symbols' "rule" (outlined, weight 400), a list with a tick and
-   a cross, from @material-symbols/svg-400 0.48.0, by Google, under the Apache License 2.0
-   (https://www.apache.org/licenses/LICENSE-2.0; docs/sources.md). It sits beside the first line,
-   and is drawn with the box's colour through it, so it follows the theme as the box does. */
+.jp-RenderedMarkdown .ms-box-steps::before,
 .jp-RenderedMarkdown .ms-box-requirement::before {
   content: "";
   position: absolute;
@@ -284,9 +294,8 @@
   width: 20px;
   height: 20px;
   background-color: var(--ms-box-colour);
-  --ms-rule-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='m576-160-42-42 111-111-111-111 42-42 111 111 111-111 42 42-111 111 111 111-42 42-111-111-111 111Zm83-374L517-676l42-42 100 99 179-179 42 43-221 221ZM80-290v-60h360v60H80Zm0-320v-60h360v60H80Z'/%3E%3C/svg%3E");
-  -webkit-mask: var(--ms-rule-icon) center / contain no-repeat;
-  mask: var(--ms-rule-icon) center / contain no-repeat;
+  -webkit-mask: var(--ms-box-icon) center / contain no-repeat;
+  mask: var(--ms-box-icon) center / contain no-repeat;
 }
 
 /* What a cell prints keeps its own lines: a JSON Lines file shows one record per line, as it is

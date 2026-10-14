@@ -1170,6 +1170,16 @@ different question needing a different record, and its headings say so: "One rea
 after the table no longer repeats "a word with four meanings". Words from brief BT
 (`briefs/round-23/BT.md`, `drafts/round-23/BT.md`).
 
+## Something the reader does, in a box, 14 October 2026
+
+The author asked whether an icon should mark something the reader should do. The blue box that
+holds the steps for running the page, in every chapter, now has Material Symbols' "touch_app" icon,
+and stands for anything the reader does. In this chapter the three other actions moved into boxes
+of that kind, each sentence as it stood: "As you read them, look for…" (section 2), "Compare it
+with your guess…" (section 3) and "Open an answer…" (the check). The check's answers are now a
+cell of their own, after that box. No words changed, so no brief. The other chapters give their
+actions in the prose until the author decides whether to box them too.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,

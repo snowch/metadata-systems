@@ -194,13 +194,14 @@ class TheBoxes(unittest.TestCase):
         for chapter, source in SOURCE.items():
             kinds = re.findall(r'\bkind="(\w+)"\)', source)
             # Chapter 2's boxes of findings (kind "success") follow its investigations.
-            self.assertEqual([k for k in kinds if k not in ("neutral", "success")], ["warn", "info"], chapter)
+            # Chapter 2 also puts each other thing the reader does in a box of the steps' kind.
+            self.assertEqual([k for k in kinds if k not in ("neutral", "success")], ["warn"] + ["info"] * (4 if chapter == 2 else 1), chapter)
             self.assertEqual(kinds.count("success"), 3 if chapter == 2 else 0, chapter)
             # Chapter 2 rewrites its rule, after the readings, to say what it is for: a second box.
             self.assertEqual(kinds.count("neutral"), 3 if chapter == 33 else 2 if chapter == 2 else (1 if chapter > 1 else 0), chapter)
             for text in re.findall(r'mo\.callout\(mo\.md\(r"""((?:(?!""").)*)"""\), kind="neutral"\)', source, re.S):
                 self.assertRegex(text.strip(), r'^[^\n]* "[^"]+"$', chapter)
-            [steps] = re.findall(r'mo\.callout\(mo\.md\(r"""(.*?)"""\), kind="info"\)', source, re.S)
+            steps = re.findall(r'mo\.callout\(mo\.md\(r"""(.*?)"""\), kind="info"\)', source, re.S)[0]
             self.assertIn("press **Run all**, at the top of the page", steps, chapter)
 
     def test_chapter_1s_steps_name_every_button(self):

@@ -9,7 +9,7 @@
 // of what Python is doing until the run ends, when the notice says every cell has run; Run all runs every
 // visible code cell, with no error in any output, and leaves the notebook where it was scrolled;
 // the warning and the steps for running the page are boxes, and from Chapter 2 the requirement the
-// chapter questions is one too, in a colour of its own and with its icon; in Chapter 1 a printed
+// chapter questions is one too, in a colour of its own, each with its icon; in Chapter 1 a printed
 // file keeps one record per line, scrolling inside its box, and the page never scrolls sideways.
 // In Chapter 2, Run below from a selected cell does the same, the opening's links reach their
 // stages, and the check's answers open with their feedback. In Chapter 3 the reader's record,
@@ -364,7 +364,8 @@ try {
     const named = (name) => boxes.filter((b) => b.name === name);
     check(
       named("ms-box-warning").length === 1 &&
-        named("ms-box-steps").length === 1 &&
+        // Chapter 2 puts three more things the reader does in boxes of the steps' kind.
+        named("ms-box-steps").length === (chapter === 2 ? 4 : 1) &&
         boxes.every((b) => b.tinted),
       `Chapter ${chapter}: the warning and the steps are boxes (${boxes.map((b) => b.name).join("; ")})`,
     );
@@ -380,8 +381,8 @@ try {
         requirement.every(
           (r) => boxes.filter((b) => b.edge === r.edge).length === requirement.length,
         ) &&
-        boxes.every((b) => b.icon === (b.name === "ms-box-requirement")),
-      `Chapter ${chapter}: ${chapter > 1 ? "the requirement is a box in a colour of its own, with its icon" : "no requirement box"}`,
+        boxes.every((b) => b.icon === ["ms-box-requirement", "ms-box-steps"].includes(b.name)),
+      `Chapter ${chapter}: ${chapter > 1 ? "the requirement is a box in a colour of its own, with its icon, as the steps have theirs" : "no requirement box; the steps have their icon"}`,
     );
     if (chapter === 1) {
       // A printed file keeps one record per line: the line scrolls inside its box, and the page

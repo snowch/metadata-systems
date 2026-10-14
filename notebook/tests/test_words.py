@@ -58,8 +58,9 @@ SOURCE = {chapter: path.read_text(encoding="utf-8") for chapter, path in CHAPTER
 
 def markdown_cells(chapter: int) -> list[str]:
     """The text of every `mo.md(...)` cell of a chapter, in the notebook's order, with the text of
-    each requirement's box (a callout of the kind "neutral") and each box of findings (the kind
-    "success", Chapter 2's), which read as part of the chapter."""
+    each requirement's box (a callout of the kind "neutral"), each box of findings (the kind
+    "success", Chapter 2's) and each box of something the reader does (the kind "info", the steps
+    for running the page among them), which read as part of the chapter."""
     out = []
     for node in ast.parse(SOURCE[chapter]).body:
         if not isinstance(node, ast.FunctionDef):
@@ -70,7 +71,7 @@ def markdown_cells(chapter: int) -> list[str]:
                 isinstance(call, ast.Call)
                 and isinstance(call.func, ast.Attribute)
                 and call.func.attr == "callout"
-                and any(k.arg == "kind" and getattr(k.value, "value", None) in ("neutral", "success") for k in call.keywords)
+                and any(k.arg == "kind" and getattr(k.value, "value", None) in ("neutral", "success", "info") for k in call.keywords)
             ):
                 call = call.args[0]
             if (
@@ -1792,7 +1793,8 @@ class TheWordsKeepTheRules(unittest.TestCase):
         # author's own words for its answers and its point ("schema", "event", a "run" of a job), and
         # its figure of the records that would have answered names lineage as Chapter 6's word, once.
         # Both come after the chapter's own term, metadata, and nowhere else in the chapter.
-        check = re.compile(r"## Check: evidence of what a job read.*?(?=\n## |\Z)", re.S)
+        # The check's answers are a cell of their own, after the box that says to open them.
+        check = re.compile(r'(?:## Check: evidence of what a job read|<details class="ms-choice">).*?(?=\n## |\Z)', re.S)
         [quiz] = check.findall(TEXT[2])
         self.assertIn("Recorded execution events provide evidence of a particular run.", quiz)
         label = "(Chapter 6 calls this lineage)"
