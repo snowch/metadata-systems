@@ -213,7 +213,7 @@ def inferred(week: Week, labels: dict[str, str]) -> str:
     return (
         f'<div class="ms-fig"><div class="ms-link">'
         f'{node(query["source"], labels["from"].format(rows=counts[query["source"]]))}'
-        f'<div class="ms-inferred"><span>{_named(labels["step"])}</span>'
+        f'<div class="ms-inferred"><span>{_named(labels["step"])}</span><span class="ms-arrow"></span>'
         f'<span class="ms-tag">{_named(labels["fit"].format(rows=counts["daily_sales"]))}</span></div>'
         f'{node("daily_sales", labels["to"].format(rows=counts["daily_sales"]))}'
         f'</div><div class="ms-muted ms-recorded">{_named(labels["recorded"])}</div></div>'

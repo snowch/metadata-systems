@@ -1180,6 +1180,15 @@ with your guess…" (section 3) and "Open an answer…" (the check). The check's
 cell of their own, after that box. No words changed, so no brief. The other chapters give their
 actions in the prose until the author decides whether to box them too.
 
+## The inferred link's arrow, 14 October 2026
+
+The author found the dashed arrow of the inferred figure (`figures.inferred`) above the boxes'
+middle, on a tablet: it was the middle label's top border, so it sat higher the more lines the
+query's label took. The arrow is now an element of its own between the label and the tag, in rows
+of equal height, so it runs level with the middle of the two tables at every width (measured within
+a pixel at 680, 900 and 1280 pixels); on a phone the link still runs down between the stacked
+tables.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,
