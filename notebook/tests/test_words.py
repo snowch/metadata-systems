@@ -322,7 +322,8 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertEqual(week, lacking)
         self.assertIn("WHERE order_id NOT IN (SELECT order_id FROM clean_orders)", SOURCE[2])
         self.says("Across the whole week, 3 orders in `orders.jsonl` are missing from `clean_orders`: 7021, 7023 and 7025.")
-        self.says("All three are Thursday's, and none has a customer id. Together they are worth 15400 pence, the whole of Thursday's gap.")
+        self.says("All three are Thursday's, and none has a customer id.")
+        self.says("Together they are worth 15400 pence, the whole of Thursday's gap.")
         self.says("no order from those days is missing from `clean_orders`")
         same = [d for d in shop.DAYS if raw[d] == daily[d]]
         self.assertEqual(same, ["2026-09-07", "2026-09-11", "2026-09-13"])
@@ -348,7 +349,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         )
         # The record is shown before it is described: the cells come first.
         holds = SOURCE[2][SOURCE[2].index("## 2. What the platform records"):]
-        self.assertLess(holds.index("FROM information_schema.columns"), holds.index("**Established.**"))
+        self.assertLess(holds.index("FROM information_schema.columns"), holds.index("**Established**"))
 
     def test_the_file_formats(self):
         self.assertTrue(shop.FILES["orders"].endswith("orders.jsonl") and shop.FILES["customers"].endswith("customers.jsonl"))
@@ -362,6 +363,9 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertEqual(set(self.week.storage.ls("s3://shop-raw/")[0]), {"key", "size_bytes", "last_modified"})
         self.says("Each file's record gives its key, size and last-modified time.")
         self.says("The dashboard's record gives its title, who created it, when it last refreshed and the values it shows.")
+        # Each box of findings is two lists, what the evidence established and what it did not.
+        self.assertEqual(SOURCE[2].count("**Established**"), 3)
+        self.assertEqual(SOURCE[2].count("**Not established**"), 3)
 
     def test_the_owner_and_the_programs(self):
         owners = {r["table_owner"] for r in self.w.sql("SELECT table_owner FROM information_schema.tables")}

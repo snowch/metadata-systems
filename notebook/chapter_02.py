@@ -175,11 +175,18 @@ def _(mo):
     mo.callout(mo.md(r"""
     <div class="ms-found">
 
-    **Established.** Across the whole week, 3 orders in `orders.jsonl` are missing from `clean_orders`: 7021, 7023 and 7025. All three are Thursday's, and none has a customer id. Together they are worth 15400 pence, the whole of Thursday's gap.
+    **Established**
+
+    - Across the whole week, 3 orders in `orders.jsonl` are missing from `clean_orders`: 7021, 7023 and 7025.
+    - All three are Thursday's, and none has a customer id.
+    - Together they are worth 15400 pence, the whole of Thursday's gap.
 
     </div><div class="ms-open">
 
-    **Not established.** Which rule left them out, which job applied it, and since when. Why Tuesday, Wednesday and Saturday differ: no order from those days is missing from `clean_orders`.
+    **Not established**
+
+    - Which rule left them out, which job applied it, and since when.
+    - Why Tuesday, Wednesday and Saturday differ: no order from those days is missing from `clean_orders`.
 
     </div>
     """), kind="success")
@@ -232,11 +239,23 @@ def _(mo):
     mo.callout(mo.md(r"""
     <div class="ms-found">
 
-    **Established.** Each record describes an asset as it is this morning. The record for `daily_sales` gives its columns and their types, 7 rows, a size, when it was created, a last-altered time of 02:30 on Monday 14 September, and an owner, `etl_service`. Each file's record gives its key, size and last-modified time. The dashboard's record gives its title, who created it, when it last refreshed and the values it shows.
+    **Established**
+
+    Each record describes an asset as it is this morning.
+
+    - The record for `daily_sales` gives its columns and their types, 7 rows, a size, when it was created, a last-altered time of 02:30 on Monday 14 September, and an owner, `etl_service`.
+    - Each file's record gives its key, size and last-modified time.
+    - The dashboard's record gives its title, who created it, when it last refreshed and the values it shows.
 
     </div><div class="ms-open">
 
-    **Not established.** Which job wrote any of these assets, what the job read, which version of its code ran, what the rows were the day before, or who decided the rules that shaped them.
+    **Not established**
+
+    - Which job wrote any of these assets.
+    - What the job read.
+    - Which version of its code ran.
+    - What the rows were the day before.
+    - Who decided the rules that shaped them.
 
     </div>
     """), kind="success")
@@ -381,11 +400,17 @@ def _(mo):
     mo.callout(mo.md(r"""
     <div class="ms-found">
 
-    **Established.** A query over `clean_orders` that keeps completed orders and adds up `price_pence` × `quantity` per day gives every row of `daily_sales`. It accounts for every day's gap.
+    **Established**
+
+    - A query over `clean_orders` that keeps completed orders and adds up `price_pence` × `quantity` per day gives every row of `daily_sales`.
+    - It accounts for every day's gap.
 
     </div><div class="ms-open">
 
-    **Not established.** That the job that writes `daily_sales` runs this query, or reads `clean_orders` at all. That it did the same every night.
+    **Not established**
+
+    - That the job that writes `daily_sales` runs this query, or reads `clean_orders` at all.
+    - That it did the same every night.
 
     </div>
     """), kind="success")

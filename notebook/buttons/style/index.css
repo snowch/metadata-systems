@@ -476,7 +476,16 @@
 }
 
 .jp-RenderedMarkdown .ms-box-finding p {
+  margin: 0 0 0.35rem;
+}
+
+.jp-RenderedMarkdown .ms-box-finding ul {
   margin: 0;
+  padding-left: 1.2rem;
+}
+
+.jp-RenderedMarkdown .ms-box-finding li + li {
+  margin-top: 0.25rem;
 }
 
 @media (max-width: 640px) {
