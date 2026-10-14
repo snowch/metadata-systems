@@ -329,47 +329,32 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.callout(mo.md(r"""
-    In the cell below, write what you would send the head, and what you take "owner" to mean; the readings follow the cell.
+    Before you open the block below, which holds four readings of "owner", decide two things: what you would send the head, and what you take "owner" to mean.
     """), kind="info")
-    return
-
-
-@app.cell
-def _():
-    reading = """
-What would you send the head?
-........
-What do you take "owner" to mean?
-........
-"""
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Four readings of "owner"</summary>
+
     - As written, `as_written`: the table has a value in `table_owner`. `etl_service` meets it.
     - A person to ask, `a_person`: a named member of staff. Nothing records one.
     - A team that answers for it, `a_team`: a named team. Nothing records one.
     - The job that writes it, `the_job`: a program. `etl_service` is the account a program logs in as, not the program.
 
     A requirement as written is met by whatever the platform already holds. Each reading of it asks for a different thing to be recorded. Your work is to say which reading was meant, and to record what that reading needs.
-    """)
-    return
 
+    <div class="ms-box ms-box-requirement">
 
-@app.cell(hide_code=True)
-def _(mo):
-    mo.callout(mo.md(r"""
     Someone to ask about a wrong number is a person or a team, so the owner has to be `a_person` or `a_team`. The warehouse's owner, `etl_service`, is an account, so it does not meet that reading. Your rule becomes "Every table must name whom to ask about it."
-    """), kind="neutral")
-    return
 
+    </div>
 
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
     Nothing on the shop's platform meets this yet, because no system records whom to ask about a table.
+
+    </details>
     """)
     return
 

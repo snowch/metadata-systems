@@ -1269,6 +1269,18 @@ night"), drawn with a rule above it and space before it (`.jp-RenderedMarkdown >
 chapter has one). No words changed. The test that the what-ifs run the engine's changes now reads
 the three headings.
 
+## Decide, then open the readings, 14 October 2026
+
+The author asked whether the `reading` cell (a Python string with two questions and dots to
+replace) was used, and found it ugly. Nothing read it, here or in Chapters 4, 5, 6, 8 and 9, which
+have the same cell; it was a place to commit before reading on. It also failed the rule against an
+answer in view below a question: the readings and the box naming `a_person` or `a_team` showed while
+the reader decided. The cell is gone. The blue box asks the reader to decide what they would send
+the head and what they take "owner" to mean before opening a closed block, "Four readings of
+"owner"", which holds the readings, the method, the rewritten rule in its requirement box and the
+closing sentence. Closed, the block shows only its title. Brief BX, draft BX (round 23); the draft
+was used as it stood. The other chapters' `reading` cells are left for the author to decide.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,

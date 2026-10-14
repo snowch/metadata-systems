@@ -197,12 +197,18 @@ class TheBoxes(unittest.TestCase):
             # Chapter 2 also puts each other thing the reader does in a box of the steps' kind.
             self.assertEqual([k for k in kinds if k not in ("neutral", "success")], ["warn"] + ["info"] * (5 if chapter == 2 else 1), chapter)
             self.assertEqual(kinds.count("success"), 3 if chapter == 2 else 0, chapter)
-            # Chapter 2 rewrites its rule, after the readings, to say what it is for: a second box.
-            self.assertEqual(kinds.count("neutral"), 3 if chapter == 33 else 2 if chapter == 2 else (1 if chapter > 1 else 0), chapter)
+            self.assertEqual(kinds.count("neutral"), 3 if chapter == 33 else (1 if chapter > 1 else 0), chapter)
             for text in re.findall(r'mo\.callout\(mo\.md\(r"""((?:(?!""").)*)"""\), kind="neutral"\)', source, re.S):
                 self.assertRegex(text.strip(), r'^[^\n]* "[^"]+"$', chapter)
             steps = re.findall(r'mo\.callout\(mo\.md\(r"""(.*?)"""\), kind="info"\)', source, re.S)[0]
             self.assertIn("press **Run all**, at the top of the page", steps, chapter)
+
+    def test_chapter_2s_rule_rewritten_is_inside_the_readings(self):
+        # Chapter 2 rewrites its rule, after the readings, in a second requirement box; it is inside
+        # the closed block of readings, so that it is not in view while the reader decides.
+        block = SOURCE[2].split('<details><summary>Four readings of "owner"</summary>')[1].split("</details>")[0]
+        self.assertIn('<div class="ms-box ms-box-requirement">', block)
+        self.assertIn('Your rule becomes "Every table must name whom to ask about it."', block)
 
     def test_chapter_1s_steps_name_every_button(self):
         [steps] = re.findall(r'mo\.callout\(mo\.md\(r"""(.*?)"""\), kind="info"\)', SOURCE[1], re.S)

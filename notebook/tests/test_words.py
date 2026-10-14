@@ -394,7 +394,11 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("- The job that writes it, `the_job`: a program. `etl_service` is the account a program logs in as, not the program.")
         self.says('- Question the requirement "Every table must have an owner."')
         self.says('## "Every table must have an owner."')
-        self.assertIn('What do you take "owner" to mean?', SOURCE[2])
+        # The reader decides before opening the readings, which are closed until then; no code cell
+        # holds the answers, since nothing reads them.
+        self.says('decide two things: what you would send the head, and what you take "owner" to mean.')
+        self.assertIn('<details><summary>Four readings of "owner"</summary>', SOURCE[2])
+        self.assertNotIn('    reading = """', SOURCE[2])
         # No table of the readings: a list, as in Chapter 4.
         self.assertNotIn("| One reading of", SOURCE[2])
         self.assertNotIn("These fields", self.text[2])
