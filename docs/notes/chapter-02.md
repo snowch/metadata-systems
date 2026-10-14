@@ -1127,6 +1127,15 @@ did not line up.
   faster network and 55 s on the slower, and the warning (brief BO) says that reading first
   shortens the wait.
 
+## Weekdays beside dates, 14 October 2026
+
+The author noticed that the text names days (Monday, Friday and Sunday; Tuesday's cancelled order;
+Saturday 12 September) while the tables showed only dates, so the reader had to work out the
+weekday. The comparison of every day, and the cells listing the cancelled orders and the order
+written twice, now have a column `weekday` (`substr('SunMonTueWedThuFriSat', 1 + 3 *
+strftime('%w', ...), 3)`, which a test holds to the calendar); the what-ifs' tables show each time
+and each dashboard value with its weekday after it, `2026-09-12 (Sat)`.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,
