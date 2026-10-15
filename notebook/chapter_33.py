@@ -159,24 +159,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what "record the lineage of every boarding" means to you here.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_every_boarding_means = """
-What does "record the lineage of every boarding" mean here?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what "record the lineage of every boarding" means to you here.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of "record the lineage of every boarding"</summary>
+
     "Record the lineage of every boarding" could mean three things. Each item says what it needs:
 
     - per scan: each row of `boardings` needs the batch it came from. `boardings` keeps the batch's name, in its column `batch`, and not its version;
@@ -184,6 +177,8 @@ def _(mo):
     - per version: each run needs to name the batch and the version it read, so that a figure can be traced to the versions it counted. The question about Tuesday's 17:30 above needs this one.
 
     The requirement does not say which it means. This page builds to the third. With the column `batch`, it answers the first two as well.
+
+    </details>
 
     Each batch is one dataset, named by its key in `ferry-gates`. The version a run read goes on that run's input, in OpenLineage's `version` facet, whose field is `datasetVersion`, as the shop's returns desk did in Chapters 7 and 8. A batch's versions stay one dataset over time.
 
@@ -278,18 +273,15 @@ def _(mo):
     At the 09:30 sailing, `sailing_loads` has 31 and the harbour master counted 31 on board. At the 14:30 sailing, it has 14 and the harbour master counted 24. At the 19:30 sailing, it has 10 and the harbour master counted 17.
 
     For the two sailings after noon, `sailing_loads` counts 10 and 7 fewer than the harbour master.
-
-    Before you read on, write in the next cell whether any run of a function or a job failed in the three days.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_failure = """
-Did any run of a function or a job fail in the three days?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide whether any run of a function or a job failed in the three days.
+    """), kind="info")
     return
 
 
@@ -304,7 +296,7 @@ def _(mo):
     mo.md(r"""
     Every run finished: 38 runs of `load_scans`, 1 of `drop_scans`, and 3 each of `build_loads` and `send_report`. None failed.
 
-    Compare this with what you wrote.
+    Compare this with what you decided.
 
     The ferry's next requirement, in the box below, is for a loss like this one.
     """)
@@ -321,24 +313,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what "a sailing's data is missing" means to you here.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_missing_means = """
-What does "alert us when a sailing's data is missing" mean here?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what "a sailing's data is missing" means to you here.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of the requirement</summary>
+
     It could mean four things:
 
     - no batch arrived from a gate: it needs the timetable and the list of gates. Both gates' batches arrived, so it does not catch it;
@@ -347,6 +332,8 @@ def _(mo):
     - a sailing carried fewer passengers than usual: it needs past loads, and a sailing that is quiet for another reason looks the same.
 
     The requirement does not say which it means. This page builds to the third.
+
+    </details>
 
     The events of each run of `load_scans` hold its state (`state`), the scans it read (`scans_read`), the rows it wrote to `boardings` (`rows_written`), and the batch's fields (`fields`, from OpenLineage's `schema` facet).
 
@@ -396,18 +383,15 @@ def _(mo):
     ## Tuesday's 17:30
 
     The second message is about Tuesday's 17:30 from the mainland. `sailing_loads` shows 35 passengers for it, and `boardings` holds 38 rows. Gate 2 uploaded its batch for that sailing twice: 14 scans at 17:31 on Tuesday, and all 17 at 07:05 on Wednesday.
-
-    Before you read on, write in the next cell which of gate 2's two uploads the 35 counted.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_row = """
-Which of gate 2's two uploads did the 35 count?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide which of gate 2's two uploads the 35 counted.
+    """), kind="info")
     return
 
 
@@ -426,7 +410,7 @@ def _(mo):
 
     Gate 2's second version, `f0ff6ad37438`, with 17 scans, was loaded at 07:05:02 on Wednesday, after the run. `boardings` now holds 38.
 
-    Compare this with what you wrote.
+    Compare this with what you decided.
 
     `build_loads` rebuilds only the day before, so no later run rebuilt Tuesday's rows. The row stays at 35 until somebody rebuilds it.
 
@@ -437,18 +421,15 @@ def _(mo):
     The third message is about a test batch. At 23:40 on Wednesday, an engineer uploaded a test batch of 5 scans under Wednesday's 19:30 from the island, and `load_scans` loaded it. `build_loads` ran at 01:00 on Thursday, and `send_report` at 06:00 sent the file `loads-2026-09-23.csv`. At 08:30 the engineer deleted the batch, and `drop_scans` removed its rows from `boardings`.
 
     The next cell follows the graph downstream of the test batch and checks each dataset it reaches.
-
-    Before you read on, write in the next cell which of `boardings`, `sailing_loads` and `loads-2026-09-23.csv` still count the test scans.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_trace = """
-Which of boardings, sailing_loads and loads-2026-09-23.csv still count the test scans?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide which of `boardings`, `sailing_loads` and `loads-2026-09-23.csv` still count the test scans.
+    """), kind="info")
     return
 
 
@@ -463,7 +444,7 @@ def _(mo):
     mo.md(r"""
     `boardings` no longer counts the test scans: it holds 17 for Wednesday's 19:30 from the island, the harbour master's count. `sailing_loads` and `loads-2026-09-23.csv` still do: each shows 22.
 
-    Compare this with what you wrote.
+    Compare this with what you decided.
 
     The delete reached only what `drop_scans` changed. The row of `sailing_loads` was built before the delete, and the report is a copy that was emailed at 06:00.
 
@@ -484,24 +465,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what "leave no trace" means to you here.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_no_trace_means = """
-What does "a deleted batch must leave no trace" mean here?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what "leave no trace" means to you here.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of the requirement</summary>
+
     It could mean five things. Each item says what it needs:
 
     - no rows made from the batch: `drop_scans` does this;
@@ -513,6 +487,8 @@ def _(mo):
     The last reading works against the second and the third: finding every figure the batch reached needs the lineage that the last reading would remove.
 
     The ferry's platform meets the first reading only. The requirement does not say which it means.
+
+    </details>
     """)
     return
 

@@ -78,18 +78,15 @@ def _(mo):
     The `COMPLETE` event for the run of `build_daily_sales` early on Thursday 10 arrives twice, and the two copies are the same, byte for byte.
 
     Ingestion turns events into runs and edges, job by job (Chapter 9).
-
-    Before you read on, write in the next cell whether the lineage will change, and how.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_lineage = """
-Will the lineage change, and how?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide whether the lineage will change, and how.
+    """), kind="info")
     return
 
 
@@ -116,7 +113,7 @@ def _(mo):
 
     Ingestion merges events into runs by their run id. The copy names the same run and the same datasets, so it adds nothing to the graph.
 
-    Compare this with what you wrote.
+    Compare this with what you decided.
 
     ## A retry with a new time
 
@@ -199,21 +196,15 @@ def _(mo):
     The returns desk corrected `r-202` on Thursday 10 at 09:30. Object storage sends a notice of each change, and each notice starts `record_return`.
 
     In the week below, object storage delivers the notice for the correction twice. So `record_return` starts twice for the one change, 25 seconds apart. Each run deletes the return's row from `returns` and writes it again.
-
-    Before you read on, write in the next cell what changes in the table `returns`, and what changes in the lineage.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_twice = """
-What changes in returns?
-........
-
-What changes in the lineage?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide what changes in the table `returns`, and what changes in the lineage.
+    """), kind="info")
     return
 
 
@@ -306,24 +297,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what counts as a duplicate here.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_duplicates_means = """
-What counts as a duplicate here?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what counts as a duplicate here.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of "duplicates"</summary>
+
     "Duplicates" could mean three things. Each needs a different key:
 
     - the same event twice: the event's content;
@@ -337,6 +321,8 @@ def _(mo):
     - The same work: not met. The lineage holds two runs, and neither key of deduplication drops either.
 
     The requirement does not say which of these it means.
+
+    </details>
     """)
     return
 

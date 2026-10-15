@@ -262,6 +262,22 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 15 October 2026: decide, then read on; no write-in cells
+
+At the author's request. Every chapter asked the reader to commit before reading on by typing into
+a code cell, a string of questions with dots to replace, which nothing read (70 cells across
+Chapters 2 to 33; Chapter 1's `guesses`, which the map reads, stays). They were ugly, and the
+readings of a requirement sat in view below them. Each is gone. A blue box (`kind="info"`, the
+"touch_app" icon) now says "Before you read on, decide …" where the page said "Before you read on,
+write in the next cell …"; where readings of a requirement follow, it says "Before you open the
+readings below, decide …", and the readings, with what follows from them, sit in a closed block
+("Readings of …") that the reader opens. A sentence that leads into the next code cell stays
+outside the block. "Compare … with what you wrote" became "… what you decided", and "the cell
+after the next one" lost its "next one". The words were the pages' own, changed only where a cell
+no longer existed; Chapter 4's count prediction, whose question lived in its cell, has a box Haiku
+drafted (brief BZ). `test_jupyterlite.py` fails a write-in cell nothing reads, and a later box of
+the steps' kind that is not something the reader does.
+
 ### 15 October 2026: the programs' account is `svc_nightly_etl`
 
 At the author's suggestion, the warehouse account the four nightly programs log in as, which the

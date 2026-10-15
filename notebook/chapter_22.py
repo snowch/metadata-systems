@@ -98,18 +98,15 @@ def _(shop):
 def _(mo):
     mo.md(r"""
     This is the rule for merging: take the last part of each name, in lower case, with spaces and hyphens read as underscores, and a file's extension left off. References with the same last part become one.
-
-    Before you read on, write in the next cell which references this rule will merge.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_merge = """
-Which of the six references will this rule merge?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide which references this rule will merge.
+    """), kind="info")
     return
 
 
@@ -124,7 +121,7 @@ def _(mo):
     mo.md(r"""
     Under that rule, all six become one entity. Among them are the development table, which holds other rows in another environment (Chapter 12), and Jo Marsh's CSV file, a copy made at one time.
 
-    Compare this with what you wrote.
+    Compare this with what you decided.
 
     Deciding which references name one entity is **entity resolution**.
 
@@ -177,24 +174,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what "the same dataset" means to you here.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_same_means = """
-What does "the same dataset" mean here?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what "the same dataset" means to you here.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of "the same dataset"</summary>
+
     "The same dataset" could mean four things, and each needs different information.
 
     - The same name: it needs a rule for reading names. Met for warehouse names, by the qualified rule. The other references' names alone do not merge.
@@ -203,6 +193,8 @@ def _(mo):
     - The same across environments: it needs to know which environment holds each table. The `aliases` rule keeps the development table apart.
 
     The requirement does not say which it means.
+
+    </details>
     """)
     return
 

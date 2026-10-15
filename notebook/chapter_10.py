@@ -92,19 +92,15 @@ def _(mo):
 def _(mo):
     mo.md(r"""
     Lineage between columns, which columns each column is made from or depends on, is **column lineage**.
-
-    Before you read on, write in the next cell which columns of `orders.jsonl` you expect `revenue_pence` to depend on, and why.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_columns = """
-Which columns of `orders.jsonl` does `revenue_pence`
-depend on, and why?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide which columns of `orders.jsonl` you expect `revenue_pence` to depend on, and why.
+    """), kind="info")
     return
 
 
@@ -309,19 +305,15 @@ def _(week10n):
 def _(mo):
     mo.md(r"""
     `returned_quantity(7004, 2)` and `returned_quantity(7008, 1)` give 1: one of each came back (`r-201` and `r-202`). `returned_quantity(7001, 1)` gives 0. A row's value depends on what is in `returns`.
-
-    Before you read on, write in the next cell whether the parser's answer for `revenue_pence` will include the table `returns`, and why.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_returns = """
-Will the parser's answer for `revenue_pence` include
-the table `returns`, and why?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide whether the parser's answer for `revenue_pence` will include the table `returns`, and why.
+    """), kind="info")
     return
 
 

@@ -85,20 +85,16 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The two cells below the next one show what the shop already holds about this: Chapter 6's two lines for `build_clean_orders`, and what the warehouse records about `clean_orders`.
-
-    Before you read on, write in the next cell what they can tell you about the orders `build_clean_orders` left out each night.
+    The two cells below show what the shop already holds about this: Chapter 6's two lines for `build_clean_orders`, and what the warehouse records about `clean_orders`.
     """)
     return
 
 
-@app.cell
-def _():
-    expected = """
-What can the two lines and the warehouse tell you
-about the orders left out each night?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide what they can tell you about the orders `build_clean_orders` left out each night.
+    """), kind="info")
     return
 
 
@@ -246,19 +242,15 @@ def _(mo):
     The next cell runs the week with the returns desk and groups `record_return`'s events by `job` and `day`. Its design adds `object` and `object_change`.
 
     On Wednesday 9 the desk created 2 returns: `r-202` at 10:05 and `r-203` at 15:40.
-
-    Before you read on, write in the next cell what the grouping will show for Wednesday 9: how many rows, and how many times `record_return` did its work.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_wednesday = """
-How many rows will the grouping show for Wednesday 9,
-and how many times did record_return do its work?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide what the grouping will show for Wednesday 9: how many rows, and how many times `record_return` did its work.
+    """), kind="info")
     return
 
 
@@ -343,19 +335,15 @@ def _(mo):
     The run of `remove_return` on Saturday 12 has an empty `reads`: the file it removed was gone when it started, and it read nothing.
 
     The next cell makes a graph from what each run read and wrote in the week with no changes, as Chapter 6 made one from its lines, and follows edges upstream from `sales_dashboard`. Its events carry `run`, `job`, `type`, `reads` and `writes`.
-
-    Before you read on, write in the next cell what that traversal would reach if the events carried no `reads`.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_without_reads = """
-What would the traversal reach if the events
-carried no `reads`?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide what that traversal would reach if the events carried no `reads`.
+    """), kind="info")
     return
 
 
@@ -400,9 +388,15 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, change the list `yours` in the next cell to the fields you would record, write what you take the requirement to mean where the cell shows `........`, select the cell and press **Run below**.
+    mo.callout(mo.md(r"""
+    Before you read on, decide what you take the requirement to mean, change the list `yours` in the next cell to the fields you would record, select the cell and press **Run below**.
+    """), kind="info")
+    return
 
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     The cell sets your design against four readings of the requirement, and says which it meets.
     """)
     return
@@ -411,10 +405,6 @@ def _(mo):
 @app.cell
 def _(shop):
     yours = ["run", "job", "type", "time", "status"]
-    meaning = """
-What does "Record every run." mean to you?
-........
-"""
     shop.readings(yours)
     return
 

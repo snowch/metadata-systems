@@ -131,18 +131,15 @@ def _(mo):
     Monday's run of `build_daily_sales` failed (Chapter 13).
 
     The shop's query for stale assets reads Chapter 13's freshness measure. It lists each asset the shop measures (`orders.jsonl`, `clean_orders`, `daily_sales`, `sales_dashboard` and `returns`) that was last written more than 24 hours before 09:00 on Monday 14.
-
-    Before you read on, write in the next cell whether that query will list `sales_dashboard`.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_stale = """
-Will the query list sales_dashboard as stale?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide whether that query will list `sales_dashboard`.
+    """), kind="info")
     return
 
 
@@ -159,7 +156,7 @@ def _(mo):
 
     The stale assets are `daily_sales` and `returns`. `sales_dashboard` is not among them.
 
-    Compare this with what you wrote.
+    Compare this with what you decided.
 
     The next cell shows the freshness measure the query read, for each asset it measures: when it was last written, how many hours that was before 09:00 on Monday 14, and the latest day it holds.
     """)
@@ -202,29 +199,24 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what "who owns `daily_sales`" means to you here.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_owner_means = """
-What does "who owns daily_sales" mean here?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what "who owns `daily_sales`" means to you here.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of the requirement</summary>
+
     The shop holds three owners for `daily_sales`, each from its own source, and each answers a different question. The next cell lists them:
 
     - `account`: which account controls the table in the warehouse? `svc_nightly_etl` (Chapter 2).
     - `responsible`: whom should you ask about it? `j.marsh`, from your records (Chapter 4).
     - `team`: which team looks after it? `data team`, from the team sheet (Chapter 21).
+
+    </details>
 
     You write `owner(asset)`. It must give an owner and say which meaning it holds: a dictionary with `owner` and `meaning`, where `meaning` is `account`, `responsible` or `team`.
 

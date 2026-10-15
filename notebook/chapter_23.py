@@ -123,18 +123,15 @@ def _(mo):
     For each way, the projection gives the first of these sizes at which it reads more than 1,000,000 records.
 
     The limit of 1,000,000 records, the 4 steps and the 3 edges a step are the shop's own choices.
-
-    Before you read on, write in the next cell which ways pass that limit first.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_first = """
-Which ways of answering pass the limit first?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide which ways pass that limit first.
+    """), kind="info")
     return
 
 
@@ -157,7 +154,7 @@ def _(mo):
 
     Followed to the end, the traversal downstream passes the limit at 10,000,000 assets. Followed 4 steps, it reads at most 81 edges and never passes it.
 
-    Compare this with what you wrote. The next cell lists the projection's numbers at each size.
+    Compare this with what you decided. The next cell lists the projection's numbers at each size.
     """)
     return
 
@@ -266,24 +263,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what the requirement means to you here.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_90_days_means = """
-What does "lineage for 90 days" mean here?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what the requirement means to you here.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of the requirement</summary>
+
     The requirement could mean three things. Each is a question the head of the shop might be asking, with what it needs:
 
     - Can I see the events of the last 90 days? It needs the events kept for 90 days by age: retention.
@@ -293,6 +283,8 @@ def _(mo):
     The shop records nowhere which assets are in use. With 90 days' retention, the run that wrote `r-201`'s row would be deleted on Monday 7 December, while the row stays in `returns`.
 
     The requirement does not say which it means.
+
+    </details>
     """)
     return
 

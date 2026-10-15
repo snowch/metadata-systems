@@ -88,19 +88,9 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell which of `orders.jsonl`, `clean_orders`, `daily_sales` and `sales_dashboard` you think are not up to date at 09:00 on Monday, and how you would tell.
-    """)
-    return
-
-
-@app.cell
-def _():
-    expected_stale = """
-Which assets are not up to date at 09:00 on Monday,
-and how would you tell?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you read on, decide which of `orders.jsonl`, `clean_orders`, `daily_sales` and `sales_dashboard` you think are not up to date at 09:00 on Monday, and how you would tell.
+    """), kind="info")
     return
 
 
@@ -166,7 +156,7 @@ def _(mo):
 
     By the latest day it holds, the dashboard is a day behind. It holds Saturday 12, and on Monday the day before is Sunday 13. `daily_sales` holds the same latest day.
 
-    Compare these with what you wrote.
+    Compare these with what you decided.
     """)
     return
 
@@ -356,7 +346,7 @@ def _(mo):
     mo.md(r"""
     ## Before Chapter 14
 
-    After the failed night, `daily_sales` and the dashboard held Saturday 12 as their latest day. By the time it was last written, the dashboard was the most recent asset. Compare these with what you wrote at the start.
+    After the failed night, `daily_sales` and the dashboard held Saturday 12 as their latest day. By the time it was last written, the dashboard was the most recent asset. Compare these with what you decided at the start.
 
     "Refreshed lately" was met after the failed night, after the nights that wrote nothing, and with the slow clock. It caught neither fault. "Built from the latest data" failed after the failed night, and with the slow clock until one clock was used. "Showing the latest day" failed after the failed night and after the nights that wrote nothing. The requirement does not choose among them.
 

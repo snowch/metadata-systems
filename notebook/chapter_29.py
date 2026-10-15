@@ -146,21 +146,18 @@ def _(mo):
     - `START` gives the state `RUNNING`, `COMPLETE` gives `COMPLETED`, `ABORT` gives `ABORTED` and `FAIL` gives `FAILED`; `RUNNING` and `OTHER`, the specification's other two types, give `RUNNING`, as does any type it does not know;
     - `COMPLETE`, `ABORT` or `FAIL` moves the run's end time to the event's own time.
 
-    The two cells after the next one send Chapter 25's arrivals, Part V's faults included, to your collector (the shop's versions of your three pieces from Chapter 25) and through Marquez's rules, in the order the events arrived.
+    The two cells below send Chapter 25's arrivals, Part V's faults included, to your collector (the shop's versions of your three pieces from Chapter 25) and through Marquez's rules, in the order the events arrived.
 
     The run of `build_daily_sales` early on Friday 11 has a `START` with the event time 02:30:00 and a `COMPLETE` with the event time 02:30:21. The `START` arrived at 02:31:03, after the `COMPLETE`.
-
-    Before you read on, write in the next cell which state Marquez's rules give that run once all the week's events have arrived.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_state = """
-Which state will Marquez's rules give the run early on Friday 11, once all the events have arrived?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide which state Marquez's rules give that run once all the week's events have arrived.
+    """), kind="info")
     return
 
 
@@ -181,7 +178,7 @@ def _(mo):
     mo.md(r"""
     Friday 11: your collector's state is `COMPLETE`. By Marquez's rules, the state is `RUNNING`. The late `START` was the last of the run's events taken, so it set the state.
 
-    Compare this with what you wrote.
+    Compare this with what you decided.
 
     Thursday 10: the run's `COMPLETE` was sent again with a new event time, a retry. Your collector dropped the retry and kept the end at 02:30:21. Marquez's rules stored 3 event rows for the run and moved its end to 02:30:52.
 
@@ -248,24 +245,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what "use the reference consumer" means to you here.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_reference_means = """
-What does "use the reference consumer" mean here?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what "use the reference consumer" means to you here.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of "use the reference consumer"</summary>
+
     "Use the reference consumer" could mean three things. Each item says what it needs:
 
     - use Marquez, the consumer the OpenLineage project names as its reference implementation: it needs a Marquez to send the events to. By the rules above, the shop would then hold Friday 11's run as `RUNNING` unless the events are sorted first, and a retry would move a run's end;
@@ -273,6 +263,8 @@ def _(mo):
     - check your own consumer against the reference: it needs a rule for which is right where the two differ. For Friday 11's late `START`, the specification does not say what a consumer does.
 
     The requirement does not say which it means.
+
+    </details>
     """)
     return
 

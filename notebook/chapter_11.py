@@ -82,21 +82,15 @@ def _(mo):
     - `added`: a new field, `coupon_code`;
     - `renamed`: `quantity` renamed to `qty`;
     - `retyped`: each customer id written in a new format, as text: `C101` where it was `101`.
-
-    Before you read on, write in the next cell, for each change, whether you expect it to change what `daily_sales` holds on Monday, and why.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_changes = """
-Does each change alter what daily_sales holds
-on Monday, and why?
-added ....
-renamed ....
-retyped ....
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide, for each change, whether you expect it to change what `daily_sales` holds on Monday, and why.
+    """), kind="info")
     return
 
 
@@ -214,7 +208,7 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Compare the counts with what you wrote.
+    Compare the counts with what you decided.
 
     `renamed`: `build_clean_orders` reads `quantity` by name. The file has no `quantity`, so the value is empty, and the filter `quantity > 0` keeps no order. The export writes every order so far each night, so `clean_orders` has no rows after each of the last two nights, though the program succeeded each time. `daily_sales` has no row for Saturday or Sunday, and Jo Marsh's query finds no order.
 
@@ -284,24 +278,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what the shop would have to record to warn each kind of reader.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_to_record = """
-What would the shop have to record to warn each kind of reader?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what the shop would have to record to warn each kind of reader.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of "breaking"</summary>
+
     "Breaking" could mean breaking for three kinds of reader, each needing something different:
 
     - a program that reads the dataset: the column lineage of every program whose code the shop has, and the comparison of the schema versions;
@@ -317,6 +304,8 @@ def _(mo):
     - Somebody's own query: not met. Jo Marsh's query broke under `renamed` and `retyped`, and no record names it.
 
     The requirement does not say breaking for whom.
+
+    </details>
     """)
     return
 

@@ -80,21 +80,23 @@ def _(mo):
     The developer's runner sends OpenLineage events, as the analyst's script did in Chapter 9. Its events name the tables `analytics.clean_orders` and `analytics.daily_sales`, without the database. Its jobs are in the namespace `dev`.
 
     Chapter 9's ingestion gives `shop`, the production database, to a warehouse name that leaves out its database.
-
-    Before you read on, write in the next cell which programs you expect the graph to show writing `shop.analytics.daily_sales`, production's table.
-
-    The cell after it runs the week with the returns desk and the development run, and ingests the events as Chapter 9 did.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_writers = """
-Which programs will the graph show
-writing shop.analytics.daily_sales?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide which programs you expect the graph to show writing `shop.analytics.daily_sales`, production's table.
+    """), kind="info")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The next cell runs the week with the returns desk and the development run, and ingests the events as Chapter 9 did.
+    """)
     return
 
 
@@ -135,23 +137,15 @@ def _(mo):
     4. `shop.analytics.daily_sales` and `shop.analytics.sales_by_day`, a view Jo Marsh made over `daily_sales`;
     5. `s3://shop-raw/orders.jsonl` and `s3://shop-raw/Orders.jsonl`, which the supplier wrote on Friday 11 to test a new export;
     6. two versions of `s3://shop-returns/r-202.json`: as the desk created it on Wednesday 9, and as it was overwritten on Thursday 10. In the next cells, `@` followed by a version names one version of an object.
-
-    Before you read on, write in the next cell, for each pair, whether the two names refer to the same asset: yes, no, or you cannot tell yet.
     """)
     return
 
 
-@app.cell
-def _():
-    same_asset = """
-Do the two names in each pair refer to the same asset?
-1 ....
-2 ....
-3 ....
-4 ....
-5 ....
-6 ....
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide, for each pair, whether the two names refer to the same asset: yes, no, or you cannot tell yet.
+    """), kind="info")
     return
 
 
@@ -212,30 +206,25 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what "the same table" means to you.
-    """)
-    return
-
-
-@app.cell
-def _():
-    same_table = """
-What does "the same table" mean to you?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what "the same table" means to you.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of "the same"</summary>
+
     "The same" could mean four things, each needing something different:
 
     - the same name, once qualified and read by its store's rules: qualified names and each store's rules for case;
     - the same rows: a way to compare contents;
     - the same environment: which environment holds each asset;
     - the same version: a version for each asset.
+
+    </details>
 
     The next cell tests each pair five ways, starting with the plain text of the names:
 

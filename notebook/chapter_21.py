@@ -123,18 +123,15 @@ def _(mo):
     On the night of Monday 14, the shop's nightly work runs as on every other night: the night's work writes `daily_sales` at 02:30:21, the warehouse's catalogue is read at 03:30, and the team sheet is imported at 04:00.
 
     You do not change your records, and nobody edits the team sheet.
-
-    Before you read on, write in the next cell what this rule will show as the owner at 09:00 on Tuesday 15.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_tuesday = """
-What owner will the rule show on Tuesday at 09:00?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide what this rule will show as the owner at 09:00 on Tuesday 15.
+    """), kind="info")
     return
 
 
@@ -168,7 +165,7 @@ def _(mo):
 
     The rule took the claim sent last. The team sheet's content is the oldest of the three: 28 August.
 
-    Compare this with what you wrote.
+    Compare this with what you decided.
 
     When sources disagree, the rule for which claim counts is called **precedence**.
     """)
@@ -230,27 +227,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what "correct" means to you here, and which owner you would show.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_correct_means = """
-What does "correct" mean here?
-........
-
-Which owner would you show?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what "correct" means to you here, and which owner you would show.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of "correct"</summary>
+
     "Correct" could mean three things, each needing something different.
 
     - the newest claim: the time each claim was sent;
@@ -264,6 +251,8 @@ def _(mo):
     The shop holds all three claims. A rule that shows one claim shows one of these meanings. Keeping every claim leaves the meaning to whoever reads them.
 
     The requirement names neither a rule nor a meaning, so none of the outputs above is shown to be the correct owner.
+
+    </details>
     """)
     return
 

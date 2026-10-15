@@ -185,18 +185,15 @@ def _(mo):
     Suppose each of the shop's four nightly programs ran as one query a night, all from clients with the same source, `shop-nightly`, the same user, `svc_nightly_etl`, and the same address, `10.0.0.5`.
 
     The shop's lineage wants one job for the 7 runs of `build_daily_sales`, holding no other program's runs.
-
-    Before you read on, write in the next cell how many jobs the 7 queries of `build_daily_sales` would make with the name format `$SOURCE`, and whose runs those jobs would hold.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_jobs = """
-With the name format $SOURCE, how many jobs will the 7 queries of build_daily_sales make, and whose runs will those jobs hold?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide how many jobs the 7 queries of `build_daily_sales` would make with the name format `$SOURCE`, and whose runs those jobs would hold.
+    """), kind="info")
     return
 
 
@@ -229,7 +226,7 @@ def _(mo):
 
     The check then finds 1 job for the 7 runs, and that job also holds the runs of the other three programs.
 
-    Compare this with what you wrote.
+    Compare this with what you decided.
 
     Then give each program its own source in `source_of`, and press **Run below** again. Both tests pass: one job, holding the runs of `build_daily_sales` only.
 
@@ -278,24 +275,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what "capture lineage from Airflow, Spark, dbt and Trino" means to you here.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_capture_means = """
-What does "capture lineage from Airflow, Spark, dbt and Trino" mean here?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what "capture lineage from Airflow, Spark, dbt and Trino" means to you here.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of "capture lineage from Airflow, Spark, dbt and Trino"</summary>
+
     "Capture lineage from Airflow, Spark, dbt and Trino" could mean three things. Each item says what it needs:
 
     - by each system's own OpenLineage jobs (a task, a Spark action and its output, a model, a query): it needs nothing more, and gives four kinds of job, each named its own way. It also gets jobs the cells here leave out: the Dag's own job, and the job dbt's integration sends for the whole invocation;
@@ -303,6 +293,8 @@ def _(mo):
     - by the datasets each system reads and writes, whatever the jobs are called: it needs each system to name the same dataset the same way (Chapter 12), and it misses what a system does not send, such as Trino's `SELECT`.
 
     The requirement does not say which it means.
+
+    </details>
     """)
     return
 

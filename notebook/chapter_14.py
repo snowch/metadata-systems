@@ -128,19 +128,9 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what you take it to mean: where must there be no order without a customer, and what should happen to one?
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_it_means = """
-Where must there be no order without a customer,
-and what should happen to one?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you read on, decide what you take it to mean: where must there be no order without a customer, and what should happen to one?
+    """), kind="info")
     return
 
 
@@ -152,18 +142,15 @@ def _(mo):
     The shop's developer writes the requirement as a test on every run of `build_clean_orders`: in `clean_orders`, `no customer_id` must be at most 0.
 
     A stated expectation about data, with a record of whether it held in each run, is an **assertion**.
-
-    Before you read on, write in the next cell which runs you expect to fail the assertion, and why.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_failures = """
-Which runs do you expect to fail the assertion, and why?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide which runs you expect to fail the assertion, and why.
+    """), kind="info")
     return
 
 
@@ -253,7 +240,7 @@ def _(mo):
     - In `clean_orders`: met on every run, because the rule removes the orders before the table is written.
     - On the dashboard: not met. Thursday's total leaves out 3 completed orders, worth 15400 pence (Chapter 2).
 
-    Compare these with what you wrote at the start. The requirement does not say which reading it means. Nor does it say what should happen to an order without a customer: dropped, kept without a customer, or the night's work stopped.
+    Compare these with what you decided at the start. The requirement does not say which reading it means. Nor does it say what should happen to an order without a customer: dropped, kept without a customer, or the night's work stopped.
     """)
     return
 

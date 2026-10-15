@@ -127,18 +127,15 @@ def _(lines, shop):
 def _(mo):
     mo.md(r"""
     The week has 82 lines. One is refused: line 20, which is not JSON. 81 events pass.
-
-    Before you read on, write in the next cell what the graph will lose because of that line.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_loss = """
-What will the graph lose because of that line?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide what the graph will lose because of that line.
+    """), kind="info")
     return
 
 
@@ -270,18 +267,15 @@ def _(mo):
     The last stage makes edges of two kinds. An edge by run joins one run to a dataset it read or wrote. An edge by job joins a job to a dataset that any of its runs read or wrote. It is made once per dataset. It records how many runs had it, and the first and last time one did.
 
     The week has 41 runs: 35 by night (7 nights, each with the four jobs and the analyst's script) and 6 by the functions, during the day.
-
-    Before you read on, write in the next cell how many edges of each kind you expect, and why.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_edges = """
-How many edges between jobs and datasets, and why?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide how many edges of each kind you expect, and why.
+    """), kind="info")
     return
 
 

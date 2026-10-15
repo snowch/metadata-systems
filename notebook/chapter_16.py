@@ -94,18 +94,15 @@ def _(mo):
     - `build_daily_sales`, which writes `daily_sales`, which the dashboard shows;
     - the analyst's script, `copy_clean_orders`, which copies `clean_orders` every night to `clean_orders_copy.csv` in the bucket `shop-scratch` and sends events (Chapters 6 and 9);
     - Jo Marsh's query, which joins `clean_orders` to `clean_customers` on `customer_id` in a spreadsheet and sends no events (Chapter 11).
-
-    Before you read on, write in the next cell which of `daily_sales`, the dashboard, the analyst's copy and Jo Marsh's query you expect to break, and how.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_breaks = """
-Which readers break, and how?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide which of `daily_sales`, the dashboard, the analyst's copy and Jo Marsh's query you expect to break, and how.
+    """), kind="info")
     return
 
 
@@ -187,7 +184,7 @@ def _(mo):
     - The analyst's copy: its first line, the names of its columns, now names the column `customer`. The script ran and succeeded.
     - Jo Marsh's query: before, 7 rows, one for each country, 41 orders; after, the error `no such column: o.customer_id`.
 
-    Compare these with what you wrote.
+    Compare these with what you decided.
 
     By datasets, the lineage listed `daily_sales` and the dashboard, which did not change. Column lineage listed the copy's column, which now has another name, with no error. Neither listed Jo Marsh's query, which failed: it sends no events, and the shop does not have its code.
     """)
@@ -251,24 +248,23 @@ def _(mo):
 def _(mo):
     mo.md(r"""
     ## "Tell us what breaks if `customer_id` is renamed."
-
-    Before you read on, write in the next cell what you take "breaks" to mean.
     """)
     return
 
 
-@app.cell
-def _():
-    what_breaks_means = """
-What does "breaks" mean here?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what you take "breaks" to mean.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of "breaks"</summary>
+
     "Breaks" could mean two things, each needing something different:
 
     - fails: a program or a query stops with an error. This needs every reader that names the column, whether or not it is in the shop's records.
@@ -280,6 +276,8 @@ def _(mo):
     - keeps running with a different answer: met for the copy, whose column lineage the shop has. Lineage by datasets also listed `daily_sales` and the dashboard, which did not change.
 
     The requirement does not say which meaning of "breaks" it wants.
+
+    </details>
     """)
     return
 

@@ -154,21 +154,16 @@ def _(mo):
     mo.md(r"""
     ## What a consumer knows
 
-    A program that receives events is a consumer. The cell after the next one sends the `START` alone to a consumer: the shop's own, a small one. It keeps one row for each run, and it adds to that row what each event says.
-
-    Before you read on, write in the next cell what the consumer knows about the run after the `START` alone, and what it knows about `clean_orders`.
+    A program that receives events is a consumer. The cell below sends the `START` alone to a consumer: the shop's own, a small one. It keeps one row for each run, and it adds to that row what each event says.
     """)
     return
 
 
-@app.cell
-def _():
-    expected = """
-After the START alone, what does it know about the run?
-........
-What does it know about clean_orders?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide what the consumer knows about the run after the `START` alone, and what it knows about `clean_orders`.
+    """), kind="info")
     return
 
 
@@ -283,19 +278,16 @@ def _(mo):
     mo.md(r"""
     The check finds no problems in `start`.
 
-    The cell after the next one sends the week's events and the analyst's two events to a new consumer, and follows edges upstream from the copy, `s3://shop-scratch/clean_orders_copy.csv`.
-
-    Before you read on, write in the next cell whether that traversal will reach `orders.jsonl`.
+    The cell below sends the week's events and the analyst's two events to a new consumer, and follows edges upstream from the copy, `s3://shop-scratch/clean_orders_copy.csv`.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_join = """
-Will the traversal reach orders.jsonl?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide whether that traversal will reach `orders.jsonl`.
+    """), kind="info")
     return
 
 

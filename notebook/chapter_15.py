@@ -74,18 +74,15 @@ def _(mo):
     ## Thursday's £51.50
 
     Chapter 2 began with the head of the shop's message: "Thursday's revenue looks wrong." The dashboard shows £51.50 for Thursday 10.
-
-    Before you read on, write in the next cell which orders you expect £51.50 to be made of.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_orders = """
-Which orders is Thursday's £51.50 made of?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide which orders you expect £51.50 to be made of.
+    """), kind="info")
     return
 
 
@@ -161,18 +158,15 @@ def _(mo):
     The next week has the change `corrected`. From Saturday's row on, `build_daily_sales` takes away what was returned, through the SQL function `returned_quantity`, which reads the table `returns` (Chapter 10).
 
     On Sunday 13 at 18:10 the returns desk records `r-205`: 2 rolls of bar tape back from order 7044. Early on Monday 14, at 02:30, `build_daily_sales` writes Sunday's row. At 08:40 on Monday the desk corrects `r-205` to 1 roll.
-
-    Before you read on, write in the next cell whether you expect Sunday's total to add up from the shop's tables as they are at 09:00 on Monday, and why.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_sunday = """
-Does Sunday's total add up from the tables as they are now?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide whether you expect Sunday's total to add up from the shop's tables as they are at 09:00 on Monday, and why.
+    """), kind="info")
     return
 
 
@@ -251,30 +245,25 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what you would show.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_to_show = """
-What would you show?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what you would show.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of "where it came from"</summary>
+
     "Where it came from" could mean four things. Each needs something different.
 
     - The rows: which rows it was made from, found by following it back row by row.
     - The program: which programs made it, from lineage.
     - The run: which runs made it, from the record of each run.
     - The rows as they were when each run read them: a version of each input, kept and recorded.
+
+    </details>
     """)
     return
 
@@ -290,7 +279,7 @@ def _(mo):
 
     The requirement does not say which reading it means.
 
-    Compare these with what you wrote.
+    Compare these with what you decided.
     """)
     return
 

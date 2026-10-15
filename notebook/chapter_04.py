@@ -146,23 +146,9 @@ def _(together):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write your answer in the next cell. The cell gives no result. Fill in its blanks with your answer and how you decided.
-    """)
-    return
-
-
-@app.cell
-def _():
-    expected = """
-Will the count of different values of
-responsible in these records be the number of
-people responsible for the shop's assets, more
-than that, fewer, or can you not tell yet?
-........
-How I decided:
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you read on, decide whether the count of different values of `responsible` in these records will be the number of people responsible for the shop's assets, more than that, fewer, or whether you cannot tell yet. Note how you decided.
+    """), kind="info")
     return
 
 

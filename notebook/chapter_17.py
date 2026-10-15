@@ -76,19 +76,15 @@ def _(mo):
     Chapter 2 began with a message from the head of the shop: "Thursday's revenue looks wrong." The dashboard shows £51.50 for Thursday 10.
 
     The shop now records each run and its code as it was that night (Chapter 7). It also records what each run of `build_clean_orders` counted (Chapter 14). The shop's object storage keeps every version of each file, with the time it was written.
-
-    Before you read on, write in the next cell where you would look first, and what would show you that you had found the cause.
     """)
     return
 
 
-@app.cell
-def _():
-    where_to_look = """
-Where would you look first,
-and what would show you had found the cause?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide where you would look first, and what would show you that you had found the cause.
+    """), kind="info")
     return
 
 
@@ -123,18 +119,15 @@ def _(mo):
     The last row is the checkout. It has no step and no totals, because the shop records nothing about it or about what the export read.
 
     Compare this with where you said you would look first.
-
-    Before you read on, write in the next cell what you would report to the head of the shop as the cause of Thursday's total, in one sentence.
     """)
     return
 
 
-@app.cell
-def _():
-    the_cause = """
-What would you report as the cause of Thursday's total?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide what you would report to the head of the shop as the cause of Thursday's total, in one sentence.
+    """), kind="info")
     return
 
 
@@ -253,7 +246,7 @@ def _(mo):
 
     The shop's records meet the first reading for Thursday, the first two for Saturday, and the third for neither. The requirement does not say which of the three it means.
 
-    Compare these with what you wrote.
+    Compare these with what you decided.
     """)
     return
 

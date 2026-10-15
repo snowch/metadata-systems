@@ -149,20 +149,15 @@ def _(mo):
     - Can we delete `products.csv`? Does anything still read it?
     - If the checkout renames a column in `orders.jsonl`, what stops working?
     - Who should I ask about `daily_sales`?
-
-    Before you read on, write in the next cell, for each question, whether your record answers it, in part or not at all, and why. **Save** keeps what you wrote.
     """)
     return
 
 
-@app.cell
-def _():
-    expected = """
-Is Thursday's total wrong, and since when? ........
-Can we delete products.csv? Does anything still read it? ........
-If the checkout renames a column in orders.jsonl, what stops working? ........
-Who should I ask about daily_sales? ........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide, for each question, whether your record answers it, in part or not at all, and why.
+    """), kind="info")
     return
 
 
@@ -364,25 +359,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell whether the line `daily_sales revenue_pence means: the revenue in pence` describes the column `revenue_pence` as the requirement asks, and why.
-    """)
-    return
-
-
-@app.cell
-def _():
-    verdict = """
-daily_sales revenue_pence means: the revenue in pence
-Does this line meet the requirement for revenue_pence? Why?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide whether the line `daily_sales revenue_pence means: the revenue in pence` describes the column `revenue_pence` as the requirement asks, and why.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of the requirement</summary>
+
     The requirement could ask five different things. Each needs a different line:
 
     - As written: the check's rule. It needs a `means` line with a value.
@@ -392,6 +379,8 @@ def _(mo):
     - Whether it may be empty. It needs a line saying so, which a check could test against the rows.
 
     The line already says "in pence". Under the reading about meaning, it says nothing the name `revenue_pence` did not.
+
+    </details>
 
     The next cell runs the check over all three tables. Your record describes only the columns of `daily_sales`, so the check lists the 12 columns of `clean_customers` and `clean_orders` that have no description.
     """)
@@ -459,18 +448,15 @@ def _(mo):
 
     1. The job that writes `daily_sales` also writes each day's number of completed orders, in a new column, `order_count`. The rows before Saturday have no value in `order_count`.
     2. The job is edited to keep every order that has not been refunded, as in Chapter 2. The shop has no refunds, so from Saturday a cancelled order counts too.
-
-    Before you read on, write in the next cell, for each change, whether the check of `daily_sales` will report a problem.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_changes = """
-Change 1, new column: a problem? ........
-Change 2, edited job: a problem? ........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide, for each change, whether the check of `daily_sales` will report a problem.
+    """), kind="info")
     return
 
 

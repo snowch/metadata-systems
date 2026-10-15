@@ -1753,7 +1753,7 @@ class TheWordsKeepTheRules(unittest.TestCase):
             (9, "## Normalise", ("normalise",)),
             (10, "Lineage between columns", ("column lineage",)),
             (11, "## The schema over time", ("schema evolution",)),
-            (11, "Compare the counts with what you wrote.", ("breaking change",)),
+            (11, "Compare the counts with what you decided.", ("breaking change",)),
             (12, "## A run in development", ("environment",)),
             (12, "## The same asset?", ("identity",)),
             (12, "In pair 1, both names refer", ("qualified name",)),

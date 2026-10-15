@@ -142,18 +142,15 @@ def _(mo):
     The second shape is a table in SQLite, the database the shop's warehouse runs on: `edges`, with one row for each edge by job, and the columns `job`, `edge`, `dataset` and `runs`.
 
     The table has no index. SQLite does not make one unless a statement creates it.
-
-    Before you read on, write in the next cell whether a query for one dataset's readers will read every row of `edges`, or only that dataset's rows.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_rows = """
-Will the query read every row of edges, or only the dataset's rows?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide whether a query for one dataset's readers will read every row of `edges`, or only that dataset's rows.
+    """), kind="info")
     return
 
 
@@ -197,7 +194,7 @@ def _(mo):
 
     The plan is a scan: SQLite reads each row and tests it against the `WHERE` clause.
 
-    Compare this with what you wrote.
+    Compare this with what you decided.
 
     ## An index
 
@@ -310,24 +307,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what "fast" means to you here.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_fast_means = """
-What does "fast" mean here?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what "fast" means to you here.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of "fast"</summary>
+
     "Fast" could mean several things:
 
     - fast to find one program or dataset by its name: a key for each document, or a lookup by name. Finding `build_daily_sales` took 1 document.
@@ -339,6 +329,8 @@ def _(mo):
     Of the shapes here, the documents and the graph met the first reading. The table, with no index on `job`, did not. The table with the index on `dataset` and the graph met the second. The graph met the third, for one step. None was measured against the fourth or the fifth.
 
     The requirement does not say which it means.
+
+    </details>
     """)
     return
 

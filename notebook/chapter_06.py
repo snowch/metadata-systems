@@ -225,21 +225,17 @@ def _(model, records, shop):
 def _(mo):
     mo.md(r"""
     ## What the rename affects
-
-    Before you read on, write in the next cell which assets the rename of `customer_id` in `orders.jsonl` affects, and why.
-
-    You can use the code printed above and the drawing.
     """)
     return
 
 
-@app.cell
-def _():
-    expected = """
-Which assets does the rename of customer_id
-in orders.jsonl affect, and why?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide which assets the rename of `customer_id` in `orders.jsonl` affects, and why.
+
+    You can use the code printed above and the drawing.
+    """), kind="info")
     return
 
 
@@ -339,20 +335,15 @@ def _(model, records, shop):
 def _(mo):
     mo.md(r"""
     With Jo's line, downstream of `customers.jsonl` there are 6 nodes, `daily_sales` and `sales_dashboard` among them. A change to `customers.jsonl` now seems to affect the dashboard.
-
-    Before you read on, write in the next cell whether the code of `build_daily_sales` reads `clean_customers`, and which job's code leaves out orders with no customer id. The code is printed near the top of the page.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_belief = """
-Does the code of build_daily_sales read clean_customers?
-........
-Which job's code leaves out orders with no customer id?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide whether the code of `build_daily_sales` reads `clean_customers`, and which job's code leaves out orders with no customer id. The code is printed near the top of the page.
+    """), kind="info")
     return
 
 
@@ -394,20 +385,15 @@ def _(mo):
     And suppose that from Saturday, `build_daily_sales` is changed to read the copy instead of `clean_orders`. The copy holds the same rows.
 
     Your lines were written from the code as it is today.
-
-    Before you read on, write in the next cell whether the comparison will report anything after the change, and whether the rows of `daily_sales` will change.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_change = """
-Will the comparison report anything after the change?
-........
-Will the rows of daily_sales change?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide whether the comparison will report anything after the change, and whether the rows of `daily_sales` will change.
+    """), kind="info")
     return
 
 

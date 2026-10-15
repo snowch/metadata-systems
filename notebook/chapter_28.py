@@ -106,18 +106,15 @@ def _(shop):
 def _(mo):
     mo.md(r"""
     The cell below the one you write in holds `run_history` as it stands: it keeps the runs whose written datasets include the asset.
-
-    Before you read on, write in the next cell whether that run history for `daily_sales` will include Monday's run.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_history = """
-Will the run history include Monday's run of build_daily_sales?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide whether that run history for `daily_sales` will include Monday's run.
+    """), kind="info")
     return
 
 
@@ -141,7 +138,7 @@ def _(mo):
 
     Monday's run failed and wrote nothing, so a run history built from what each run wrote leaves it out.
 
-    Compare this with what you wrote.
+    Compare this with what you decided.
 
     Change `run_history` so that it keeps the runs of the programs that write the asset, from `shop.interface.writers(asset)`. Select the cell and press **Run below**.
 
@@ -192,24 +189,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what "everything" means to you here.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_everything_means = """
-What does "everything about an asset" mean here?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what "everything" means to you here.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of "everything"</summary>
+
     "Everything" could mean three things, and each needs something different.
 
     - every section the shop can draw: all seven names in the list. That meets this reading, and shows nothing more about the asset than the sections themselves hold.
@@ -221,6 +211,8 @@ def _(mo):
     The page meets a reading only through the sections chosen for it.
 
     The requirement does not say which it means.
+
+    </details>
     """)
     return
 

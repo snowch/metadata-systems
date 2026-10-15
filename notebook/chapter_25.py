@@ -164,18 +164,15 @@ def _(mo):
     In the next check, the collector restarts on Saturday 12 at 16:50:20. The restart falls between the two arrivals of `remove_return`'s `COMPLETE`, at 16:50:07 and 16:50:37.
 
     After a restart, the collector reads its file and rebuilds each run's state. Its keys are what `start(stored)` gives, from the events in the file. `start` is the function in the cell below the one you write in.
-
-    Before you read on, write in the next cell whether the collector drops the `COMPLETE` that arrives again at 16:50:37.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_restart = """
-Will the collector drop the COMPLETE that arrives again after the restart?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide whether the collector drops the `COMPLETE` that arrives again at 16:50:37.
+    """), kind="info")
     return
 
 
@@ -199,7 +196,7 @@ def _(mo):
 
     `start` as it stands gives an empty set. The keys the collector had seen were not in its file, so the restart lost them. After the restart, the collector's set of keys was empty. The event's key was right, and its first copy was in the file, but the set did not hold its key.
 
-    Compare this with what you wrote.
+    Compare this with what you decided.
 
     Change `start` so that it gives the key of every event in `stored`. Select the cell and press **Run below**. 6 of 6 pass.
     """)
@@ -224,24 +221,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what "invalid" means to you here.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_invalid_means = """
-What does "invalid" mean here?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what "invalid" means to you here.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of "invalid"</summary>
+
     "Invalid" could mean several things, and each needs something different:
 
     - an event that breaks the specification's rules: it needs those rules, as many as Chapter 8's check holds. The collector refuses it, as it refused the developer's event with no `eventTime`.
@@ -251,6 +241,8 @@ def _(mo):
     The collector meets the first reading. It keeps no list for the second, and it does not refuse an event for the third.
 
     The requirement does not say which it means.
+
+    </details>
     """)
     return
 

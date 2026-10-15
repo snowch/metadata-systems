@@ -102,18 +102,15 @@ def _(mo):
     The graph from Chapter 9 lists each job's edges, with how many runs had each one. With every event, `build_daily_sales` has two edges: `reads` to `clean_orders` in 7 runs, and `writes` to `daily_sales` in 7 runs. A run reports its outputs in its `COMPLETE` (Chapter 8).
 
     In Chapter 9, a `COMPLETE` line was cut short inside the shop's own store of events. Here the `COMPLETE` is lost on its way to the collector, before anything stores it.
-
-    Before you read on, write in the next cell what the graph will show for `build_daily_sales` when that `COMPLETE` never arrives: which edges, and how many runs each.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_graph = """
-What will the graph show for build_daily_sales?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide what the graph will show for `build_daily_sales` when that `COMPLETE` never arrives: which edges, and how many runs each.
+    """), kind="info")
     return
 
 
@@ -132,7 +129,7 @@ def _(mo):
 
     The other 6 runs that wrote `daily_sales` carry the `writes` edge. The lost `COMPLETE` changes only the count of runs, as in Chapter 9.
 
-    Compare this with what you wrote.
+    Compare this with what you decided.
 
     A run with a `START` at the collector and no `COMPLETE`, `ABORT` or `FAIL` is an open run.
 
@@ -246,18 +243,15 @@ def _(mo):
     The collector received it once, at 16:50:37.
 
     Next, the `COMPLETE` arrives and its acknowledgement is lost instead.
-
-    Before you change the cell, write in the next cell how many times the collector will receive the `COMPLETE`.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_ack = """
-How many times will the collector receive the COMPLETE, with its acknowledgement lost?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you change the cell, decide how many times the collector will receive the `COMPLETE`.
+    """), kind="info")
     return
 
 
@@ -270,7 +264,7 @@ def _(mo):
 
     The first copy arrived, and its acknowledgement was lost, so the program sent it again at 16:50:35.
 
-    Compare this with what you wrote.
+    Compare this with what you decided.
 
     At least once delivers every event the program sends, and can deliver one twice.
     """)
@@ -295,24 +289,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what "complete" means to you here.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_complete_means = """
-What does "complete" mean here?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what "complete" means to you here.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of "complete"</summary>
+
     "Complete" could mean three things, each needing something different:
 
     - Every event a program sends arrives. It needs delivery at least once, or a path that loses nothing.
@@ -325,9 +312,11 @@ def _(mo):
     - Every program that changes the data: not met. The export sends no events (Chapter 13).
     - Every run's end: met with at least once for a run whose program sent its end. Not met for a program that stops before it sends its `COMPLETE`, `ABORT` or `FAIL`, or for a run that has not ended: there is no end to send again.
 
-    Compare these with what you wrote.
+    Compare these with what you decided.
 
     The requirement does not say which of these it means.
+
+    </details>
     """)
     return
 

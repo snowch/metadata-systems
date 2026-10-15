@@ -194,10 +194,15 @@ class TheBoxes(unittest.TestCase):
         for chapter, source in SOURCE.items():
             kinds = re.findall(r'\bkind="(\w+)"\)', source)
             # Chapter 2's boxes of findings (kind "success") follow its investigations.
-            # Chapter 2 also puts each other thing the reader does in a box of the steps' kind, and
-            # Chapters 4, 5, 6, 8 and 9 ask the reader to decide before opening the readings.
-            actions = {2: 5, 4: 2, 5: 2, 6: 2, 8: 2, 9: 2}.get(chapter, 1)
-            self.assertEqual([k for k in kinds if k not in ("neutral", "success")], ["warn"] + ["info"] * actions, chapter)
+            # Every later box of the steps' kind is something the reader does: in every chapter, to
+            # decide before reading on or before opening the readings, and in Chapter 2 what to look
+            # for, compare or open.
+            boxes = [k for k in kinds if k not in ("neutral", "success")]
+            self.assertEqual(boxes[:2], ["warn", "info"], chapter)
+            self.assertEqual(set(boxes[2:]) <= {"info"}, True, chapter)
+            for text in re.findall(r'mo\.callout\(mo\.md\(r"""((?:(?!""").)*)"""\), kind="info"\)', source, re.S)[1:]:
+                if chapter != 2:
+                    self.assertRegex(text.strip(), r"^Before you ", chapter)
             self.assertEqual(kinds.count("success"), 3 if chapter == 2 else 0, chapter)
             self.assertEqual(kinds.count("neutral"), 3 if chapter == 33 else (1 if chapter > 1 else 0), chapter)
             for text in re.findall(r'mo\.callout\(mo\.md\(r"""((?:(?!""").)*)"""\), kind="neutral"\)', source, re.S):
@@ -217,6 +222,12 @@ class TheBoxes(unittest.TestCase):
         # 4, 5, 6, 8 and 9); no code cell holds answers that nothing reads.
         for chapter, source in SOURCE.items():
             self.assertNotIn('    reading = """', source, chapter)
+        for chapter, source in SOURCE.items():
+            # Chapter 1's guesses are read: the map gains the reader's guesses.
+            fill = [v for v, body in re.findall(r'^    (\w+) = """\n(.*?)"""', source, re.S | re.M) if "...." in body]
+            self.assertEqual(fill, ["guesses"] if chapter == 1 else [], chapter)
+            self.assertNotIn("write in the next cell", source, chapter)
+            self.assertNotIn("with what you wrote", source, chapter)
         for chapter in (2, 4, 5, 6, 8, 9):
             self.assertIn("Before you open the block below", SOURCE[chapter], chapter)
             self.assertIn("<details><summary>", SOURCE[chapter], chapter)

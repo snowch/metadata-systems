@@ -119,18 +119,15 @@ def _(mo):
     On Monday 14 at 09:00, Jo Marsh asks which rows the forecast was trained on.
 
     The record holds no rows: a name, where the data is kept, a digest and a count.
-
-    Before you read on, write in the next cell whether `daily_sales`, read on Monday 14 at 09:00, will give the digest the run recorded, and what that would tell you.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_rows = """
-Will daily_sales on Monday 14 at 09:00 give the digest the run recorded?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide whether `daily_sales`, read on Monday 14 at 09:00, will give the digest the run recorded, and what that would tell you.
+    """), kind="info")
     return
 
 
@@ -147,7 +144,7 @@ def _(mo):
 
     The digests differ, so `daily_sales` has changed since the run.
 
-    Compare this with what you wrote.
+    Compare this with what you decided.
 
     Each night's run of `build_daily_sales` adds one row, for the day before, and leaves the other rows as they are. So the rows the run read may still be in `daily_sales`.
 
@@ -226,24 +223,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what "record the training data" means to you here.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_training_data_means = """
-What does "record the training data" mean here?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what "record the training data" means to you here.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of "record the training data of the model"</summary>
+
     "Record the training data of the model" could mean three things. Each item says what it needs:
 
     - the snapshot the run read: a version or a time of `daily_sales`, and a table that keeps its earlier states, as the table formats in Chapter 2's closing note do;
@@ -253,6 +243,8 @@ def _(mo):
     This record meets none of the three. It names `daily_sales`, and its digest and count show whether the rows are still as the run read them. MLflow can also keep text with a run, such as a query, which this record does not.
 
     The requirement does not say which it means.
+
+    </details>
     """)
     return
 

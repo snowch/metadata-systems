@@ -120,18 +120,15 @@ def _(shop):
 def _(mo):
     mo.md(r"""
     The events reach the graph in the order they arrived. Wednesday 9's `COMPLETE` of `build_daily_sales` was held up. It arrived at 04:30:24 on Thursday 10, after Thursday 10's `COMPLETE` of `build_daily_sales` (Chapter 20).
-
-    Before you read on, write in the next cell when the graph, as it stands at 09:00 on Thursday 10, will show that `build_daily_sales` last wrote `daily_sales`.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_last_write = """
-At 09:00 on Thursday 10, when will the graph show that build_daily_sales last wrote daily_sales?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide when the graph, as it stands at 09:00 on Thursday 10, will show that `build_daily_sales` last wrote `daily_sales`.
+    """), kind="info")
     return
 
 
@@ -160,7 +157,7 @@ def _(mo):
 
     The second test fails: at 09:00 on Thursday 10, the graph shows `build_daily_sales` last wrote `daily_sales` at 02:30:21 on Wednesday 9, not on Thursday 10. Wednesday's `COMPLETE` arrived last, so `add` took it last and set the edge's last time from it.
 
-    Compare this with what you wrote.
+    Compare this with what you decided.
 
     Change `add` so that an edge's first time is the earlier of its first time and the event's time, and its last time is the later of its last time and the event's time. Select the cell with `add` and press **Run below**. All 3 tests pass.
 
@@ -210,24 +207,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what "as it is now" means to you here.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_now_means = """
-What does "as it is now" mean here?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what "as it is now" means to you here.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of the requirement</summary>
+
     Chapter 9 asked what "current" means for the edges by job, which kept no times. This graph keeps each edge's times, which allows one more reading: a window.
 
     "Now" could mean three things. Each item below says what it needs:
@@ -235,6 +225,8 @@ def _(mo):
     - The edges of each program's latest run: needs each edge's last time and each program's latest run.
     - Every edge ever seen: needs every edge kept, and nothing removed.
     - The edges seen in the last 2 days: needs each edge's last time, and the length of the window.
+
+    </details>
 
     The next cell shows, for each edge of `build_daily_sales` and of `record_return` at 09:00 on Monday 14, which of the three readings includes it.
     """)

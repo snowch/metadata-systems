@@ -224,20 +224,15 @@ def _(mo):
     A traversal lists every node it reaches, the number of edges it walked to reach it (`steps`), and its `path`. In a path, `-responsible->` is an edge followed the way its arrow points, and `<-responsible-` one followed against it.
 
     The first traversal finds which assets Jo Marsh is responsible for. It starts at `j.marsh` and follows `responsible` edges `"in"`.
-
-    Before you read on, write in the next cell which nodes it will reach, and which it would reach with `"out"` in place of `"in"`.
     """)
     return
 
 
-@app.cell
-def _():
-    expected = """
-Which nodes will the traversal reach?
-........
-Which nodes will it reach with "out" in place of "in"?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide which nodes it will reach, and which it would reach with `"out"` in place of `"in"`.
+    """), kind="info")
     return
 
 
@@ -252,7 +247,7 @@ def _(mo):
     mo.md(r"""
     The traversal reaches `daily_sales` and `sales_dashboard`, each by 1 edge and each against a `responsible` arrow.
 
-    Change `"in"` to `"out"` in the cell above, select that cell and press **Run below**. Compare what it lists with what you wrote.
+    Change `"in"` to `"out"` in the cell above, select that cell and press **Run below**. Compare what it lists with what you decided.
     """)
     return
 
@@ -265,20 +260,15 @@ def _(mo):
     Change `"out"` back to `"in"` and press **Run below** again.
 
     A traversal given no kinds of edge follows every edge, both ways.
-
-    Before you read on, write in the next cell which nodes `graph.traverse("daily_sales")` will reach, and whether it will reach `clean_orders`, whose `drops` line holds the rule behind the orders Jo asks about.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_everything = """
-Which nodes will graph.traverse("daily_sales") reach?
-........
-Will it reach clean_orders?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide which nodes `graph.traverse("daily_sales")` will reach, and whether it will reach `clean_orders`, whose `drops` line holds the rule behind the orders Jo asks about.
+    """), kind="info")
     return
 
 

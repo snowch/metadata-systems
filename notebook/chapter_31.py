@@ -103,18 +103,15 @@ def _(mo):
     - Marquez: no owner on a dataset. A namespace has one, and a namespace made from an OpenLineage event gets the owner `anonymous`.
 
     Here the shop gives DataHub and OpenMetadata `svc_nightly_etl` and `j.marsh` as users, and `data team` as a group in DataHub and a team of team type `Group` in OpenMetadata.
-
-    Before you read on, write in the next cell which platforms keep all three owners of `daily_sales`.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_owners = """
-Which platforms will keep all three owners of daily_sales?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide which platforms keep all three owners of `daily_sales`.
+    """), kind="info")
     return
 
 
@@ -135,7 +132,7 @@ def _(mo):
     mo.md(r"""
     DataHub and OpenMetadata keep all three. Atlas keeps one, here the first, `svc_nightly_etl`. Marquez keeps none.
 
-    Compare this with what you wrote.
+    Compare this with what you decided.
 
     The list of stored owners gives DataHub's three owners the same ownership type, `urn:li:ownershipType:__system__technical_owner`, with its description. So the count of owners below it shows none of DataHub's three told apart by ownership type. OpenMetadata's owners carry no ownership type at all.
 
@@ -210,24 +207,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what "tracks ownership" means to you here.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_tracks_means = """
-What does "tracks ownership" mean here?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what "tracks ownership" means to you here.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of "choose a metadata platform that tracks ownership"</summary>
+
     "Choose a metadata platform that tracks ownership" could mean three things. Each item says what it needs, then which platforms meet it:
 
     - an owner for each dataset: it needs an owner on a dataset. DataHub, OpenMetadata and Atlas can keep one. Marquez keeps owners only on namespaces, not on datasets;
@@ -237,6 +227,8 @@ def _(mo):
     So DataHub can meet all three readings, OpenMetadata and Atlas the first only, and Marquez none for a dataset.
 
     The requirement does not say which it means.
+
+    </details>
     """)
     return
 

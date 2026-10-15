@@ -80,20 +80,15 @@ def _(mo):
     Since Chapter 9, ingestion has taken each run's state from its events in the order of their event times. In the same order, it keeps, for each dataset, the run that last wrote it: the dataset's last write. Reading them in the order they arrived is the other way. (Chapter 8's consumer did that.)
 
     Here the `COMPLETE` of the run of `build_daily_sales` early on Wednesday 9 is held up for 26 hours on its way to the collector. Every other event takes 2 seconds.
-
-    Before you read on, write in the next cell when `daily_sales` was last written, as the collector's events show it at 09:00 on Thursday 10: by event time, and by arrival. "Last written" is when the run that last wrote it ended.
     """)
     return
 
 
-@app.cell
-def _():
-    expected_last_write = """
-When was daily_sales last written, by event time?
-........
-By arrival?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you read on, decide when `daily_sales` was last written, as the collector's events show it at 09:00 on Thursday 10: by event time, and by arrival. "Last written" is when the run that last wrote it ended.
+    """), kind="info")
     return
 
 
@@ -135,7 +130,7 @@ def _(mo):
 
     Chapter 13's freshness, taken from the collector's last write by arrival, would find `daily_sales` a day behind on Thursday morning.
 
-    Compare these with what you wrote.
+    Compare these with what you decided.
 
     In the cell that starts `week20 =`, keep `order="arrival"` and change `26` to `20`. Select it and press **Run below**.
 
@@ -225,24 +220,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what "latest" means to you here.
-    """)
-    return
-
-
-@app.cell
-def _():
-    what_latest_means = """
-What does "latest" mean here?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the readings below, decide what "latest" means to you here.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of "latest"</summary>
+
     "Latest" could mean at least two things, and each needs something different.
 
     - Latest by when it happened: it needs `eventTime` on every event, set by each program's clock, and clocks that agree. The shop's ingestion reads events in this order unless told otherwise.
@@ -253,6 +241,8 @@ def _(mo):
     By event time, the run early on Wednesday 9 is `COMPLETE`, `daily_sales` was last written on Thursday 10, and `r-206.json` is deleted. By arrival, the run is `START`, the last write is Wednesday's, and `r-206.json` exists.
 
     The requirement does not say which it means.
+
+    </details>
     """)
     return
 
