@@ -120,7 +120,11 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The changed export first appears on Sunday 13, and its schema version is the second.
+
+    </details>
 
     The next cell compares the two schema versions.
     """)
@@ -208,6 +212,8 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     Compare the counts with what you decided.
 
     `renamed`: `build_clean_orders` reads `quantity` by name. The file has no `quantity`, so the value is empty, and the filter `quantity > 0` keeps no order. The export writes every order so far each night, so `clean_orders` has no rows after each of the last two nights, though the program succeeded each time. `daily_sales` has no row for Saturday or Sunday, and Jo Marsh's query finds no order.
@@ -217,6 +223,8 @@ def _(mo):
     A change to a dataset's structure or format after which a program or a person that reads it fails or gets a different answer is a **breaking change**. The definition is by its effect on a reader.
 
     The new name broke all three readers. The new ids broke Jo Marsh's query only. The new field broke none.
+
+    </details>
     """)
     return
 

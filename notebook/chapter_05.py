@@ -245,7 +245,11 @@ def _(graph):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The traversal reaches `daily_sales` and `sales_dashboard`, each by 1 edge and each against a `responsible` arrow.
+
+    </details>
 
     Change `"in"` to `"out"` in the cell above, select that cell and press **Run below**. Compare what it lists with what you decided.
     """)
@@ -281,11 +285,15 @@ def _(graph):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     Read the `path` of `sales_dashboard` in the table above: `daily_sales -responsible-> j.marsh <-responsible- sales_dashboard`.
 
     The traversal reaches the dashboard because Jo Marsh is responsible for both, not because the dashboard reads `daily_sales`. The dashboard does read `daily_sales`, but no line records that.
 
     The traversal does not reach `clean_orders`. The `drops` line is text, so it is no edge, and no edge joins `clean_orders` to any node the traversal reaches.
+
+    </details>
 
     The next cell starts at `clean_customers` and follows every edge both ways.
     """)

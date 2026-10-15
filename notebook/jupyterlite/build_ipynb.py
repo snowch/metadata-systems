@@ -23,6 +23,7 @@ Usage: python3 build_ipynb.py OUT_DIR [--check]
 
 import ast
 import hashlib
+import re
 import sys
 import textwrap
 from pathlib import Path
@@ -131,6 +132,17 @@ def box(name: str, text: str) -> str:
     return f'<div class="ms-box {name}">\n\n{text}\n\n</div>'
 
 
+# A figure inside a Markdown cell's text, where it must sit with the words around it: in a closed
+# block, say, which cannot span two cells. The text holds the figure's call in a comment,
+# `<!-- figure: figures.figure(...) -->`, and the build draws it there, as it draws a figure cell.
+FIGURE = re.compile(r"<!-- figure: (.+?) -->", re.S)
+
+
+def draw(call: str) -> str:
+    """A figure, drawn from the shop's week (notebook/shop/figures.py)."""
+    return eval(compile(call, "figure", "eval"), {"figures": figures, "week": WEEK, "shop": shop})
+
+
 def build(chapter: int) -> nbformat.NotebookNode:
     """One chapter's Jupyter notebook."""
     source = CHAPTERS[chapter][0].read_text(encoding="utf-8")
@@ -144,7 +156,8 @@ def build(chapter: int) -> nbformat.NotebookNode:
         stmts = [s for s in node.body if not isinstance(s, ast.Return)]
         first = stmts[0]
         if len(stmts) == 1 and isinstance(first, ast.Expr) and is_call(first.value, "md") and isinstance(first.value.args[0], ast.Constant):
-            out.append(nbformat.v4.new_markdown_cell(textwrap.dedent(first.value.args[0].value).strip()))
+            text = textwrap.dedent(first.value.args[0].value).strip()
+            out.append(nbformat.v4.new_markdown_cell(FIGURE.sub(lambda m: draw(m.group(1)), text)))
             continue
         code = lines_of(source, stmts)
         if not hidden:
@@ -163,7 +176,7 @@ def build(chapter: int) -> nbformat.NotebookNode:
         elif len(stmts) == 1 and isinstance(first, ast.Expr) and is_call(first.value, "Html"):
             # A figure: drawn here from the shop's week and written into a Markdown cell, so it
             # shows before anything runs.
-            drawn = eval(compile(ast.Expression(first.value.args[0]), "figure", "eval"), {"figures": figures, "week": WEEK, "shop": shop})
+            drawn = draw(ast.unparse(first.value.args[0]))
             out.append(nbformat.v4.new_markdown_cell(drawn))
         elif len(stmts) == 1 and isinstance(first, ast.Expr) and is_call(first.value, "vstack"):
             parts = ",\n    ".join(ast.unparse(e) for e in first.value.args[0].elts)

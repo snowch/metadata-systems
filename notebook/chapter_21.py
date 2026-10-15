@@ -145,7 +145,11 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     At 09:00 on Tuesday 15, the owner is `data team`, from the team sheet. The columns are still `day, revenue`.
+
+    </details>
 
     The next cell lists the claims held at 09:00 on Tuesday 15, with the time each was sent.
     """)
@@ -161,11 +165,15 @@ def _(tuesday):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The team sheet's claims were sent at 04:00 on Tuesday 15, the warehouse's at 03:30, and your records' at 16:40 on Monday 14. The team sheet's import is the most recent claim.
 
     The rule took the claim sent last. The team sheet's content is the oldest of the three: 28 August.
 
     Compare this with what you decided.
+
+    </details>
 
     When sources disagree, the rule for which claim counts is called **precedence**.
     """)

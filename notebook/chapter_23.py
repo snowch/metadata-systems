@@ -144,6 +144,8 @@ def _(shop, week23):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The two questions that read every stored event pass the limit first, at 100,000 assets: the latest run of one job, and one day's events, each in its way that reads every stored event. The sizes go up in powers of ten, so each passes it somewhere between 10,000 and 100,000 assets.
 
     A structure that lets a question go straight to the records it needs, the way a book's index points to pages, is an **index**. The events sorted by job and time are one.
@@ -153,6 +155,8 @@ def _(mo):
     Storing records in separate parts by a key is a **partition**. Here the key is the day. One day's events read one part, and that way passes the limit only at 10,000,000 assets.
 
     Followed to the end, the traversal downstream passes the limit at 10,000,000 assets. Followed 4 steps, it reads at most 81 edges and never passes it.
+
+    </details>
 
     Compare this with what you decided. The next cell lists the projection's numbers at each size.
     """)

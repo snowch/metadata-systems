@@ -167,11 +167,15 @@ def _(parsed, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The stage made 26 changes: 12 times, in the functions' events (6 runs, 2 events each), and 14 names, in the analyst's events (7 nights, 2 events each).
 
     Without the change to the names, the analyst's copy would not join `clean_orders`, as in Chapter 8.
 
     The rule for names is the shop's. It fits a warehouse with one database; where two databases hold tables of the same name, it would join tables that are not the same.
+
+    </details>
     """)
     return
 
@@ -289,11 +293,15 @@ def _(objs, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     There are 80 edges by run and 17 edges by job.
 
     Each night's runs repeat the same reads and writes. They add edges by run, about one night's worth each night. They add no edge by job, which counts its runs instead.
 
     `record_return` adds an edge by job for each file it read.
+
+    </details>
 
     The next cell lists the edges by job of `build_daily_sales`.
     """)
@@ -377,6 +385,8 @@ def _(found):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     That cell lists 13 of the 17 edges by job. It leaves out `build_daily_sales` reading `clean_orders` (the last such run was on Saturday 12), and `record_return` reading `r-201.json`, `r-202.json` and `r-203.json`. The rows of `r-201` and `r-202` are still in the table `returns`. The row of `r-203` was removed when its file was deleted.
 
     By reading:
@@ -386,6 +396,8 @@ def _(mo):
     - As of the last change to a job's code: not met by the edges by job alone; the stage keeps each run's code version (from `sourceCodeLocation`), and a query would have to join the runs to the edges.
 
     The requirement does not say which "current" it means.
+
+    </details>
     """)
     return
 

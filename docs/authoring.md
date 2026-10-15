@@ -38,7 +38,13 @@ chapter is added to `CHAPTERS` in `build_ipynb.py`, in `notebook/tests/test_word
   decide before reading on ("Before you read on, decide …") or before opening the readings of a
   requirement, which sit in a closed `<details>` block ("Readings of …"); Chapter 2 also boxes
   what it asks the reader to look for, compare or open. No code cell holds answers that nothing
-  reads: a prediction is decided, not typed into a string. The requirement a
+  reads: a prediction is decided, not typed into a string. The paragraphs that state the result
+  a reader has just run sit in a closed block, "The printed result, explained", so the result is
+  not in view while they decide; an instruction ("Change …, select the cell and press **Run
+  below**") and a lead into the next cell stay outside it, and the result of a rerun gets a block
+  of its own. A block cannot span two cells, so a figure that belongs with a result is written into
+  its Markdown cell as `<!-- figure: figures.figure(...) -->`, which the build draws there
+  (Change 1 in Chapter 2). The requirement a
   chapter questions has a box of its own (`kind="neutral"`, purple, with the "rule" icon). The only
   other box is a box of findings
   (`kind="success"`), which Chapter 2 sets after each of its three investigations: what the

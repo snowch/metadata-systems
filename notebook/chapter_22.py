@@ -119,6 +119,8 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     Under that rule, all six become one entity. Among them are the development table, which holds other rows in another environment (Chapter 12), and Jo Marsh's CSV file, a copy made at one time.
 
     Compare this with what you decided.
@@ -127,11 +129,17 @@ def _(mo):
 
     If it merges too much, the development table's runs show in production's lineage (Chapter 12). If it merges too little, the model, the reporting tool's dataset and the table stay three entities, and what each system records about one is not joined to what the others record.
 
+    </details>
+
     In the cell, change `"last part"` to `"qualified"`. Select the cell and press **Run below**. The qualified rule reads each warehouse name by the warehouse's rules (Chapter 12), and it takes an event's namespace as the warehouse.
+
+    <details><summary>The printed result, explained</summary>
 
     The result has five entities. The warehouse's reference and the events' reference merge into one.
 
     The other four each stay alone: the development table is in another database; the CSV file's name is an object's key in storage, not a warehouse name; the transformation tool's and the reporting tool's names are not warehouse names.
+
+    </details>
     """)
     return
 

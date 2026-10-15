@@ -152,11 +152,15 @@ def _(shop, week27):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The cell above gives the shop's answers to four questions. Only the first, where `daily_sales` came from, follows the graph. The stale assets come from the freshness measure, the failed runs from the week's events, and the columns a change reaches from Chapter 16's column lineage.
 
     The stale assets are `daily_sales` and `returns`. `sales_dashboard` is not among them.
 
     Compare this with what you decided.
+
+    </details>
 
     The next cell shows the freshness measure the query read, for each asset it measures: when it was last written, how many hours that was before 09:00 on Monday 14, and the latest day it holds.
     """)
@@ -249,7 +253,11 @@ def _(owner, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The check passes for any of the three meanings, as long as the owner given is that meaning's. It tests `daily_sales` only.
+
+    </details>
 
     The requirement asks about each asset. The next cell lists every asset on the platform, with the owner each meaning's source holds for it, and a blank where it holds none.
     """)

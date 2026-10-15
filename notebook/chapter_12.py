@@ -112,12 +112,16 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The graph lists two programs that write `shop.analytics.daily_sales`:
 
     - `shop/build_daily_sales`, in 7 runs, the last at `2026-09-14T02:30:21Z`;
     - `dev/build_daily_sales`, in 1 run, at `2026-09-14T10:20:04Z`.
 
     The graph now shows that a run in development wrote production's `daily_sales`, and was the last to write it.
+
+    </details>
     """)
     return
 
@@ -175,6 +179,8 @@ def _(shop, week12):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     In pair 1, both names refer to `shop.analytics.daily_sales`. The warehouse reads a name without regard to case.
 
     In pair 5, the names refer to two objects. Object storage reads a key exactly, case included, and the supplier's test file is there.
@@ -182,6 +188,8 @@ def _(mo):
     In pair 2, `daily_sales` refers to production's table, because `refresh_dashboard` runs with production's defaults: the database `shop` and the schema `analytics`, a group of tables inside the database, as Chapter 8 named it. The same code run in development would refer to `shop_dev.analytics.daily_sales`.
 
     In pair 4, a view is a name for a query. `sales_by_day` holds no rows of its own and shows those of `daily_sales`.
+
+    </details>
 
     A name that holds everything its store needs to find the asset, with no defaults, is a **qualified name**: `shop.analytics.daily_sales`, or `s3://shop-raw/orders.jsonl`.
     """)
@@ -246,6 +254,8 @@ def _(pairs, shop, week12):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     No pair has the same text, yet pairs 1 and 2 are the same object, with the same rows and environment.
 
     "Same asset?" depends on the test. Pair 4 has the same rows and environment, but is another object. Pair 6 is one object, but not the same rows or version. For pairs like these, "cannot tell yet" was a fair answer until "same" had a meaning.
@@ -258,6 +268,8 @@ def _(mo):
     - The same version: not met for a table. The warehouse keeps no versions of a table.
 
     The requirement does not say which "same" it means.
+
+    </details>
     """)
     return
 

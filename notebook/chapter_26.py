@@ -149,6 +149,8 @@ def _(mo):
 
     The third test saves the graph as one line for each edge (its runs, first time and last time) and loads it again after Chapter 25's restart, on Saturday 12 at 16:50:20. The graph is held in memory, like the collector's keys, so a restart loses it unless it is saved.
 
+    <details><summary>The printed result, explained</summary>
+
     As `add` stands, 2 pass.
 
     The first test passes: built from the whole file, the graph has the same edges and run counts as Chapter 9's way of building edges by job gives for this file. This file has no line cut short, so `daily_sales` is written in 7 runs, not Chapter 9's 6.
@@ -159,9 +161,15 @@ def _(mo):
 
     Compare this with what you decided.
 
+    </details>
+
     Change `add` so that an edge's first time is the earlier of its first time and the event's time, and its last time is the later of its last time and the event's time. Select the cell with `add` and press **Run below**. All 3 tests pass.
 
+    <details><summary>The printed result, explained</summary>
+
     No event in this week names an edge for the first time after a later event has named it, so the check cannot tell whether the first time is right. The earlier of the two times is still the rule that keeps it right when that happens.
+
+    </details>
 
     The next cell builds the graph from the whole file and lists the edges of `build_daily_sales`, to show what the graph holds about Sunday's change of input.
     """)
@@ -242,6 +250,8 @@ def _(graph26, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     `build_daily_sales`'s reads of `clean_orders` are in "ever" only. Its reads of the analyst's copy, and its writes to `daily_sales`, are in all three readings.
 
     `record_return` last ran on Friday 11 at 13:15. Its read of `r-204.json` and its write to `returns` are in its latest run, but not in the last 2 days. Its reads of the other three return files are in "ever" only.
@@ -251,6 +261,8 @@ def _(mo):
     The graph keeps each edge's first and last time, so it answers all three readings. Without times on its edges, the graph alone answers only "ever".
 
     The requirement does not say which reading it means.
+
+    </details>
     """)
     return
 

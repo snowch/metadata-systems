@@ -112,6 +112,8 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The dashboard, `daily_sales` and `clean_orders` each hold 5150 pence for Thursday. The version of `orders.jsonl` written at 01:00:41 on Friday 11 holds 20550 pence.
 
     The difference first appears in `clean_orders`. It was made by `run-014`, `build_clean_orders`, early on Friday 11. Its code had not changed since the night before.
@@ -119,6 +121,8 @@ def _(mo):
     The last row is the checkout. It has no step and no totals, because the shop records nothing about it or about what the export read.
 
     Compare this with where you said you would look first.
+
+    </details>
     """)
     return
 
@@ -170,9 +174,13 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The difference first appears in `daily_sales`: 21549 pence, where `clean_orders` holds 19149 for Saturday. `daily_sales` was made by `run-023`, `build_daily_sales`, early on Sunday 13, and its code had changed since the night before.
 
     Two causes fit together: the change to the code, and Saturday's cancelled order 7037, 2 pairs of brake pads, 2400 pence, which is the difference.
+
+    </details>
 
     Tuesday 8 also had a cancelled order, 7009. Change `day = "2026-09-12"` to `day = "2026-09-08"`, select the cell and press **Run below**.
     """)
@@ -182,9 +190,13 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     For Tuesday, no step differs: 16225 pence at every step, and no code had changed.
 
     With the code as it was when Tuesday's row was written, the cancelled order was left out. A cancelled order alone does not raise the total. What differs between Tuesday and Saturday is the recorded change to the code.
+
+    </details>
 
     The next cell prints the lines of `build_daily_sales`'s code that changed for the work early on Sunday 13.
     """)
@@ -226,6 +238,8 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Readings of "the cause"</summary>
+
     "The cause" could mean three things, each needing something different:
 
     - where the data first went wrong: the values each step holds or adds up to, and the versions of what each run read;
@@ -247,6 +261,8 @@ def _(mo):
     The shop's records meet the first reading for Thursday, the first two for Saturday, and the third for neither. The requirement does not say which of the three it means.
 
     Compare these with what you decided.
+
+    </details>
     """)
     return
 

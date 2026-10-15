@@ -105,6 +105,8 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The collector received 69 events, 1 more than the 68 sent.
 
     The cell compares every job's edges, with how many runs had each and the first and last time, against the graph built when each event was received once. They are the same: `True`.
@@ -114,6 +116,8 @@ def _(mo):
     Ingestion merges events into runs by their run id. The copy names the same run and the same datasets, so it adds nothing to the graph.
 
     Compare this with what you decided.
+
+    </details>
 
     ## A retry with a new time
 
@@ -219,7 +223,11 @@ def _(shop, week19):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The cell shows `True`. `returns` is the same as in the week in which the notice came once. `record_return` is idempotent for the table.
+
+    </details>
 
     The next cell looks for runs started more than once for the same change to the same version of an object. It reads `shop_objectChange`, the facet each function's events carry (Chapter 9): the object, its version and the change.
     """)

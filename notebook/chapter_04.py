@@ -165,11 +165,15 @@ def _(together):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The cell counts 4 different values of `responsible`: the data engineer, Jo Marsh, `j.marsh` and Sam Lund.
 
     The count is of spellings, not people. Jo Marsh and `j.marsh` may be one person, and the records do not say whether they are. The head of the shop said in Chapter 3 that Jo Marsh built the dashboard, and the reporting tool records `j.marsh` as the dashboard's creator. That supports one person. It does not prove it, because to the records each name is still a piece of text.
 
     As written, `daily_sales` has two owners: Jo Marsh, from your records, and `j.marsh`, from Jo's notes.
+
+    </details>
 
     You ask the head of the shop who `j.marsh` and `s.lund` are. The head answers that `j.marsh` is Jo Marsh, in finance, and `s.lund` is Sam Lund, in catalogue. So `j.marsh` and Jo Marsh are one person. You started today and have no line of your own yet.
     """)
@@ -397,11 +401,15 @@ def _(records, shop, week):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     With the data engineer as a team, 5 of the 7 assets have one owner under `one_owner`, 3 have one person under `one_person`, and 5 have one team under `one_team`. With the data engineer as a person, the counts are 5, 5 and 3 (the person `data_engineering` has no team).
 
     `orders.jsonl` and `customers.jsonl` have no `responsible` line in the records, so they fail every reading.
 
     No reading holds for all 7 assets. The head did not say which one was meant. A list you send should say which reading it meets, and for which assets.
+
+    </details>
     """)
     return
 

@@ -126,9 +126,13 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     Step 1 is the programs that read `clean_orders`: `copy_clean_orders` writes `clean_orders_copy.csv`, and `build_daily_sales` writes `daily_sales`. Step 2 is the programs that read what step 1 wrote: `refresh_dashboard` writes `sales_dashboard`.
 
     Following lineage from a change to find what the change may affect is **impact analysis**. By datasets, everything downstream of `clean_orders` may be affected.
+
+    </details>
 
     The next cell follows column lineage (Chapter 10) downstream from one column, `customer_id` of `clean_orders`.
     """)
@@ -180,6 +184,8 @@ def _(shop, week16):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     - `daily_sales` and the dashboard are unchanged: 7 rows, 100798 pence, and the same seven values.
     - The analyst's copy: its first line, the names of its columns, now names the column `customer`. The script ran and succeeded.
     - Jo Marsh's query: before, 7 rows, one for each country, 41 orders; after, the error `no such column: o.customer_id`.
@@ -187,6 +193,8 @@ def _(mo):
     Compare these with what you decided.
 
     By datasets, the lineage listed `daily_sales` and the dashboard, which did not change. Column lineage listed the copy's column, which now has another name, with no error. Neither listed Jo Marsh's query, which failed: it sends no events, and the shop does not have its code.
+
+    </details>
     """)
     return
 

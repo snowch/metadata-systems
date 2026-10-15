@@ -104,6 +104,8 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     Thursday's total goes back through four steps.
 
     1. The dashboard's value for Thursday, £51.50, drawn by `run-028`, `refresh_dashboard`, early on Monday 14.
@@ -116,6 +118,8 @@ def _(mo):
     Information about where a piece of data came from and how it was made is its **provenance**.
 
     The total is made from four orders together; none of them alone is where it came from.
+
+    </details>
     """)
     return
 
@@ -180,11 +184,15 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The dashboard and `daily_sales` show 6925 pence for Sunday.
 
     The five Sunday orders in `clean_orders`, 7043 to 7047, add up to 9775 pence. `returns`, as it is now, holds `r-205` with 1 roll of order 7044, written by `run-036`, `record_return`, after the correction: 1425 pence less. Together, these come to 8350 pence.
 
     8350 is not 6925. Sunday's total does not add up from the tables as they are now.
+
+    </details>
 
     The next cell lists every version of `r-205`'s object.
     """)
@@ -271,6 +279,8 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     For Thursday, the first three were met. For the fourth: the file's version was kept by the shop's object storage and chosen by the time `run-014` started, but `run-014` did not record it; the tables were read as they are now, and every step still added up.
 
     For Sunday, with the correction, the first three were met. The fourth was not met by `returns` as it is now. It was met only by rebuilding the table from the object versions the runs of `record_return` recorded.
@@ -280,6 +290,8 @@ def _(mo):
     The requirement does not say which reading it means.
 
     Compare these with what you decided.
+
+    </details>
     """)
     return
 

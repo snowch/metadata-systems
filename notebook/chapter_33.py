@@ -228,7 +228,11 @@ def _(inputs, platform, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     With the change, all 3 tests pass. The delete's event names the test batch with the version `e622b165c27a`, the version the engineer deleted.
+
+    </details>
 
     ## Capturing the ferry's lineage
 
@@ -294,9 +298,13 @@ def _(collected, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     Every run finished: 38 runs of `load_scans`, 1 of `drop_scans`, and 3 each of `build_loads` and `send_report`. None failed.
 
     Compare this with what you decided.
+
+    </details>
 
     The ferry's next requirement, in the box below, is for a loss like this one.
     """)
@@ -404,6 +412,8 @@ def _(collected, platform, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     Read the trace from the top. The row of `sailing_loads`, 35, was written by `build_loads` at 01:00 on Wednesday.
 
     That run counted gate 1's batch, 21 scans, and gate 2's first version, `15da88b56abc`, 14 scans.
@@ -415,6 +425,8 @@ def _(mo):
     `build_loads` rebuilds only the day before, so no later run rebuilt Tuesday's rows. The row stays at 35 until somebody rebuilds it.
 
     The versions in the trace come from the inputs you wrote. Without them, the trace shows "not recorded" for each version.
+
+    </details>
 
     ## The test batch
 
@@ -442,6 +454,8 @@ def _(graph33, platform, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     `boardings` no longer counts the test scans: it holds 17 for Wednesday's 19:30 from the island, the harbour master's count. `sailing_loads` and `loads-2026-09-23.csv` still do: each shows 22.
 
     Compare this with what you decided.
@@ -449,6 +463,8 @@ def _(mo):
     The delete reached only what `drop_scans` changed. The row of `sailing_loads` was built before the delete, and the report is a copy that was emailed at 06:00.
 
     The graph also reached the reports for Tuesday's and Thursday's sailings, `loads-2026-09-22.csv` and `loads-2026-09-24.csv`. They have no row for that sailing and do not count the test scans. Following the edges job by job reaches every file `send_report` wrote, and cannot tell those two apart from Wednesday's.
+
+    </details>
 
     The ferry has a requirement for deleted batches, in the box below.
     """)

@@ -125,12 +125,16 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     "Depends on" could mean two things, each needing something different:
 
     - the columns its value is made from: these are in the expressions the SELECT lists;
     - also the columns that decide which rows count: these are in the WHERE and GROUP BY clauses, and in DISTINCT.
 
     Either reading can stop at the program that writes `daily_sales`, or go back through every program to `orders.jsonl`.
+
+    </details>
 
     The next cell gives the code to the shop's SQL parser, a program that reads the course's SQL. For each column the program writes, it lists each column it reads, with `kind` and `how`.
     """)
@@ -326,6 +330,8 @@ def _(shop, week10n):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     13 columns. None is in `returns`.
 
     The parser followed `lines` back to `clean_orders`. The value of `line_pence` is made from `price_pence`, `quantity`, `order_id` and `product_id`: the last two are the function's arguments.
@@ -335,6 +341,8 @@ def _(mo):
     The run's events also name `clean_orders` as the only input.
 
     In the shop, the function is code registered with the warehouse, and nothing records what it reads. A record that it reads `returns` has to come from whoever wrote it, or from the warehouse while the query runs.
+
+    </details>
     """)
     return
 

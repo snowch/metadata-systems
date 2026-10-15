@@ -262,9 +262,9 @@ def hypothesis(week: Week, labels: dict[str, str]) -> str:
         '<div class="ms-fig ms-hyp">'
         f'<div class="ms-hyp-lane ms-hyp-head"><div><code>{escape(source)}</code></div><div></div>'
         f"<div><code>{escape(target)}</code></div></div>"
-        + lane(names(kept), labels["keep"], False, "")
         + lane(names(key), labels["per"], True, names(made[:1]))
         + lane(names(value), labels["measure"], True, names(made[1:]))
+        + lane(names(kept), labels["keep"], False, "")
         + f'<div class="ms-muted ms-hyp-unused">{_named(labels["unused"].format(columns=", ".join(f"`{c}`" for c in unused)))}</div>'
         "</div>"
     )

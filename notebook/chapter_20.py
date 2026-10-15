@@ -104,11 +104,19 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     By event time, the run that last wrote `daily_sales` ended at 02:30:21 on Thursday 10.
+
+    </details>
 
     Change `order="event"` to `order="arrival"` in the cell, select it and press **Run below**.
 
+    <details><summary>The printed result, explained</summary>
+
     By arrival, it ended at 02:30:21 on Wednesday 9: a day earlier.
+
+    </details>
 
     The next cell lists when each `COMPLETE` of `build_daily_sales` arrived.
     """)
@@ -124,6 +132,8 @@ def _(late):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     Wednesday 9's `COMPLETE` arrived at 04:30:24 on Thursday 10, after Thursday 10's, which arrived at 02:30:24.
 
     Taken in the order they arrived, Wednesday's `COMPLETE` came last, so Wednesday's run became the last write.
@@ -132,11 +142,17 @@ def _(mo):
 
     Compare these with what you decided.
 
+    </details>
+
     In the cell that starts `week20 =`, keep `order="arrival"` and change `26` to `20`. Select it and press **Run below**.
+
+    <details><summary>The printed result, explained</summary>
 
     Wednesday 9's `COMPLETE` now arrives at 22:30:24 on Wednesday 9, before Thursday 10's. By arrival, the last write is Thursday's run again, ended at 02:30:21 on Thursday 10.
 
     A held-up event changes the last write only when it arrives after the next `COMPLETE` of the same job.
+
+    </details>
     """)
     return
 

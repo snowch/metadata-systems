@@ -248,6 +248,8 @@ def _(lineage):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The cell above follows edges from `orders.jsonl` to each job that reads it, then to what that job writes, and on. The assets and jobs it reaches this way are **downstream** of `orders.jsonl`.
 
     Downstream of `orders.jsonl` there are 6 nodes: the jobs `build_clean_orders`, `build_daily_sales` and `refresh_dashboard`, and the assets `clean_orders`, `daily_sales` and `sales_dashboard`.
@@ -261,6 +263,8 @@ def _(mo):
     Tell the developer that the code of `build_clean_orders` must change with the rename, and that the two jobs after it read what it writes.
 
     Chapter 10 records which columns each column is made from.
+
+    </details>
 
     The opposite traversal goes from an asset to the job that writes it, then to what that job reads, and on. What it reaches is **upstream** of the asset: what the asset is made from, and the jobs that made it.
 
@@ -364,6 +368,8 @@ def _(repo, shop, with_jo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The comparison lists one row: Jo's line. The code of `build_daily_sales` reads `clean_orders`, and not `clean_customers`.
 
     The code of `build_clean_orders` has `WHERE customer_id IS NOT NULL`. It leaves out orders with no customer id when it writes `clean_orders`, as the `drops` line on `clean_orders` says.
@@ -371,6 +377,8 @@ def _(mo):
     That answers Jo: the orders are lost in `build_clean_orders`, before `build_daily_sales` reads `clean_orders`.
 
     A line written by hand records what someone believes. The code is evidence of what the job reads now.
+
+    </details>
     """)
     return
 
@@ -407,11 +415,15 @@ def _(records, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The cell above runs the week with the change, and compares your lines with the code as it is after the change. It lists 2 rows.
 
     Your line says `build_daily_sales` reads `clean_orders`, and its code no longer does. Its code reads `s3://shop-scratch/clean_orders_copy.csv`, and no line says so.
 
     Your lines went stale when the code changed, and nothing changed them.
+
+    </details>
 
     The next cell compares the rows of `daily_sales` in the changed week with today's.
     """)

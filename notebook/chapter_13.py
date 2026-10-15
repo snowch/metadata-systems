@@ -120,11 +120,15 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     28 runs. One failed: `run-027`, `build_daily_sales`, at 02:30 on Monday 14, after 21 seconds, with the error `database is locked`.
 
     A failed run records no counts, so its count columns are blank. Blank is not 0: the record does not show how many rows it wrote.
 
     `run-028`, `refresh_dashboard`, ran after it and succeeded: it read 6 rows of `daily_sales` and showed 6 days.
+
+    </details>
     """)
     return
 
@@ -152,11 +156,15 @@ def _(shop, week13):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     By the time it was last written, the dashboard is the most recent of the four: 6.0 hours before 09:00 on Monday.
 
     By the latest day it holds, the dashboard is a day behind. It holds Saturday 12, and on Monday the day before is Sunday 13. `daily_sales` holds the same latest day.
 
     Compare these with what you decided.
+
+    </details>
     """)
     return
 

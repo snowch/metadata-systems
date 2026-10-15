@@ -164,9 +164,13 @@ def _(shop, week14):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     It passed on all 7 runs.
 
     `build_clean_orders` drops every order with no customer id before it writes the table. Its rule is `customer_id IS NOT NULL` (Chapter 6, where you read its code). The assertion tests the table after that rule, so it finds no such order on any night. While the rule stays, this assertion cannot fail.
+
+    </details>
 
     Change `dataset = "clean_orders"` to `dataset = "orders.jsonl"`, select the cell and press **Run below**.
     """)
@@ -236,11 +240,15 @@ def _(shop, week14):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     - In the file: not met; 4 runs failed.
     - In `clean_orders`: met on every run, because the rule removes the orders before the table is written.
     - On the dashboard: not met. Thursday's total leaves out 3 completed orders, worth 15400 pence (Chapter 2).
 
     Compare these with what you decided at the start. The requirement does not say which reading it means. Nor does it say what should happen to an order without a customer: dropped, kept without a customer, or the night's work stopped.
+
+    </details>
     """)
     return
 

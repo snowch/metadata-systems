@@ -190,11 +190,15 @@ def _(query, shop, tables, week24):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     With the `WHERE` clause, the check finds 11 of 11 right. The query reads every row of `edges`: 154 rows, 14 for each of the 11 datasets.
 
     The plan is a scan: SQLite reads each row and tests it against the `WHERE` clause.
 
     Compare this with what you decided.
+
+    </details>
 
     ## An index
 

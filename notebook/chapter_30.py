@@ -220,13 +220,21 @@ def _(mo):
     mo.md(r"""
     The cell above the check holds `name_format`, `"$QUERY_ID"`, and `source_of`, the source each program's client gives.
 
+    <details><summary>The printed result, explained</summary>
+
     As it stands, the check finds 7 jobs: each query is its own job, named by its id.
 
+    </details>
+
     Change `name_format` to `"$SOURCE"`. Select the cell and press **Run below**.
+
+    <details><summary>The printed result, explained</summary>
 
     The check then finds 1 job for the 7 runs, and that job also holds the runs of the other three programs.
 
     Compare this with what you decided.
+
+    </details>
 
     Then give each program its own source in `source_of`, and press **Run below** again. Both tests pass: one job, holding the runs of `build_daily_sales` only.
 

@@ -125,11 +125,15 @@ def _(shop, week18):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     Both edges are still there. `writes` now has 6 runs, not 7. `reads` still has 7.
 
     The other 6 runs that wrote `daily_sales` carry the `writes` edge. The lost `COMPLETE` changes only the count of runs, as in Chapter 9.
 
     Compare this with what you decided.
+
+    </details>
 
     A run with a `START` at the collector and no `COMPLETE`, `ABORT` or `FAIL` is an open run.
 
@@ -260,11 +264,15 @@ def _(mo):
     mo.md(r"""
     In the cell that ends `again.retried()`, change `lose=` to `lose_ack=`. Select that cell and press **Run below**.
 
+    <details><summary>The printed result, explained</summary>
+
     With `lose_ack`, the `COMPLETE` is sent twice and received twice: at 16:50:07 and at 16:50:37.
 
     The first copy arrived, and its acknowledgement was lost, so the program sent it again at 16:50:35.
 
     Compare this with what you decided.
+
+    </details>
 
     At least once delivers every event the program sends, and can deliver one twice.
     """)

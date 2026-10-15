@@ -176,6 +176,8 @@ def _(shop, week29):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     Friday 11: your collector's state is `COMPLETE`. By Marquez's rules, the state is `RUNNING`. The late `START` was the last of the run's events taken, so it set the state.
 
     Compare this with what you decided.
@@ -185,6 +187,8 @@ def _(mo):
     Saturday 12: the same `COMPLETE` of `remove_return` arrived twice, a repeat. Your collector stored 2 events for the run; Marquez's rules stored 3 rows.
 
     Over the week, both refused the developer's event with no `eventTime`. Your collector stored 68 events, and Marquez's rules stored 70.
+
+    </details>
 
     The next cell holds `order`, the order in which the events reach Marquez's rules and your collector: `"arrival"`.
 

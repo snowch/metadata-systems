@@ -181,7 +181,13 @@ def _(records):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The record answers the fourth question with Jo Marsh, the name you wrote from the head of the shop's reply, now kept where the next engineer can query it. The next cell takes Jo Marsh's words about a day's revenue and turns them into a query over `orders.jsonl`. It keeps each completed order once, even an order the export wrote twice. It adds up price times quantity for each UTC day, and puts that total beside each row of `daily_sales`, marked `same` or `different`.
+    <details><summary>The printed result, explained</summary>
+
+    The record answers the fourth question with Jo Marsh, the name you wrote from the head of the shop's reply, now kept where the next engineer can query it.
+
+    </details>
+
+    The next cell takes Jo Marsh's words about a day's revenue and turns them into a query over `orders.jsonl`. It keeps each completed order once, even an order the export wrote twice. It adds up price times quantity for each UTC day, and puts that total beside each row of `daily_sales`, marked `same` or `different`.
     """)
     return
 
@@ -477,9 +483,13 @@ def _(records, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     For change 1, the check reports `order_count`, which has no description in your record. The check compares the columns of your record with the warehouse's, so the record is now incomplete.
 
     For change 2, the check reports nothing: the edit changed no column.
+
+    </details>
 
     The next cell compares the edited week's `daily_sales` with Jo's meaning, using the query from above.
     """)

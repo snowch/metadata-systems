@@ -134,15 +134,23 @@ def _(run_history, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The check finds 6 runs, and not Monday's.
 
     Monday's run failed and wrote nothing, so a run history built from what each run wrote leaves it out.
 
     Compare this with what you decided.
 
+    </details>
+
     Change `run_history` so that it keeps the runs of the programs that write the asset, from `shop.interface.writers(asset)`. Select the cell and press **Run below**.
 
+    <details><summary>The printed result, explained</summary>
+
     The check finds 7 runs, the `FAIL` among them.
+
+    </details>
 
     ## The sections
 

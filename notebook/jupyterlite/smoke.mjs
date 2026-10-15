@@ -263,7 +263,9 @@ try {
           const caption = f.querySelector("figcaption").textContent;
           const img = f.querySelector("img.ms-svg");
           found.set(caption, {
-            shown: f.getBoundingClientRect().height > 40,
+            // A figure in a closed block (the result after Change 1, in Chapter 2) shows once the
+            // reader opens it.
+            shown: f.getBoundingClientRect().height > 40 || !!f.closest("details:not([open])"),
             image: img ? img.complete && img.naturalWidth > 0 : null,
             width: img ? img.getBoundingClientRect().width : null,
           });

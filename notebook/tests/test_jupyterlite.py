@@ -232,6 +232,22 @@ class TheBoxes(unittest.TestCase):
             self.assertIn("Before you open the block below", SOURCE[chapter], chapter)
             self.assertIn("<details><summary>", SOURCE[chapter], chapter)
 
+    def test_a_result_is_closed_until_the_reader_opens_it(self):
+        # The paragraphs that state a printed result sit in a closed block, "The printed result,
+        # explained", opened after the reader has run the cell and compared it with what they
+        # decided. Each Markdown cell closes every block it opens: a block cannot span two cells.
+        title = "<details><summary>The printed result, explained</summary>"
+        for chapter, source in SOURCE.items():
+            for text in re.findall(r'mo\.md\(r"""(.*?)"""\)', source, re.S):
+                self.assertEqual(text.count("<details"), text.count("</details>"), (chapter, text[:80]))
+            if chapter >= 2:
+                self.assertIn(title, source, chapter)
+        # Chapter 2's three changes each keep their result closed; Change 1's figure is inside its block.
+        after = SOURCE[2].split("#### Change 1:")[1]
+        self.assertEqual(after.count(title), 3)
+        block = after.split(title)[1].split("</details>")[0]
+        self.assertIn("<!-- figure: figures.figure(figures.two_sources(", block)
+
     def test_chapter_1s_steps_name_every_button(self):
         [steps] = re.findall(r'mo\.callout\(mo\.md\(r"""(.*?)"""\), kind="info"\)', SOURCE[1], re.S)
         self.assertEqual(set(re.findall(r"press \*\*([^*]+)\*\*", steps)), set(LABELS.values()))

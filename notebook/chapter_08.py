@@ -178,11 +178,15 @@ def _(friday, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The consumer writes each name as its namespace, then `/`, then the name.
 
     Its row holds the state `START`, the start time, and the input `orders.jsonl`. It holds no output and no end time. The START named the input and no output.
 
     From this row alone, a run still working and a run that stopped without sending another event look the same.
+
+    </details>
 
     The next cell sends the COMPLETE.
     """)
@@ -301,17 +305,25 @@ def _(complete, events, shop, start):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The traversal reaches 2 nodes, `analyst/copy_clean_orders` and `warehouse://shop-warehouse/analytics.clean_orders`, and stops. It does not reach `orders.jsonl`.
 
     Compare the analyst's input in the cell above with the name the jobs' events gave `clean_orders` earlier: `analytics.clean_orders` against `shop.analytics.clean_orders`. The analyst left out the database.
 
     The consumer joins two datasets only when their namespace and their name are the same. To the consumer, the two names are two datasets.
 
+    </details>
+
     Change the analyst's input to the jobs' name, `"shop.analytics.clean_orders"`, select that cell and press **Run below**. The traversal then reaches 4 nodes, through `shop/build_clean_orders`, to `orders.jsonl`.
+
+    <details><summary>The printed result, explained</summary>
 
     The specification's naming page gives a namespace and a name for each kind of data store it lists. It lists no form for the store the shop's warehouse runs on, so the shop's producers must agree on one.
 
     The page warns of the same failure for a store it lists: names made under Snowflake's older form of account name do not connect to names made under the newer form, so the lineage does not join.
+
+    </details>
     """)
     return
 
@@ -401,6 +413,8 @@ def _(events, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     In all, 6 programs sent events: the four jobs and the two functions. Every run sent a START and a COMPLETE, except the run of `build_daily_sales` on Monday 14, which sent a FAIL. No event breaks the specification's rules.
 
     Taken one reading at a time:
@@ -413,6 +427,8 @@ def _(mo):
     As written, "Our programs" covers every program, so the shop does not meet the requirement until the export and the analyst's copy send events too.
 
     One of the standard facets, `ownership`, holds a dataset's owners. Each owner is an identifier, which can name a user, a team or an application. So the facet records an owner without saying which of Chapter 2's readings of "owner" it answers. The shop does not send it.
+
+    </details>
     """)
     return
 

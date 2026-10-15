@@ -343,6 +343,14 @@
   line-height: 1.4;
 }
 
+/* A name inside a figure keeps the code font, without the grey fill prose gives it: in a drawing
+   the fill reads as a box of its own. JupyterLab sets the fill in .jp-ThemedContainer
+   .jp-RenderedHTMLCommon code, so this rule names the same container to outrank it. */
+.jp-ThemedContainer .jp-RenderedMarkdown .ms-fig code {
+  padding: 0;
+  background: none;
+}
+
 .jp-RenderedMarkdown .ms-systems {
   display: grid;
   grid-template-columns: 1fr auto 1fr auto 1fr;
@@ -467,13 +475,16 @@
 
 /* A name in the text (a file, a table, a column) does not split while it fits a line. JupyterLab
    lets inline code break anywhere, so on a phone "updated_by" could split as "upda" and "ted_by".
-   Here a name that fits moves to the next line whole, and only a name longer than the column
-   breaks, where it must: the programs' account etlsvc/batch01.corp.internal@CORP.INTERNAL, a
-   file's header line, an urn: name. Kept on one line, those ran out of their box on a 360-pixel
-   phone and were cut off. */
+   Here each name is one box on its line (inline-block), so a name that fits moves to the next line
+   whole, even one with a hyphen, such as a date, where a line could otherwise break; only a name
+   longer than the column breaks, inside its box, where it must: the programs' account
+   etlsvc/batch01.corp.internal@CORP.INTERNAL, a file's header line, an urn: name. Kept on one
+   line, those ran out of their box on a 360-pixel phone and were cut off. */
 /* JupyterLab sets inline code in .jp-ThemedContainer .jp-RenderedHTMLCommon code, so this rule
    names the same container to outrank it. */
 .jp-ThemedContainer .jp-RenderedMarkdown :not(pre) > code {
+  display: inline-block;
+  max-width: 100%;
   white-space: normal;
   word-break: normal;
   overflow-wrap: anywhere;
@@ -835,7 +846,24 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.25rem;
+  gap: 0.3rem;
+}
+
+/* Each column a small outlined box, as the other figures draw an asset; the table's name above
+   them, bold. */
+.jp-ThemedContainer .jp-RenderedMarkdown .ms-hyp-cols code {
+  padding: 0.1rem 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--jp-content-font-color1) 35%, transparent);
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.jp-RenderedMarkdown .ms-hyp-head code {
+  font-weight: 600;
+}
+
+.jp-RenderedMarkdown .ms-hyp-unused code {
+  color: var(--jp-content-font-color2);
 }
 
 .jp-RenderedMarkdown .ms-hyp-lane > .ms-hyp-cols:last-child {

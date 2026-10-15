@@ -121,11 +121,15 @@ def _(warehouse):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The lines say what the job reads and what it writes. They do not say when it did its work, or how many rows it read or wrote.
 
     The warehouse records that `clean_orders` has 44 rows and was last written at `2026-09-14T02:05:52Z`. That is the work of the last night only.
 
     Each night, `build_clean_orders` replaces the whole table. Nothing on the platform records what the job did on an earlier night.
+
+    </details>
     """)
     return
 
@@ -266,6 +270,8 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     Wednesday 9 shows 1 row with 4 events, 2 objects (`r-202.json` and `r-203.json`), 2 rows read and 2 written, starting at `10:05:02` and finishing at `15:40:05`. The 2 runs of `record_return` were merged into one row.
 
     Grouping by `job` and `day` worked for the jobs because each job does its work once a night. Grouping by `job` and `day` tells runs apart only for a program that does its work at most once a day.
@@ -273,6 +279,8 @@ def _(mo):
     `time` does not tell them apart either: a run's start and its finish have different times. Pairing each start with the next finish works on Wednesday, because the 2 runs did not overlap. It fails when 2 runs of one program overlap, or when a run never sends its finish.
 
     What ties the events of one run together is `run`: an identifier the program makes when it starts and repeats in each event it sends.
+
+    </details>
 
     The next cell adds `run` and `object_version` to the design, groups the events by `run`, and lists the runs of both functions.
     """)
@@ -357,13 +365,21 @@ def _(shop, week):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     With `reads`, the traversal reaches 6 nodes, back to `orders.jsonl`.
 
+    </details>
+
     Delete `"reads"` from the list in the cell above, select that cell and press **Run below**.
+
+    <details><summary>The printed result, explained</summary>
 
     Without `reads`, the traversal reaches only `refresh_dashboard`. The graph shows no input for `daily_sales`, or for anything else.
 
     A run that read nothing, as `remove_return`'s did, also gives the graph no input. From the graph, a run that read nothing and a run whose events left `reads` out look the same.
+
+    </details>
 
     Put `"reads"` back and press **Run below** again.
     """)
@@ -412,6 +428,8 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The table sets your design against 4 readings. Each needs its own fields, which the table lists.
 
     As the cell first stands, `yours` holds `run`, `job`, `type`, `time` and `status`, and meets the first reading only.
@@ -419,6 +437,8 @@ def _(mo):
     As written, a design meets "Record every run." if each run sends events and the events keep each run apart. That needs `run`: without it, 2 runs of one function on one day became one row.
 
     Which of the readings a design meets depends on its fields. A field's name does not say which reading it serves: `time` is when an event was sent, not when the data was written.
+
+    </details>
     """)
     return
 

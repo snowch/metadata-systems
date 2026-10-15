@@ -140,6 +140,8 @@ def _(shop, week32):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     The record counts 5 rows and holds the digest `60ba54ee`. `daily_sales` has 7 rows and gives the digest `6b0727dc`.
 
     The digests differ, so `daily_sales` has changed since the run.
@@ -149,6 +151,8 @@ def _(mo):
     Each night's run of `build_daily_sales` adds one row, for the day before, and leaves the other rows as they are. So the rows the run read may still be in `daily_sales`.
 
     The record can test that guess: the same rows give the same digest.
+
+    </details>
 
     The next cell holds `where`, a condition on the rows of `daily_sales`. As it stands, `day <= '2026-09-13'` keeps all 7.
 

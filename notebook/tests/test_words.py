@@ -1790,8 +1790,10 @@ class TheWordsKeepTheRules(unittest.TestCase):
             (23, "## Keeping less", ("retention",)),
             (23, "The row is still in `returns`.", ("compaction",)),
         ):
-            # The chapter's title is the plan's, and may name its term ("Metadata as a graph").
+            # The chapter's title is the plan's, and may name its term ("Metadata as a graph"). A cell
+            # may open with a closed block, the printed result explained; its words start after the title.
             cells = [re.sub(r"^# Chapter \d+: .*$", "", re.sub(r"\]\([^)]*\)", "]", c), flags=re.M) for c in CELLS[number]]
+            cells = [re.sub(r"^<details><summary>[^<]*</summary>\s*", "", c) for c in cells]
             home = next(i for i, c in enumerate(cells) if c.startswith(heading))
             for word in words:
                 found = next(i for i, c in enumerate(cells) if re.search(rf"\b{word}", c, re.I))

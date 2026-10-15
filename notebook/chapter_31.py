@@ -130,11 +130,15 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     DataHub and OpenMetadata keep all three. Atlas keeps one, here the first, `etlsvc/batch01.corp.internal@CORP.INTERNAL`. Marquez keeps none.
 
     Compare this with what you decided.
 
     The list of stored owners gives DataHub's three owners the same ownership type, `urn:li:ownershipType:__system__technical_owner`, with its description. So the count of owners below it shows none of DataHub's three told apart by ownership type. OpenMetadata's owners carry no ownership type at all.
+
+    </details>
 
     The next cell holds `types`: the ownership type each of the three owners gets in DataHub. As it stands, each is `urn:li:ownershipType:__system__technical_owner`.
 

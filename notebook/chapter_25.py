@@ -192,11 +192,15 @@ def _(key, newer, shop, start, week25):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
     With your `key` and `newer`, the check shows 4 of 6 passing. The `COMPLETE` that arrived again after the restart is kept a second time, and the file holds 69 events.
 
     `start` as it stands gives an empty set. The keys the collector had seen were not in its file, so the restart lost them. After the restart, the collector's set of keys was empty. The event's key was right, and its first copy was in the file, but the set did not hold its key.
 
     Compare this with what you decided.
+
+    </details>
 
     Change `start` so that it gives the key of every event in `stored`. Select the cell and press **Run below**. 6 of 6 pass.
     """)
