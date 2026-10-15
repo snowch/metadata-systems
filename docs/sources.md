@@ -647,9 +647,10 @@ Each chapter that relies on one of these reads it first and adds an entry above:
   `notebook/licences.py` on every build (21 on 13 October 2026, among them IPython, traitlets, jedi
   and comm, which the kernel installs when it starts, under BSD, MIT, Apache-2.0 and MPL-2.0). Since
   13 October 2026 no chapter has a widget, and the site no longer bundles ipywidgets.
-- The boxes' icons: Material Symbols' "rule" for a requirement and "touch_app" for something the
-  reader does (outlined, weight 400), by Google, from the npm package `@material-symbols/svg-400`
-  0.48.0, under the Apache License 2.0. Each icon's one path is inlined in
+- The boxes' icons: Material Symbols' "rule" for a requirement, "touch_app" for something the
+  reader does and "expand_circle_down" on a closed block the reader opens (outlined, weight 400),
+  by Google, from the npm package `@material-symbols/svg-400` 0.48.0, under the Apache License
+  2.0. Each icon's one path is inlined in
   `notebook/buttons/style/index.css`, whose comment names the icons, the package and the licence;
   the site fetches nothing for them.
 - The notebooks' row of buttons (`notebook/buttons/`): the course's own code, built with

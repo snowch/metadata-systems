@@ -499,6 +499,71 @@
   cursor: pointer;
 }
 
+/* A closed block in the text (the readings of a requirement, which a blue box above asks the
+   reader to decide before opening): a bar in the colour of that box, so the two read as one step,
+   with Material Symbols' "expand_circle_down" (outlined, weight 400, @material-symbols/svg-400
+   0.48.0, Apache License 2.0; docs/sources.md) in place of the browser's small triangle. The icon
+   turns over once the block is open. The bar is 44 pixels tall, to tap on a phone. Blocks inside a
+   box (the warning's time and memory) and the check's answers keep their own look. */
+.jp-RenderedMarkdown > details:not(.ms-choice) {
+  --ms-open-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='m480-351 173-173-43-42-130 130-130-130-43 42 173 173Zm0 271q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-156t86-127Q252-817 325-848.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 82-31.5 155T763-197.5q-54 54.5-127 86T480-80Zm0-60q142 0 241-99.5T820-480q0-142-99-241t-241-99q-141 0-240.5 99T140-480q0 141 99.5 240.5T480-140Zm0-340Z'/%3E%3C/svg%3E");
+  margin: 0 0 var(--jp-content-heading-margin-bottom, 1em);
+  padding: 0 14px;
+  border: 1px solid color-mix(in srgb, var(--jp-brand-color1) 55%, transparent);
+  border-left: 4px solid var(--jp-brand-color1);
+  border-radius: var(--jp-border-radius);
+}
+
+.jp-RenderedMarkdown > details:not(.ms-choice) > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  box-sizing: border-box;
+  margin: 0 -14px;
+  padding: 0.55rem 14px;
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--jp-brand-color1) 12%, transparent);
+}
+
+.jp-RenderedMarkdown > details:not(.ms-choice) > summary::-webkit-details-marker {
+  display: none;
+}
+
+.jp-RenderedMarkdown > details:not(.ms-choice) > summary::before {
+  content: "";
+  flex: none;
+  width: 22px;
+  height: 22px;
+  background-color: var(--jp-brand-color1);
+  -webkit-mask: var(--ms-open-icon) center / contain no-repeat;
+  mask: var(--ms-open-icon) center / contain no-repeat;
+  transition: transform 0.15s;
+}
+
+.jp-RenderedMarkdown > details:not(.ms-choice) > summary:hover {
+  background: color-mix(in srgb, var(--jp-brand-color1) 20%, transparent);
+}
+
+.jp-RenderedMarkdown > details:not(.ms-choice) > summary:focus-visible {
+  outline: 2px solid var(--jp-brand-color1);
+  outline-offset: 2px;
+}
+
+.jp-RenderedMarkdown > details:not(.ms-choice)[open] > summary {
+  margin-bottom: 0.8rem;
+}
+
+.jp-RenderedMarkdown > details:not(.ms-choice)[open] > summary::before {
+  transform: rotate(180deg);
+}
+
+.jp-RenderedMarkdown > details:not(.ms-choice) > :last-child:not(summary) {
+  margin-bottom: 0.8rem;
+}
+
 /* Chapter 2's investigation (docs/notes/chapter-02.md, round 22). Each part takes its colours from
    the theme, so it reads in the light and the dark theme alike.
 
