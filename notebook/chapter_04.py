@@ -364,30 +364,31 @@ def _(mo):
     mo.md(r"""
     ## "Each asset has one owner."
 
-    The head of the shop's requirement is "Each asset has one owner." In the cell below, write what you would send the head, and what you take "one owner" to mean. The readings follow the cell.
+    The head of the shop's requirement is "Each asset has one owner."
     """)
     return
 
 
-@app.cell
-def _():
-    reading = """
-What list would you send the head?
-........
-What does "one owner" mean to you?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you open the block below, which holds three readings of "one owner", decide two things: what list you would send the head, and what you take "one owner" to mean.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Three readings of "one owner"</summary>
+
     - As written, `one_owner`: exactly one `responsible` value for the asset.
     - One person to ask, `one_person`: exactly one value, and it names a person.
     - One team that answers for it, `one_team`: exactly one team, named directly or as the team of the person named.
 
     Each needs identifiers, so that two spellings of one owner count once.
+
+    </details>
 
     The next cell applies your two changes to the records if you have not made them. It makes the data engineer either a team or a person, with the identifier `data_engineering`. The line `the_data_engineer = "team"` sets which. To make the data engineer a person, change the line to `the_data_engineer = "person"` and press **Run below**. The cell then lists the 7 assets with their `responsible` values, and a `yes` or `no` for each reading: `one_owner`, `one_person` and `one_team`.
     """)

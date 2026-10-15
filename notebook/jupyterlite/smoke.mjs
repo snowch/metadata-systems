@@ -364,8 +364,9 @@ try {
     const named = (name) => boxes.filter((b) => b.name === name);
     check(
       named("ms-box-warning").length === 1 &&
-        // Chapter 2 puts four more things the reader does in boxes of the steps' kind.
-        named("ms-box-steps").length === (chapter === 2 ? 5 : 1) &&
+        // Chapter 2 puts four more things the reader does in boxes of the steps' kind, and Chapters
+        // 4, 5, 6, 8 and 9 one more: deciding before opening the readings.
+        named("ms-box-steps").length === ({ 2: 5, 4: 2, 5: 2, 6: 2, 8: 2, 9: 2 }[chapter] ?? 1) &&
         boxes.every((b) => b.tinted),
       `Chapter ${chapter}: the warning and the steps are boxes (${boxes.map((b) => b.name).join("; ")})`,
     );

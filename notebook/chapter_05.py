@@ -327,26 +327,25 @@ def _(mo):
     mo.md(r"""
     ## "Show everything related to `daily_sales`."
 
-    Jo Marsh's request is a requirement, and it does not say what "related" means. Before you read on, write in the next cell what you would send Jo Marsh, and what "related" means to you.
+    Jo Marsh's request is a requirement, and it does not say what "related" means.
     """)
     return
 
 
-@app.cell
-def _():
-    reading = """
-What would you send Jo Marsh?
-........
-What does "related" mean to you?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you open the block below, which holds four readings of "related", decide two things: what you would send Jo Marsh, and what you take "related" to mean.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Set what you wrote in the cell above beside four readings of "related":
+    <details><summary>Four readings of "related"</summary>
+
+    Set what you decided beside four readings of "related":
 
     - What `daily_sales` takes its data from: a line that says what produces it, followed back towards the files;
     - What reads `daily_sales`: the same kind of line, followed the other way;
@@ -360,6 +359,8 @@ def _(mo):
     As written, the request is met by a list of what a traversal along every edge reaches. As Jo meant it, no traversal of these records can meet it, because no line records what is made from what.
 
     What you can send Jo: who is responsible for `daily_sales` and the dashboard; the `drops` line on `clean_orders`; and that the records do not say what `daily_sales` takes its data from, or what reads it.
+
+    </details>
     """)
     return
 

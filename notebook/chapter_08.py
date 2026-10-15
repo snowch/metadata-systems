@@ -367,24 +367,23 @@ def _(mo):
     ## "Our programs must emit OpenLineage."
 
     The head of the shop set this requirement at the start of the chapter.
-
-    Before you read on, write in the next cell what you would check to say that the shop meets it.
     """)
     return
 
 
-@app.cell
-def _():
-    reading = """
-What would you check to say the shop meets the requirement?
-........
-"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Before you open the block below, which holds four readings of the requirement "Our programs must emit OpenLineage", decide what you would check to say the shop meets the requirement.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Four readings of the requirement</summary>
+
     The requirement could mean four things:
 
     - which programs: a list of every program that touches the shop's data, and whether each sends events;
@@ -392,7 +391,11 @@ def _(mo):
     - which facets: a list of the facets each event must carry; the specification requires none;
     - which names: one namespace and name for each dataset, which every producer uses.
 
-    Each reading needs something different. The next cell counts, job by job, the runs, the events of each type, and the events that break the specification's rules.
+    Each reading needs something different.
+
+    </details>
+
+    The next cell counts, job by job, the runs, the events of each type, and the events that break the specification's rules.
     """)
     return
 

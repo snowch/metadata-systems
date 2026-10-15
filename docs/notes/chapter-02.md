@@ -1281,6 +1281,16 @@ the head and what they take "owner" to mean before opening a closed block, "Four
 closing sentence. Closed, the block shows only its title. Brief BX, draft BX (round 23); the draft
 was used as it stood. The other chapters' `reading` cells are left for the author to decide.
 
+## Decide, then open the readings, in Chapters 4, 5, 6, 8 and 9, 15 October 2026
+
+At the author's request, the same change as Chapter 2's in the five chapters with a `reading` cell:
+the cell goes, a blue box asks the reader to decide before opening a closed block of the readings,
+and the block holds the readings and what follows from them, while a sentence that leads to the
+next code cell stays outside (Chapters 4, 8 and 9). Chapter 5's "Set what you wrote in the cell
+above" became "Set what you decided". Brief BY, draft BY (round 23), used as it stood. 70 other
+write-in cells (`expected…`, `what_…_means`), all unread but Chapter 1's `guesses`, are left for the
+author to decide.
+
 ## Known gaps
 
 - The bundle is about 860 kB minified, most of it the runtime's Markdown and maths rendering,

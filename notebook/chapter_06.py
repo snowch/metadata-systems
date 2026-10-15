@@ -470,26 +470,17 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what you would record, and from what.
-    """)
-    return
-
-
-@app.cell
-def _():
-    reading = """
-What would you record?
-........
-From what?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the block below, which holds four readings of the requirement "Record the lineage of `daily_sales`", decide two things: what you would record, and what you would record it from.
+    """), kind="info")
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Four readings of the requirement</summary>
+
     The requirement could mean four things, each needing something different:
 
     - **What someone says the job reads.** Needs someone to write it down. A line like Jo's records a belief.
@@ -498,6 +489,8 @@ def _(mo):
     - **Which columns each of its columns is made from.** For example, `revenue_pence` is made from `price_pence` and `quantity` of `clean_orders`. Lines between tables do not say so (Chapter 10).
 
     Your lines meet the requirement as written. They meet the second reading today, because they agree with the code. They do not meet the third or the fourth.
+
+    </details>
     """)
     return
 

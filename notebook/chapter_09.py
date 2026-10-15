@@ -348,18 +348,9 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-    Before you read on, write in the next cell what "current" means to you.
-    """)
-    return
-
-
-@app.cell
-def _():
-    reading = """
-What does "current" mean to you?
-........
-"""
+    mo.callout(mo.md(r"""
+    Before you open the block below, which holds three readings of "current", decide what you take "current" to mean.
+    """), kind="info")
     return
 
 
@@ -367,6 +358,8 @@ What does "current" mean to you?
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    <details><summary>Three readings of "current"</summary>
+
     "Current" could mean three things, each needing something different:
 
     - As of the last event received: every edge by job;
@@ -374,6 +367,8 @@ def _(mo):
     - As of the last change to a job's code: the code version of each run, set against the runs on each edge.
 
     The readings differ for `record_return`. Its code did not change during the week, so the third reading keeps every file it read. Its latest run read only `r-204.json`, so the second keeps that one file alone.
+
+    </details>
 
     The next cell lists, for each job, the edges its latest run had: the second reading's answer.
     """)

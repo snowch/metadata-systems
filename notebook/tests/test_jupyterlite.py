@@ -194,8 +194,10 @@ class TheBoxes(unittest.TestCase):
         for chapter, source in SOURCE.items():
             kinds = re.findall(r'\bkind="(\w+)"\)', source)
             # Chapter 2's boxes of findings (kind "success") follow its investigations.
-            # Chapter 2 also puts each other thing the reader does in a box of the steps' kind.
-            self.assertEqual([k for k in kinds if k not in ("neutral", "success")], ["warn"] + ["info"] * (5 if chapter == 2 else 1), chapter)
+            # Chapter 2 also puts each other thing the reader does in a box of the steps' kind, and
+            # Chapters 4, 5, 6, 8 and 9 ask the reader to decide before opening the readings.
+            actions = {2: 5, 4: 2, 5: 2, 6: 2, 8: 2, 9: 2}.get(chapter, 1)
+            self.assertEqual([k for k in kinds if k not in ("neutral", "success")], ["warn"] + ["info"] * actions, chapter)
             self.assertEqual(kinds.count("success"), 3 if chapter == 2 else 0, chapter)
             self.assertEqual(kinds.count("neutral"), 3 if chapter == 33 else (1 if chapter > 1 else 0), chapter)
             for text in re.findall(r'mo\.callout\(mo\.md\(r"""((?:(?!""").)*)"""\), kind="neutral"\)', source, re.S):
@@ -209,6 +211,15 @@ class TheBoxes(unittest.TestCase):
         block = SOURCE[2].split('<details><summary>Four readings of "owner"</summary>')[1].split("</details>")[0]
         self.assertIn('<div class="ms-box ms-box-requirement">', block)
         self.assertIn('Your rule becomes "Every table must name whom to ask about it."', block)
+
+    def test_no_cell_holds_answers_nothing_reads(self):
+        # A reader commits before opening the readings, which are closed until then (Chapters 2,
+        # 4, 5, 6, 8 and 9); no code cell holds answers that nothing reads.
+        for chapter, source in SOURCE.items():
+            self.assertNotIn('    reading = """', source, chapter)
+        for chapter in (2, 4, 5, 6, 8, 9):
+            self.assertIn("Before you open the block below", SOURCE[chapter], chapter)
+            self.assertIn("<details><summary>", SOURCE[chapter], chapter)
 
     def test_chapter_1s_steps_name_every_button(self):
         [steps] = re.findall(r'mo\.callout\(mo\.md\(r"""(.*?)"""\), kind="info"\)', SOURCE[1], re.S)
