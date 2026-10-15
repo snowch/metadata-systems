@@ -497,7 +497,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    #### An analyst copies `clean_orders` every night
+    #### Change 1: an analyst copies `clean_orders` every night
 
     The copy goes to a CSV file, `clean_orders_copy.csv`, in the bucket `shop-scratch`, every night, at 02:15, after the job that writes `clean_orders`.
 
@@ -524,7 +524,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    #### From Saturday, the `daily_sales` job keeps unrefunded orders
+    #### Change 2: from Saturday, the `daily_sales` job keeps unrefunded orders
 
     Someone on the shop's team edits the job that writes `daily_sales`, so that from Saturday's row on, written early on Sunday 13, it keeps every order that has not been refunded, where it kept completed orders.
 
@@ -551,7 +551,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    #### The `daily_sales` job fails on the last night
+    #### Change 3: the `daily_sales` job fails on the last night
 
     Early on Monday 14, the job that writes `daily_sales` fails and writes nothing.
 

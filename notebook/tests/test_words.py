@@ -1673,9 +1673,9 @@ class TheWordsAboutThePage(unittest.TestCase):
         self.assertEqual(
             headings,
             [
-                "An analyst copies `clean_orders` every night",
-                "From Saturday, the `daily_sales` job keeps unrefunded orders",
-                "The `daily_sales` job fails on the last night",
+                "Change 1: an analyst copies `clean_orders` every night",
+                "Change 2: from Saturday, the `daily_sales` job keeps unrefunded orders",
+                "Change 3: the `daily_sales` job fails on the last night",
             ],
         )
 
