@@ -342,7 +342,7 @@ def _(mo):
     - As written, `as_written`: the table has a value in `table_owner`. `etlsvc/batch01.corp.internal@CORP.INTERNAL` meets it.
     - A person to ask, `a_person`: a named member of staff. Nothing records one.
     - A team that answers for it, `a_team`: a named team. Nothing records one.
-    - The job that writes it, `the_job`: a program. `etlsvc/batch01.corp.internal@CORP.INTERNAL` is the account a program logs in as, not the program.
+    - The job that writes it, `the_job`: the name of the program that writes the table. The warehouse records `etlsvc/batch01.corp.internal@CORP.INTERNAL` in `table_owner`. That value is an account, the one all four nightly programs log in as. Because the four programs share it, the account does not identify which program writes the table. It does not meet this reading.
 
     A requirement as written is met by whatever the platform already holds. Each reading of it asks for a different thing to be recorded. Your work is to say which reading was meant, and to record what that reading needs.
 

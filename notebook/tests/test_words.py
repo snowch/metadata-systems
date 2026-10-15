@@ -391,7 +391,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("- As written, `as_written`: the table has a value in `table_owner`. `etlsvc/batch01.corp.internal@CORP.INTERNAL` meets it.")
         self.says("- A person to ask, `a_person`: a named member of staff. Nothing records one.")
         self.says("- A team that answers for it, `a_team`: a named team. Nothing records one.")
-        self.says("- The job that writes it, `the_job`: a program. `etlsvc/batch01.corp.internal@CORP.INTERNAL` is the account a program logs in as, not the program.")
+        self.says("- The job that writes it, `the_job`: the name of the program that writes the table. The warehouse records `etlsvc/batch01.corp.internal@CORP.INTERNAL` in `table_owner`. That value is an account, the one all four nightly programs log in as. Because the four programs share it, the account does not identify which program writes the table. It does not meet this reading.")
         self.says('- Question the requirement "Every table must have an owner."')
         self.says('## "Every table must have an owner."')
         # The reader decides before opening the readings, which are closed until then; no code cell
