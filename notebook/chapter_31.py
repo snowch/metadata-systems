@@ -93,7 +93,7 @@ def _(mo):
     mo.md(r"""
     ## The owners of `daily_sales`
 
-    Chapter 27 found three owners of `daily_sales`: the account `svc_nightly_etl`, the person responsible `j.marsh`, and the team `data team`.
+    Chapter 27 found three owners of `daily_sales`: the account `etlsvc/batch01.corp.internal@CORP.INTERNAL`, the person responsible `j.marsh`, and the team `data team`.
 
     Each platform has a rule for an owner, as its code states it:
 
@@ -102,7 +102,7 @@ def _(mo):
     - Atlas: one text value, `owner`, on each asset, which may be left empty.
     - Marquez: no owner on a dataset. A namespace has one, and a namespace made from an OpenLineage event gets the owner `anonymous`.
 
-    Here the shop gives DataHub and OpenMetadata `svc_nightly_etl` and `j.marsh` as users, and `data team` as a group in DataHub and a team of team type `Group` in OpenMetadata.
+    Here the shop gives DataHub and OpenMetadata `etlsvc/batch01.corp.internal@CORP.INTERNAL` and `j.marsh` as users, and `data team` as a group in DataHub and a team of team type `Group` in OpenMetadata.
     """)
     return
 
@@ -130,7 +130,7 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    DataHub and OpenMetadata keep all three. Atlas keeps one, here the first, `svc_nightly_etl`. Marquez keeps none.
+    DataHub and OpenMetadata keep all three. Atlas keeps one, here the first, `etlsvc/batch01.corp.internal@CORP.INTERNAL`. Marquez keeps none.
 
     Compare this with what you decided.
 
@@ -255,7 +255,7 @@ def _(mo):
     - The architectures list and the owner rules come from each project's documentation and code in the version read. Each platform keeps much more than an owner.
     - DataHub names an owner's ownership type in the field `typeUrn`. The shop's check takes any name after `urn:li:ownershipType:` and does not check that the ownership type has been defined. DataHub also has an older field, `type`, that its schema marks as no longer to be used.
     - A comment in DataHub's schema says its web front end supports only users as owners. The schema also allows groups.
-    - The shop gives OpenMetadata `svc_nightly_etl` as a user. OpenMetadata's rule takes any user.
+    - The shop gives OpenMetadata `etlsvc/batch01.corp.internal@CORP.INTERNAL` as a user. OpenMetadata's rule takes any user.
     - Atlas has room for one owner; which of the three it holds depends on what writes it.
 
     [Back to contents](https://snowch.github.io/metadata-systems/) · [Previous: Chapter 30](chapter_30.ipynb) · [Next: Chapter 32](chapter_32.ipynb)

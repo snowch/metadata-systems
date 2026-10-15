@@ -31,7 +31,7 @@ WEEK = ("returns", "source", "failed")
 MEANINGS = ("account", "responsible", "team")
 
 # Each meaning's source, for the assets that have a value in it.
-ACCOUNT = "svc_nightly_etl"  # the warehouse records it as every table's owner (Chapter 2)
+ACCOUNT = "etlsvc/batch01.corp.internal@CORP.INTERNAL"  # the warehouse records it as every table's owner (Chapter 2)
 # the `responsible` lines of your records and Jo's notes (Chapter 4)
 RESPONSIBLE = {
     "daily_sales": "j.marsh",

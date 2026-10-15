@@ -75,7 +75,7 @@ def _(mo):
 
     The shop's metadata system takes what other systems hold about `daily_sales` from three sources.
 
-    - The warehouse: its catalogue, read every night at 03:30. Its owner is the account the warehouse records as the table's owner, `svc_nightly_etl` (Chapter 2). Its columns are the table's columns.
+    - The warehouse: its catalogue, read every night at 03:30. Its owner is the account the warehouse records as the table's owner, `etlsvc/batch01.corp.internal@CORP.INTERNAL` (Chapter 2). Its columns are the table's columns.
     - Your records (Chapters 3 and 4), sent when they change. You last changed them on Monday 14 at 16:40, and they name `j.marsh` as responsible.
     - The team sheet: a spreadsheet of owners and columns that the engineer who built the platform wrote before the shop opened. Nobody has edited it since 28 August. It is imported every night at 04:00, and each import sends every row again.
 
@@ -98,7 +98,7 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    There are five claims. Three are about the owner: `svc_nightly_etl`, `j.marsh` and `data team`. Two are about the columns: `day, revenue_pence` from the warehouse, and `day, revenue` from the team sheet.
+    There are five claims. Three are about the owner: `etlsvc/batch01.corp.internal@CORP.INTERNAL`, `j.marsh` and `data team`. Two are about the columns: `day, revenue_pence` from the warehouse, and `day, revenue` from the team sheet.
 
     The shop keeps each source's latest sending of each attribute, so each night's import replaces the one before.
 
@@ -179,7 +179,7 @@ def _(mo):
 
     The next cell applies another rule to Tuesday's claims: `as of`. The claim whose source's content changed most recently wins.
 
-    The owner is `svc_nightly_etl` and the columns are `day, revenue_pence`, both from the warehouse.
+    The owner is `etlsvc/batch01.corp.internal@CORP.INTERNAL` and the columns are `day, revenue_pence`, both from the warehouse.
 
     The warehouse's content changes every night, at 02:30:21, when the night's work writes `daily_sales`. The warehouse's owner does not change.
     """)
@@ -246,7 +246,7 @@ def _(mo):
 
     On Tuesday at 09:00, the three give, in that order: `data team`; `j.marsh`; all three owners.
 
-    "Owner" is Chapter 2's word, and the three owners answer different questions: `j.marsh` names a person responsible, `data team` a team, and `svc_nightly_etl` the account the warehouse records.
+    "Owner" is Chapter 2's word, and the three owners answer different questions: `j.marsh` names a person responsible, `data team` a team, and `etlsvc/batch01.corp.internal@CORP.INTERNAL` the account the warehouse records.
 
     The shop holds all three claims. A rule that shows one claim shows one of these meanings. Keeping every claim leaves the meaning to whoever reads them.
 

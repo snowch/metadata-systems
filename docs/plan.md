@@ -278,13 +278,18 @@ no longer existed; Chapter 4's count prediction, whose question lived in its cel
 drafted (brief BZ). `test_jupyterlite.py` fails a write-in cell nothing reads, and a later box of
 the steps' kind that is not something the reader does.
 
-### 15 October 2026: the programs' account is `svc_nightly_etl`
+### 15 October 2026: the programs' account is `etlsvc/batch01.corp.internal@CORP.INTERNAL`
 
 At the author's suggestion, the warehouse account the four nightly programs log in as, which the
-warehouse records as every table's owner, is `svc_nightly_etl`, not `etl_service`: the `svc_` prefix
-marks a service identity, as platforms commonly name one, so that it reads as an account no person
-holds. The rename is the engine's (`PROGRAM_ACCOUNT` in `notebook/shop/platform.py` and the shop's
-other uses), the chapters' (2, 4, 21, 27, 30, 31) and the tests'; no number changes.
+warehouse records as every table's owner, looks like a principal from a corporate directory, not a
+made-up word: `etlsvc/batch01.corp.internal@CORP.INTERNAL`, first `svc_nightly_etl` and before that
+`etl_service`. Its form is a Kerberos user principal with an instance: the `etlsvc` account, on the
+batch host the programs run from, in the realm `CORP.INTERNAL`. The author first suggested
+`etlsvc/sql-dw-prod.corp.internal`; with the warehouse's host as its instance that form names a
+service on the warehouse (a service principal clients connect to), not the account that logs in to
+it, so the host is the batch machine's. The rename is the engine's (`PROGRAM_ACCOUNT` in
+`notebook/shop/platform.py` and the shop's other uses), the chapters' (2, 4, 21, 27, 30, 31) and the
+tests'; no number changes.
 
 ### 14 October 2026: Chapter 2's owner requirement, questioned as Chapters 3 and 4 question theirs
 
@@ -294,7 +299,7 @@ it." You, the data engineer, turn that into a rule for the platform, in a requir
 table must have an owner." (The author's brief first had the head send the rule about tables; the
 author then asked whether a shop's head would care about such details, and the head now speaks of
 the dashboard's numbers only.) The section follows Chapter 4's form: the warehouse's `table_owner`
-read; the rule met as written by `svc_nightly_etl`, the account the nightly programs log in as; a cell
+read; the rule met as written by `etlsvc/batch01.corp.internal@CORP.INTERNAL`, the account the nightly programs log in as; a cell
 where the reader writes what they would send the head and what they take "owner" to mean; the
 readings as a named list (`as_written`, `a_person`, `a_team`, `the_job`), which Chapter 8's
 ownership facet refers back to; the method said once, as this is its first appearance; and, in a

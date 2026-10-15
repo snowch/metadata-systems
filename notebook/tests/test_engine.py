@@ -76,13 +76,13 @@ class TheWeekAsItRan(unittest.TestCase):
         self.assertGreater(t["bytes"], 0)
         self.assertEqual(t["created"], "2026-09-01T10:20:00Z")
         self.assertEqual(t["last_altered"], "2026-09-14T02:30:21Z")
-        self.assertEqual(t["table_owner"], "svc_nightly_etl")
+        self.assertEqual(t["table_owner"], "etlsvc/batch01.corp.internal@CORP.INTERNAL")
         cols = self.w.sql("SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'daily_sales'")
         self.assertEqual([(c["column_name"], c["data_type"]) for c in cols], [("day", "DATE"), ("revenue_pence", "INTEGER")])
 
     def test_every_table_is_owned_by_the_account_four_programs_share(self):
         owners = {r["table_owner"] for r in self.w.sql("SELECT table_owner FROM information_schema.tables")}
-        self.assertEqual(owners, {"svc_nightly_etl"})
+        self.assertEqual(owners, {"etlsvc/batch01.corp.internal@CORP.INTERNAL"})
         programs = {e.writer for e in self.week.executions} - {"export"}
         self.assertEqual(programs, {"clean_customers", "clean_orders", "daily_sales", "dashboard_refresh"})
 
@@ -792,7 +792,7 @@ class TheClaims(unittest.TestCase):
         pick = lambda at, rule: {r["attribute"]: (r["value"], r["source"]) for r in C.resolve(C.claims(at), rule)}
         self.assertEqual(pick("2026-09-14T18:00:00Z", "newest"), {"columns": ("day, revenue", "team sheet"), "owner": ("j.marsh", "records")})
         self.assertEqual(pick("2026-09-15T09:00:00Z", "newest"), {"columns": ("day, revenue", "team sheet"), "owner": ("data team", "team sheet")})
-        self.assertEqual(pick("2026-09-15T09:00:00Z", "as of"), {"columns": ("day, revenue_pence", "warehouse"), "owner": ("svc_nightly_etl", "warehouse")})
+        self.assertEqual(pick("2026-09-15T09:00:00Z", "as of"), {"columns": ("day, revenue_pence", "warehouse"), "owner": ("etlsvc/batch01.corp.internal@CORP.INTERNAL", "warehouse")})
         self.assertEqual(pick("2026-09-15T09:00:00Z", "ranked"), {"columns": ("day, revenue_pence", "warehouse"), "owner": ("j.marsh", "records")})
         self.assertEqual(len(C.resolve(C.claims("2026-09-15T09:00:00Z"), "all")), 5)
 
@@ -1024,7 +1024,7 @@ class ThePartVIIRules(unittest.TestCase):
         # a value not written as a typeUrn is not counted, and the check names its owner
         wrong = {"account": "CUSTOM", "responsible": "x", "team": "urn:li:ownershipType:y"}
         self.assertEqual(P.kept(wrong)[0]["owners told apart by ownership type"], 1)
-        self.assertIn("`svc_nightly_etl`: `CUSTOM`", P.check(wrong)[0]["test"])
+        self.assertIn("`etlsvc/batch01.corp.internal@CORP.INTERNAL`: `CUSTOM`", P.check(wrong)[0]["test"])
         for which, passed in (("stub", 1), ("reference", 2)):
             ns: dict = {}
             exec((P.STUBS if which == "stub" else P.REFERENCE)["types"], ns)
@@ -1032,7 +1032,7 @@ class ThePartVIIRules(unittest.TestCase):
         self.assertEqual(P.check({"account": "OWNER", "responsible": "NONE", "team": "DATA_STEWARD"}).passed, 1)
         descriptions = {r["owner"]: r["its description"] for r in P.owners_in(ns["types"]) if r["platform"] == "DataHub"}
         self.assertEqual(descriptions["j.marsh"], "Principal stakeholders or domain experts associated with the asset(s).")
-        self.assertIsNone(descriptions["svc_nightly_etl"])
+        self.assertIsNone(descriptions["etlsvc/batch01.corp.internal@CORP.INTERNAL"])
 
     def test_the_forecast(self):
         from shop import ml as M
