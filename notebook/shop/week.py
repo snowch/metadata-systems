@@ -3,7 +3,7 @@
 """The shop's week, run night by night.
 
 Each night, in the early hours of Tuesday 8 to Monday 14 September, the export writes the three raw
-files, then four programs run in order, each logged in as `etl_service`: they clean the customers,
+files, then four programs run in order, each logged in as `svc_nightly_etl`: they clean the customers,
 clean the orders, add up the day before into `daily_sales`, and refresh the dashboard. The result is
 the platform as the learner finds it on Monday morning.
 

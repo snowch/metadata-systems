@@ -335,7 +335,7 @@ TABLES = {
 }
 
 # The account every program logs in as, which the warehouse records as each table's owner.
-PROGRAM_ACCOUNT = "etl_service"
+PROGRAM_ACCOUNT = "svc_nightly_etl"
 
 _WIDTH = {"INTEGER": 8, "DATE": 4, "TIMESTAMP": 8}
 

@@ -38,7 +38,7 @@ RECORDS_CHANGED = "2026-09-14T16:40:00Z"
 SHEET_EDITED = "2026-08-28T17:05:00Z"
 
 SOURCES = {
-    "warehouse": {"owner": "etl_service", "columns": "day, revenue_pence"},
+    "warehouse": {"owner": "svc_nightly_etl", "columns": "day, revenue_pence"},
     "records": {"owner": "j.marsh"},
     "team sheet": {"owner": "data team", "columns": "day, revenue"},
 }

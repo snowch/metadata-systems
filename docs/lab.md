@@ -44,7 +44,7 @@ note says which difference matters to it.
 
 ### The jobs
 
-Four jobs run each night, in this order, all logged in as the warehouse account `etl_service`.
+Four jobs run each night, in this order, all logged in as the warehouse account `svc_nightly_etl`.
 Their SQL (SQLite's) is in `notebook/shop/week.py`; the platform does not record it.
 
 | Job | Reads | Writes | How |

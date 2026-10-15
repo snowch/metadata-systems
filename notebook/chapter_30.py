@@ -182,7 +182,7 @@ def _(mo):
 
     A job's name follows the setting `openlineage-event-listener.job.name-format`. Its default is `$QUERY_ID`, the query's id, so each query is its own job. The other values it can use are `$SOURCE`, the name the client gives, `$USER` and `$CLIENT_IP`. The format can combine these values with fixed text; the cell here takes one value.
 
-    Suppose each of the shop's four nightly programs ran as one query a night, all from clients with the same source, `shop-nightly`, the same user, `etl_service`, and the same address, `10.0.0.5`.
+    Suppose each of the shop's four nightly programs ran as one query a night, all from clients with the same source, `shop-nightly`, the same user, `svc_nightly_etl`, and the same address, `10.0.0.5`.
 
     The shop's lineage wants one job for the 7 runs of `build_daily_sales`, holding no other program's runs.
 
@@ -249,7 +249,7 @@ def _(mo):
     mo.md(r"""
     With a source for each program, the 28 nightly queries make 28 jobs under `$QUERY_ID`, one for each query. `$SOURCE` makes 4, one for each program.
 
-    `$USER` and `$CLIENT_IP` each make 1 job. All four programs share the user `etl_service` and the address `10.0.0.5`, so neither value can tell the programs apart.
+    `$USER` and `$CLIENT_IP` each make 1 job. All four programs share the user `svc_nightly_etl` and the address `10.0.0.5`, so neither value can tell the programs apart.
 
     Suppose the analyst's copy from Sunday 13 were made in Trino: a `SELECT` on `clean_orders` whose result a client saves as a file.
 

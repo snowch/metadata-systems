@@ -343,10 +343,10 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         [t] = self.w.sql("SELECT * FROM information_schema.tables WHERE table_name = 'daily_sales'")
         cols = [c["column_name"] for c in self.w.sql("SELECT column_name FROM information_schema.columns WHERE table_name = 'daily_sales'")]
         self.assertEqual(cols, ["day", "revenue_pence"])
-        self.assertEqual((t["row_count"], t["created"][:10], t["last_altered"][:16], t["table_owner"]), (7, "2026-09-01", "2026-09-14T02:30", "etl_service"))
+        self.assertEqual((t["row_count"], t["created"][:10], t["last_altered"][:16], t["table_owner"]), (7, "2026-09-01", "2026-09-14T02:30", "svc_nightly_etl"))
         self.says(
             "The record for `daily_sales` gives its columns and their types, 7 rows, a size, when it was created, "
-            "a last-altered time of 02:30 on Monday 14 September, and an owner, `etl_service`."
+            "a last-altered time of 02:30 on Monday 14 September, and an owner, `svc_nightly_etl`."
         )
         # The record is shown before it is described: the cells come first.
         holds = SOURCE[2][SOURCE[2].index("## 2. What the platform records about its assets"):]
@@ -371,7 +371,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
     def test_the_owner_and_the_programs(self):
         owners = {r["table_owner"] for r in self.w.sql("SELECT table_owner FROM information_schema.tables")}
         programs = {e.writer for e in self.week.executions} - {"export"}
-        self.assertEqual((owners, len(programs)), ({"etl_service"}, 4))
+        self.assertEqual((owners, len(programs)), ({"svc_nightly_etl"}, 4))
         tables = self.w.sql("SELECT table_name FROM information_schema.tables")
         self.assertEqual(len(tables), 3)
         # Since 14 October 2026, at the author's request, the head of the shop sends the requirement
@@ -387,11 +387,11 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says('Your rule becomes "Every table must name whom to ask about it."')
         self.assertNotIn("The reading the head wanted", SOURCE[2])
         self.says("So the requirement is met as written: every table has an owner.")
-        self.says("`etl_service` is the account the shop's four nightly programs log in as.")
-        self.says("- As written, `as_written`: the table has a value in `table_owner`. `etl_service` meets it.")
+        self.says("`svc_nightly_etl` is the account the shop's four nightly programs log in as.")
+        self.says("- As written, `as_written`: the table has a value in `table_owner`. `svc_nightly_etl` meets it.")
         self.says("- A person to ask, `a_person`: a named member of staff. Nothing records one.")
         self.says("- A team that answers for it, `a_team`: a named team. Nothing records one.")
-        self.says("- The job that writes it, `the_job`: a program. `etl_service` is the account a program logs in as, not the program.")
+        self.says("- The job that writes it, `the_job`: a program. `svc_nightly_etl` is the account a program logs in as, not the program.")
         self.says('- Question the requirement "Every table must have an owner."')
         self.says('## "Every table must have an owner."')
         # The reader decides before opening the readings, which are closed until then; no code cell
@@ -1343,12 +1343,12 @@ class TheWordsOfPartV(unittest.TestCase):
         tuesday = C.claims("2026-09-15T09:00:00Z")
         chosen = lambda rule, held=tuesday: {r["attribute"]: r["value"] for r in C.resolve(held, rule)}
         self.assertEqual(chosen("newest"), {"columns": "day, revenue", "owner": "data team"})
-        self.assertEqual(chosen("as of"), {"columns": "day, revenue_pence", "owner": "etl_service"})
+        self.assertEqual(chosen("as of"), {"columns": "day, revenue_pence", "owner": "svc_nightly_etl"})
         self.assertEqual(chosen("ranked"), {"columns": "day, revenue_pence", "owner": "j.marsh"})
         self.assertEqual(len(C.resolve(tuesday, "all")), 5)
         self.assertEqual({r["source"]: r["sent"] for r in tuesday}, {"team sheet": "2026-09-15T04:00:00Z", "warehouse": "2026-09-15T03:30:00Z", "records": "2026-09-14T16:40:00Z"})
         self.says("The team sheet's claims were sent at 04:00 on Tuesday 15, the warehouse's at 03:30, and your records' at 16:40 on Monday 14.", 21)
-        self.says("The owner is `etl_service` and the columns are `day, revenue_pence`, both from the warehouse.", 21)
+        self.says("The owner is `svc_nightly_etl` and the columns are `day, revenue_pence`, both from the warehouse.", 21)
         self.assertEqual(chosen("ranked", C.claims("2026-09-14T12:00:00Z"))["owner"], "data team")
         self.says("At 12:00 on Monday 14, before your records were sent, `ranked` gave the owner `data team`, from the team sheet.", 21)
         self.says("The cell lists every claim the shop holds, with its source and its two times: five rows.", 21)
@@ -1867,7 +1867,7 @@ class TheWordsOfPartVII(unittest.TestCase):
         from shop import platforms as P
 
         self.assertEqual([r["owners kept"] for r in P.kept()], [3, 3, 1, 0])
-        self.says("DataHub and OpenMetadata keep all three. Atlas keeps one, here the first, `etl_service`. Marquez keeps none.", 31)
+        self.says("DataHub and OpenMetadata keep all three. Atlas keeps one, here the first, `svc_nightly_etl`. Marquez keeps none.", 31)
         ns: dict = {}
         exec(P.REFERENCE["types"], ns)
         self.assertEqual(P.kept(ns["types"])[0]["owners told apart by ownership type"], 3)

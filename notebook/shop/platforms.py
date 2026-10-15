@@ -28,7 +28,7 @@ from __future__ import annotations
 from .platform import Rows
 
 OWNERS = (
-    ("account", "etl_service", "user"),
+    ("account", "svc_nightly_etl", "user"),
     ("responsible", "j.marsh", "user"),
     ("team", "data team", "group"),
 )

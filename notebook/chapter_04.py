@@ -93,7 +93,7 @@ def _(mo):
 
     Each group of lines starts with a `#` note that says where the lines come from. Your records hold your record of `daily_sales` from Chapter 3, five lines with Jo Marsh as responsible. They also hold three lines from the head of the shop's message in Chapter 3: the data engineer is responsible for `clean_customers` and `clean_orders`, and Sam Lund is responsible for `products.csv`. The last part of your records is one line from the orders Chapter 2 found missing on Thursday: `clean_orders drops: orders with no customer id`. Jo's notes say what `sales_dashboard` means, and name `j.marsh` as responsible for `sales_dashboard` and for `daily_sales`.
 
-    The head's word is "owner". The lines that the head's list counts are the `responsible` lines: Chapter 3 defined `responsible` as who to ask about an asset. The warehouse's owner, the account `etl_service` that Chapter 2 found, answers a different question: which account controls a table. The head's list does not ask for that.
+    The head's word is "owner". The lines that the head's list counts are the `responsible` lines: Chapter 3 defined `responsible` as who to ask about an asset. The warehouse's owner, the account `svc_nightly_etl` that Chapter 2 found, answers a different question: which account controls a table. The head's list does not ask for that.
     """)
     return
 

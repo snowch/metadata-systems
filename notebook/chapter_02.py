@@ -264,7 +264,7 @@ def _(mo):
 
     Each record describes an asset as it is this morning.
 
-    - The record for `daily_sales` gives its columns and their types, 7 rows, a size, when it was created, a last-altered time of 02:30 on Monday 14 September, and an owner, `etl_service`.
+    - The record for `daily_sales` gives its columns and their types, 7 rows, a size, when it was created, a last-altered time of 02:30 on Monday 14 September, and an owner, `svc_nightly_etl`.
     - Each file's record gives its key, size and last-modified time.
     - The dashboard's record gives its title, who created it, when it last refreshed and the values it shows.
 
@@ -321,7 +321,7 @@ def _(warehouse):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The warehouse records `etl_service` in `table_owner` for all three tables. `etl_service` is the account the shop's four nightly programs log in as. So the requirement is met as written: every table has an owner.
+    The warehouse records `svc_nightly_etl` in `table_owner` for all three tables. `svc_nightly_etl` is the account the shop's four nightly programs log in as. So the requirement is met as written: every table has an owner.
     """)
     return
 
@@ -339,16 +339,16 @@ def _(mo):
     mo.md(r"""
     <details><summary>Four readings of "owner"</summary>
 
-    - As written, `as_written`: the table has a value in `table_owner`. `etl_service` meets it.
+    - As written, `as_written`: the table has a value in `table_owner`. `svc_nightly_etl` meets it.
     - A person to ask, `a_person`: a named member of staff. Nothing records one.
     - A team that answers for it, `a_team`: a named team. Nothing records one.
-    - The job that writes it, `the_job`: a program. `etl_service` is the account a program logs in as, not the program.
+    - The job that writes it, `the_job`: a program. `svc_nightly_etl` is the account a program logs in as, not the program.
 
     A requirement as written is met by whatever the platform already holds. Each reading of it asks for a different thing to be recorded. Your work is to say which reading was meant, and to record what that reading needs.
 
     <div class="ms-box ms-box-requirement">
 
-    Someone to ask about a wrong number is a person or a team, so the owner has to be `a_person` or `a_team`. The warehouse's owner, `etl_service`, is an account, so it does not meet that reading. Your rule becomes "Every table must name whom to ask about it."
+    Someone to ask about a wrong number is a person or a team, so the owner has to be `a_person` or `a_team`. The warehouse's owner, `svc_nightly_etl`, is an account, so it does not meet that reading. Your rule becomes "Every table must name whom to ask about it."
 
     </div>
 

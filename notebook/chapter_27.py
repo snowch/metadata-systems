@@ -222,7 +222,7 @@ def _(mo):
     mo.md(r"""
     The shop holds three owners for `daily_sales`, each from its own source, and each answers a different question. The next cell lists them:
 
-    - `account`: which account controls the table in the warehouse? `etl_service` (Chapter 2).
+    - `account`: which account controls the table in the warehouse? `svc_nightly_etl` (Chapter 2).
     - `responsible`: whom should you ask about it? `j.marsh`, from your records (Chapter 4).
     - `team`: which team looks after it? `data team`, from the team sheet (Chapter 21).
 

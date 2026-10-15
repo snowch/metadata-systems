@@ -262,6 +262,14 @@ The author reviews the course at five checkpoints:
 
 ## Decisions since the brief
 
+### 15 October 2026: the programs' account is `svc_nightly_etl`
+
+At the author's suggestion, the warehouse account the four nightly programs log in as, which the
+warehouse records as every table's owner, is `svc_nightly_etl`, not `etl_service`: the `svc_` prefix
+marks a service identity, as platforms commonly name one, so that it reads as an account no person
+holds. The rename is the engine's (`PROGRAM_ACCOUNT` in `notebook/shop/platform.py` and the shop's
+other uses), the chapters' (2, 4, 21, 27, 30, 31) and the tests'; no number changes.
+
 ### 14 October 2026: Chapter 2's owner requirement, questioned as Chapters 3 and 4 question theirs
 
 At the author's request. The head of the shop asks, in the shop's terms, as a second message:
@@ -270,7 +278,7 @@ it." You, the data engineer, turn that into a rule for the platform, in a requir
 table must have an owner." (The author's brief first had the head send the rule about tables; the
 author then asked whether a shop's head would care about such details, and the head now speaks of
 the dashboard's numbers only.) The section follows Chapter 4's form: the warehouse's `table_owner`
-read; the rule met as written by `etl_service`, the account the nightly programs log in as; a cell
+read; the rule met as written by `svc_nightly_etl`, the account the nightly programs log in as; a cell
 where the reader writes what they would send the head and what they take "owner" to mean; the
 readings as a named list (`as_written`, `a_person`, `a_team`, `the_job`), which Chapter 8's
 ownership facet refers back to; the method said once, as this is its first appearance; and, in a

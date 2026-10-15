@@ -146,7 +146,7 @@ def trino(week: Week, name_format: str = "$QUERY_ID", source_of: dict | None = N
     out = []
     for n, r in enumerate(_nights(week), start=1):
         query_id = f"q{r['day'][8:10]}{NIGHTLY.index(r['job']) + 1:02d}"
-        values = {"$QUERY_ID": query_id, "$SOURCE": source_of.get(r["job"], ""), "$USER": "etl_service", "$CLIENT_IP": "10.0.0.5"}
+        values = {"$QUERY_ID": query_id, "$SOURCE": source_of.get(r["job"], ""), "$USER": "svc_nightly_etl", "$CLIENT_IP": "10.0.0.5"}
         out.append({"program": r["job"], "night": r["day"], "query": query_id, "job in Trino's events": values.get(name_format, name_format)})
     return Rows(out)
 
