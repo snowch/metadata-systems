@@ -144,6 +144,38 @@ content tests fail a figure without a block or with a question unanswered.
   that rebuilds `daily_sales` exactly.
 - **Why now:** straight after `True`, and before the what-ifs show what the inference cannot hold.
 
+### `hypothesis` (15 October 2026)
+
+- **Kind:** a diagram (reference), `figures.hypothesis`: the hypothesis column by column.
+  `clean_orders`'s columns are on the left and `daily_sales`'s on the right. Each link has a dashed
+  arrow and the hypothesis's step: the rows it keeps (`status`, `completed`, marked assumed), the
+  date of `ordered_at` to `day`, and `price_pence` × `quantity` added up per day to
+  `revenue_pence`. A line under it lists the columns the hypothesis leaves unused. The columns are
+  the warehouse's own, and the links are the parts of the engine's one fitting query
+  (`shop/infer.py`).
+- **Serves:** "what exactly does the hypothesis claim?", before the query tests it. It replaces two
+  bullets that listed the two tables' columns and left the reader to match them. Every link is
+  dashed, as the inferred link is, so it cannot be read as a recorded relation. The map still
+  draws none.
+- **Why now:** it sits under the bold hypothesis, ahead of the query cell. The reader then holds the
+  claim in one picture while reading the SQL that tests it, and compares it with their Chapter 1
+  guess (the box under the bullets).
+
+### `two_sources` (15 October 2026)
+
+- **Kind:** a diagram (reference), `figures.two_sources`, in Change 1: `clean_orders` and
+  `s3://shop-scratch/clean_orders_copy.csv` each have a dashed arrow tagged "Inferred: gives all 7
+  rows" to `daily_sales`, with each asset's row count. The sources and counts come from the week
+  with the analyst's copy.
+- **Serves:** the result Change 1's paragraph states, that a query that fits is evidence for every
+  source it fits, drawn in the same form as `inferred`. The reader sees the one link of section 3
+  become two equal ones. It draws no record of which source the job reads, because none exists.
+  The paragraph above it says so, and the figure does not repeat it.
+- **Why now:** it follows the paragraph after Change 1's cell, so the paragraph's answer comes
+  first and the figure shows it. Like that paragraph, it sits below the cell. Moving the answer
+  out of the reader's view until the cell runs is the closed-block question, still open
+  (`inferred` and the three what-ifs' paragraphs share it).
+
 ### `three_records` (round 22)
 
 - **Kind:** a figure of the shop's data, `figures.three_records`: for `daily_sales`, each question
@@ -1304,3 +1336,15 @@ author to decide.
 - The lab models one week. Later chapters add weeks and changes as they need them.
 - The map's button is this course's own, built in `packages/views`. If the digital-design course
   wants a figure that stays to hand, it is a candidate for the platform under the rule of two.
+
+## The hypothesis drawn, 15 October 2026
+
+At the author's request ("Show this visually?"), the hypothesis's first two bullets, which listed
+`daily_sales`'s columns and `clean_orders`'s, became `hypothesis` (above). Change 1 gained
+`two_sources`. Haiku drafted their captions and labels from a fact brief. The check added one
+full stop to the `status` label. It also gave the `daily_sales` node the wording of the
+`clean_orders` node ("A table with {rows} rows.") where Haiku had written two forms. The
+"Compare" box now follows the hypothesis it points to ("the hypothesis above"). The word test
+pins both figures' columns, links and row counts. On a 360-pixel phone the names keep whole: the
+column figure gives each name its width and the arrow what is left. The copy's long name breaks
+after a slash or an underscore.

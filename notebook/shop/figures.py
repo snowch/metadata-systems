@@ -220,6 +220,91 @@ def inferred(week: Week, labels: dict[str, str]) -> str:
     )
 
 
+def _columns(week: Week, table: str) -> list[str]:
+    return [
+        r["column_name"]
+        for r in week.warehouse.sql(
+            "SELECT column_name FROM information_schema.columns WHERE table_name = :t ORDER BY rowid", t=table
+        )
+    ]
+
+
+def hypothesis(week: Week, labels: dict[str, str]) -> str:
+    """The hypothesis column by column: which columns of the source each column of `daily_sales` could
+    come from, and the rows it keeps. Every link is dashed: a guess the query then tests.
+
+    The links are the parts of the one query that rebuilds `daily_sales` (shop/infer.py): the column
+    it groups by, the sum it adds up, and the status it keeps. The columns are the warehouse's own."""
+    import re
+
+    from .infer import MEASURE, PER, queries_that_rebuild
+
+    [query] = queries_that_rebuild(week)
+    assert (query["keep"], query["measure"], query["per"]) == ("completed", "revenue", "day"), query
+    source, target = query["source"], "daily_sales"
+    have, made = _columns(week, source), _columns(week, target)
+
+    def used(expr: str) -> list[str]:
+        named = [c for c in have if re.search(rf"\b{c}\b", expr)]
+        return sorted(named, key=expr.index)
+
+    key, value = used(PER[query["per"]]), used(MEASURE[query["measure"]])
+    kept = used("status")
+    names = lambda cols: "".join(f"<code>{escape(c)}</code>" for c in cols)
+    lane = lambda left, label, arrow, right: (
+        f'<div class="ms-hyp-lane"><div class="ms-hyp-cols">{left}</div>'
+        f'<div class="ms-hyp-how"><span class="ms-hyp-label">{_named(label)}</span>'
+        f'{"<span class=\"ms-hyp-arrow\"></span>" if arrow else ""}</div>'
+        f'<div class="ms-hyp-cols">{right}</div></div>'
+    )
+    unused = [c for c in have if c not in key + value + kept]
+    return (
+        '<div class="ms-fig ms-hyp">'
+        f'<div class="ms-hyp-lane ms-hyp-head"><div><code>{escape(source)}</code></div><div></div>'
+        f"<div><code>{escape(target)}</code></div></div>"
+        + lane(names(kept), labels["keep"], False, "")
+        + lane(names(key), labels["per"], True, names(made[:1]))
+        + lane(names(value), labels["measure"], True, names(made[1:]))
+        + f'<div class="ms-muted ms-hyp-unused">{_named(labels["unused"].format(columns=", ".join(f"`{c}`" for c in unused)))}</div>'
+        "</div>"
+    )
+
+
+def two_sources(week: Week, labels: dict[str, str]) -> str:
+    """With the analyst's copy: the two assets the same query fits, each linked to `daily_sales` by a
+    dashed arrow, inferred, not recorded. The sources and the row counts are the engine's."""
+    import re
+
+    from .infer import queries_that_rebuild
+
+    sources = [q["source"] for q in queries_that_rebuild(week)]
+    assert len(sources) == 2 and sources[1].endswith("clean_orders_copy.csv"), sources
+    table = week.warehouse.sql(f"SELECT COUNT(*) AS n FROM {sources[0]}")[0]["n"]
+    copy = len(week.storage.records(sources[1]))
+    target = week.warehouse.sql("SELECT COUNT(*) AS n FROM daily_sales")[0]["n"]
+    # The copy's long name breaks after a slash or an underscore, where a reader would split it, not at
+    # any letter; a table's name stays whole.
+    breakable = lambda name: (
+        re.sub(r"(?<!/)/(?!/)", "/<wbr>", escape(name)).replace("_", "_<wbr>") if "/" in name else escape(name)
+    )
+    node = lambda cls, name, under: (
+        f'<div class="ms-system ms-node {cls}"><code>{breakable(name)}</code><div class="ms-muted">{_named(under)}</div></div>'
+    )
+    arrow = lambda cls: (
+        f'<div class="ms-two-link {cls}"><span class="ms-tag">{_named(labels["fit"].format(rows=target))}</span>'
+        '<span class="ms-hyp-arrow"></span></div>'
+    )
+    return (
+        '<div class="ms-fig ms-two">'
+        + node("ms-two-a", sources[0], labels["table"].format(rows=table))
+        + arrow("ms-two-la")
+        + node("ms-two-b", sources[1], labels["file"].format(rows=copy))
+        + arrow("ms-two-lb")
+        + node("ms-two-t", "daily_sales", labels["to"].format(rows=target))
+        + "</div>"
+    )
+
+
 def three_records(week: Week, copied: Week, heads: tuple[str, str, str], rows: list[tuple[str, str, str]]) -> str:
     """For `daily_sales`: each question, what the platform holds, and the record that would answer it.
 

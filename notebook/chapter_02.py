@@ -373,9 +373,19 @@ def _(mo):
 def _(mo):
     mo.md(r"""
     **`daily_sales` is made from `clean_orders`: completed orders only, `price_pence` × `quantity` added up for each day.**
+    """)
+    return
 
-    - `daily_sales` has two columns, `day` and `revenue_pence`: one total in pence per day.
-    - `clean_orders` has `price_pence`, `quantity`, `status` and `ordered_at` for each order.
+
+@app.cell(hide_code=True)
+def _(figures, mo, week):
+    mo.Html(figures.figure(figures.hypothesis(week, {'keep': 'Keeps rows where `status` is `completed` (assumed).', 'per': 'The date part of `ordered_at` becomes `day`.', 'measure': '`price_pence` × `quantity` for each order, added up for each day.', 'unused': 'Not used from `clean_orders`: {columns}.'}), 'How `daily_sales` could be made from `clean_orders`, column by column.'))
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     - On Thursday, `daily_sales` agrees with `clean_orders`, not with `orders.jsonl`: it is short by exactly the three orders that `clean_orders` lacks.
     - Leaving out cancelled orders is an assumption, that a cancelled order brings in no money. Nothing so far shows whether `daily_sales` counts them.
     """)
@@ -518,6 +528,12 @@ def _(mo):
     mo.md(r"""
     Two records change: object storage has a new file, `s3://shop-scratch/clean_orders_copy.csv`, and the last row lists a second query that fits, over the copy. No record says which of the two the job that writes `daily_sales` reads, and a query that fits is evidence for every source it fits. Only a record of what the job read would settle it.
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(figures, mo, shop):
+    mo.Html(figures.figure(figures.two_sources(shop.run_week(["copy"]), {'table': 'A table with {rows} rows.', 'file': 'A CSV file with {rows} rows.', 'to': 'A table with {rows} rows.', 'fit': 'Inferred: gives all {rows} rows'}), "After Change 1, the same query fits two sources: `clean_orders` and the analyst's copy, each linked to `daily_sales`."))
     return
 
 

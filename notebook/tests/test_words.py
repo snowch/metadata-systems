@@ -429,6 +429,20 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         drawn = figures.inferred(self.week, {"from": "{rows}", "step": "s", "fit": "{rows}", "to": "{rows}", "recorded": "r"})
         self.assertIn("<code>clean_orders</code><div class=\"ms-muted\">44</div>", drawn)
         self.assertEqual(len(self.w.sql("SELECT * FROM clean_orders")), 44)
+        # The hypothesis column by column: the warehouse's columns, joined as the one fitting query
+        # joins them, and the columns it leaves unused.
+        drawn = figures.hypothesis(self.week, {"keep": "k", "per": "p", "measure": "m", "unused": "{columns}"})
+        self.assertIn('<code>status</code></div><div class="ms-hyp-how"><span class="ms-hyp-label">k</span></div>', drawn)
+        self.assertIn('<code>ordered_at</code></div><div class="ms-hyp-how"><span class="ms-hyp-label">p</span><span class="ms-hyp-arrow"></span></div><div class="ms-hyp-cols"><code>day</code>', drawn)
+        self.assertIn('<code>price_pence</code><code>quantity</code></div><div class="ms-hyp-how"><span class="ms-hyp-label">m</span><span class="ms-hyp-arrow"></span></div><div class="ms-hyp-cols"><code>revenue_pence</code>', drawn)
+        self.assertIn("<code>order_id</code>, <code>customer_id</code>, <code>product_id</code>", drawn)
+        self.assertIn("figures.hypothesis(week,", SOURCE[2])
+        # With Change 1, the same query fits the table and the analyst's copy, 44 rows each.
+        drawn = figures.two_sources(shop.run_week(["copy"]), {"table": "{rows}", "file": "{rows}", "to": "{rows}", "fit": "all {rows}"})
+        for shown in ("<code>clean_orders</code><div class=\"ms-muted\">44</div>", "<code>s3://shop-scratch/<wbr>clean_<wbr>orders_<wbr>copy.csv</code><div class=\"ms-muted\">44</div>", "<code>daily_sales</code><div class=\"ms-muted\">7</div>"):
+            self.assertIn(shown, drawn)
+        self.assertEqual(drawn.count("all 7"), 2)
+        self.assertIn('figures.two_sources(shop.run_week(["copy"]),', SOURCE[2])
 
     def test_the_three_changes(self):
         # Chapter 2's three; Chapter 3 adds a fourth, `column`.

@@ -798,6 +798,188 @@
   }
 }
 
+/* The hypothesis column by column (Chapter 2): the source's columns on the left, the made table's on
+   the right, and between them what the hypothesis says happens, over a dashed arrow, the same as an
+   inferred link's. Each lane is one link, and every lane shares the three columns, so the names line
+   up. On a phone the arrow keeps its narrow column between the names, and the words go under them. */
+.jp-RenderedMarkdown .ms-hyp-lane {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr);
+  grid-template-areas: "from how to";
+  gap: 0.4rem 0.75rem;
+  align-items: center;
+  padding: 0.55rem 0;
+  border-top: 1px solid color-mix(in srgb, var(--jp-content-font-color1) 15%, transparent);
+}
+
+.jp-RenderedMarkdown .ms-hyp-head {
+  padding-top: 0;
+  border-top: none;
+  font-weight: 600;
+}
+
+.jp-RenderedMarkdown .ms-hyp-lane > :first-child {
+  grid-area: from;
+}
+
+.jp-RenderedMarkdown .ms-hyp-lane > :last-child {
+  grid-area: to;
+}
+
+.jp-RenderedMarkdown .ms-hyp-head > :last-child,
+.jp-RenderedMarkdown .ms-hyp-lane > .ms-hyp-cols:last-child {
+  text-align: right;
+}
+
+.jp-RenderedMarkdown .ms-hyp-cols {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.jp-RenderedMarkdown .ms-hyp-lane > .ms-hyp-cols:last-child {
+  align-items: flex-end;
+}
+
+.jp-RenderedMarkdown .ms-hyp-how {
+  grid-area: how;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.jp-RenderedMarkdown .ms-hyp-arrow {
+  position: relative;
+  display: block;
+  width: 100%;
+  border-top: 2px dashed color-mix(in srgb, var(--jp-content-font-color1) 55%, transparent);
+}
+
+.jp-RenderedMarkdown .ms-hyp-arrow::after {
+  content: "\25B6";
+  position: absolute;
+  right: -0.3rem;
+  top: 0;
+  transform: translateY(calc(-50% - 1px));
+  font-size: 0.8rem;
+  line-height: 1;
+  color: color-mix(in srgb, var(--jp-content-font-color1) 55%, transparent);
+}
+
+.jp-RenderedMarkdown .ms-hyp-unused {
+  padding-top: 0.55rem;
+  border-top: 1px solid color-mix(in srgb, var(--jp-content-font-color1) 15%, transparent);
+}
+
+/* Change 1's two sources: each with its dashed arrow to `daily_sales`, which spans both rows. On a
+   phone the two sources sit side by side, and each arrow runs down to `daily_sales` under them. */
+.jp-RenderedMarkdown .ms-two {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr);
+  grid-template-areas:
+    "a la t"
+    "b lb t";
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.jp-RenderedMarkdown .ms-two-a {
+  grid-area: a;
+}
+
+.jp-RenderedMarkdown .ms-two-b {
+  grid-area: b;
+}
+
+.jp-RenderedMarkdown .ms-two-la {
+  grid-area: la;
+}
+
+.jp-RenderedMarkdown .ms-two-lb {
+  grid-area: lb;
+}
+
+.jp-RenderedMarkdown .ms-two-t {
+  grid-area: t;
+}
+
+.jp-RenderedMarkdown .ms-two-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+@media (max-width: 640px) {
+  /* The names take the width they need, whole, and the arrow takes what is left. */
+  .jp-RenderedMarkdown .ms-hyp-lane {
+    grid-template-columns: max-content minmax(1.2rem, 1fr) max-content;
+    column-gap: 0.5rem;
+    grid-template-areas:
+      "from arrow to"
+      "label label label";
+  }
+
+  .jp-RenderedMarkdown .ms-hyp-head {
+    grid-template-areas: "from arrow to";
+  }
+
+  .jp-RenderedMarkdown .ms-hyp-how {
+    display: contents;
+  }
+
+  .jp-RenderedMarkdown .ms-hyp-label {
+    grid-area: label;
+    font-size: 0.85rem;
+  }
+
+  .jp-RenderedMarkdown .ms-hyp-arrow {
+    grid-area: arrow;
+  }
+
+  /* Narrower margins in the two boxes side by side, so a table's name fits a 360-pixel phone whole. */
+  .jp-RenderedMarkdown .ms-two .ms-node {
+    padding: 0.6rem 0.4rem;
+  }
+
+  .jp-RenderedMarkdown .ms-two {
+    column-gap: 0.5rem;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "a b"
+      "la lb"
+      "t t";
+    align-items: stretch;
+  }
+
+  /* Each arrow runs down from its source: a dashed line on the left with an arrowhead, the tag
+     beside it. */
+  .jp-RenderedMarkdown .ms-two-link {
+    position: relative;
+    align-items: flex-start;
+    margin-left: 1.25rem;
+    padding: 0.4rem 0 0.9rem 0.6rem;
+    border-left: 2px dashed color-mix(in srgb, var(--jp-content-font-color1) 55%, transparent);
+  }
+
+  .jp-RenderedMarkdown .ms-two-link .ms-hyp-arrow {
+    display: none;
+  }
+
+  .jp-RenderedMarkdown .ms-two-link::after {
+    content: "\25BC";
+    position: absolute;
+    bottom: -0.55rem;
+    left: -0.42rem;
+    font-size: 0.8rem;
+    color: color-mix(in srgb, var(--jp-content-font-color1) 55%, transparent);
+  }
+}
+
 /* A table of questions and records: columns on a wide screen; on a phone each row stacks, with
    each cell under its column's name, which a wide screen hides (its heading says it). A Markdown
    cell drops data attributes, so the name is a span in the cell. */
