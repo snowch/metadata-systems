@@ -371,14 +371,6 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.callout(mo.md(r"""
-    Compare it with your guess for `daily_sales` at the end of Chapter 1.
-    """), kind="info")
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
     mo.md(r"""
     **`daily_sales` is made from `clean_orders`: completed orders only, `price_pence` × `quantity` added up for each day.**
 
@@ -387,6 +379,14 @@ def _(mo):
     - On Thursday, `daily_sales` agrees with `clean_orders`, not with `orders.jsonl`: it is short by exactly the three orders that `clean_orders` lacks.
     - Leaving out cancelled orders is an assumption, that a cancelled order brings in no money. Nothing so far shows whether `daily_sales` counts them.
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.callout(mo.md(r"""
+    Compare the hypothesis above with your guess for `daily_sales` at the end of Chapter 1.
+    """), kind="info")
     return
 
 
