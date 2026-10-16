@@ -430,11 +430,16 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertIn("<code>clean_orders</code><div class=\"ms-muted\">44</div>", drawn)
         self.assertEqual(len(self.w.sql("SELECT * FROM clean_orders")), 44)
         # The hypothesis column by column: the warehouse's columns, joined as the one fitting query
-        # joins them, and the columns it leaves unused.
+        # joins them, a numbered key in the links' order, and the columns it leaves unused.
         drawn = figures.hypothesis(self.week, {"keep": "k", "per": "p", "measure": "m", "unused": "{columns}"})
-        self.assertIn('<code>status</code></div><div class="ms-hyp-how"><span class="ms-hyp-label">k</span></div>', drawn)
-        self.assertIn('<code>ordered_at</code></div><div class="ms-hyp-how"><span class="ms-hyp-label">p</span><span class="ms-hyp-arrow"></span></div><div class="ms-hyp-cols"><code>day</code>', drawn)
-        self.assertIn('<code>price_pence</code><code>quantity</code></div><div class="ms-hyp-how"><span class="ms-hyp-label">m</span><span class="ms-hyp-arrow"></span></div><div class="ms-hyp-cols"><code>revenue_pence</code>', drawn)
+        import base64
+
+        svg = base64.b64decode(re.search(r"base64,([^\"]+)", drawn).group(1)).decode()
+        names = re.findall(r">([a-z_]+)</text>", svg)
+        self.assertEqual(names, ["clean_orders", "ordered_at", "price_pence", "quantity", "status", "order_id", "customer_id", "product_id", "daily_sales", "day", "revenue_pence"])
+        self.assertEqual(svg.count('class="unused"'), 3)
+        self.assertIn("1: ordered_at links to day. 2: price_pence and quantity link to revenue_pence. 3: status links to the table daily_sales.", drawn)
+        self.assertIn('<ol class="ms-hyp-key"><li>p</li><li>m</li><li>k</li></ol>', drawn)
         self.assertIn("<code>order_id</code>, <code>customer_id</code>, <code>product_id</code>", drawn)
         self.assertIn("figures.hypothesis(week,", SOURCE[2])
         # With Change 1, the same query fits the table and the analyst's copy, 44 rows each.

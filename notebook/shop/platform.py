@@ -49,7 +49,7 @@ _TABLE_STYLE = (
     "color-mix(in srgb,currentColor 18%,transparent);text-align:left;white-space:nowrap}"
     ".ms-table td{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}"
     ".ms-table th{font-weight:600}.ms-scroll{overflow-x:auto;max-width:100%}"
-    ".ms-table .ms-wd{margin-left:0.35em;opacity:0.65}</style>"
+    ".ms-table .ms-wd{margin-left:0.35em;opacity:0.65}.ms-table .ms-nb{white-space:nowrap}</style>"
 )
 
 # A date or a time standing as a word of its own: 2026-09-10, 2026-09-10T02:30:21Z, "2026-09-22
@@ -78,7 +78,7 @@ def _value(value) -> str:
             day = datetime.strptime(m.group(1)[:10], "%Y-%m-%d").strftime("%a")
         except ValueError:
             return m.group(0)
-        return f'{m.group(1)}<span class="ms-wd">({day})</span>'
+        return f'<span class="ms-nb">{m.group(1)}<span class="ms-wd">({day})</span></span>'
 
     return _DATE.sub(mark, shown)
 
@@ -126,7 +126,9 @@ class Record(dict):
 
 
 _BESIDE_STYLE = (
-    "<style>table.ms-table.ms-beside th,table.ms-table.ms-beside td{text-align:left;vertical-align:top}"
+    "<style>table.ms-table.ms-beside th,table.ms-table.ms-beside td{text-align:left;vertical-align:top;"
+    "white-space:normal;overflow-wrap:break-word}"
+    "table.ms-table.ms-beside td:first-child,table.ms-table.ms-beside th:first-child{max-width:13em}"
     "table.ms-table.ms-beside td:first-child{font-family:var(--jp-content-font-family,sans-serif);font-weight:600}"
     "table.ms-table.ms-beside tr.ms-changed td{background:color-mix(in srgb,var(--jp-warn-color1,#f59e0b) 14%,transparent)}"
     "table.ms-table.ms-beside .ms-badge{display:none}"
@@ -150,7 +152,9 @@ class Beside(Rows):
     """Records side by side, one per row, in columns. A column `changed` marks each row that
     differs, which is tinted. On a narrow screen each row stacks, with each value under its
     column's name; a row that did not change shows its value once, and one that did carries a
-    badge in place of the column."""
+    badge in place of the column. On a wide screen the cells wrap, the record's name within 13
+    ems, so the table fits the page: kept on one line, each column took its longest value's width
+    and left the other rows mostly empty. A date keeps its day of the week beside it."""
 
     def _repr_html_(self) -> str:
         names = list(self[0])

@@ -229,9 +229,28 @@ def _columns(week: Week, table: str) -> list[str]:
     ]
 
 
+# The hypothesis's image: two tables drawn at a phone's width, as the week is, with 14-unit names
+# that show at about 12 pixels on a 360-pixel phone. The stylesheet keeps it to 420 pixels on a
+# wider screen, so the names stay near the text's size.
+_HYP_STYLE = (
+    "text{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;fill:#1f2328}"
+    ".head{font-weight:700}.unused{fill-opacity:.45}"
+    ".box{fill:none;stroke:#1f2328;stroke-opacity:.45}.band{fill:#1f2328;fill-opacity:.07}"
+    ".rule{stroke:#1f2328;stroke-opacity:.15}"
+    ".link{fill:none;stroke:#1f2328;stroke-opacity:.6;stroke-width:1.5;stroke-dasharray:4 3}"
+    ".tip{fill:#1f2328;fill-opacity:.6}.dot{fill:#2a9d8f}.num{fill:#fff;font-family:system-ui,sans-serif;"
+    "font-size:11px;font-weight:700}"
+    "@media (prefers-color-scheme:dark){text{fill:#e6e6e6}.box,.rule{stroke:#e6e6e6}.band{fill:#e6e6e6}"
+    ".link{stroke:#e6e6e6}.tip{fill:#e6e6e6}.num{fill:#1f2328}}"
+)
+
+
 def hypothesis(week: Week, labels: dict[str, str]) -> str:
-    """The hypothesis column by column: which columns of the source each column of `daily_sales` could
-    come from, and the rows it keeps. Every link is dashed: a guess the query then tests.
+    """The hypothesis column by column: `clean_orders` and `daily_sales` drawn as two tables, a
+    dashed, numbered link from each column the hypothesis uses to the column it makes, and from
+    `status` to the table, whose rows it decides; a numbered key under it says each step. The
+    columns the hypothesis leaves unused are greyed, at the foot of their table. Every link is
+    dashed: a guess the query then tests.
 
     The links are the parts of the one query that rebuilds `daily_sales` (shop/infer.py): the column
     it groups by, the sum it adds up, and the status it keeps. The columns are the warehouse's own."""
@@ -248,24 +267,74 @@ def hypothesis(week: Week, labels: dict[str, str]) -> str:
         named = [c for c in have if re.search(rf"\b{c}\b", expr)]
         return sorted(named, key=expr.index)
 
-    key, value = used(PER[query["per"]]), used(MEASURE[query["measure"]])
-    kept = used("status")
-    names = lambda cols: "".join(f"<code>{escape(c)}</code>" for c in cols)
-    lane = lambda left, label, arrow, right: (
-        f'<div class="ms-hyp-lane"><div class="ms-hyp-cols">{left}</div>'
-        f'<div class="ms-hyp-how"><span class="ms-hyp-label">{_named(label)}</span>'
-        f'{"<span class=\"ms-hyp-arrow\"></span>" if arrow else ""}</div>'
-        f'<div class="ms-hyp-cols">{right}</div></div>'
-    )
+    key, value, kept = used(PER[query["per"]]), used(MEASURE[query["measure"]]), used("status")
     unused = [c for c in have if c not in key + value + kept]
+    left = key + value + kept + unused  # the used columns first, in the order of the links
+
+    width, head, row, w = 340, 30, 26, 128
+    lx, rx = 2, width - 2 - w
+    y = lambda i: head + i * row + row / 2  # the middle of a column's row
+    parts = []
+
+    def table(x: float, name: str, cols: list[str], dim: set[str]) -> None:
+        h = head + row * len(cols)
+        parts.append(f'<rect class="band" x="{x}" y="1" width="{w}" height="{head - 1}" rx="5"/>')
+        parts.append(f'<rect class="box" x="{x}" y="1" width="{w}" height="{h - 1}" rx="5"/>')
+        parts.append(f'<text class="head" x="{x + 10}" y="{head / 2 + 6}">{escape(name)}</text>')
+        for i, c in enumerate(cols):
+            parts.append(f'<line class="rule" x1="{x}" x2="{x + w}" y1="{head + i * row}" y2="{head + i * row}"/>')
+            cls = ' class="unused"' if c in dim else ""
+            parts.append(f'<text{cls} x="{x + 10}" y="{y(i) + 5}">{escape(c)}</text>')
+
+    table(lx, source, left, set(unused))
+    table(rx, target, made, set())
+    a, b = lx + w, rx  # the gap the links cross
+    mid = (a + b) / 2
+
+    def link(path: str, end: tuple[float, float], n: int, at: tuple[float, float]) -> None:
+        parts.append(f'<path class="link" d="{path}"/>')
+        ex, ey = end
+        parts.append(f'<path class="tip" d="M{ex} {ey} l-7 -4 v8 z"/>')
+        cx, cy = at
+        parts.append(f'<circle class="dot" cx="{cx}" cy="{cy}" r="9"/>')
+        parts.append(f'<text class="num" x="{cx}" y="{cy + 4}" text-anchor="middle">{n}</text>')
+
+    # 1: the column it groups by, to the first column of daily_sales.
+    yk, yd = y(left.index(key[0])), y(0)
+    link(f"M{a} {yk} C{mid} {yk} {mid} {yd} {b - 7} {yd}", (b, yd), 1, (mid, (yk + yd) / 2))
+    # 2: the columns it multiplies, joined, to the second.
+    yv = y(1)
+    jx, jy = mid, sum(y(left.index(c)) for c in value) / len(value)
+    for c in value:
+        yc = y(left.index(c))
+        parts.append(f'<path class="link" d="M{a} {yc} C{a + 18} {yc} {jx - 18} {jy} {jx} {jy}"/>')
+    link(f"M{jx} {jy} C{jx + 18} {jy} {b - 25} {yv} {b - 7} {yv}", (b, yv), 2, (jx, jy))
+    # 3: the status, to the foot of daily_sales: it decides which rows reach the table.
+    ys, foot = y(left.index(kept[0])), head + row * len(made)
+    fx = rx + w / 2
+    parts.append(f'<path class="link" d="M{a} {ys} C{fx - 30} {ys} {fx} {ys} {fx} {foot + 7}"/>')
+    parts.append(f'<path class="tip" d="M{fx} {foot} l-4 7 h8 z"/>')
+    parts.append(f'<circle class="dot" cx="{(a + fx) / 2}" cy="{ys - 2}" r="9"/>')
+    parts.append(f'<text class="num" x="{(a + fx) / 2}" y="{ys + 2}" text-anchor="middle">3</text>')
+
+    height = head + row * len(left) + 2
+    heard = (
+        f"{source} has the columns {', '.join(left)}; {target} has {', '.join(made)}. "
+        f"1: {key[0]} links to {made[0]}. 2: {' and '.join(value)} link to {made[1]}. "
+        f"3: {kept[0]} links to the table {target}. {', '.join(unused)} link to nothing."
+    )
+    svg = (
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" width="{width}" height="{height}">'
+        f"<style>{_HYP_STYLE}</style>{''.join(parts)}</svg>"
+    )
+    data = base64.b64encode(svg.encode("utf-8")).decode("ascii")
+    steps = "".join(f"<li>{_named(labels[k])}</li>" for k in ("per", "measure", "keep"))
+    shown = ", ".join(f"`{c}`" for c in unused)
     return (
         '<div class="ms-fig ms-hyp">'
-        f'<div class="ms-hyp-lane ms-hyp-head"><div><code>{escape(source)}</code></div><div></div>'
-        f"<div><code>{escape(target)}</code></div></div>"
-        + lane(names(key), labels["per"], True, names(made[:1]))
-        + lane(names(value), labels["measure"], True, names(made[1:]))
-        + lane(names(kept), labels["keep"], False, "")
-        + f'<div class="ms-muted ms-hyp-unused">{_named(labels["unused"].format(columns=", ".join(f"`{c}`" for c in unused)))}</div>'
+        f'<img class="ms-svg ms-svg-small" alt="{escape(heard)}" src="data:image/svg+xml;base64,{data}">'
+        f'<ol class="ms-hyp-key">{steps}</ol>'
+        f'<div class="ms-muted">{_named(labels["unused"].format(columns=shown))}</div>'
         "</div>"
     )
 

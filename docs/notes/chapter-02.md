@@ -144,15 +144,17 @@ content tests fail a figure without a block or with a question unanswered.
   that rebuilds `daily_sales` exactly.
 - **Why now:** straight after `True`, and before the what-ifs show what the inference cannot hold.
 
-### `hypothesis` (15 October 2026)
+### `hypothesis` (15 October 2026, redrawn 16 October)
 
-- **Kind:** a diagram (reference), `figures.hypothesis`: the hypothesis column by column.
-  `clean_orders`'s columns are on the left and `daily_sales`'s on the right. Each link has a dashed
-  arrow and the hypothesis's step: the rows it keeps (`status`, `completed`, marked assumed), the
-  date of `ordered_at` to `day`, and `price_pence` × `quantity` added up per day to
-  `revenue_pence`. A line under it lists the columns the hypothesis leaves unused. The columns are
-  the warehouse's own, and the links are the parts of the engine's one fitting query
-  (`shop/infer.py`).
+- **Kind:** a diagram (reference), `figures.hypothesis`: `clean_orders` and `daily_sales` drawn as
+  two tables, as an image at a phone's width like the week. Dashed, numbered links run from
+  `ordered_at` to `day` (1), from `price_pence` and `quantity`, joined, to `revenue_pence` (2), and
+  from `status` to the table `daily_sales` itself (3), since it decides which rows count. The
+  columns the hypothesis leaves unused are greyed at the foot of `clean_orders`. A numbered key
+  under the image gives each step in Haiku's words, and a muted line names the unused columns. The
+  columns are the warehouse's own, and the links are the parts of the engine's one fitting query
+  (`shop/infer.py`). The first version, built in HTML, spread three lanes of dashed arrows across
+  the page, and the author found it messy and hard to read.
 - **Serves:** "what exactly does the hypothesis claim?", before the query tests it. It replaces two
   bullets that listed the two tables' columns and left the reader to match them. Every link is
   dashed, as the inferred link is, so it cannot be read as a recorded relation. The map still
@@ -1348,3 +1350,13 @@ full stop to the `status` label. It also gave the `daily_sales` node the wording
 pins both figures' columns, links and row counts. On a 360-pixel phone the names keep whole: the
 column figure gives each name its width and the arrow what is left. The copy's long name breaks
 after a slash or an underscore.
+
+## The diagram redrawn, and the change tables wrapped, 16 October 2026
+
+At the author's request ("This diagram is messy. Difficult to read"), `hypothesis` became an image
+of two tables with short numbered links and a key, as described above. HTML cannot draw a line
+from one row to another, so the first version stood the links in lanes of their own. At the
+author's request ("Too much whitespace in these outputs"), the tables `shop.records_beside` prints
+now wrap on a wide screen, with the record's name kept within 13 ems. On one line, each column took
+its longest value's width, and the other rows sat mostly empty; at 830 pixels the table scrolled
+sideways. A date keeps its day of the week beside it when a cell wraps.

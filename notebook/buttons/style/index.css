@@ -809,77 +809,44 @@
   }
 }
 
-/* The hypothesis column by column (Chapter 2): the source's columns on the left, the made table's on
-   the right, and between them what the hypothesis says happens, over a dashed arrow, the same as an
-   inferred link's. Each lane is one link, and every lane shares the three columns, so the names line
-   up. On a phone the arrow keeps its narrow column between the names, and the words go under them. */
-.jp-RenderedMarkdown .ms-hyp-lane {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr);
-  grid-template-areas: "from how to";
-  gap: 0.4rem 0.75rem;
-  align-items: center;
-  padding: 0.55rem 0;
-  border-top: 1px solid color-mix(in srgb, var(--jp-content-font-color1) 15%, transparent);
+/* The hypothesis column by column (Chapter 2) is an image (notebook/shop/figures.py, hypothesis),
+   kept to 420 pixels on a wide screen so its names stay near the text's size; its key is a list
+   numbered as the image's links are, in the same teal circles. */
+.jp-RenderedMarkdown img.ms-svg.ms-svg-small {
+  max-width: 420px;
 }
 
-.jp-RenderedMarkdown .ms-hyp-head {
-  padding-top: 0;
-  border-top: none;
-  font-weight: 600;
+.jp-RenderedMarkdown .ms-hyp-key {
+  margin: 0.6rem 0 0.4rem;
+  padding: 0;
+  list-style: none;
+  counter-reset: ms-hyp;
 }
 
-.jp-RenderedMarkdown .ms-hyp-lane > :first-child {
-  grid-area: from;
+.jp-RenderedMarkdown .ms-hyp-key li {
+  position: relative;
+  margin: 0.3rem 0;
+  padding-left: 1.9rem;
+  counter-increment: ms-hyp;
 }
 
-.jp-RenderedMarkdown .ms-hyp-lane > :last-child {
-  grid-area: to;
-}
-
-.jp-RenderedMarkdown .ms-hyp-head > :last-child,
-.jp-RenderedMarkdown .ms-hyp-lane > .ms-hyp-cols:last-child {
-  text-align: right;
-}
-
-.jp-RenderedMarkdown .ms-hyp-cols {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.3rem;
-}
-
-/* Each column a small outlined box, as the other figures draw an asset; the table's name above
-   them, bold. */
-.jp-ThemedContainer .jp-RenderedMarkdown .ms-hyp-cols code {
-  padding: 0.1rem 0.5rem;
-  border: 1px solid color-mix(in srgb, var(--jp-content-font-color1) 35%, transparent);
-  border-radius: 6px;
-  white-space: nowrap;
-}
-
-.jp-RenderedMarkdown .ms-hyp-head code {
-  font-weight: 600;
-}
-
-.jp-RenderedMarkdown .ms-hyp-unused code {
-  color: var(--jp-content-font-color2);
-}
-
-.jp-RenderedMarkdown .ms-hyp-lane > .ms-hyp-cols:last-child {
-  align-items: flex-end;
-}
-
-.jp-RenderedMarkdown .ms-hyp-how {
-  grid-area: how;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.85rem;
+.jp-RenderedMarkdown .ms-hyp-key li::before {
+  content: counter(ms-hyp);
+  position: absolute;
+  left: 0;
+  top: 0.1rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 50%;
+  background: #2a9d8f;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.2rem;
   text-align: center;
 }
 
+/* The dashed arrow of an inferred link, in Change 1's figure of two sources. */
 .jp-RenderedMarkdown .ms-hyp-arrow {
   position: relative;
   display: block;
@@ -896,11 +863,6 @@
   font-size: 0.8rem;
   line-height: 1;
   color: color-mix(in srgb, var(--jp-content-font-color1) 55%, transparent);
-}
-
-.jp-RenderedMarkdown .ms-hyp-unused {
-  padding-top: 0.55rem;
-  border-top: 1px solid color-mix(in srgb, var(--jp-content-font-color1) 15%, transparent);
 }
 
 /* Change 1's two sources: each with its dashed arrow to `daily_sales`, which spans both rows. On a
@@ -943,32 +905,6 @@
 }
 
 @media (max-width: 640px) {
-  /* The names take the width they need, whole, and the arrow takes what is left. */
-  .jp-RenderedMarkdown .ms-hyp-lane {
-    grid-template-columns: max-content minmax(1.2rem, 1fr) max-content;
-    column-gap: 0.5rem;
-    grid-template-areas:
-      "from arrow to"
-      "label label label";
-  }
-
-  .jp-RenderedMarkdown .ms-hyp-head {
-    grid-template-areas: "from arrow to";
-  }
-
-  .jp-RenderedMarkdown .ms-hyp-how {
-    display: contents;
-  }
-
-  .jp-RenderedMarkdown .ms-hyp-label {
-    grid-area: label;
-    font-size: 0.85rem;
-  }
-
-  .jp-RenderedMarkdown .ms-hyp-arrow {
-    grid-area: arrow;
-  }
-
   /* Narrower margins in the two boxes side by side, so a table's name fits a 360-pixel phone whole. */
   .jp-RenderedMarkdown .ms-two .ms-node {
     padding: 0.6rem 0.4rem;
