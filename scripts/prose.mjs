@@ -16,6 +16,16 @@ import { join } from "node:path";
 
 /** Each prohibited phrase: what it is, and the standard's rule it breaks. */
 const PROHIBITED = [
+  // Rule 8: an ambiguous requirement is not automatically satisfied by existing fields.
+  {
+    phrase: "A requirement as written is met by whatever the platform already holds",
+    rule: "overstatement (rule 8): say which interpretation the recorded value satisfies",
+  },
+  // Rule 8: the experiment searches a finite set, not every possible simple query.
+  {
+    phrase: "no simple query fitted",
+    rule: "overstatement (rule 8): restrict the conclusion to the queries tested",
+  },
   // Rule 1: pseudo-profound aphorisms. Explain the activity instead.
   {
     phrase: "A wrong belief, once tested, tells you something",
@@ -100,7 +110,7 @@ const PROHIBITED = [
  * tests and docs, which quote and teach the standard, and quote bad phrasing on purpose; and code
  * identifiers.
  */
-const FILES = ["apps/course/src/strings.ts"];
+const FILES = ["apps/course/src/strings.ts", "notebook/buttons/answer-words.js"];
 
 /** Every string literal in a TypeScript source file, one per line of the file it came from. */
 function* stringsOf(source) {

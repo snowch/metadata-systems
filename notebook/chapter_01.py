@@ -94,7 +94,13 @@ def _(mo):
 
     1. Nothing on the page runs until you run it. Run every cell first: press **Run all**, at the top of the page.
     2. A cell does not run again when a cell it uses changes. After you change a cell, select it and press **Run below**: it runs that cell and every cell below it.
-    3. To keep your changes, press **Save**, or press Ctrl+S (Cmd+S on a Mac). After a reload, the page shows your saved copy, which stays in this browser. When the chapter is updated, the page shows the new version instead. If you changed a cell, your copy is kept under the chapter's name with "(your copy)" added, and [the list of files in this browser](https://snowch.github.io/metadata-systems/jupyterlite/tree/) opens it.
+    3. To keep changes to code cells, press **Save**, or press Ctrl+S (Cmd+S on a Mac). After a reload, the page shows your saved copy, which stays in this browser. The answer boxes at the end save separately as you type.
+
+    <details><summary>Your saved copy after a course update</summary>
+
+    When the chapter is updated, the page shows the new version instead. If you changed a cell, your copy is kept under the chapter's name with "(your copy)" added, and [the list of files in this browser](https://snowch.github.io/metadata-systems/jupyterlite/tree/) opens it.
+
+    </details>
     """), kind="info")
     return
 
@@ -174,7 +180,7 @@ def _(mo):
     mo.md(r"""
     ## The warehouse
 
-    The warehouse holds three tables: `clean_customers`, `clean_orders` and `daily_sales`. You read a table by writing SQL in `warehouse.sql`. `daily_sales` has one row per day: the day and that day's revenue in pence (`revenue_pence`).
+    The warehouse holds three tables: `clean_customers`, `clean_orders` and `daily_sales`. You read a table by writing SQL in `warehouse.sql`. `daily_sales` has one row per day: the day and that day's reported revenue in pence (`revenue_pence`).
 
     The cell below reads every row of `clean_customers`.
     """)
@@ -220,7 +226,7 @@ def _(mo):
     mo.md(r"""
     ## The dashboard
 
-    The reporting tool holds one dashboard, `sales_dashboard`, titled "Sales, last 7 days", and it shows each day's revenue in pounds for 7 to 13 September.
+    The reporting tool holds one dashboard, `sales_dashboard`, titled "Sales, last 7 days", and it shows each day's reported revenue in pounds for 7 to 13 September.
     """)
     return
 
@@ -236,18 +242,10 @@ def _(mo):
     mo.md(r"""
     ## Your guesses about the warehouse tables
 
-    For each of the three tables, write in the cell below which file or table you think it is made from, and what on this page makes you think so. Write one line per table, then press **Save** to keep it. Chapter 2 asks what evidence like this can establish.
+    For each of the three tables, write in its answer box which file or table you think it is made from, and what on this page makes you think so. The boxes save as you type; you do not need to run a cell or press **Save**. Chapter 2 shows your guesses for `daily_sales` and `clean_orders` beside the evidence and gives you separate boxes for revised explanations.
+
+    <!-- answer: guesses -->
     """)
-    return
-
-
-@app.cell
-def _():
-    guesses = """
-clean_customers: made from ........ because ........
-clean_orders:    made from ........ because ........
-daily_sales:     made from ........ because ........
-"""
     return
 
 

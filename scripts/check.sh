@@ -28,6 +28,7 @@ echo "== unit and integration tests =="
 # The plan against docs/plan.md, each notebook's heading against the plan, and the front page's
 # words, icon and tokens.
 npx vitest run
+node --test notebook/buttons/answers.test.mjs
 
 echo "== the chapters' engine and words =="
 # The chapters are notebooks (notebook/): the shop's platform in Python, every number and sentence

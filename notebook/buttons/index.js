@@ -41,6 +41,7 @@ import { NotebookActions, INotebookTracker } from "@jupyterlab/notebook";
 import { Widget } from "@lumino/widgets";
 import labels from "./buttons.json";
 import words from "./status.json";
+import { attachAnswers } from "./answers.js";
 
 // How much of a cell must show for JupyterLab not to scroll to it, in pixels: its notebook's
 // scroll-down threshold, half a cell margin and one line.
@@ -464,6 +465,7 @@ export default {
         noticeUntil: 0,
       };
       state.checked = update(app, panel, state).catch((reason) => console.error("update", reason));
+      attachAnswers(app, panel, state.checked).catch((reason) => console.error("answers", reason));
       states.set(panel, state);
       const widget = row(app, panel, state);
       panel.contentHeader.addWidget(widget);

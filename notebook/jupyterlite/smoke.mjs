@@ -26,6 +26,7 @@
 import { spawn } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { chromium } from "playwright";
+import { checkAnswers } from "./answer-smoke.mjs";
 
 // The notice's words (notebook/buttons/status.json).
 const notices = JSON.parse(
@@ -64,6 +65,7 @@ try {
     isMobile: true,
     hasTouch: true,
   });
+  await checkAnswers(browser, `http://127.0.0.1:${port}`, check);
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (m) => m.type() === "error" && errors.push(m.text()));

@@ -1360,3 +1360,23 @@ author's request ("Too much whitespace in these outputs"), the tables `shop.reco
 now wrap on a wide screen, with the record's name kept within 13 ems. On one line, each column took
 its longest value's width, and the other rows sat mostly empty; at 830 pixels the table scrolled
 sideways. A date keeps its day of the week beside it when a cell wraps.
+
+## 17 October 2026: recall, inference and the business question
+
+The comparisons now display the learner's saved Chapter 1 daily_sales and clean_orders guesses
+and save revised explanations separately. A closing response field asks what the learner can
+responsibly tell the head of the shop; a collapsed example distinguishes accounting for the
+discrepancy from judging correctness against an agreed revenue definition. This adds no hidden
+facts or numerical claims.
+
+The main text now distinguishes the exact reconstruction check from the comparisons' weaker
+matching of all existing rows, which permits extras. The failed-night explanation explicitly
+says it would fail exact equality. Ownership is conditional on its interpretation; the quiz
+limits its negative result to the queries tried. The rule-testing explanation no longer calls
+compatibility confirmation of a rule. The metadata paragraph and saving guidance were split
+without dropping their facts; the closing names asset descriptions directly.
+
+The review findings formed the factual brief, checked against infer.fits, records_beside and the
+chapter's existing computations. A separate prose agent drafted the changes (Haiku unavailable),
+then independent chapter reviewers checked them. The persistence implementation also received an
+independent sceptic pass. Browser tests exercise the chapter's original, revision and reply fields.

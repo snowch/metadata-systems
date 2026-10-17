@@ -157,7 +157,11 @@ def build(chapter: int) -> nbformat.NotebookNode:
         first = stmts[0]
         if len(stmts) == 1 and isinstance(first, ast.Expr) and is_call(first.value, "md") and isinstance(first.value.args[0], ast.Constant):
             text = textwrap.dedent(first.value.args[0].value).strip()
-            out.append(nbformat.v4.new_markdown_cell(FIGURE.sub(lambda m: draw(m.group(1)), text)))
+            answer = re.search(r"<!-- answer: (guesses|daily_sales|clean_orders|report) -->", text)
+            metadata = {"ms": {"answer": answer.group(1)}} if answer else {}
+            if answer:
+                text = text.replace(answer.group(0), "").strip()
+            out.append(nbformat.v4.new_markdown_cell(FIGURE.sub(lambda m: draw(m.group(1)), text), metadata=metadata))
             continue
         code = lines_of(source, stmts)
         if not hidden:

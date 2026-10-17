@@ -1,0 +1,24 @@
+# Copyright © 2026 Christopher Snow
+name: Format review
+on:
+  push:
+    branches: [codex/intro-exercise-persistence]
+permissions:
+  contents: read
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npx prettier --write .
+      - name: Formatting patch
+        run: |
+          echo FORMAT_PATCH_BEGIN
+          git diff --binary | base64 -w0
+          echo
+          echo FORMAT_PATCH_END

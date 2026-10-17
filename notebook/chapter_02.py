@@ -31,7 +31,7 @@ def _(mo):
     2. [What the platform records about its assets](#2.-What-the-platform-records-about-its-assets)
     3. [Test an explanation](#3.-Test-an-explanation)
 
-    [Records made at the time](#Records-made-at-the-time) says which records would have answered; [a short check](#Check:-evidence-of-what-a-job-read) closes the chapter.
+    [Records made at the time](#Records-made-at-the-time) says which records would have answered; [a short check](#Check:-evidence-of-what-a-job-read) compares evidence of what a job read.
     """)
     return
 
@@ -321,7 +321,7 @@ def _(warehouse):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The warehouse records `etlsvc/batch01.corp.internal@CORP.INTERNAL` in `table_owner` for all three tables. `etlsvc/batch01.corp.internal@CORP.INTERNAL` is the account the shop's four nightly programs log in as. So the requirement is met as written: every table has an owner.
+    The warehouse records `etlsvc/batch01.corp.internal@CORP.INTERNAL` in `table_owner` for all three tables. `etlsvc/batch01.corp.internal@CORP.INTERNAL` is the account the shop's four nightly programs log in as. If "owner" means a value in `table_owner`, every table meets the requirement.
     """)
     return
 
@@ -339,12 +339,12 @@ def _(mo):
     mo.md(r"""
     <details><summary>Four readings of "owner"</summary>
 
-    - As written, `as_written`: the table has a value in `table_owner`. `etlsvc/batch01.corp.internal@CORP.INTERNAL` meets it.
+    - A value in `table_owner`, `as_written`: the table names an owning account. `etlsvc/batch01.corp.internal@CORP.INTERNAL` meets it.
     - A person to ask, `a_person`: a named member of staff. Nothing records one.
     - A team that answers for it, `a_team`: a named team. Nothing records one.
     - The job that writes it, `the_job`: the name of the program that writes the table. The warehouse records `etlsvc/batch01.corp.internal@CORP.INTERNAL` in `table_owner`. That value is an account, the one all four nightly programs log in as. Because the four programs share it, the account does not identify which program writes the table. It does not meet this reading.
 
-    A requirement as written is met by whatever the platform already holds. Each reading of it asks for a different thing to be recorded. Your work is to say which reading was meant, and to record what that reading needs.
+    The account satisfies one reading of "owner", but does not identify someone responsible for answering questions about the table. Each reading asks for a different thing to be recorded. Your work is to say which reading was meant, and to record what that reading needs.
 
     <div class="ms-box ms-box-requirement">
 
@@ -394,9 +394,11 @@ def _(mo):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.callout(mo.md(r"""
-    Compare the hypothesis above with your guess for `daily_sales` at the end of Chapter 1.
-    """), kind="info")
+    mo.md(r"""
+    Compare the hypothesis above with your saved Chapter 1 guess for `daily_sales`. After checking the query below, write what the evidence supports and what remains unknown in the separate explanation box.
+
+    <!-- answer: daily_sales -->
+    """)
     return
 
 
@@ -499,9 +501,11 @@ def _(mo):
 
     Each cell below runs the week again with one change. It prints Monday morning's records in three columns: `the week as it ran`, `with the change`, and `changed`, which says `yes` where the two differ.
 
+    The equality check above required the query to reproduce `daily_sales` exactly. The last row of these comparisons uses a weaker test: it lists queries that match every existing row of `daily_sales`, even if they return additional rows. Here, "fits" means matching the existing rows; it does not mean reproducing the whole table exactly.
+
     <details><summary>How the last row is found</summary>
 
-    The last row comes from a fixed set of simple queries over the week's assets. Each reads one asset, keeps all, completed or cancelled orders, and adds up revenue, quantity or rows, per day, customer or product. A query is listed if it gives every row of `daily_sales`, even if it gives one row more. The listed queries include, for example `clean_orders: completed orders, revenue per day`, which is the query you ran above.
+    The last row comes from a fixed set of simple queries over the week's assets. Each reads one asset, keeps all, completed or cancelled orders, and adds up revenue, quantity or rows, per day, customer or product. The listed queries include, for example `clean_orders: completed orders, revenue per day`, which is the query you ran above.
 
     </details>
     """)
@@ -546,7 +550,7 @@ def _(mo):
     mo.md(r"""
     #### Change 2: from Saturday, the `daily_sales` job keeps unrefunded orders
 
-    Someone on the shop's team edits the job that writes `daily_sales`, so that from Saturday's row on, written early on Sunday 13, it keeps every order that has not been refunded, where it kept completed orders.
+    Someone on the shop's team edits the job that writes `daily_sales`. From Saturday's row onwards, it keeps every order that has not been refunded, where it previously kept completed orders. The job writes Saturday's row early on Sunday 13.
 
     Does an edit to a job leave a trace in the platform's records?
     """)
@@ -596,7 +600,7 @@ def _(mo):
     mo.md(r"""
     <details><summary>The printed result, explained</summary>
 
-    Three records change: `daily_sales` has 6 rows, none for Sunday; it was last altered on Sunday at 02:30, a day earlier than `clean_orders`; and the dashboard shows 6 values. The dashboard still refreshed at 03:00 on Monday, and the query over `clean_orders` still fits, with one row more, for Sunday. The shortfall is there to see if you expect 7 rows or compare the last-altered times, but no record says a write was due and did not happen. Only a record of whether each night's write succeeded would.
+    Three records change: `daily_sales` has 6 rows, none for Sunday; it was last altered on Sunday at 02:30, a day earlier than `clean_orders`; and the dashboard shows 6 values. The dashboard still refreshed at 03:00 on Monday. The query over `clean_orders` matches every existing row, but also returns Sunday's row. It passes the weaker test used here; it would fail the exact equality check above. The shortfall is there to see if you expect 7 rows or compare the last-altered times, but no record says a write was due and did not happen. Only a record of whether each night's write succeeded would.
 
     </details>
     """)
@@ -641,9 +645,11 @@ def _(mo):
 
     So the last rule never removes a row. Two settings fit: one with the rule and one without.
 
-    From the data you cannot tell whether the rule exists. The data can confirm a rule only where some row would have triggered it.
+    From the data you cannot tell whether the rule exists. Testing it requires an input that would produce different results with and without the rule.
 
-    Your guess for `clean_orders` from Chapter 1 meets the same limit.
+    Compare this limit with your saved Chapter 1 guess for `clean_orders`. In the separate explanation box, say which parts you can test against these rows and which remain uncertain.
+
+    <!-- answer: clean_orders -->
     """)
     return
 
@@ -667,7 +673,11 @@ def _(figures, mo, shop, week):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Information of this kind, about an asset or about the platform, is called **metadata**: what an asset is, where it came from, who is responsible for it, what its numbers mean, how it is made, and how it relates to other assets. Some of it the systems already keep for their own purposes: the names, types, counts and times you read in section 2, [What the platform records about its assets](#2.-What-the-platform-records-about-its-assets). They do not keep what an asset means, what it was made from, or what happened to it. Somebody has to record those. What happened, such as which tables a night's job read, has to be recorded when it happens. What a table is made from can also be read later, from the jobs' code (Chapter 6). That shows what the code says, not what the job did on a given night. A note of what a job read, written the next morning from the data, is a reconstruction, with the limits shown above.
+    Information of this kind, about an asset or about the platform, is called **metadata**: what an asset is, where it came from, who is responsible for it, what its numbers mean, how it is made, and how it relates to other assets.
+
+    Some of it the systems already keep for their own purposes: the names, types, counts and times you read in section 2, [What the platform records about its assets](#2.-What-the-platform-records-about-its-assets). They do not keep what an asset means, what it was made from, or what happened to it. Somebody has to record those.
+
+    What happened, such as which tables a night's job read, has to be recorded when it happens. What a table is made from can also be read later, from the jobs' code (Chapter 6). That shows what the code says, not what the job did on a given night. A note of what a job read, written the next morning from the data, is a reconstruction, with the limits shown above.
 
     Real platforms keep more history than the shop's: query logs, table snapshots, audit trails. Those are records made at the time too, kept by the system rather than by a person, and later chapters use them where they exist.
     """)
@@ -707,7 +717,7 @@ def _(mo):
 
     <details class="ms-choice"><summary>B. A SQL query that reproduces the dashboard's current totals.</summary>
 
-    Not the strongest. A query that matches supports a hypothesis about how the totals could be produced. Another source can fit as well: with the analyst's copy, the same query over `clean_orders_copy.csv` gives the same rows. It matches today's totals, not what a past run did: after the edit to the job, no simple query fitted, and nothing said why.
+    Not the strongest. A query that matches supports a hypothesis about how the totals could be produced. Another source can fit as well: with the analyst's copy, the same query over `clean_orders_copy.csv` gives the same rows. It matches today's totals, not what a past run did: after the edit to the job, none of the queries we tried fitted, and no record explained why.
 
     Try another answer.
 
@@ -733,11 +743,37 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    ## Is Thursday's revenue wrong?
+
+    Write a short reply to the head of the shop. Say what the evidence establishes about Thursday's discrepancy, whether it establishes an error, and what you need to find out before recommending a change.
+
+    <!-- answer: report -->
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    <details><summary>A possible reply</summary>
+
+    Thursday's gap is accounted for by the orders with no customer id: they appear in `orders.jsonl` but are absent from `clean_orders`. A query over completed orders in `clean_orders` reproduces `daily_sales`. That supports an explanation of the reported total, but does not establish which job or rule produced it.
+
+    We cannot yet say whether the reported revenue is wrong. The available records do not say whether orders with no customer id should count towards revenue. We need an agreed definition of revenue and a person or team responsible for it. We also need the job's rules and records of what it did each night to establish how the total was produced before deciding what to change.
+
+    </details>
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     ## Before Chapter 3
 
     The platform's state answers what exists. It does not answer what happened or why. Inferring the history from the data gave an explanation that fitted. Three ordinary changes then tested it: the copy made it ambiguous, the edit made it wrong, and one failed night was left that no record names as a failure.
 
-    Chapter 3 starts making them: a description of each asset, kept beside the data, with what the asset means and who is responsible for it. It then asks the four questions at the start again. Chapter 6 records what was made from what, which is called lineage, and Chapter 7 records each run of a job.
+    Chapter 3 starts recording descriptions of assets: what each asset means and who is responsible for it, kept beside the data. It then asks the four questions at the start again. Chapter 6 records what was made from what, which is called lineage, and Chapter 7 records each run of a job.
     """)
     return
 

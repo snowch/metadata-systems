@@ -116,3 +116,19 @@ lines: JupyterLab wrapped `customers.jsonl` inside words and dates (`"countr` / 
 box, with a shadow at the edge it continues past. The smoke test checks both boxes and that the
 printed file draws ten lines for its ten records, with the page never scrolling sideways.
 
+
+## 17 October 2026: saved table guesses
+
+The table-guess exercise now uses browser answer fields, one per table, in place of an unused
+Python string. The writing task and available evidence are unchanged. Answers save on input and
+remain independent of notebook publication versions. Chapter 2 recalls the daily_sales and
+clean_orders guesses alongside separate revision fields. The original response remains editable
+only in Chapter 1. Export/import provides a portable copy; storage failure is reported without
+discarding the draft. Existing saved guesses are recovered as text from old notebooks and their
+archived copies. The front page now gives its verbs concrete objects, and the chapter calls the
+figures reported revenue while their business meaning remains under investigation.
+
+The author's requested review fixes are the factual brief. A separate prose agent drafted the
+wording; the specified Haiku model was unavailable. Independent chapter reviewers checked the
+changed passages and a sceptic checked persistence. Tests cover storage and the built notebook
+interface; see docs/authoring.md, Answers used by later chapters.
