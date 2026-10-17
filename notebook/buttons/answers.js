@@ -66,9 +66,14 @@ export function answerStore(storage = () => window.localStorage, events = window
     },
     import(text) {
       const data = JSON.parse(text);
-      if (data?.course !== "metadata-systems" || data.version !== 1 || !data.answers ||
-          typeof data.answers !== "object" || Array.isArray(data.answers) ||
-          Object.entries(data.answers).some(([id, value]) => !known(id) || typeof value !== "string")) {
+      if (
+        data?.course !== "metadata-systems" ||
+        data.version !== 1 ||
+        !data.answers ||
+        typeof data.answers !== "object" ||
+        Array.isArray(data.answers) ||
+        Object.entries(data.answers).some(([id, value]) => !known(id) || typeof value !== "string")
+      ) {
         throw new Error("Invalid answers file");
       }
       let saved = true;
@@ -130,7 +135,11 @@ function field(root, store, id, label, readonly = false) {
   input.dataset.answer = id;
   input.rows = 4;
   input.readOnly = readonly;
-  input.placeholder = readonly ? words.empty : id.endsWith(".revision") ? words.revisionPrompt : words.prompt;
+  input.placeholder = readonly
+    ? words.empty
+    : id.endsWith(".revision")
+      ? words.revisionPrompt
+      : words.prompt;
   if (id === "ch02.report") input.placeholder = "";
   const status = element("p");
   status.className = "ms-Answer-status";
@@ -141,7 +150,13 @@ function field(root, store, id, label, readonly = false) {
   const refresh = () => {
     const answer = store.read(id);
     if (input.value !== answer.text) input.value = answer.text;
-    status.textContent = !answer.saved ? words.unsaved : readonly && !answer.text ? words.empty : answer.exists ? words.saved : "";
+    status.textContent = !answer.saved
+      ? words.unsaved
+      : readonly && !answer.text
+        ? words.empty
+        : answer.exists
+          ? words.saved
+          : "";
   };
   input.addEventListener("input", () => store.write(id, input.value));
   // Notebook keyboard shortcuts must not consume normal editing keys, including spaces and Escape.
@@ -161,8 +176,10 @@ function field(root, store, id, label, readonly = false) {
 export function mountAnswers(root, kind, store) {
   root.classList.add("ms-Answers");
   const cleanups = [];
-  const original = (table, readonly) => cleanups.push(field(root, store, `ch01.${table}`,
-    words.original.replace("{table}", table), readonly));
+  const original = (table, readonly) =>
+    cleanups.push(
+      field(root, store, `ch01.${table}`, words.original.replace("{table}", table), readonly),
+    );
   if (kind === "guesses") TABLES.forEach((table) => original(table, false));
   else if (kind === "daily_sales" || kind === "clean_orders") {
     original(kind, true);
@@ -171,7 +188,9 @@ export function mountAnswers(root, kind, store) {
     link.target = "_blank";
     link.rel = "noopener";
     root.append(link);
-    cleanups.push(field(root, store, `ch02.${kind}.revision`, words.revision.replace("{table}", kind)));
+    cleanups.push(
+      field(root, store, `ch02.${kind}.revision`, words.revision.replace("{table}", kind)),
+    );
   } else if (kind === "report") cleanups.push(field(root, store, "ch02.report", words.report));
   root.append(element("p", words.local));
   const controls = element("div");
@@ -230,21 +249,31 @@ export async function attachAnswers(app, panel, checked) {
   } catch {
     // An unavailable legacy notebook must not prevent new answers. Its saved copy is untouched.
   }
-  if (panel.isDisposed) { store.dispose(); return; }
+  if (panel.isDisposed) {
+    store.dispose();
+    return;
+  }
   const mounted = new Map();
   const scan = () => {
     const cells = new Set(panel.content.widgets);
     for (const [cell, dispose] of mounted) {
-      if (!cells.has(cell)) { dispose(); mounted.delete(cell); }
+      if (!cells.has(cell)) {
+        dispose();
+        mounted.delete(cell);
+      }
     }
     for (const cell of cells) {
       const kind = cell.model.getMetadata("ms")?.answer;
-      if (!["guesses", "daily_sales", "clean_orders", "report"].includes(kind) || mounted.has(cell)) continue;
+      if (!["guesses", "daily_sales", "clean_orders", "report"].includes(kind) || mounted.has(cell))
+        continue;
       const root = element("section");
       root.dataset.exercise = kind;
       cell.node.append(root);
       const unmount = mountAnswers(root, kind, store);
-      mounted.set(cell, () => { unmount(); root.remove(); });
+      mounted.set(cell, () => {
+        unmount();
+        root.remove();
+      });
     }
   };
   const observer = new MutationObserver(scan);
