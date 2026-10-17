@@ -187,13 +187,13 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("The warehouse holds three tables: `clean_customers`, `clean_orders` and `daily_sales`.", 1)
         days = [r["day"] for r in self.w.sql("SELECT day FROM daily_sales ORDER BY day")]
         self.assertEqual(days, list(shop.DAYS))
-        self.says("`daily_sales` has one row per day: the day and that day's revenue in pence (`revenue_pence`).", 1)
+        self.says("`daily_sales` has one row per day: the day and that day's reported revenue in pence (`revenue_pence`).", 1)
         self.assertIn('warehouse.sql("SELECT * FROM clean_orders LIMIT 7")', SOURCE[1])
         self.says("the first 7 rows of `clean_orders`", 1)
         d = self.week.reporting.dashboard()
         self.assertEqual((d["name"], d["title"], [v["day"] for v in d["values"]]), ("sales_dashboard", "Sales, last 7 days", list(shop.DAYS)))
         self.says('one dashboard, `sales_dashboard`, titled "Sales, last 7 days"', 1)
-        self.says("each day's revenue in pounds for 7 to 13 September", 1)
+        self.says("each day's reported revenue in pounds for 7 to 13 September", 1)
 
     def test_the_chapters_link_to_each_other_by_their_notebooks_names(self):
         build = (ROOT / "notebook" / "jupyterlite" / "build_ipynb.py").read_text(encoding="utf-8")
@@ -208,7 +208,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
     def test_the_closing_names_the_next_chapter(self):
         # Chapter 2 ends by naming the chapter after it, which the plan numbers 3; and so on.
         self.says("## Before Chapter 3", 2)
-        self.says("Chapter 3 starts making them", 2)
+        self.says("Chapter 3 starts recording descriptions of assets", 2)
         self.says("## Before Chapter 4", 3)
         self.says("Neither your record nor the reporting tool says that the two names refer to one person.", 3)
         self.says("## Before Chapter 5", 4)
@@ -386,9 +386,9 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("Someone to ask about a wrong number is a person or a team, so the owner has to be `a_person` or `a_team`.")
         self.says('Your rule becomes "Every table must name whom to ask about it."')
         self.assertNotIn("The reading the head wanted", SOURCE[2])
-        self.says("So the requirement is met as written: every table has an owner.")
+        self.says('If "owner" means a value in `table_owner`, every table meets the requirement.')
         self.says("`etlsvc/batch01.corp.internal@CORP.INTERNAL` is the account the shop's four nightly programs log in as.")
-        self.says("- As written, `as_written`: the table has a value in `table_owner`. `etlsvc/batch01.corp.internal@CORP.INTERNAL` meets it.")
+        self.says("- A value in `table_owner`, `as_written`: the table names an owning account. `etlsvc/batch01.corp.internal@CORP.INTERNAL` meets it.")
         self.says("- A person to ask, `a_person`: a named member of staff. Nothing records one.")
         self.says("- A team that answers for it, `a_team`: a named team. Nothing records one.")
         self.says("- The job that writes it, `the_job`: the name of the program that writes the table. The warehouse records `etlsvc/batch01.corp.internal@CORP.INTERNAL` in `table_owner`. That value is an account, the one all four nightly programs log in as. Because the four programs share it, the account does not identify which program writes the table. It does not meet this reading.")
@@ -509,7 +509,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertEqual(last["refunds"], ["none"])
         self.says("(the last row says `none`)")
         self.assertEqual(last["failed"], ["clean_orders: completed orders, revenue per day"])
-        self.says("the query over `clean_orders` still fits, with one row more, for Sunday")
+        self.says("The query over `clean_orders` matches every existing row, but also returns Sunday's row.")
         self.says("The shortfall is there to see if you expect 7 rows or compare the last-altered times, but no record says a write was due and did not happen.")
         self.assertEqual(failed.reporting.dashboard()["title"], "Sales, last 7 days")
         self.assertNotIn("looks normal", self.text[2])
@@ -1819,7 +1819,7 @@ class TheWordsKeepTheRules(unittest.TestCase):
         # A second exemption, at the author's decision of 12 October 2026: Chapter 2's closing
         # paragraph names what later chapters build, "lineage" (Chapter 6) and a "run" of a job
         # (Chapter 7), once each, so a reader sees where the course goes. Nowhere else.
-        closing = re.compile(r"Chapter 3 starts making them:[^\n]*")
+        closing = re.compile(r"Chapter 3 starts recording descriptions of assets:[^\n]*")
         [preview] = closing.findall(TEXT[2])
         self.assertEqual((len(re.findall(r"\blineage\b", preview)), len(re.findall(r"\beach run of a job\b", preview))), (1, 1))
         # A third, at the author's decision of 13 October 2026: Chapter 2's closing check uses the

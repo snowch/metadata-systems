@@ -1,5 +1,80 @@
 /* Copyright © 2026 Christopher Snow */
 
+/* Answer fields are outside Markdown rendering and follow the notebook's theme. */
+.ms-Answers {
+  box-sizing: border-box;
+  margin: 12px 8px;
+  padding: 16px;
+  border: 1px solid var(--jp-border-color1);
+  border-radius: var(--jp-border-radius);
+  color: var(--jp-ui-font-color1);
+  background: var(--jp-layout-color1);
+  font: var(--jp-content-font-size1) / 1.5 var(--jp-ui-font-family);
+  overflow-wrap: anywhere;
+}
+
+.ms-Answer-field {
+  display: block;
+  margin-top: 16px;
+}
+
+.ms-Answer-field span {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.ms-Answers textarea {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-height: 110px;
+  resize: vertical;
+  padding: 10px;
+  color: var(--jp-ui-font-color1);
+  background: var(--jp-layout-color0);
+  border: 1px solid var(--jp-border-color1);
+  border-radius: var(--jp-border-radius);
+  font: inherit;
+  font-size: max(16px, var(--jp-content-font-size1));
+}
+
+.ms-Answers textarea[readonly] {
+  background: var(--jp-layout-color2);
+}
+
+.ms-Answers button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--jp-border-color1);
+  border-radius: var(--jp-border-radius);
+  color: var(--jp-ui-font-color1);
+  background: var(--jp-layout-color2);
+  font: inherit;
+  cursor: pointer;
+}
+
+.ms-Answers :is(button, textarea, a):focus-visible {
+  outline: 2px solid var(--jp-brand-color1);
+  outline-offset: 2px;
+}
+
+.ms-Answer-controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ms-Answers a {
+  display: inline-block;
+  padding: 10px 0;
+  color: var(--jp-brand-color1);
+}
+
+.ms-Answer-status {
+  margin: 6px 0;
+}
+
 /* The row of buttons above a notebook's cells (index.js). Each button is 44 pixels tall, a size a
    finger can press, which the toolbar's 21-pixel buttons are not. The row's height is fixed
    because JupyterLab lays the panel out from the row's minimum height, not from its contents; the

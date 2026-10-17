@@ -223,9 +223,9 @@ class TheBoxes(unittest.TestCase):
         for chapter, source in SOURCE.items():
             self.assertNotIn('    reading = """', source, chapter)
         for chapter, source in SOURCE.items():
-            # Chapter 1's guesses are read: the map gains the reader's guesses.
+            # Answers live in browser fields, not unused Python string assignments.
             fill = [v for v, body in re.findall(r'^    (\w+) = """\n(.*?)"""', source, re.S | re.M) if "...." in body]
-            self.assertEqual(fill, ["guesses"] if chapter == 1 else [], chapter)
+            self.assertEqual(fill, [], chapter)
             self.assertNotIn("write in the next cell", source, chapter)
             self.assertNotIn("with what you wrote", source, chapter)
         for chapter in (2, 4, 5, 6, 8, 9):

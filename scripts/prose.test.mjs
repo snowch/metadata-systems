@@ -16,7 +16,7 @@ import { tmpdir } from "node:os";
 const PROSE = new URL("./prose.mjs", import.meta.url).pathname;
 
 /** Every file the check scans; a temp repository must have them all. */
-const ALL_FILES = ["apps/course/src/strings.ts"];
+const ALL_FILES = ["apps/course/src/strings.ts", "notebook/buttons/answer-words.js"];
 
 /** Runs the check in a temp copy of the repository layout, with the given file contents. */
 function runCheck(files) {
@@ -52,6 +52,19 @@ test("normal, clear technical prose passes", () => {
       'export const PROSE = {\n  plain:\n    "The warehouse records an owner for every table. You read the owner field for daily_sales in the inspector.",\n',
   });
   assert.equal(code, 0, out);
+});
+
+test("the reviewed overstatements are rejected in answer feedback too", () => {
+  for (const phrase of [
+    "A requirement as written is met by whatever the platform already holds",
+    "no simple query fitted",
+  ]) {
+    const { code, out } = runCheck({
+      "notebook/buttons/answer-words.js": `export default { feedback: ${JSON.stringify(phrase)} };`,
+    });
+    assert.notEqual(code, 0);
+    assert.match(out, /rule 8/);
+  }
 });
 
 test("suspicious but legitimate wording is not a hard failure", () => {

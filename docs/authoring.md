@@ -77,6 +77,34 @@ chapter is added to `CHAPTERS` in `build_ipynb.py`, in `notebook/tests/test_word
 The chapter's notes, `docs/notes/chapter-NN.md`, are written in the same commit, with a section
 "Figures", a section "Requirements" and a section "Originality" (below).
 
+## Answers used by later chapters
+
+Use a Markdown cell with `<!-- answer: guesses -->` for Chapter 1's table guesses,
+`<!-- answer: daily_sales -->` or `<!-- answer: clean_orders -->` for the comparisons in
+Chapter 2, and `<!-- answer: report -->` for its reply to the head of the shop. The notebook
+builder removes the marker and stores its value in the cell's `ms.answer` metadata.
+`notebook/buttons/answers.js` mounts labelled text fields on that cell widget, outside its
+Markdown renderer. These fields do not execute Python or become notebook source.
+
+Each response has a stable exercise ID and its own `ms:metadata-systems:answers:v1:` browser
+storage key. Do not derive IDs from cell positions, headings or published notebook versions.
+Writes happen on each input event, with explicit failure feedback and an in-memory draft for
+export. Chapter 2 displays the Chapter 1 answers read-only and saves revisions separately.
+An explicit reset stores an empty value so recovery from an old notebook cannot undo the reset.
+Import restores missing or empty answers and preserves nonempty current answers. Export includes
+unsaved in-memory drafts. Both use a course-identified, versioned JSON document.
+
+On opening either chapter, recovery reads old `guesses` strings from Chapter 1 and its saved
+copies, newest first, without executing Python. Existing answer-store entries take precedence.
+Keep the notebook's normal Save/update handling intact: it still protects changes to code cells.
+The answer text is separate and survives published notebook replacement.
+
+Run `node --test notebook/buttons/answers.test.mjs` for storage and recovery behaviour.
+`notebook/jupyterlite/answer-smoke.mjs`, called by the normal smoke suite, exercises typing,
+refresh, Run all, chapter navigation, revisions, export/import, failed storage, reset and a
+published-notebook update in the built JupyterLite site. UI words live in `answer-words.js` and
+are checked by the prose regression script as well as the editorial pass.
+
 ## How a figure is drawn
 
 A figure the reader does not change is drawn when the site is built, into a Markdown cell, so it
