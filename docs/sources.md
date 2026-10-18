@@ -697,3 +697,25 @@ Read in the OpenLineage repository (`OpenLineage/OpenLineage`, `main`, commit
   choice, the version removed, is labelled as the ferry's on the page.
 - The ferry, its object storage, functions, scheduler and every delivery rule are the course's own;
   no real system is described.
+
+## Offline course storage and JupyterLite integration
+
+Read 18 October 2026 from the pinned JupyterLite 0.8.6 source:
+
+- [`ServiceWorkerManager`](https://github.com/jupyterlite/jupyterlite/blob/v0.8.6/packages/apputils/src/service-worker-manager.ts)
+  accepts a worker URL and manages the contents and stdin broadcast channel. Its internal
+  `_unregisterOldServiceWorkers` method unregisters every service worker on the origin when the
+  stored version changes. The course overrides that method in a subclass to preserve other
+  applications on the same GitHub Pages origin; this integration must be rechecked on upgrades.
+- [The worker](https://github.com/jupyterlite/jupyterlite/blob/v0.8.6/packages/apputils/src/service-worker.ts)
+  forwards drive/stdin API calls through a BroadcastChannel and answers a heartbeat. Its optional
+  cache fills only from requests, so it cannot establish that unvisited chapters work offline.
+  The course imports the built upstream worker unchanged for those APIs and handles static
+  course resources separately.
+- [The manager plugin](https://github.com/jupyterlite/jupyterlite/blob/v0.8.6/packages/application-extension/src/index.tsx)
+  provides `IServiceWorkerManager` and registers the kernel client's stdin handler. The course
+  supplies the same interface through its extension with the pinned shared packages.
+
+The offline browser test checks CacheStorage persistence across a browser restart, service worker
+scope, byte integrity before cache publication, and offline execution against the real built site.
+It does not establish permanent storage: browser or user removal of site data remains possible.

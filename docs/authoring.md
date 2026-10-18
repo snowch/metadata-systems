@@ -295,3 +295,37 @@ Closing the panel cancels timers and listeners.
 `startup.test.mjs` checks timing, cancellation and stale callbacks. `startup-smoke.mjs`, called by
 the notebook browser suite, delays the real WebAssembly download, breaks the course-package
 download, and checks retry, queued runs, retained edits, answer fields and a narrow dark view.
+
+## Offline course
+
+The contents page offers an explicit full-course download with the size calculated from the
+assembled site. It includes the front page, all published notebooks, Python and all bundled
+packages. No first visit or successful Python startup alone is called offline-ready. A user must
+finish the download while connected, then can close the browser and return without a network.
+Browser storage can be evicted; the UI checks that all files are still present before reporting
+readiness. Removing downloaded files does not remove answers, notebook saves or another course's
+data. The browser can still remove site data, so the UI recommends exporting answers.
+
+After building both apps and adding redirects, run `node scripts/build-offline.mjs SITE_DIR`.
+It writes `offline-manifest.json` with a release digest, file sizes and SHA-256 hashes, omitting
+source maps. The client validates downloads before storing them, resumes incomplete downloads
+and reuses unchanged files during updates. A single metadata write switches to a complete new
+version. An interrupted update leaves the previous complete version active. The offline copy
+remains on that version until the reader chooses Download update; open chapters are reloaded
+by the reader afterwards. No page reload is forced and learner data is never deleted for an
+update. A cross-tab Web Lock serialises download/removal operations.
+
+`offline/worker.js` serves the selected snapshot under the course's own URL scope, including
+notebook navigation query strings and package checksum URLs. It imports the pinned JupyterLite
+worker for its filesystem and stdin protocol. `notebook/buttons/service-worker.js` uses
+JupyterLite's manager but disables its origin-wide unregister-on-version-change method; the
+browser updates registrations normally. The download client migrates only this course's old
+JupyterLite registration. Other GitHub Pages projects on the origin keep their workers and caches.
+
+`node scripts/offline-smoke.mjs SITE_DIR` tests the full production build under a project subpath.
+It cancels and resumes downloads, restarts a persistent browser with an empty HTTP cache and no
+network, opens previously unvisited notebooks, runs Python, checks answer persistence, simulates
+a failed and successful release update, rejects a checksum mismatch, detects an evicted asset,
+and removes the download without removing answers, saved notebooks or unrelated workers and
+caches. Both the Notebooks and deploy workflows run it;
+the deploy verifies the exact artifact it publishes.

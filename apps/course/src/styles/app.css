@@ -432,3 +432,29 @@ figure.interactive > figcaption {
   font-size: var(--text-sm);
   color: var(--fg-muted);
 }
+
+/* A user starts the full-course download explicitly; its controls also work on phones. */
+.offline-course {
+  margin-block: 2rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.offline-course h2 {
+  margin-top: 0;
+}
+.offline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.offline-actions button {
+  min-height: 44px;
+}
+.offline-course progress {
+  width: 100%;
+  margin-top: 1rem;
+}
+.offline-note {
+  font-size: 0.875rem;
+}

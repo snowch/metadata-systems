@@ -4,6 +4,34 @@
 // docs/notes/chapter-02/briefs/F-figure-labels.md (CLAUDE.md).
 
 export const STRINGS = {
+  offline: {
+    title: "Use the course offline",
+    intro:
+      "Download the full course to open, reload and run every chapter offline. You need an internet connection for the download.",
+    size: "Full course: {size} MB",
+    download: "Download full course",
+    update: "Download update",
+    cancel: "Cancel download",
+    remove: "Remove downloaded course",
+    progress: "Downloaded {done} of {total} MB",
+    progressLabel: "Course download progress",
+    ready: "The full course is saved in this browser and ready to use offline.",
+    offlineReady:
+      "You are offline. You can open, reload and run every chapter from the downloaded course.",
+    incomplete:
+      "The full course is not available offline. Reconnect to the internet and complete the download.",
+    updateAvailable: "A course update is available. Download it to update your offline copy.",
+    updated:
+      "Course update downloaded. Reload open chapters to use it. Your answers and notebook edits are kept.",
+    cancelled:
+      "Download cancelled. You can resume it later. Any complete version downloaded earlier remains available.",
+    failed:
+      "Could not complete the download. Check your connection and available browser storage, then try again. Any complete version downloaded earlier remains available.",
+    unsupported:
+      "This browser cannot download the course for offline use. You can use the course while online.",
+    storageNote:
+      "Removing the download keeps your answers and saved notebooks. Your browser may clear stored site data, including downloads and answers. Export your answers to keep a separate copy.",
+  },
   brand: "Metadata Systems",
   courseTitle: "Metadata Systems: From Raw Files to a Working Metadata Platform",
   lead: "You predict outcomes, build a metadata system, inspect its results, then break and repair it. Your work stays in your browser.",

@@ -43,6 +43,7 @@ import labels from "./buttons.json";
 import words from "./status.json";
 import { attachAnswers } from "./answers.js";
 import { createStartup } from "./startup.js";
+import { courseWorker } from "./service-worker.js";
 
 // How much of a cell must show for JupyterLab not to scroll to it, in pixels: its notebook's
 // scroll-down threshold, half a cell margin and one line.
@@ -537,7 +538,7 @@ function followMove(app) {
   });
 }
 
-export default {
+const rowPlugin = {
   id: "ms-notebook-buttons:row",
   description:
     "Adds a row of large Run all, Run below and Save buttons above every notebook's cells, with arrows to the chapters either side, hides the menu bar and the notebook's toolbar, opens the published chapter in place of an older saved copy, starts Python on the chapter's setup as it opens, scrolls to a heading the text links to, and sends the notebooks' earlier names to their chapters.",
@@ -570,3 +571,5 @@ export default {
     tracker.widgetAdded.connect((_, panel) => add(panel));
   },
 };
+
+export default [rowPlugin, courseWorker];

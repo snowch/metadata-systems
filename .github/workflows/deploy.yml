@@ -67,6 +67,14 @@ jobs:
           mkdir -p apps/course/dist/notebook
           cp notebook/redirect/index.html notebook/redirect/part-2.html apps/course/dist/notebook/
 
+      - name: Prepare the complete offline download
+        run: node scripts/build-offline.mjs apps/course/dist
+
+      - name: Verify offline navigation, Python, answers and updates
+        run: |
+          npx playwright install --with-deps chromium
+          node scripts/offline-smoke.mjs apps/course/dist
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: apps/course/dist

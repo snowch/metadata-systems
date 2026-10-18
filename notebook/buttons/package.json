@@ -8,13 +8,26 @@
   "scripts": {
     "build": "node node_modules/@jupyter/builder/lib/build-labextension.js --core-package-file node_modules/@jupyterlab/core-meta/core.package.json ."
   },
-  "dependencies": {},
   "devDependencies": {
     "@jupyter/builder": "1.2.3",
     "@jupyterlab/core-meta": "4.6.4"
   },
   "jupyterlab": {
     "extension": true,
-    "outputDir": "labextension"
+    "outputDir": "labextension",
+    "sharedPackages": {
+      "@jupyterlite/apputils": {
+        "bundled": false,
+        "singleton": true
+      },
+      "@jupyterlite/services": {
+        "bundled": false,
+        "singleton": true
+      }
+    }
+  },
+  "dependencies": {
+    "@jupyterlite/apputils": "0.8.6",
+    "@jupyterlite/services": "0.8.6"
   }
 }

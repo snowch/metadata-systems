@@ -48,6 +48,15 @@ jobs:
       - name: Build the chapters as a JupyterLite site
         run: notebook/jupyterlite/build.sh jupyterlite-site
 
+      - name: Assemble and test the complete offline course
+        run: |
+          npm run build -w @ms/course
+          cp -a jupyterlite-site apps/course/dist/jupyterlite
+          mkdir -p apps/course/dist/notebook
+          cp notebook/redirect/*.html apps/course/dist/notebook/
+          node scripts/build-offline.mjs apps/course/dist
+          node scripts/offline-smoke.mjs apps/course/dist
+
       - name: Press the row of buttons in each chapter, as a phone
         run: node notebook/jupyterlite/smoke.mjs jupyterlite-site
 
