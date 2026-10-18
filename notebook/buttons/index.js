@@ -80,8 +80,8 @@ const actions = {
   },
 };
 
-/** A notice at the foot of the screen that says what Python is doing: starting, ready, how many
-    cells have run. A queued run waits for startup; the separate startup row remains visible.
+/** A notice at the foot of the screen counts completed cells. A queued run waits for startup;
+    the separate startup row remains visible.
     It is a status for screen readers too, and lets taps through to the page beneath it. */
 function notice(panel) {
   const node = document.createElement("div");
@@ -125,7 +125,6 @@ async function run(panel, state, start) {
     });
   };
   NotebookActions.executed.connect(count);
-  state.runs += 1;
   try {
     // A run waits for the check for a newer chapter, which may replace the notebook's cells.
     await state.checked;
@@ -144,7 +143,9 @@ async function run(panel, state, start) {
       busy: true,
     });
     const succeeded = await promise;
-    state.notice.show(succeeded ? words.done : words.runFailed, { briefly: !succeeded ? 10_000 : true });
+    state.notice.show(succeeded ? words.done : words.runFailed, {
+      briefly: !succeeded ? 10_000 : true,
+    });
   } finally {
     NotebookActions.executed.disconnect(count);
   }
@@ -270,7 +271,8 @@ async function warmUp(app, panel, state, { retry, active, preparing, signal }) {
   await state.checked;
   if (!active()) return;
   if (retry) {
-    const name = panel.sessionContext.session?.kernel?.name ||
+    const name =
+      panel.sessionContext.session?.kernel?.name ||
       panel.context.model.getMetadata("kernelspec")?.name;
     if (!name) throw new Error("No Python kernel configured");
     const previous = panel.sessionContext.session?.kernel?.id;
@@ -358,11 +360,17 @@ function startup(app, panel, state) {
       widget.node.dataset.phase = phase;
       widget.node.classList.toggle("ms-Startup-busy", phase === "loading" || phase === "preparing");
       message.textContent = words[phase] || "";
-      detail.textContent = phase === "loading" || phase === "preparing"
-        ? stalled ? words.stalled : slow ? words.slow : ""
-        : "";
+      detail.textContent =
+        phase === "loading" || phase === "preparing"
+          ? stalled
+            ? words.stalled
+            : slow
+              ? words.slow
+              : ""
+          : "";
       detail.hidden = !detail.textContent;
-      retry.hidden = phase !== "failed" && !((phase === "loading" || phase === "preparing") && stalled);
+      retry.hidden =
+        phase !== "failed" && !((phase === "loading" || phase === "preparing") && stalled);
     },
   });
   retry.addEventListener("click", () => {
@@ -500,7 +508,6 @@ async function update(app, panel, state) {
   }
   await panel.context.revert();
   const shown = copy ? 10_000 : 5_000;
-  state.noticeUntil = Date.now() + shown;
   if (copy) {
     // The copy's name is a link that opens it in a new tab, as the arrows open their chapters.
     const link = document.createElement("a");
@@ -511,7 +518,6 @@ async function update(app, panel, state) {
     const [before, after] = words.kept.split("{copy}");
     state.notice.show([before, link, after], { briefly: shown });
   } else state.notice.show(words.updated, { briefly: shown });
-
 }
 
 const MOVED = {
@@ -545,9 +551,7 @@ export default {
       const state = {
         notice: notice(panel),
         ready: false,
-        runs: 0,
         lastAction: null,
-        noticeUntil: 0,
       };
       state.checked = update(app, panel, state).catch((reason) => console.error("update", reason));
       attachAnswers(app, panel, state.checked).catch((reason) => console.error("answers", reason));

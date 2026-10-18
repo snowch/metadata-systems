@@ -1,15 +1,18 @@
 // Copyright © 2026 Christopher Snow
 
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
 import { test } from "node:test";
+import { createStartup } from "./startup.js";
 
-const source = readFileSync(new URL("./startup.js", import.meta.url), "utf8");
-const { createStartup } = await import(`data:text/javascript;base64,${Buffer.from(source).toString("base64")}`);
-const tick = async () => { for (let n = 0; n < 6; n++) await Promise.resolve(); };
+const tick = async () => {
+  for (let n = 0; n < 6; n++) await Promise.resolve();
+};
 const deferred = () => {
   let resolve, reject;
-  const promise = new Promise((yes, no) => { resolve = yes; reject = no; });
+  const promise = new Promise((yes, no) => {
+    resolve = yes;
+    reject = no;
+  });
   return { promise, resolve, reject };
 };
 
@@ -20,21 +23,34 @@ function fixture(start) {
   const controller = createStartup({
     start,
     render: (state) => frames.push(state),
-    setTimer: (fn, delay) => { const id = ++next; timers.set(id, { fn, delay }); return id; },
+    setTimer: (fn, delay) => {
+      const id = ++next;
+      timers.set(id, { fn, delay });
+      return id;
+    },
     clearTimer: (id) => timers.delete(id),
   });
-  return { controller, frames, timers, fire(delay) {
-    for (const [id, timer] of [...timers]) if (timer.delay === delay) {
-      timers.delete(id);
-      timer.fn();
-    }
-  } };
+  return {
+    controller,
+    frames,
+    timers,
+    fire(delay) {
+      for (const [id, timer] of [...timers])
+        if (timer.delay === delay) {
+          timers.delete(id);
+          timer.fn();
+        }
+    },
+  };
 }
 
 test("slow startup stays pending, reports stages, and can finish after the retry threshold", async () => {
   const work = deferred();
   let attempt;
-  const f = fixture((value) => { attempt = value; return work.promise; });
+  const f = fixture((value) => {
+    attempt = value;
+    return work.promise;
+  });
   const ready = f.controller.begin();
   await tick();
   assert.equal(f.frames.at(-1).phase, "loading");
@@ -55,7 +71,10 @@ test("slow startup stays pending, reports stages, and can finish after the retry
 
 test("a failure releases queued runs, clears timers, and retry can succeed", async () => {
   let tries = 0;
-  const f = fixture(({ retry }) => { if (++tries === 1) throw Error("download failed"); assert.equal(retry, true); });
+  const f = fixture(({ retry }) => {
+    if (++tries === 1) throw Error("download failed");
+    assert.equal(retry, true);
+  });
   f.controller.begin();
   assert.equal(await f.controller.ready(), false);
   assert.equal(f.frames.at(-1).phase, "failed");
@@ -68,7 +87,10 @@ test("retry cancels a stalled attempt and ignores its late progress or failure",
   const old = deferred();
   const fresh = deferred();
   const attempts = [];
-  const f = fixture((attempt) => { attempts.push(attempt); return attempts.length === 1 ? old.promise : fresh.promise; });
+  const f = fixture((attempt) => {
+    attempts.push(attempt);
+    return attempts.length === 1 ? old.promise : fresh.promise;
+  });
   const first = f.controller.begin();
   await tick();
   const second = f.controller.begin(true);
