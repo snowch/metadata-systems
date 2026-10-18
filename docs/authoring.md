@@ -277,3 +277,21 @@ it.
   error and keeping the reader's place.
 
 A commit carries the tests for the code it changes, so every commit passes the check on its own.
+
+## Python startup feedback
+
+`notebook/buttons/startup.js` tracks startup separately from run progress and chapter-update
+notices. The row below the notebook controls shows loading, chapter preparation, and readiness.
+It uses an indeterminate indicator because the worker's kernel interface exposes no download
+byte totals. After ten seconds it adds slow-connection guidance; after two minutes it offers
+Retry while allowing the current attempt to finish. A rejected startup, dead kernel, or failed
+setup reply shows an error immediately.
+
+Retry replaces the Python worker within the existing notebook session and shuts down the old
+worker. It preserves the document and answer controls; it does not reload the page. An early
+Run all waits for setup to succeed. A failed or superseded startup releases that queued run.
+Closing the panel cancels timers and listeners.
+
+`startup.test.mjs` checks timing, cancellation and stale callbacks. `startup-smoke.mjs`, called by
+the notebook browser suite, delays the real WebAssembly download, breaks the course-package
+download, and checks retry, queued runs, retained edits, answer fields and a narrow dark view.

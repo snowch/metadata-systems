@@ -56,14 +56,14 @@ class TheButtons(unittest.TestCase):
 
     def test_the_notice_has_its_words_and_keeps_the_rules(self):
         words = json.loads((BUTTONS / "status.json").read_text(encoding="utf-8"))
-        self.assertEqual(set(words), {"starting", "ready", "waiting", "running", "done", "updated", "kept"})
+        self.assertEqual(set(words), {"loading", "preparing", "slow", "stalled", "failed", "retry", "runFailed", "ready", "waiting", "running", "done", "updated", "kept"})
         self.assertIn("{done}", words["running"])
         self.assertIn("{total}", words["running"])
         self.assertEqual(words["kept"].count("{copy}"), 1)
         for key, text in words.items():
             self.assertNotIn("\u2014", text)
             # The kept copy's notice names a file, and stays up for longer (index.js, update).
-            self.assertLessEqual(len(text), 110 if key == "kept" else 60, key)
+            self.assertLessEqual(len(text), 160 if key == "stalled" else 110 if key in {"kept", "loading", "slow", "failed"} else 60, key)
         script = (BUTTONS / "index.js").read_text(encoding="utf-8")
         self.assertIn('node.setAttribute("role", "status")', script)
 

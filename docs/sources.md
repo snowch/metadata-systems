@@ -458,6 +458,15 @@ Read 10 October 2026, for `notebook/` and `docs/notes/notebook-prototype.md`.
   (`getOffsetForIndexAndAlignment`) defines: no scroll when the cell is in view, or when at least
   the scroll-down threshold of it shows below the view's top, which a notebook sets to half a cell
   margin and one line, 11 + 17 = 28 pixels (`src/windowing.ts`).
+- **Startup and retry APIs** (read 18 October 2026): JupyterLab 4.6.0's
+  [`SessionContext`](https://github.com/jupyterlab/jupyterlab/blob/v4.6.0/packages/apputils/src/sessioncontext.tsx)
+  exposes `ready` and `changeKernel`; the latter updates the existing session. JupyterLite 0.8.6's
+  [`SessionAPIClient.update`](https://github.com/jupyterlite/jupyterlite/blob/v0.8.6/packages/services/src/session/client.ts)
+  starts a new kernel when passed a kernel name, even when that name is unchanged. This version
+  does not shut down the previous kernel, so the course explicitly calls the kernel manager's
+  `shutdown` after replacement. Its
+  [`KernelAPIClient.shutdown`](https://github.com/jupyterlite/jupyterlite/blob/v0.8.6/packages/services/src/kernel/client.ts)
+  disposes the worker without waiting for Python to become ready.
 - **Apple Developer Forums, "Safari and WkWebView Memory Limit Causing App Interruptions"**
   (developer.apple.com/forums/thread/766309). A developer, not Apple, reports in October 2024 that
   Safari reloaded their page and showed "This webpage was reloaded because it was using significant

@@ -1135,3 +1135,64 @@
   font-size: 1.1rem;
   scroll-margin-top: 1rem;
 }
+
+/* Startup occupies its own row rather than covering the chapter. The worker cannot report a
+   total download size, so the indicator has no percentage. */
+.ms-Startup {
+  flex: 0 0 auto;
+  color: var(--jp-ui-font-color0);
+  background: var(--jp-layout-color1);
+  border-bottom: 1px solid var(--jp-border-color2);
+  font-family: var(--jp-ui-font-family);
+  font-size: 14px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.ms-Startup-content {
+  padding: 8px 14px;
+}
+
+.ms-Startup-detail {
+  margin-top: 4px;
+}
+
+.ms-Startup button {
+  margin-top: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--jp-border-color1);
+  border-radius: var(--jp-border-radius);
+  color: var(--jp-ui-font-color1);
+  background: var(--jp-layout-color2);
+  font: inherit;
+  cursor: pointer;
+}
+
+.ms-Startup button:focus-visible {
+  outline: 2px solid var(--jp-brand-color1);
+  outline-offset: 2px;
+}
+
+.ms-Startup [hidden] {
+  display: none;
+}
+
+.ms-Startup-busy [role="status"] > :first-child::before {
+  content: "";
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  margin-right: 8px;
+  vertical-align: -1px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: ms-Buttons-spin 0.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ms-Startup-busy [role="status"] > :first-child::before {
+    animation: none;
+  }
+}
