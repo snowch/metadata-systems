@@ -134,19 +134,30 @@ export async function checkStartup(browser, base, check) {
     serviceWorkers: "block",
   });
   let broken = true;
-  await failed.route("**/shop-0.0.0-py3-none-any.whl", (route) =>
-    broken
+  let intercepted = 0;
+  await failed.route("**/shop-0.0.0-py3-none-any.whl*", (route) => {
+    intercepted++;
+    return broken
       ? route.fulfill({
           status: 200,
           contentType: "application/zip",
           body: "invalid wheel for startup failure test",
         })
-      : route.continue(),
-  );
+      : route.continue();
+  });
   try {
     const page = await open(failed);
     await page.click('button[data-action="runAll"]');
-    await page.waitForSelector('.ms-Startup[data-phase="failed"]', { timeout: 120_000 });
+    await page
+      .waitForSelector('.ms-Startup[data-phase="failed"]', { timeout: 120_000 })
+      .catch(async (error) => {
+        console.log("startup failure diagnostic", {
+          intercepted,
+          status: await page.locator(".ms-Startup").textContent(),
+        });
+        throw error;
+      });
+    check(intercepted > 0, "startup: the failed package download was intercepted");
     check(
       (await page.locator(".ms-Startup").innerText()).includes(words.failed),
       "startup: a failed chapter setup displays a clear error and Retry",
