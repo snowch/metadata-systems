@@ -15,8 +15,8 @@
 // With the toolbar hidden, nothing else on the page shows that Python is busy, and on a phone Python
 // takes most of a minute to start. So while a run is under way, Run all and Run below are disabled
 // (Save stays usable) and the pressed one shows a spinner; and a notice at the foot of the screen
-// says what Python is doing, from the moment the page opens: starting, ready, or how many cells
-// have run (its words are in status.json).
+// counts the cells that have run. A separate row below the controls reports Python startup,
+// slow loading and failures, with an in-place retry (its words are in status.json).
 //
 // At the row's right end, an arrow to the chapter before and one to the chapter after. The row
 // stays in view while the cells scroll, and the links the chapter's text gives are at its top and
@@ -42,6 +42,7 @@ import { Widget } from "@lumino/widgets";
 import labels from "./buttons.json";
 import words from "./status.json";
 import { attachAnswers } from "./answers.js";
+import { createStartup } from "./startup.js";
 
 // How much of a cell must show for JupyterLab not to scroll to it, in pixels: its notebook's
 // scroll-down threshold, half a cell margin and one line.
@@ -79,10 +80,9 @@ const actions = {
   },
 };
 
-/** A notice at the foot of the screen that says what Python is doing: starting, ready, how many
-    cells have run. On a phone Python takes most of a minute to start, and a press of Run all before
-    then waits for it; without the notice, the page looks stuck. It is a status for screen readers
-    too, and lets taps through to the page beneath it. */
+/** A notice at the foot of the screen counts completed cells. A queued run waits for startup;
+    the separate startup row remains visible.
+    It is a status for screen readers too, and lets taps through to the page beneath it. */
 function notice(panel) {
   const node = document.createElement("div");
   node.className = "ms-Status";
@@ -125,22 +125,27 @@ async function run(panel, state, start) {
     });
   };
   NotebookActions.executed.connect(count);
-  state.runs += 1;
   try {
     // A run waits for the check for a newer chapter, which may replace the notebook's cells.
     await state.checked;
+    if (!state.ready) {
+      state.notice.show(words.waiting, { busy: true });
+      if (!(await state.startup.ready())) {
+        state.notice.hide();
+        return;
+      }
+    }
     const promise = start();
     // The cells the action runs: every code cell, or those from the selected one down.
     const from = state.lastAction === "runAll" ? 0 : Math.max(0, before);
     total = notebook.widgets.slice(from).filter(counted).length;
-    if (!state.ready) state.notice.show(words.waiting, { busy: true });
-    else
-      state.notice.show(words.running.replace("{done}", 0).replace("{total}", total), {
-        busy: true,
-      });
-    await promise;
-    state.ready = true;
-    state.notice.show(words.done, { briefly: true });
+    state.notice.show(words.running.replace("{done}", 0).replace("{total}", total), {
+      busy: true,
+    });
+    const succeeded = await promise;
+    state.notice.show(succeeded ? words.done : words.runFailed, {
+      briefly: !succeeded ? 10_000 : true,
+    });
   } finally {
     NotebookActions.executed.disconnect(count);
   }
@@ -177,6 +182,7 @@ function row(app, panel, state) {
         if (runs) await run(panel, state, () => actions[action](panel, app));
         else await actions[action](panel, app);
       } catch (reason) {
+        if (runs) state.notice.show(words.runFailed, { briefly: 10_000 });
         console.error(label, reason);
       } finally {
         button.removeAttribute("aria-busy");
@@ -257,37 +263,127 @@ function contents() {
   return link;
 }
 
-// The notebooks' names until 11 October 2026, when the two parts of Chapter 1 became Chapters 1 and
-// 2, and the names they have now.
-/** Starts Python on the chapter's setup as the page opens. Python starts in the browser when the
-    notebook opens, but the setup cells (installing the shop's package, the imports and the shop's
-    week) wait for Run all, and on a slow phone they take most of a minute. This sends their code
-    to Python as soon as it is up, silently: no cell runs, nothing is printed and no cell's count
-    changes. When the reader presses Run all, the setup cells run again, now in a moment, and a
-    press before the warm-up ends waits for it; a press before Python is even up runs the setup
-    itself, and the warm-up stands aside. A notebook without marked setup cells (one a
-    reader saved before the mark existed) is left as it is. */
-async function warmUp(panel, state) {
-  state.notice.show(words.starting, { busy: true });
+/** Starts Python, then prepares the chapter. Retry replaces the worker in the existing session;
+    it never reloads the page or discards notebook edits. The kernel API does not expose download
+    byte totals, so the UI reports observed stages with an indeterminate spinner. */
+async function warmUp(app, panel, state, { retry, active, preparing, signal }) {
   await panel.context.ready;
   await state.checked;
-  await panel.sessionContext.ready;
+  if (!active()) return;
+  if (retry) {
+    const name =
+      panel.sessionContext.session?.kernel?.name ||
+      panel.context.model.getMetadata("kernelspec")?.name;
+    if (!name) throw new Error("No Python kernel configured");
+    const previous = panel.sessionContext.session?.kernel?.id;
+    await panel.sessionContext.changeKernel({ name });
+    // JupyterLite 0.8.6 starts a new worker but does not shut down the replaced one.
+    if (previous && previous !== panel.sessionContext.session?.kernel?.id)
+      await app.serviceManager.kernels.shutdown(previous);
+  } else {
+    await panel.sessionContext.ready;
+  }
+  if (!active()) return;
   const kernel = panel.sessionContext.session?.kernel;
-  if (!kernel) return state.notice.hide();
-  const code = panel.content.widgets
-    .filter((cell) => cell.model.type === "code" && cell.model.getMetadata("ms")?.setup)
-    .map((cell) => cell.model.sharedModel.getSource())
-    .join("\n\n");
-  await kernel.info;
-  // A run the reader started before Python was up queued its cells first, and they do the setup
-  // themselves: the warm-up would only repeat it after them.
-  if (code && !state.runs)
-    await kernel.requestExecute({ code, silent: true, store_history: false }).done;
-  state.ready = true;
-  // Once the reader has run anything, the notice is the run's; and a notice that the chapter was
-  // updated stays up for its time (update, below).
-  if (!state.runs && Date.now() >= state.noticeUntil)
-    state.notice.show(words.ready, { briefly: true });
+  if (!kernel) throw new Error("Python did not start");
+  let died;
+  let aborted;
+  const dead = new Promise((_, reject) => {
+    aborted = () => reject(new Error("Startup cancelled"));
+    signal.addEventListener("abort", aborted, { once: true });
+    died = (_, status) => {
+      if (status === "dead") reject(new Error("Python stopped during startup"));
+    };
+    kernel.statusChanged.connect(died);
+    died(null, kernel.status);
+  });
+  try {
+    await Promise.race([kernel.info, dead]);
+    if (!active()) return;
+    preparing();
+    const code = panel.content.widgets
+      .filter((cell) => cell.model.type === "code" && cell.model.getMetadata("ms")?.setup)
+      .map((cell) => cell.model.sharedModel.getSource())
+      .join("\n\n");
+    if (code) {
+      const reply = await Promise.race([
+        kernel.requestExecute({ code, silent: true, store_history: false }).done,
+        dead,
+      ]);
+      if (reply.content.status !== "ok") throw new Error("Chapter setup failed");
+    }
+  } finally {
+    kernel.statusChanged.disconnect(died);
+    signal.removeEventListener("abort", aborted);
+  }
+}
+
+/** Startup stays below the controls, leaving the chapter and its answer fields usable. It has
+    its own status region so a chapter-update notice or queued run cannot erase a failure. */
+function startup(app, panel, state) {
+  const widget = new Widget();
+  widget.addClass("ms-Startup");
+  const body = document.createElement("div");
+  body.className = "ms-Startup-content";
+  const status = document.createElement("div");
+  status.setAttribute("role", "status");
+  status.setAttribute("aria-live", "polite");
+  status.setAttribute("aria-atomic", "true");
+  const message = document.createElement("div");
+  const detail = document.createElement("div");
+  detail.className = "ms-Startup-detail";
+  status.append(message, detail);
+  const retry = document.createElement("button");
+  retry.type = "button";
+  retry.className = "ms-Startup-retry";
+  retry.textContent = words.retry;
+  retry.hidden = true;
+  body.append(status, retry);
+  widget.node.append(body);
+  panel.contentHeader.addWidget(widget);
+  // Lumino lays out the header using each widget's explicit limits. Observe the content so
+  // wrapped messages at phone widths reserve their height instead of covering the notebook.
+  const size = new ResizeObserver(() => {
+    if (widget.isHidden || panel.isDisposed) return;
+    const height = `${Math.ceil(body.getBoundingClientRect().height)}px`;
+    widget.node.style.minHeight = height;
+    widget.node.style.maxHeight = height;
+    panel.contentHeader.fit();
+  });
+  size.observe(body);
+  const controller = createStartup({
+    start: (attempt) => warmUp(app, panel, state, attempt),
+    render({ phase, slow, stalled }) {
+      if (panel.isDisposed) return;
+      state.ready = phase === "ready" || phase === "hidden";
+      widget.setHidden(phase === "hidden");
+      widget.node.dataset.phase = phase;
+      widget.node.classList.toggle("ms-Startup-busy", phase === "loading" || phase === "preparing");
+      message.textContent = words[phase] || "";
+      detail.textContent =
+        phase === "loading" || phase === "preparing"
+          ? stalled
+            ? words.stalled
+            : slow
+              ? words.slow
+              : ""
+          : "";
+      detail.hidden = !detail.textContent;
+      retry.hidden =
+        phase !== "failed" && !((phase === "loading" || phase === "preparing") && stalled);
+    },
+  });
+  retry.addEventListener("click", () => {
+    // Remove focus from the button before hiding it; a keyboard user keeps focus in this region.
+    widget.node.tabIndex = -1;
+    widget.node.focus();
+    void controller.begin(true);
+  });
+  panel.disposed.connect(() => {
+    controller.dispose();
+    size.disconnect();
+  });
+  return controller;
 }
 
 /** A heading's address in a link, as JupyterLab writes it: its words with each space a hyphen. */
@@ -412,7 +508,6 @@ async function update(app, panel, state) {
   }
   await panel.context.revert();
   const shown = copy ? 10_000 : 5_000;
-  state.noticeUntil = Date.now() + shown;
   if (copy) {
     // The copy's name is a link that opens it in a new tab, as the arrows open their chapters.
     const link = document.createElement("a");
@@ -423,10 +518,6 @@ async function update(app, panel, state) {
     const [before, after] = words.kept.split("{copy}");
     state.notice.show([before, link, after], { briefly: shown });
   } else state.notice.show(words.updated, { briefly: shown });
-  // The notice goes back to Python starting, unless Python is ready or a run has begun by then.
-  setTimeout(() => {
-    if (!state.ready && !state.runs) state.notice.show(words.starting, { busy: true });
-  }, shown);
 }
 
 const MOVED = {
@@ -460,9 +551,7 @@ export default {
       const state = {
         notice: notice(panel),
         ready: false,
-        runs: 0,
         lastAction: null,
-        noticeUntil: 0,
       };
       state.checked = update(app, panel, state).catch((reason) => console.error("update", reason));
       attachAnswers(app, panel, state.checked).catch((reason) => console.error("answers", reason));
@@ -472,11 +561,8 @@ export default {
       panel.context.ready
         .then(() => arrows(app, panel, widget))
         .catch((reason) => console.error("arrows", reason));
-      warmUp(panel, state).catch((reason) => {
-        state.ready = true;
-        state.notice.hide();
-        console.error("warm-up", reason);
-      });
+      state.startup = startup(app, panel, state);
+      void state.startup.begin();
       // The menu bar's area in Jupyter Notebook's page, which its zen mode hides the same way.
       app.shell.menu?.setHidden(true);
     };

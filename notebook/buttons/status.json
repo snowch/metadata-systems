@@ -1,9 +1,15 @@
 {
-  "starting": "Python is starting in the browser.",
   "ready": "Python is ready.",
   "waiting": "Python is still starting. Cells run when it is ready.",
   "running": "{done} of {total} cells have run",
   "done": "Every cell has run.",
   "updated": "The page now shows the chapter's new version.",
-  "kept": "The page now shows the chapter's new version. Your saved copy, with your changes, is kept as {copy}."
+  "kept": "The page now shows the chapter's new version. Your saved copy, with your changes, is kept as {copy}.",
+  "loading": "Loading Python in your browser. You can keep reading and writing exercise answers.",
+  "preparing": "Python has started. Preparing the chapter.",
+  "slow": "The first load can take longer, especially on a slow connection.",
+  "stalled": "Still waiting for Python to be ready. You can wait or retry. Retry restarts Python without reloading the page and keeps your answers and notebook edits.",
+  "failed": "Could not start Python. Retry keeps your answers and notebook edits.",
+  "retry": "Retry",
+  "runFailed": "Could not finish running the cells. Try running them again."
 }
