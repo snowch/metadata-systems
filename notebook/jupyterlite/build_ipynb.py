@@ -231,9 +231,11 @@ def build_all() -> dict[str, nbformat.NotebookNode]:
 
 
 def build_reader() -> nbformat.NotebookNode:
-    """A comparison view of Chapter 1, generated from the same source rather than a prose fork."""
+    """Chapter 1 with reader controls and presentation-specific descriptions."""
     nb = build(1)
     words = json.loads((HERE / "reader.json").read_text(encoding="utf-8"))
+    descriptions = words["descriptions"]
+    replaced = set()
     examples = iter([
         ("products", "The product catalogue"),
         ("customers", "The customers"),
@@ -251,6 +253,10 @@ def build_reader() -> nbformat.NotebookNode:
                 cell.source = box("ms-box-warning", words["warning"])
             elif "ms-box-steps" in cell.source:
                 cell.source = box("ms-box-steps", words["instructions"])
+            heading = cell.source.split("\n", 1)[0]
+            if heading in descriptions:
+                cell.source = descriptions[heading]
+                replaced.add(heading)
             cell.source = cell.source.replace(" or press **Save**", "")
         elif cell.metadata.get("ms", {}).get("setup"):
             cell.metadata["editable"] = False
@@ -259,6 +265,8 @@ def build_reader() -> nbformat.NotebookNode:
             cell.metadata["ms"] = {"example": {"id": identifier, "title": title, "source": cell.source}}
     if next(examples, None) is not None:
         raise ValueError("Chapter 1 reader examples no longer match the chapter")
+    if replaced != descriptions.keys():
+        raise ValueError("Chapter 1 reader descriptions no longer match the chapter headings")
     nb.cells[0].source += "\n\n" + words["comparison"]
     nb.metadata["ms"] = {**stamp(nb), "reader": True}
     return nb

@@ -1,9 +1,12 @@
 # Chapter 1b: The shop and its platform
 
 This comparison view is generated from Chapter 1's source by `build_reader` in
-`notebook/jupyterlite/build_ipynb.py`. The shop, prose, diagrams, examples and answer boxes are
-the same. Only the heading, navigation and running/saving instructions change. The original
-chapter remains available beside the comparison on the contents page.
+`notebook/jupyterlite/build_ipynb.py`. The shop, diagrams, examples and answer boxes are the same.
+The heading, navigation and running/saving instructions adapt to the reader controls. Four file
+and warehouse descriptions use short introductions and labelled bullets, held in `reader.json`;
+the build requires their headings to match Chapter 1. They retain the original facts, field
+meanings and code instructions. The original chapter remains available beside the comparison
+on the contents page.
 
 ## Requirements
 
@@ -13,9 +16,9 @@ Chapter 1's learning objectives and the requirements described in its notes stil
 
 ## Originality
 
-The comparison uses the course's own bicycle shop, the same examples and the same prose as
-Chapter 1. It does not reproduce another project's course or interface copy. The new control
-instructions were drafted by the separate prose agent from checked implementation facts.
+The comparison uses the course's own bicycle shop and the same examples as Chapter 1. It does
+not reproduce another project's course or interface copy. Reader instructions and descriptions
+were drafted by the separate prose agent from checked implementation and data facts.
 
 ## Reader implementation
 
