@@ -377,34 +377,23 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertEqual((owners, len(programs)), ({"etlsvc/batch01.corp.internal@CORP.INTERNAL"}, 4))
         tables = self.w.sql("SELECT table_name FROM information_schema.tables")
         self.assertEqual(len(tables), 3)
-        # Since 14 October 2026, at the author's request, the head of the shop sends the requirement
-        # (as in Chapters 3 and 4), the warehouse meets it as written, the reader writes what they
-        # would send before the readings, and the readings are named as Chapter 4 names its own;
-        # Chapter 8 refers back to them ("Chapter 2's readings of \"owner\"").
-        # The head asks in the shop's terms, about the dashboard's numbers, and you write the rule
-        # about tables: a shop's head does not name the warehouse's tables. The reading the section
-        # closes on follows from the head's words, not from a guess at what the head wanted.
+        # A shared database account does not identify a contact for a wrong dashboard number.
         self.says('The head of the shop sends a second message: "When a number on the dashboard looks wrong, as Thursday\'s did, I need to know whom to ask about it."')
-        self.says('You turn the head\'s request into a rule for the shop\'s platform: "Every table must have an owner."')
-        self.says("Someone to ask about a wrong number is a person or a team, so the owner has to be `a_person` or `a_team`.")
-        self.says('Your rule becomes "Every table must name whom to ask about it."')
-        self.assertNotIn("The reading the head wanted", SOURCE[2])
-        self.says('If "owner" means a value in `table_owner`, every table meets the requirement.')
-        self.says("`etlsvc/batch01.corp.internal@CORP.INTERNAL` is the account the shop's four nightly programs log in as.")
-        self.says("- A value in `table_owner`, `as_written`: the table names an owning account. `etlsvc/batch01.corp.internal@CORP.INTERNAL` meets it.")
-        self.says("- A person to ask, `a_person`: a named member of staff. Nothing records one.")
-        self.says("- A team that answers for it, `a_team`: a named team. Nothing records one.")
-        self.says("- The job that writes it, `the_job`: the name of the program that writes the table. The warehouse records `etlsvc/batch01.corp.internal@CORP.INTERNAL` in `table_owner`. That value is an account, the one all four nightly programs log in as. Because the four programs share it, the account does not identify which program writes the table. It does not meet this reading.")
+        self.says('A proposed rule for the shop’s platform is: "Every table must have an owner."')
+        self.says("The shop’s four nightly programs use this account.")
+        self.says("Does the `table_owner` value tell you whom to ask about Thursday’s revenue?")
+        self.says("For this request, each table needs a named person or team to contact.")
+        self.says("The shared account in `table_owner` does not provide that information.")
+        self.says('- **Database owner:** an account recorded as owning the table.')
+        self.says('- **Responsible person:** a named person to contact about the data.')
+        self.says('- **Responsible team:** a team accountable for the data.')
+        self.says('The catalogue does not identify the **producing job**, the program that writes the table.')
         self.says('- Question the requirement "Every table must have an owner."')
         self.says('## "Every table must have an owner."')
-        # The reader decides before opening the readings, which are closed until then; no code cell
-        # holds the answers, since nothing reads them.
-        self.says('decide two things: what you would send the head, and what you take "owner" to mean.')
-        self.assertIn('<details><summary>Four readings of "owner"</summary>', SOURCE[2])
+        for label in ("as_written", "a_person", "a_team", "the_job"):
+            self.assertNotIn(f"`{label}`", SOURCE[2])
+        self.assertIn('<details><summary>What does "owner" mean?</summary>', SOURCE[2])
         self.assertNotIn('    reading = """', SOURCE[2])
-        # No table of the readings: a list, as in Chapter 4.
-        self.assertNotIn("| One reading of", SOURCE[2])
-        self.assertNotIn("These fields", self.text[2])
 
     def test_the_reconstruction_and_thursday(self):
         self.assertEqual(len(shop.queries_that_rebuild(self.week)), 1)

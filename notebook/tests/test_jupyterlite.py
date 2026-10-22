@@ -210,12 +210,12 @@ class TheBoxes(unittest.TestCase):
             steps = re.findall(r'mo\.callout\(mo\.md\(r"""(.*?)"""\), kind="info"\)', source, re.S)[0]
             self.assertIn("press **Run all**, at the top of the page", steps, chapter)
 
-    def test_chapter_2s_rule_rewritten_is_inside_the_readings(self):
-        # Chapter 2 rewrites its rule, after the readings, in a second requirement box; it is inside
-        # the closed block of readings, so that it is not in view while the reader decides.
-        block = SOURCE[2].split('<details><summary>Four readings of "owner"</summary>')[1].split("</details>")[0]
+    def test_chapter_2s_contact_requirement_is_inside_the_explanation(self):
+        # The contact requirement stays inside the closed explanation while the reader
+        # considers whether the shared database account answers the head's request.
+        block = SOURCE[2].split('<details><summary>What does "owner" mean?</summary>')[1].split("</details>")[0]
         self.assertIn('<div class="ms-box ms-box-requirement">', block)
-        self.assertIn('Your rule becomes "Every table must name whom to ask about it."', block)
+        self.assertIn("For this request, each table needs a named person or team to contact.", block)
 
     def test_no_cell_holds_answers_nothing_reads(self):
         # A reader commits before opening the readings, which are closed until then (Chapters 2,
@@ -229,7 +229,8 @@ class TheBoxes(unittest.TestCase):
             self.assertNotIn("write in the next cell", source, chapter)
             self.assertNotIn("with what you wrote", source, chapter)
         for chapter in (2, 4, 5, 6, 8, 9):
-            self.assertIn("Before you open the block below", SOURCE[chapter], chapter)
+            if chapter != 2:
+                self.assertIn("Before you open the block below", SOURCE[chapter], chapter)
             self.assertIn("<details><summary>", SOURCE[chapter], chapter)
 
     def test_a_result_is_closed_until_the_reader_opens_it(self):

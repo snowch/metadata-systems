@@ -215,16 +215,15 @@ content tests fail a figure without a block or with a question unanswered.
 
 ## Requirements
 
-Since 14 October 2026 (the sections "The owner requirement in Chapter 4's form" and "The head asks,
-you write the rule", below): "Every table must have an owner.", the rule you write from the head's
-request for whom to ask when a dashboard number looks wrong, questioned in prose and a `reading`
-cell, with no figure. (1) As written: every table has an owner. (2) What it might mean: `as_written`,
-`a_person`, `a_team`, `the_job`. (3) What each needs: a value in `table_owner`; a named member of
-staff; a named team; a program. (4) What the platform records: `etl_service`, an account the
-programs log in as, in every table. (5) Met as written, and by no other reading; the head's
-request (someone to ask when a number looks wrong, as Thursday's did) needs `a_person` or
-`a_team`, which nothing records. The
-paragraphs below are the history.
+Since 22 October 2026, the ownership section begins with the head's need for someone to ask
+about a wrong dashboard number and tests the proposed rule "Every table must have an owner."
+The reader queries `table_owner`, sees the shared account, and considers whether it identifies
+someone to contact. The closed explanation distinguishes a database account, a responsible
+person and a responsible team, and separates the producing job from responsibility. It uses
+plain English rather than the unused labels from the earlier version. The resulting requirement
+is a named person or team to contact; the shop's available records do not provide one. Chapter 8
+retains the distinction when discussing the standard ownership facet. The paragraphs below are
+the history.
 
 The chapter questions "Every table must have an owner." in prose, not in a figure. The
 construction states what the field holds (`etl_service`, the account all four programs log in

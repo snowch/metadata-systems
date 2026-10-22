@@ -193,7 +193,7 @@ and its notes say which (`CLAUDE.md`, "Question the requirement").
 | Ch | A requirement that sounds settled | What it could be asking |
 | --- | --- | --- |
 | 1 | none: the chapter tours what the platform holds, and leaves its first requirement to Chapter 2 | |
-| 2 | "Every table must have an owner." (yours, from the head's request for whom to ask; questioned in the prose) | as written, `as_written`: a value in `table_owner`; a person to ask, `a_person`; a team that answers for it, `a_team`; the job that writes it, `the_job` |
+| 2 | "Every table must have an owner." (a proposed rule tested against the head's request for whom to ask) | an owning database account; a responsible person or team; distinguish the producing job from responsibility for answering questions |
 | 3 | "Every column must have a description." | what the column means; its unit; where its values come from; whether it may be empty. A description that repeats the column's name meets it as written |
 | 4 | "Each asset has one owner." | one person, one team, or one identifier for an owner two records spell differently |
 | 5 | "Show everything related to `daily_sales`." | what it is made from; what reads it; who is responsible for it; where it is kept. Each is a different kind of edge |

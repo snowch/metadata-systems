@@ -296,7 +296,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.callout(mo.md(r"""
-    You turn the head's request into a rule for the shop's platform: "Every table must have an owner."
+    A proposed rule for the shop’s platform is: "Every table must have an owner."
     """), kind="neutral")
     return
 
@@ -321,7 +321,7 @@ def _(warehouse):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The warehouse records `etlsvc/batch01.corp.internal@CORP.INTERNAL` in `table_owner` for all three tables. `etlsvc/batch01.corp.internal@CORP.INTERNAL` is the account the shop's four nightly programs log in as. If "owner" means a value in `table_owner`, every table meets the requirement.
+    The warehouse records `etlsvc/batch01.corp.internal@CORP.INTERNAL` in `table_owner` for all three tables. The shop’s four nightly programs use this account.
     """)
     return
 
@@ -329,7 +329,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.callout(mo.md(r"""
-    Before you open the block below, which holds four readings of "owner", decide two things: what you would send the head, and what you take "owner" to mean.
+    Does the `table_owner` value tell you whom to ask about Thursday’s revenue? What would you report to the head, and what information is still missing?
     """), kind="info")
     return
 
@@ -337,22 +337,21 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    <details><summary>Four readings of "owner"</summary>
+    <details><summary>What does "owner" mean?</summary>
 
-    - A value in `table_owner`, `as_written`: the table names an owning account. `etlsvc/batch01.corp.internal@CORP.INTERNAL` meets it.
-    - A person to ask, `a_person`: a named member of staff. Nothing records one.
-    - A team that answers for it, `a_team`: a named team. Nothing records one.
-    - The job that writes it, `the_job`: the name of the program that writes the table. The warehouse records `etlsvc/batch01.corp.internal@CORP.INTERNAL` in `table_owner`. That value is an account, the one all four nightly programs log in as. Because the four programs share it, the account does not identify which program writes the table. It does not meet this reading.
+    In real systems, "owner" can have different meanings:
 
-    The account satisfies one reading of "owner", but does not identify someone responsible for answering questions about the table. Each reading asks for a different thing to be recorded. Your work is to say which reading was meant, and to record what that reading needs.
+    - **Database owner:** an account recorded as owning the table.
+    - **Responsible person:** a named person to contact about the data.
+    - **Responsible team:** a team accountable for the data.
+
+    The catalogue does not identify the **producing job**, the program that writes the table. Recording that program would be useful, but would not by itself identify a responsible person or team.
 
     <div class="ms-box ms-box-requirement">
 
-    Someone to ask about a wrong number is a person or a team, so the owner has to be `a_person` or `a_team`. The warehouse's owner, `etlsvc/batch01.corp.internal@CORP.INTERNAL`, is an account, so it does not meet that reading. Your rule becomes "Every table must name whom to ask about it."
+    For this request, each table needs a named person or team to contact. The shared account in `table_owner` does not provide that information.
 
     </div>
-
-    Nothing on the shop's platform meets this yet, because no system records whom to ask about a table.
 
     </details>
     """)

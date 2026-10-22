@@ -322,8 +322,8 @@ object only the owner (or a superuser) can do anything with it at first, and oth
 once privileges are granted; the right to modify or destroy an object comes with being its owner
 and cannot be granted on its own. A role here is what the course calls an account.
 
-It supports the closing note's sentences on PostgreSQL, and the fourth reading of Chapter 2's
-requirement, "which account controls `daily_sales` in the warehouse?": a warehouse's owner is an
+It supports the closing note's sentences on PostgreSQL and Chapter 2's distinction between
+database ownership and responsibility for answering questions: a warehouse's owner is an
 account with rights over the table, an answer to a question about control, not about who is
 responsible. The note says "some real databases": not every database gives a table an owner, and
 the course claims nothing about the others.
@@ -788,3 +788,12 @@ The regression test shortens only that background-save timer and writes a newer 
 IndexedDB, representing another tab's save. It reproduces the dialog in a navigated chapter before
 the fix, then verifies no dialog after the fix and checks that independent code drafts and exercise
 answers survive refresh. The reader does not overwrite the newer notebook to suppress the dialog.
+
+
+Chapter 2's ownership explanation revised 22 October 2026 uses these PostgreSQL, dbt and
+OpenLineage sources to distinguish an owning account from a responsible person or team.
+The producing program is discussed separately: recording which program writes a table does
+not itself identify a responsible contact. Chapter 8 retains that distinction without claiming
+that the ownership facet cannot carry additional meaning: its optional `type` remains available.
+The unused prose labels from the earlier explanation are removed; Chapter 4's executable
+`one_owner`, `one_person` and `one_team` checks are unchanged.

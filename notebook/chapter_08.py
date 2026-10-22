@@ -436,7 +436,7 @@ def _(mo):
 
     As written, "Our programs" covers every program, so the shop does not meet the requirement until the export and the analyst's copy send events too.
 
-    One of the standard facets, `ownership`, holds a dataset's owners. Each owner is an identifier, which can name a user, a team or an application. So the facet records an owner without saying which of Chapter 2's readings of "owner" it answers. The shop does not send it.
+    One of the standard facets, `ownership`, holds a dataset's owners. Each owner is an identifier, which can name a user, a team or an application. As Chapter 2 showed, an owner's identifier alone does not establish whom to contact about a wrong number. The shop does not send it.
 
     </details>
     """)
