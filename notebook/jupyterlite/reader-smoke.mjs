@@ -61,6 +61,18 @@ export async function checkReader(browser, base, check) {
       "reader: comparison examples are identical to the original Chapter 1",
     );
     await open();
+    const reminder = page
+      .locator(".jp-RenderedMarkdown")
+      .getByText("Write your guesses now, before continuing to Chapter 2.", {
+        exact: true,
+      });
+    await reminder.waitFor({ state: "attached" });
+    await page.waitForSelector('textarea[data-answer="ch01.daily_sales"]', { state: "attached" });
+    check(
+      (await reminder.count()) === 1 &&
+        (await page.locator('textarea[data-answer^="ch01."]').count()) === 3,
+      "reader: the Chapter 2 carry-over reminder appears before all three original answer boxes",
+    );
     assert.equal(await page.locator(".ms-Example").count(), 6);
     check(
       (await page.locator(".ms-Buttons > [data-action]").count()) === 0,

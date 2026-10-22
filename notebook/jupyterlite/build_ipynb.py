@@ -252,7 +252,7 @@ def build_reader(chapter: int = 1) -> nbformat.NotebookNode:
             if title in descriptions:
                 cell.source = descriptions[title]
                 replaced.add(title)
-            if "<!-- answer: guesses -->" in cell.source:
+            if cell.metadata.get("ms", {}).get("answer") == "guesses":
                 cell.source = words["answerInstructions"]
             for before, after in words.get("proseReplacements", {}).items():
                 cell.source = cell.source.replace(before, after)
