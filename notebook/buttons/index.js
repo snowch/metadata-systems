@@ -21,9 +21,8 @@
 // At the row's right end, an arrow to the chapter before and one to the chapter after. The row
 // stays in view while the cells scroll, and the links the chapter's text gives are at its top and
 // its end only. The chapters are the site's files named chapter_NN.ipynb, so a new chapter gains its
-// arrows when its file is added. Each arrow is a link that opens its chapter in a new tab, as the
-// text's links do; their names are the text's links' own words. Between them, a link to the course's
-// contents, which opens in a new tab too. Below 500 pixels the arrows show without their chapters'
+// arrows when its file is added. Chapter links open within the running page, preserving its Python worker.
+// Modifier clicks still open independent tabs. Contents opens a chapter picker. Below 500 pixels the arrows show without their chapters'
 // numbers, below 600 the contents link shows as an icon, and below 390 not at all, so that the row
 // fits 360 pixels (style/index.css); the chapter's text links to the contents at its top and end.
 //
@@ -36,6 +35,7 @@
 // A link in the text to one of the notebook's own headings scrolls the notebook to that heading
 // (followLinks, below), where JupyterLab's own handling lands it a screen away in a long notebook.
 
+import { DocumentManager } from "@jupyterlab/docmanager";
 import { PageConfig, URLExt } from "@jupyterlab/coreutils";
 import { NotebookActions, INotebookTracker } from "@jupyterlab/notebook";
 import { Widget } from "@lumino/widgets";
@@ -225,7 +225,6 @@ async function arrows(app, panel, widget) {
     const link = document.createElement("a");
     link.className = `ms-Buttons-link ms-Buttons-${which.toLowerCase()}`;
     link.href = `${window.location.pathname}?path=${encodeURIComponent(name)}`;
-    link.target = "_blank";
     const sign = document.createElement("span");
     sign.className = "ms-Buttons-arrow";
     sign.textContent = arrow;
@@ -308,10 +307,12 @@ async function warmUp(app, panel, state, { retry, active, preparing, signal }) {
     await Promise.race([kernel.info, dead]);
     if (!active()) return;
     preparing();
-    const code = panel.content.widgets
-      .filter((cell) => cell.model.type === "code" && cell.model.getMetadata("ms")?.setup)
-      .map((cell) => cell.model.sharedModel.getSource())
-      .join("\n\n");
+    const code =
+      (state.reused ? "%reset -f\n" : "") +
+      panel.content.widgets
+        .filter((cell) => cell.model.type === "code" && cell.model.getMetadata("ms")?.setup)
+        .map((cell) => cell.model.sharedModel.getSource())
+        .join("\n\n");
     if (code) {
       const reply = await Promise.race([
         kernel.requestExecute({ code, silent: true, store_history: false }).done,
@@ -611,6 +612,152 @@ const rowPlugin = {
   requires: [INotebookTracker],
   activate(app, tracker) {
     followMove(app);
+    let navigating = false;
+    let reused = false;
+    const documents = new DocumentManager({
+      registry: app.docRegistry,
+      manager: app.serviceManager,
+      opener: {
+        open: (widget) => {
+          const previous = app.shell.currentWidget;
+          if (previous && previous !== widget) previous.parent = null;
+          app.shell.add(widget, "main");
+          widget.activate();
+        },
+      },
+    });
+    const navigate = async (path, history = true) => {
+      if (navigating) return;
+      const previous = app.shell.currentWidget;
+      if (!previous || previous.context.path === path) return;
+      navigating = true;
+      try {
+        const state = states.get(previous);
+        if (!(await state.startup.ready())) return;
+        const kernel = previous.sessionContext.session.kernel;
+        while (kernel.status !== "idle" || state.busy) {
+          if (previous.isDisposed || kernel.status === "dead") return;
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+        previous.sessionContext.kernelPreference = {
+          ...previous.sessionContext.kernelPreference,
+          shutdownOnDispose: false,
+        };
+        reused = true;
+        const panel = documents.open(
+          path,
+          "default",
+          { id: kernel.id },
+          {},
+          { shutdownOnDispose: false },
+        );
+        if (!panel) throw new Error("Could not open chapter");
+        await panel.context.ready;
+        await states.get(panel).surface;
+        await states.get(panel).startup.ready();
+        previous.dispose();
+        if (history)
+          window.history.pushState(
+            {},
+            "",
+            `${window.location.pathname}?path=${encodeURIComponent(path)}`,
+          );
+        panel.content.node.scrollTop = 0;
+      } catch (error) {
+        console.error("chapter navigation", error);
+      } finally {
+        reused = false;
+        navigating = false;
+      }
+    };
+    const chapterContents = document.createElement("dialog");
+    chapterContents.className = "ms-ChapterContents";
+    chapterContents.setAttribute("aria-label", "Contents");
+    const closeContents = document.createElement("button");
+    closeContents.textContent = "Close contents";
+    closeContents.addEventListener("click", () => chapterContents.close());
+    const courseHome = contents();
+    courseHome.className = "ms-CourseHome";
+    courseHome.textContent = "Course home and offline downloads (new tab)";
+    chapterContents.append(closeContents, courseHome);
+    document.body.append(chapterContents);
+    let contentsLoaded = false;
+    const showContents = async () => {
+      chapterContents.showModal();
+      if (contentsLoaded) return;
+      const listing = await app.serviceManager.contents.get("", { content: true });
+      for (const file of listing.content
+        .filter((file) => CHAPTER.test(file.name))
+        .sort((a, b) => a.name.localeCompare(b.name))) {
+        const link = document.createElement("a");
+        link.href = `${window.location.pathname}?path=${encodeURIComponent(file.name)}`;
+        link.textContent = `Chapter ${Number(CHAPTER.exec(file.name)[1])}`;
+        chapterContents.append(link);
+        void app.serviceManager.contents
+          .get(file.name, { content: true })
+          .then((model) => {
+            const heading = model.content.cells
+              .flatMap((cell) => [].concat(cell.source).join("").split("\n"))
+              .find((line) => line.startsWith("# "));
+            if (heading) link.textContent = heading.slice(2);
+          })
+          .catch(console.error);
+      }
+      contentsLoaded = true;
+    };
+    window.addEventListener(
+      "click",
+      (event) => {
+        if (
+          event.defaultPrevented ||
+          event.button !== 0 ||
+          event.ctrlKey ||
+          event.metaKey ||
+          event.shiftKey ||
+          event.altKey
+        )
+          return;
+        const link = event.target.closest?.("a[href]");
+        if (
+          !link ||
+          link.classList.contains("ms-CourseHome") ||
+          link.getAttribute("href").startsWith("#")
+        )
+          return;
+        const url = new URL(link.href, window.location.href);
+        if (
+          url.origin === window.location.origin &&
+          (link.classList.contains("ms-Buttons-contents") ||
+            url.href === new URL("../../", window.location.href).href)
+        ) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          void showContents().catch(console.error);
+          return;
+        }
+        const path =
+          url.searchParams.get("path") ||
+          (link.closest(".jp-RenderedMarkdown") && url.origin === window.location.origin
+            ? url.pathname.split("/").at(-1)
+            : null);
+        if (
+          url.origin !== window.location.origin ||
+          (!link.closest(".jp-RenderedMarkdown") && url.pathname !== window.location.pathname) ||
+          !/^chapter_\d\d[b]?\.ipynb$/.test(path || "")
+        )
+          return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        chapterContents.close();
+        link.setAttribute("aria-busy", "true");
+        void navigate(path).finally(() => link.removeAttribute("aria-busy"));
+      },
+      true,
+    );
+    window.addEventListener("popstate", () => {
+      const path = new URLSearchParams(window.location.search).get("path");
+      if (/^chapter_\d\d[b]?\.ipynb$/.test(path || "")) void navigate(path, false);
+    });
     const add = (panel) => {
       panel.toolbar.setHidden(true);
       followLinks(panel.content);
@@ -618,13 +765,14 @@ const rowPlugin = {
         notice: notice(panel),
         ready: false,
         lastAction: null,
+        reused,
       };
       state.checked = update(app, panel, state).catch((reason) => console.error("update", reason));
       attachAnswers(app, panel, state.checked).catch((reason) => console.error("answers", reason));
       states.set(panel, state);
       const widget = row(app, panel, state);
       panel.contentHeader.addWidget(widget);
-      panel.context.ready
+      state.surface = panel.context.ready
         .then(async () => {
           await state.checked;
           if (panel.context.model.getMetadata("ms")?.reader)
@@ -641,7 +789,10 @@ const rowPlugin = {
     tracker.forEach(add);
     tracker.widgetAdded.connect((_, panel) => add(panel));
     tracker.currentChanged.connect((_, panel) => {
-      document.body.classList.toggle("ms-Reading", !!panel?.hasClass("ms-ReaderPanel"));
+      document.body.classList.toggle(
+        "ms-Reading",
+        !!app.shell.currentWidget?.hasClass("ms-ReaderPanel"),
+      );
       app.shell.fit();
     });
   },

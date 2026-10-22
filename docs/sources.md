@@ -754,3 +754,23 @@ The percentage is specifically for Python's main WASM runtime file. It is not an
 whole startup, package installation or total network transfer. Real-browser tests pause that
 response part-way through, observe intermediate percentages, then finish the stream and verify
 that a queued Run all completes without losing an exercise answer.
+
+Read 22 October 2026 for Python reuse between chapters:
+
+- JupyterLab 4.6.4's installed `@jupyterlab/docmanager/lib/manager.js` and
+  `@jupyterlab/docregistry/lib/registry.js`: `DocumentManager.open` accepts a kernel model with
+  an existing ID and passes it to the new document's session preference.
+- JupyterLab 4.6.4's installed `@jupyterlab/apputils/lib/sessioncontext.js`: `startKernel`
+  honours a preferred kernel ID; `shutdownOnDispose: false` lets the old panel release its
+  connection without shutting down the shared kernel.
+- [Jupyter Notebook's shell](https://unpkg.com/@jupyter-notebook/application@7.6.0/lib/shell.js):
+  its main area accepts one widget. The course detaches the old panel before adding its
+  replacement, then disposes the old panel after the new chapter's startup attempt finishes.
+- [IPython `%reset`](https://ipython.readthedocs.io/en/stable/interactive/magics.html#magic-reset):
+  `-f` removes names from the interactive namespace without asking for confirmation. Chapter
+  changes reset that namespace before running the hidden setup, which creates a fresh shop week.
+  Imported packages remain loaded; this is namespace isolation, not a new Python process.
+
+The navigation browser test counts actual dedicated workers, checks that a variable from Chapter 1
+is absent in Chapter 2, runs Chapters 2 and 3, and checks saved answers, code drafts, Contents and
+browser Back. A new tab or a page reload still starts its own Python worker.

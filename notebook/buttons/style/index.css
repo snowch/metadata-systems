@@ -1448,3 +1448,27 @@ body.ms-Reading #top-panel-wrapper {
   margin-top: 6px;
   accent-color: var(--jp-brand-color1);
 }
+
+/* Chapter selection stays in the current page so Python remains running. */
+.ms-ChapterContents {
+  background: var(--jp-layout-color0);
+  color: var(--jp-ui-font-color1);
+  border: 1px solid var(--jp-border-color1);
+  border-radius: 8px;
+  width: min(560px, calc(100vw - 48px));
+  max-height: 80vh;
+  overflow: auto;
+  padding: 16px;
+}
+.ms-ChapterContents a,
+.ms-ChapterContents button {
+  display: block;
+  padding: 12px;
+  font: inherit;
+}
+.ms-ChapterContents a {
+  color: var(--jp-content-link-color);
+}
+.ms-ChapterContents::backdrop {
+  background: #0008;
+}

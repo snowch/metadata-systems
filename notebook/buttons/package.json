@@ -27,6 +27,7 @@
     }
   },
   "dependencies": {
+    "@jupyterlab/docmanager": "4.6.4",
     "@jupyterlite/apputils": "0.8.6",
     "@jupyterlite/services": "0.8.6"
   }

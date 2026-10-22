@@ -1,6 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 // Exercise the reading surface against the real Python runtime and native code editors.
+import { checkNavigation } from "./navigation-smoke.mjs";
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { pathToFileURL } from "node:url";
@@ -415,6 +416,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         assert(passed, description);
       },
     );
+    await checkNavigation(browser, `http://127.0.0.1:8866${standalone ? "" : "/jupyterlite"}`);
   } finally {
     await browser.close();
     server.kill();

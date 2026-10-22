@@ -55,6 +55,7 @@ export async function attachReader(panel, state, navigation) {
   let disposed = false;
   const hold = (value) => {
     busy = value;
+    state.busy = value;
     runAll.disabled = value;
     for (const entry of entries) {
       entry.run.disabled = value;
@@ -339,7 +340,10 @@ export async function attachReader(panel, state, navigation) {
     disposed = true;
     clearTimeout(hideProgress);
     progress.remove();
-    document.body.classList.remove("ms-Reading");
+    document.body.classList.toggle(
+      "ms-Reading",
+      [...document.querySelectorAll(".ms-ReaderPanel")].some((node) => node !== panel.node),
+    );
     window.removeEventListener("keydown", shortcut, true);
     notebook.node.removeEventListener("keydown", stop);
     window.removeEventListener("contextmenu", contextMenu, true);
