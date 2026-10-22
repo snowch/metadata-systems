@@ -734,3 +734,23 @@ Read 18 October 2026 from the pinned JupyterLite 0.8.6 source:
 The offline browser test checks CacheStorage persistence across a browser restart, service worker
 scope, byte integrity before cache publication, and offline execution against the real built site.
 It does not establish permanent storage: browser or user removal of site data remains possible.
+
+Read 22 October 2026 for the course-wide reader and Python download indicator:
+
+- [Streams Standard](https://streams.spec.whatwg.org/#rs-class): a reader supplies stream chunks;
+  a readable stream's underlying source can pull them and forward cancellation. The course wraps
+  the runtime response without buffering a second copy of the whole WASM file.
+- [Fetch Standard](https://fetch.spec.whatwg.org/#http-network-fetch): HTTP content codings are
+  decoded for the response body. The progress denominator is the decoded runtime file's build-time
+  byte size, rather than a potentially compressed `Content-Length` header. Forwarded stream
+  responses retain the WASM content type and remove the transport length/encoding headers.
+- [Service Workers specification](https://w3c.github.io/ServiceWorker/#clients-matchall): the
+  worker can enumerate window clients and send messages using `Client.postMessage`. Progress is
+  limited to clients under the course worker's scope. The UI follows one runtime stream per
+  startup attempt; a retry ignores messages from a superseded attempt. A download reaching 100%
+  does not mark the kernel ready: kernel readiness and chapter setup still determine that state.
+
+The percentage is specifically for Python's main WASM runtime file. It is not an estimate of the
+whole startup, package installation or total network transfer. Real-browser tests pause that
+response part-way through, observe intermediate percentages, then finish the stream and verify
+that a queued Run all completes without losing an exercise answer.

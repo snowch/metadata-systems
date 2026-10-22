@@ -10,22 +10,9 @@ export async function checkAnswers(browser, base, check) {
     await page.goto(`${base}/notebooks/index.html?path=chapter_0${chapter}.ipynb`);
     await page.waitForSelector(".jp-Notebook .jp-Cell", { timeout: 120_000 });
   };
-  // Jupyter draws distant cells only when scrolled into view.
   const find = async (selector) => {
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-      const found = await page.evaluate(async (selector) => {
-        const outer = document.querySelector(".jp-WindowedPanel-outer");
-        for (let y = 0; y <= outer.scrollHeight; y += 450) {
-          outer.scrollTop = y;
-          await new Promise((resolve) => setTimeout(resolve, 60));
-          if (document.querySelector(selector)) return true;
-        }
-        return false;
-      }, selector);
-      if (found) return page.locator(selector).first();
-      await page.waitForTimeout(500);
-    }
-    throw new Error(`Answer field did not appear: ${selector}`);
+    await page.waitForSelector(selector, { timeout: 120000, state: "attached" });
+    return page.locator(selector).first();
   };
   const field = (id) => find(`textarea[data-answer="${id}"]`);
   const original = "My initial explanation <script>window.answerInjected = true</script> typed";
@@ -44,9 +31,9 @@ export async function checkAnswers(browser, base, check) {
       "exercise: typed answer survives immediate refresh without Save or Run",
     );
     await (await field("ch01.clean_orders")).fill("My cleaning guess");
-    await page.click('button[data-action="runAll"]');
+    await page.click('button[data-reader-action="runAll"]');
     await page.waitForFunction(
-      () => !document.querySelector('button[data-action="runAll"]:disabled'),
+      () => !document.querySelector('button[data-reader-action="runAll"]:disabled'),
       null,
       { timeout: 120_000 },
     );
@@ -139,10 +126,6 @@ export async function checkAnswers(browser, base, check) {
 
     await open(1);
     await (await field("ch01.daily_sales")).fill(original);
-    await page.click('button[data-action="save"]');
-    await page.waitForFunction(
-      () => !document.querySelector('button[data-action="save"]:disabled'),
-    );
     // Simulate a newly published chapter, using the real update handler.
     await context.route("**/files/chapter_01.ipynb", async (route) => {
       const response = await route.fetch();

@@ -11,5 +11,7 @@
   "stalled": "Still waiting for Python to be ready. You can wait or retry. Retry restarts Python without reloading the page and keeps your answers and notebook edits.",
   "failed": "Could not start Python. Retry keeps your answers and notebook edits.",
   "retry": "Retry",
-  "runFailed": "Could not finish running the cells. Try running them again."
+  "runFailed": "Could not finish running the cells. Try running them again.",
+  "downloadingRuntime": "Downloading Python's main runtime file: {percent}%.",
+  "runtimeDownloaded": "Runtime file downloaded. Starting Python."
 }

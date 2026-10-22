@@ -158,7 +158,7 @@ function row(app, panel, state) {
   const widget = new Widget();
   widget.addClass("ms-Buttons");
   // The comparison view attaches its per-example controls after the published notebook is ready.
-  if (panel.context.path === "chapter_01b.ipynb") return widget;
+  if (CHAPTER.test(panel.context.path) || panel.context.path === "chapter_01b.ipynb") return widget;
   const buttons = [];
   let pointer = "mouse";
   for (const [action, label] of Object.entries(labels)) {
@@ -204,7 +204,9 @@ const CHAPTER = /^chapter_(\d\d)\.ipynb$/;
 /** Arrows to the chapters either side of the panel's, added to the row when the site's files are
     listed. */
 async function arrows(app, panel, widget) {
-  const path = panel.context.path.replace("chapter_01b.ipynb", "chapter_01.ipynb");
+  const path = panel.context.path
+    .replace(/ \(your copy(?: \d+)?\)/, "")
+    .replace("chapter_01b.ipynb", "chapter_01.ipynb");
   const own = CHAPTER.exec(path);
   if (!own) return;
   const listing = await app.serviceManager.contents.get("", { content: true });
@@ -269,8 +271,8 @@ function contents() {
 }
 
 /** Starts Python, then prepares the chapter. Retry replaces the worker in the existing session;
-    it never reloads the page or discards notebook edits. The kernel API does not expose download
-    byte totals, so the UI reports observed stages with an indeterminate spinner. */
+    it never reloads the page or discards notebook edits. The service worker reports actual
+    runtime bytes; kernel readiness and chapter preparation remain separate stages. */
 async function warmUp(app, panel, state, { retry, active, preparing, signal }) {
   await panel.context.ready;
   await state.checked;
@@ -337,7 +339,11 @@ function startup(app, panel, state) {
   const message = document.createElement("div");
   const detail = document.createElement("div");
   detail.className = "ms-Startup-detail";
-  status.append(message, detail);
+  const progress = document.createElement("progress");
+  progress.className = "ms-Startup-progress";
+  progress.max = 100;
+  progress.hidden = true;
+  status.append(message, progress, detail);
   const retry = document.createElement("button");
   retry.type = "button";
   retry.className = "ms-Startup-retry";
@@ -358,13 +364,24 @@ function startup(app, panel, state) {
   size.observe(body);
   const controller = createStartup({
     start: (attempt) => warmUp(app, panel, state, attempt),
-    render({ phase, slow, stalled }) {
+    render({ phase, slow, stalled, download }) {
       if (panel.isDisposed) return;
       state.ready = phase === "ready" || phase === "hidden";
       widget.setHidden(phase === "hidden");
       widget.node.dataset.phase = phase;
       widget.node.classList.toggle("ms-Startup-busy", phase === "loading" || phase === "preparing");
-      message.textContent = words[phase] || "";
+      message.textContent =
+        phase === "loading" && download
+          ? download.percent === 100
+            ? words.runtimeDownloaded
+            : words.downloadingRuntime.replace("{percent}", download.percent)
+          : words[phase] || "";
+      progress.hidden = phase !== "loading" || !download;
+      if (download) {
+        progress.value = download.percent;
+        progress.setAttribute("aria-label", message.textContent);
+        widget.node.dataset.percent = String(download.percent);
+      } else delete widget.node.dataset.percent;
       detail.textContent =
         phase === "loading" || phase === "preparing"
           ? stalled
@@ -378,6 +395,15 @@ function startup(app, panel, state) {
         phase !== "failed" && !((phase === "loading" || phase === "preparing") && stalled);
     },
   });
+  const downloadMessage = (event) => {
+    if (
+      event.data?.type === "MS_PYTHON_DOWNLOAD" &&
+      event.source?.scriptURL &&
+      new URL(event.source.scriptURL).origin === window.location.origin
+    )
+      controller.download(event.data);
+  };
+  navigator.serviceWorker?.addEventListener("message", downloadMessage);
   retry.addEventListener("click", () => {
     // Remove focus from the button before hiding it; a keyboard user keeps focus in this region.
     widget.node.tabIndex = -1;
@@ -386,6 +412,7 @@ function startup(app, panel, state) {
   });
   panel.disposed.connect(() => {
     controller.dispose();
+    navigator.serviceWorker?.removeEventListener("message", downloadMessage);
     size.disconnect();
   });
   return controller;
@@ -496,7 +523,8 @@ async function update(app, panel, state) {
     cache: "no-cache",
   });
   if (!response.ok) return;
-  const published = (await response.json()).metadata?.ms?.version;
+  const publishedNotebook = await response.json();
+  const published = publishedNotebook.metadata?.ms?.version;
   const open = panel.context.model.getMetadata("ms")?.version;
   if (!published || published === open) return;
   const contents = app.serviceManager.contents;
@@ -508,6 +536,28 @@ async function update(app, panel, state) {
     if (own !== (await digest(sourcesOf(saved.content.cells)))) {
       copy = await freeName(contents, path);
       await contents.save(copy, { type: "notebook", format: "json", content: saved.content });
+    }
+    // Import code from the previous notebook UI before replacing its document. Existing reader
+    // drafts take precedence; the archived notebook remains available as an additional backup.
+    if (publishedNotebook.metadata?.ms?.reader && !saved.content.metadata?.ms?.reader) {
+      state.legacyDrafts = new Map();
+      for (const cell of publishedNotebook.cells) {
+        const example = cell.metadata?.ms?.example;
+        if (!example || example.editable === false) continue;
+        const old = saved.content.cells.find(
+          (item) => item.id === cell.id && item.cell_type === "code",
+        );
+        if (!old) continue;
+        const source = [].concat(old.source).join("");
+        if (source === example.source) continue;
+        state.legacyDrafts.set(example.id, source);
+        try {
+          const key = `ms:metadata-systems:code:v1:${path}:${example.id}`;
+          if (localStorage.getItem(key) === null) localStorage.setItem(key, source);
+        } catch {
+          /* The live draft and archived notebook remain exportable if storage is full. */
+        }
+      }
     }
     await contents.delete(path);
   }
@@ -545,7 +595,7 @@ function followMove(app) {
 const rowPlugin = {
   id: "ms-notebook-buttons:row",
   description:
-    "Adds a row of large Run all, Run below and Save buttons above every notebook's cells, with arrows to the chapters either side, hides the menu bar and the notebook's toolbar, opens the published chapter in place of an older saved copy, starts Python on the chapter's setup as it opens, scrolls to a heading the text links to, and sends the notebooks' earlier names to their chapters.",
+    "Run and reset examples, autosave code locally, track Python loading and navigate chapters with the existing notebook editors and outputs.",
   autoStart: true,
   requires: [INotebookTracker],
   activate(app, tracker) {

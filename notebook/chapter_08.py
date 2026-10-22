@@ -124,7 +124,11 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The first event's `eventType` is `START`. The second's is `COMPLETE`. A run that fails sends `FAIL` in place of `COMPLETE`. `eventTime` is when the event happened. `schemaURL` is the address of the version of the specification's schema that the event follows.
+    The events have these fields:
+
+    - **`eventType`:** `START` for the first event and `COMPLETE` for the second. A run that fails sends `FAIL` in place of `COMPLETE`.
+    - **`eventTime`:** when the event happened.
+    - **`schemaURL`:** the address of the version of the specification's schema that the event follows.
 
     `run.runId` is the run's identifier. The specification requires a UUID, a standard form of identifier. The shop makes UUIDs of version 7, which begin with the run's start time. The specification's documentation recommends that version.
 
@@ -136,7 +140,13 @@ def _(mo):
 
     Further metadata comes in a **facet**. A facet is a named object that holds its own fields. Each facet has `_producer`, the code that made it, and `_schemaURL`, the address of the facet's own schema.
 
-    In these events, `jobType` says the job is a batch job, one that starts and finishes. `sourceCodeLocation` holds the code version, `b178023`. The shop fills it with its own hash of the code, which is Chapter 7's `code_version`, not a commit. `nominalTime` holds the time the run was due to start. `inputStatistics` holds the rows read, 27. `outputStatistics` holds the rows written, 23.
+    In these events, the facets hold:
+
+    - **`jobType`:** says the job is a batch job, one that starts and finishes.
+    - **`sourceCodeLocation`:** holds the code version, `b178023`. The shop fills it with its own hash of the code, which is Chapter 7's `code_version`, not a commit.
+    - **`nominalTime`:** holds the time the run was due to start.
+    - **`inputStatistics`:** holds the rows read, 27.
+    - **`outputStatistics`:** holds the rows written, 23.
 
     The next cell lists where each of Chapter 7's fields went.
     """)

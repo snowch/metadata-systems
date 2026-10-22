@@ -953,8 +953,9 @@ class TheWordsOfChapter8(unittest.TestCase):
         self.assertEqual(complete["inputs"][0]["inputFacets"]["inputStatistics"]["rowCount"], 27)
         self.assertEqual(complete["outputs"][0]["outputFacets"]["outputStatistics"]["rowCount"], 23)
         self.assertEqual(complete["job"]["facets"]["sourceCodeLocation"]["version"], "b178023")
-        self.says("`sourceCodeLocation` holds the code version, `b178023`.")
-        self.says("`inputStatistics` holds the rows read, 27. `outputStatistics` holds the rows written, 23.")
+        self.says("**`sourceCodeLocation`:** holds the code version, `b178023`.")
+        self.says("**`inputStatistics`:** holds the rows read, 27.")
+        self.says("**`outputStatistics`:** holds the rows written, 23.")
         self.assertEqual(start["run"]["runId"][14], "7")
         self.assertEqual(start["producer"], shop.openlineage.PRODUCER)
         self.says("Here it is `https://example.org/shop/jobs/tree/v1`, which makes the events of all four jobs.")
@@ -1767,7 +1768,7 @@ class TheWordsKeepTheRules(unittest.TestCase):
             (6, "The cell above follows edges from `orders.jsonl`", ("downstream", "upstream")),
             (7, "## Events", ("event",)),
             (8, "## A form other programs can read", ("OpenLineage",)),
-            (8, "The first event's `eventType`", ("namespace", "producer", "facet")),
+            (8, "The events have these fields:", ("namespace", "producer", "facet")),
             (9, "## From events to a graph", ("ingestion",)),
             (9, "## Normalise", ("normalise",)),
             (10, "Lineage between columns", ("column lineage",)),

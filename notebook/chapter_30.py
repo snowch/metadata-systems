@@ -77,7 +77,12 @@ def _(mo):
 
     Each system keeps its own record of its work. Each has an OpenLineage integration, a part that sends OpenLineage events from that record.
 
-    As in Chapter 29, nothing runs here. Each cell applies the rules each project's code states, in the version read, to the shop's week: Airflow 3.3.0 with its OpenLineage provider 2.20.3, Spark 4.0.0 with OpenLineage's Spark integration, dbt's files as dbt 1.11 writes them with OpenLineage's dbt integration, and Trino's OpenLineage listener.
+    As in Chapter 29, nothing runs here. Each cell applies the rules each project's code states, in the version read, to the shop's week:
+
+    - **Airflow:** 3.3.0 with its OpenLineage provider 2.20.3.
+    - **Spark:** 4.0.0 with OpenLineage's Spark integration.
+    - **dbt:** its files as dbt 1.11 writes them, with OpenLineage's dbt integration.
+    - **Trino:** its OpenLineage listener.
 
     The next cell sets out, for each system, what its integration makes an OpenLineage job and an OpenLineage run, where it takes a job's inputs from, and when it sends the events.
     """)

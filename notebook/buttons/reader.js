@@ -36,6 +36,7 @@ export async function attachReader(panel, state, navigation) {
   navigation.node.replaceChildren();
   navigation.addClass("ms-Reader-nav");
   const entries = [];
+  const dependent = panel.context.model.getMetadata("ms")?.dependent;
   const runAll = button(words.runAll);
   runAll.dataset.readerAction = "runAll";
   const progress = element("div", "", "ms-Status ms-Reader-progress");
@@ -58,6 +59,7 @@ export async function attachReader(panel, state, navigation) {
     for (const entry of entries) {
       entry.run.disabled = value;
       entry.reset.disabled = value;
+      if (entry.below) entry.below.disabled = value;
     }
   };
 
@@ -153,41 +155,49 @@ export async function attachReader(panel, state, navigation) {
     }
   }
 
-  runAll.addEventListener("click", async () => {
+  async function runBatch(start = 0, trigger = runAll) {
     if (busy || disposed) return;
     hold(true);
-    runAll.setAttribute("aria-busy", "true");
+    trigger.setAttribute("aria-busy", "true");
+    const subset = entries.slice(start);
+    const below = trigger !== runAll;
     const count = (done) =>
-      words.runningAll.replace("{done}", done).replace("{total}", entries.length);
-    report(state.ready ? count(0) : words.queuedAll);
+      (below ? words.runningBelow : words.runningAll)
+        .replace("{done}", done)
+        .replace("{total}", subset.length);
+    report(state.ready ? count(0) : below ? words.queuedBelow : words.queuedAll);
     try {
       if (!(await state.startup.ready()) || disposed) {
-        if (!disposed) report(words.startupFailedAll);
+        if (!disposed) report(below ? words.startupFailedBelow : words.startupFailedAll);
         return;
       }
       report(count(0));
-      for (let index = 0; index < entries.length; index++) {
+      for (let index = 0; index < subset.length; index++) {
         if (disposed) return;
-        const entry = entries[index];
+        const entry = subset[index];
         if (!(await runExample(entry, true))) {
           if (!disposed) {
             report(
-              words.stopped.replace("{example}", entry.cell.model.getMetadata("ms").example.title),
+              (below ? words.belowStopped : words.stopped).replace(
+                "{example}",
+                entry.cell.model.getMetadata("ms").example.title,
+              ),
               10_000,
             );
-            for (const skipped of entries.slice(index + 1))
+            for (const skipped of subset.slice(index + 1))
               skipped.status.textContent = words.skipped;
           }
           return;
         }
         report(count(index + 1));
       }
-      report(words.allSucceeded, 5000);
+      report(below ? words.belowSucceeded : words.allSucceeded, 5000);
     } finally {
-      runAll.removeAttribute("aria-busy");
+      trigger.removeAttribute("aria-busy");
       hold(false);
     }
-  });
+  }
+  runAll.addEventListener("click", () => void runBatch());
 
   for (const cell of notebook.widgets) {
     cell.model.setMetadata("deletable", false);
@@ -203,10 +213,15 @@ export async function attachReader(panel, state, navigation) {
     cell.node.dataset.example = example.id;
     const key = `${prefix}${panel.context.path}:${example.id}`;
     const shared = cell.model.sharedModel;
+    const initialSource = /\(your copy(?: \d+)?\)/.test(panel.context.path)
+      ? shared.getSource()
+      : example.source;
     const controls = new Widget();
     controls.addClass("ms-Example-controls");
     const run = button(words.run);
     const reset = button(words.reset);
+    const below = dependent ? button(words.runBelow) : null;
+    if (below) below.dataset.readerAction = "runBelow";
     run.dataset.readerAction = "run";
     reset.dataset.readerAction = "reset";
     const saveStatus = element("span", "", "ms-Example-saved");
@@ -216,19 +231,31 @@ export async function attachReader(panel, state, navigation) {
     const status = element("span");
     status.setAttribute("role", "status");
     statusWidget.node.append(status);
-    controls.node.append(run, reset, saveStatus);
+    controls.node.append(run);
+    if (below) controls.node.append(below);
+    if (example.editable !== false) controls.node.append(reset, saveStatus);
+    else cell.readOnly = true;
     cell.layout.insertWidget(0, controls);
     cell.layout.addWidget(statusWidget);
-    const entry = { cell, run, reset, status, executed: null };
+    const entry = { cell, run, reset, below, status, executed: null };
     entries.push(entry);
     cell.model.outputs.clear();
     cell.model.executionCount = null;
     // A reset is stored too, so an older notebook autosave cannot resurrect a discarded edit.
     try {
-      const saved = localStorage.getItem(key);
-      shared.setSource(saved ?? example.source);
+      let saved = localStorage.getItem(key);
+      if (saved === null && state.legacyDrafts?.has(example.id)) {
+        saved = state.legacyDrafts.get(example.id);
+        localStorage.setItem(key, saved);
+      }
+      if (saved === null && panel.context.path === "chapter_01.ipynb") {
+        saved = localStorage.getItem(`${prefix}chapter_01b.ipynb:${example.id}`);
+        if (saved !== null) localStorage.setItem(key, saved);
+      }
+      shared.setSource(saved ?? initialSource);
       saveStatus.textContent = saved === null ? words.noSavedEdits : words.saved;
     } catch {
+      shared.setSource(state.legacyDrafts?.get(example.id) ?? initialSource);
       saveStatus.textContent = words.saveFailed;
     }
     let previous = shared.getSource();
@@ -243,12 +270,16 @@ export async function attachReader(panel, state, navigation) {
         saveStatus.textContent = words.saveFailed;
       }
       if (entry.executed !== null) status.textContent = words.stale;
+      if (dependent)
+        for (const later of entries.slice(entries.indexOf(entry) + 1))
+          if (later.executed !== null) later.status.textContent = words.staleBelow;
     };
     cell.model.contentChanged.connect(changed);
     panel.disposed.connect(() => cell.model.contentChanged.disconnect(changed));
     const editor = cell.node.querySelector(".cm-content");
     editor?.setAttribute("aria-label", words.editorLabel.replace("{example}", example.title));
     run.addEventListener("click", () => void execute(entry));
+    below?.addEventListener("click", () => void runBatch(entries.indexOf(entry), below));
     reset.addEventListener("click", () => {
       if (busy) return;
       shared.setSource(example.source);

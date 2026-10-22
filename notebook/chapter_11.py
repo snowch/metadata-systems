@@ -101,7 +101,12 @@ def _(mo):
 
     Object storage keeps each earlier version of `orders.jsonl` (Chapter 7), but records nothing about its fields. The catalogue holds each table's columns as they are now. Neither keeps a record of a dataset's past schemas.
 
-    The shop records a schema each time a program writes a dataset: for a file, the fields a reader finds and the type of their values; for a table, its columns and declared types from the catalogue, just after the write. Consecutive writes with the same schema make one schema version.
+    The shop records a schema each time a program writes a dataset:
+
+    - **For a file:** the fields a reader finds and the type of their values.
+    - **For a table:** its columns and declared types from the catalogue, just after the write.
+
+    Consecutive writes with the same schema make one schema version.
 
     How a dataset's schema changes over time, schema version after schema version, is **schema evolution**.
 

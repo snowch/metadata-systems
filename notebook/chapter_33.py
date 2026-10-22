@@ -188,7 +188,12 @@ def _(mo):
 
     The ferry's function platform builds each function run's OpenLineage events. The inputs come from a piece of code you write, `inputs(change)`.
 
-    `change` holds the batch's bucket and key, what happened (`"created"`, `"overwritten"` or `"deleted"`), the new version, and the version before it, `previous`, where there was one.
+    `change` holds:
+
+    - **Location:** the batch's bucket and key.
+    - **What happened:** `"created"`, `"overwritten"` or `"deleted"`.
+    - **New version:** the new version of the batch.
+    - **Previous version:** the version before it, `previous`, where there was one.
 
     As it stands, `inputs` names the batch without its version for a create or an overwrite, and nothing for a delete. The shop's `remove_return`, in Chapters 7 and 8, named no input either.
 

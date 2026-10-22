@@ -1,17 +1,16 @@
 # Chapter 1b: The shop and its platform
 
-This comparison view is generated from Chapter 1's source by `build_reader` in
-`notebook/jupyterlite/build_ipynb.py`. The shop, diagrams, examples and answer boxes are the same.
-The heading, navigation and running/saving instructions adapt to the reader controls. Four file
-and warehouse descriptions use short introductions and labelled bullets, held in `reader.json`;
-the build requires their headings to match Chapter 1. They retain the original facts, field
-meanings and code instructions. The original chapter remains available beside the comparison
-on the contents page.
+The reading surface trial is now used by every canonical chapter. The former 1b URL remains
+available for existing links and saved code drafts, rendering Chapter 1's current content.
+`build_reader` in `notebook/jupyterlite/build_ipynb.py` generates it from Chapter 1. Four file and
+warehouse descriptions use short introductions and labelled bullets in `reader.json`; the build
+requires their headings to match the chapter. See [Course reader](reader-experience.md) for the
+course-wide controls, dependencies, migration and download progress.
 
 ## Requirements
 
-This view questions no additional metadata requirement. It compares the reading experience of
-per-example Run and Reset controls with the existing notebook controls on the same material.
+This view questions no additional metadata requirement. The trial established the reading experience of
+per-example Run and Reset controls that is now used throughout the course.
 Chapter 1's learning objectives and the requirements described in its notes still apply.
 
 ## Originality

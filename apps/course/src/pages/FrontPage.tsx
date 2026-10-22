@@ -56,14 +56,6 @@ export function FrontPage() {
   return (
     <>
       <Cover />
-      <section className="reader-comparison" aria-labelledby="comparison-title">
-        <h2 id="comparison-title">
-          <a className="chapter-link" href={notebook("chapter_01b.ipynb")}>
-            {STRINGS.readerComparison.title}
-          </a>
-        </h2>
-        <p>{STRINGS.readerComparison.description}</p>
-      </section>
       <Offline />
       <h2 className="contents-heading">{STRINGS.contents}</h2>
       <p className="contents-note">{STRINGS.contentsNote}</p>

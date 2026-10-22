@@ -91,7 +91,12 @@ def _(mo):
     mo.md(r"""
     You have your records from Chapter 3. Jo Marsh, in finance, has sent the notes Jo keeps about the dashboard and `daily_sales`. The first cell puts both together, in Chapter 3's notation: your records first, then Jo's notes.
 
-    Each group of lines starts with a `#` note that says where the lines come from. Your records hold your record of `daily_sales` from Chapter 3, five lines with Jo Marsh as responsible. They also hold three lines from the head of the shop's message in Chapter 3: the data engineer is responsible for `clean_customers` and `clean_orders`, and Sam Lund is responsible for `products.csv`. The last part of your records is one line from the orders Chapter 2 found missing on Thursday: `clean_orders drops: orders with no customer id`. Jo's notes say what `sales_dashboard` means, and name `j.marsh` as responsible for `sales_dashboard` and for `daily_sales`.
+    Each group of lines starts with a `#` note that says where the lines come from:
+
+    - **Your record of `daily_sales`:** five lines from Chapter 3, with Jo Marsh as responsible.
+    - **The head of the shop's message:** three lines from Chapter 3. The data engineer is responsible for `clean_customers` and `clean_orders`, and Sam Lund is responsible for `products.csv`.
+    - **Thursday's missing orders:** the last part of your records is one line from the orders Chapter 2 found missing on Thursday: `clean_orders drops: orders with no customer id`.
+    - **Jo's notes:** what `sales_dashboard` means, and `j.marsh` as responsible for `sales_dashboard` and for `daily_sales`.
 
     The head's word is "owner". The lines that the head's list counts are the `responsible` lines: Chapter 3 defined `responsible` as who to ask about an asset. The warehouse's owner, the account `etlsvc/batch01.corp.internal@CORP.INTERNAL` that Chapter 2 found, answers a different question: which account controls a table. The head's list does not ask for that.
     """)

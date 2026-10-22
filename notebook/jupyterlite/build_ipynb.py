@@ -224,51 +224,56 @@ def stamp(nb: nbformat.NotebookNode) -> dict[str, str]:
 
 
 def build_all() -> dict[str, nbformat.NotebookNode]:
-    """Every chapter, by notebook name."""
-    notebooks = {name: build(chapter) for chapter, (_, name) in CHAPTERS.items()}
-    notebooks["chapter_01b.ipynb"] = build_reader()
+    """Every chapter in the reading view; retain the shared 1b address for existing readers."""
+    notebooks = {name: build_reader(chapter) for chapter, (_, name) in CHAPTERS.items()}
+    notebooks["chapter_01b.ipynb"] = build_reader(1)
     return notebooks
 
 
-def build_reader() -> nbformat.NotebookNode:
-    """Chapter 1 with reader controls and presentation-specific descriptions."""
-    nb = build(1)
+def build_reader(chapter: int = 1) -> nbformat.NotebookNode:
+    """Keep the chapter's cells and computations, with reader controls and concise descriptions."""
+    nb = build(chapter)
     words = json.loads((HERE / "reader.json").read_text(encoding="utf-8"))
-    descriptions = words["descriptions"]
+    descriptions = words["descriptions"] if chapter == 1 else {}
     replaced = set()
-    examples = iter([
-        ("products", "The product catalogue"),
-        ("customers", "The customers"),
-        ("orders", "The orders"),
-        ("clean_customers", "clean_customers"),
-        ("clean_orders", "clean_orders"),
-        ("daily_sales", "daily_sales"),
-    ])
+    first_ids = ["products", "customers", "orders", "clean_customers", "clean_orders", "daily_sales"]
+    heading = f"Chapter {chapter}"
+    counts = {}
+    index = 0
     for cell in nb.cells:
         cell.metadata["deletable"] = False
         if cell.cell_type == "markdown":
             cell.metadata["editable"] = False
-            cell.source = cell.source.replace("# Chapter 1:", "# Chapter 1b:")
             if "ms-box-warning" in cell.source:
                 cell.source = box("ms-box-warning", words["warning"])
-            elif "ms-box-steps" in cell.source:
-                cell.source = box("ms-box-steps", words["instructions"])
-            heading = cell.source.split("\n", 1)[0]
-            if heading in descriptions:
-                cell.source = descriptions[heading]
-                replaced.add(heading)
-            cell.source = cell.source.replace(" or press **Save**", "")
+            elif "ms-box-steps" in cell.source and "**Running and saving" in cell.source:
+                cell.source = box("ms-box-steps", words["instructions" if chapter == 1 else "instructionsDependent"])
+            title = cell.source.split("\n", 1)[0]
+            if title in descriptions:
+                cell.source = descriptions[title]
+                replaced.add(title)
+            if "<!-- answer: guesses -->" in cell.source:
+                cell.source = words["answerInstructions"]
+            for before, after in words.get("proseReplacements", {}).items():
+                cell.source = cell.source.replace(before, after)
+            for match in re.finditer(r"^#{1,6} (.+)$", cell.source, re.M):
+                heading = match.group(1).replace("`", "")
         elif cell.metadata.get("ms", {}).get("setup"):
             cell.metadata["editable"] = False
         else:
-            identifier, title = next(examples)
-            cell.metadata["ms"] = {"example": {"id": identifier, "title": title, "source": cell.source}}
-    if next(examples, None) is not None:
+            counts[heading] = counts.get(heading, 0) + 1
+            title = heading if counts[heading] == 1 else f"{heading} ({counts[heading]})"
+            identifier = first_ids[index] if chapter == 1 else cell.id
+            if chapter == 1:
+                title = ["The product catalogue", "The customers", "The orders", "clean_customers", "clean_orders", "daily_sales"][index]
+            cell.metadata["ms"] = {"example": {"id": identifier, "title": title, "source": cell.source,
+                "editable": not cell.metadata.get("jupyter", {}).get("source_hidden", False)}}
+            index += 1
+    if chapter == 1 and index != len(first_ids):
         raise ValueError("Chapter 1 reader examples no longer match the chapter")
     if replaced != descriptions.keys():
-        raise ValueError("Chapter 1 reader descriptions no longer match the chapter headings")
-    nb.cells[0].source += "\n\n" + words["comparison"]
-    nb.metadata["ms"] = {**stamp(nb), "reader": True}
+        raise ValueError("Reader descriptions no longer match the chapter headings")
+    nb.metadata["ms"] = {**stamp(nb), "reader": True, "dependent": chapter != 1}
     return nb
 
 

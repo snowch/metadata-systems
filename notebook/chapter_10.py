@@ -158,7 +158,10 @@ def _(mo):
 
     In the cell above, delete the `# ` at the start of the line `# catalogue = warehouse`, select the cell and press **Run below**, and read the column names.
 
-    `kind` is `value` for a column the value is made from, and `rows` for a column that decides which rows count. `how` says the way: for `value`, `copied`, `computed` (by an expression or a function, row by row) or `aggregated` (by SUM, COUNT and the like, over many rows); for `rows`, `filter` (WHERE), `grouping` (GROUP BY) or `distinct`. These names are the shop's own.
+    The parser uses two fields. These names are the shop's own:
+
+    - **`kind`:** `value` for a column the value is made from, and `rows` for a column that decides which rows count.
+    - **`how`:** says the way. For `value`, it is `copied`, `computed` (by an expression or a function, row by row) or `aggregated` (by SUM, COUNT and the like, over many rows). For `rows`, it is `filter` (WHERE), `grouping` (GROUP BY) or `distinct`.
 
     For `revenue_pence`, the parser lists:
 

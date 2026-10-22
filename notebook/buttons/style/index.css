@@ -1441,3 +1441,10 @@ body.ms-Reading #top-panel-wrapper {
     animation: none;
   }
 }
+
+.ms-Startup-progress {
+  width: 100%;
+  height: 8px;
+  margin-top: 6px;
+  accent-color: var(--jp-brand-color1);
+}

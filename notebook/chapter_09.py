@@ -268,7 +268,10 @@ def _(mo):
     mo.md(r"""
     ## Edges
 
-    The last stage makes edges of two kinds. An edge by run joins one run to a dataset it read or wrote. An edge by job joins a job to a dataset that any of its runs read or wrote. It is made once per dataset. It records how many runs had it, and the first and last time one did.
+    The last stage makes edges of two kinds:
+
+    - **An edge by run:** joins one run to a dataset it read or wrote.
+    - **An edge by job:** joins a job to a dataset that any of its runs read or wrote. It is made once per dataset. It records how many runs had it, and the first and last time one did.
 
     The week has 41 runs: 35 by night (7 nights, each with the four jobs and the analyst's script) and 6 by the functions, during the day.
     """)

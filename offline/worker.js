@@ -2,6 +2,8 @@
 
 // Keep JupyterLite's filesystem/stdin bridge. Our earlier listener handles only static course
 // files; API requests continue to its own service worker. Caches are private to this course URL.
+importScripts("./jupyterlite/python-progress.js");
+
 const scope = self.registration.scope;
 const prefix = `ms:metadata-systems:offline:${scope}:`;
 const stateURL = new URL("__offline_state__", scope).href;
@@ -58,8 +60,8 @@ self.addEventListener("fetch", (event) => {
         return (await saved(key)) || new Response("", { status: 503 });
       }
       const cached = await saved(key);
-      if (cached) return cached;
-      return fetch(request);
+      if (cached) return self.msTrackPython(request, cached);
+      return self.msTrackPython(request, await fetch(request));
     })(),
   );
 });

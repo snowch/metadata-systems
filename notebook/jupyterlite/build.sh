@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Copyright © 2026 Christopher Snow
 
-# Builds Chapters 1 and 2 as a JupyterLite site, into the directory given: a Jupyter notebook per
+# Builds all written chapters as a JupyterLite site, into the directory given: one notebook per
 # chapter, made from the two source files in notebook/, with the `shop` package, in
 # JupyterLite's Notebook interface, with Pyodide and every package the pages use inside the site,
 # so they fetch nothing from a third party. Both workflows run this; it needs the packages in
@@ -39,6 +39,20 @@ jupyter lite build --lite-dir "$here" --contents "$work/content" --output-dir "$
   --apps notebooks --apps tree --no-sourcemaps --no-unused-shared-packages \
   --LiteBuildConfig.federated_extensions="$buttons/labextension" \
   $(for w in "$work"/wheels/*.whl; do printf -- '--piplite-wheels %s ' "$w"; done)
+
+# Stream real download progress for the runtime in standalone and complete-course builds.
+python3 - "$here" "$out" <<'PYTHON'
+import json, sys
+from pathlib import Path
+source, out = map(Path, sys.argv[1:])
+size = (out / "static/pyodide/pyodide.asm.wasm").stat().st_size
+(out / "python-progress.js").write_text((source / "python-progress.js").read_text().replace("MS_PYTHON_RUNTIME_BYTES", str(size)))
+(out / "python-worker.js").write_bytes((source / "python-worker.js").read_bytes())
+p = out / "jupyter-lite.json"
+config = json.loads(p.read_text())
+config["jupyter-config-data"]["msOfflineWorker"] = "python-worker.js"
+p.write_text(json.dumps(config))
+PYTHON
 
 # Every Python package the page can load carries an open licence.
 python3 "$here/../licences.py" "$out"

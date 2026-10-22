@@ -258,7 +258,10 @@ def _(mo):
     mo.md(r"""
     ## The counts as OpenLineage facets
 
-    OpenLineage defines two facets for this: `dataQualityMetrics`, counts for a dataset and for each of its columns; and `dataQualityAssertions`, each assertion and whether it succeeded.
+    OpenLineage defines two facets for this:
+
+    - **`dataQualityMetrics`:** counts for a dataset and for each of its columns.
+    - **`dataQualityAssertions`:** each assertion and whether it succeeded.
 
     The shop's events do not carry them. The next cell builds them for the input `orders.jsonl` of `run-014`, the run on Friday 11, as the shop's producer would send it.
     """)

@@ -35,32 +35,25 @@ const done = (page) =>
     timeout: 180_000,
   });
 const findAnswer = async (page, id) => {
-  for (let attempt = 0; attempt < 3; attempt++) {
-    const found = await page.evaluate(async (id) => {
-      const outer = document.querySelector(".jp-WindowedPanel-outer");
-      for (let y = 0; y <= outer.scrollHeight; y += 450) {
-        outer.scrollTop = y;
-        await new Promise((resolve) => setTimeout(resolve, 50));
-        if (document.querySelector(`textarea[data-answer="${id}"]`)) return true;
-      }
-      return false;
-    }, id);
-    if (found) return page.locator(`textarea[data-answer="${id}"]`).first();
-  }
-  throw Error("Missing answer field");
+  const selector = `textarea[data-answer="${id}"]`;
+  await page.waitForSelector(selector, { state: "attached", timeout: 120000 });
+  return page.locator(selector).first();
 };
 const chapter = async (page, number) => {
   await page.goto(
     `${base}jupyterlite/notebooks/index.html?path=chapter_${String(number).padStart(2, "0")}.ipynb`,
   );
   await page.waitForSelector(".jp-MarkdownOutput h1", { timeout: 120_000 });
-  await page.click('button[data-action="runAll"]');
+  await page.click('button[data-reader-action="runAll"]');
   await page.waitForFunction(
-    () => !document.querySelector('button[data-action="runAll"]:disabled'),
+    () => !document.querySelector('button[data-reader-action="runAll"]:disabled'),
     null,
     { timeout: 120_000 },
   );
-  assert.equal(await page.locator(".ms-Status").textContent(), "Every cell has run.");
+  assert.equal(
+    await page.locator(".ms-Reader-progress").textContent(),
+    "All examples finished successfully.",
+  );
   assert.equal(await page.locator(".jp-OutputArea-output.jp-mod-error").count(), 0);
 };
 try {
@@ -153,8 +146,6 @@ try {
     "My offline explanation",
   );
   await (await findAnswer(page, "ch01.daily_sales")).fill("Changed without a connection");
-  await page.click('button[data-action="save"]');
-  await page.waitForFunction(() => !document.querySelector('button[data-action="save"]:disabled'));
   await page.reload();
   await page.waitForSelector(".jp-MarkdownOutput h1");
   assert.equal(
@@ -240,8 +231,8 @@ try {
     "false",
   );
   ok("readiness checks detect an incomplete or evicted cache");
-  const savedNotebook = () =>
-    page.evaluate(async () => {
+  const savedNotebook = (seed = false) =>
+    page.evaluate(async (seed) => {
       const { name } = (await indexedDB.databases()).find((db) =>
         db.name.startsWith("JupyterLite Storage"),
       );
@@ -250,7 +241,32 @@ try {
         open.onerror = () => reject(open.error);
         open.onsuccess = () => {
           const db = open.result;
-          const request = db.transaction("files").objectStore("files").get("chapter_01.ipynb");
+          const files = db
+            .transaction("files", seed ? "readwrite" : "readonly")
+            .objectStore("files");
+          if (seed)
+            files.put(
+              {
+                type: "notebook",
+                format: "json",
+                content: {
+                  cells: [
+                    {
+                      cell_type: "code",
+                      source: ["# Stored notebook retained independently of the course download"],
+                      metadata: {},
+                      outputs: [],
+                      execution_count: null,
+                    },
+                  ],
+                  metadata: {},
+                  nbformat: 4,
+                  nbformat_minor: 5,
+                },
+              },
+              "kept-notebook.ipynb",
+            );
+          const request = files.get("kept-notebook.ipynb");
           request.onsuccess = () => {
             db.close();
             resolve(request.result);
@@ -258,8 +274,8 @@ try {
           request.onerror = () => reject(request.error);
         };
       });
-    });
-  const notebookBefore = await savedNotebook();
+    }, seed);
+  const notebookBefore = await savedNotebook(true);
   assert(notebookBefore?.content?.cells?.length);
   await page.getByRole("button", { name: "Remove downloaded course", exact: true }).click();
   await page.waitForFunction(() => !document.querySelector(".offline-course button:disabled"));

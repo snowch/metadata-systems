@@ -119,3 +119,35 @@ test("closing a notebook cancels waiters and prevents later status updates", asy
   assert.equal(f.timers.size, 0);
   assert.equal(await f.controller.begin(true), false);
 });
+
+test("runtime percentages measure download only and ignore replaced attempts", async () => {
+  const work = deferred();
+  const f = fixture(() => work.promise);
+  f.controller.begin();
+  await tick();
+  f.controller.download({ id: "first", started: Date.now(), loaded: 25, total: 100 });
+  assert.equal(f.frames.at(-1).download.percent, 25);
+  f.controller.download({ id: "other-tab", started: Date.now(), loaded: 90, total: 100 });
+  assert.equal(f.frames.at(-1).download.percent, 25);
+  f.controller.download({ id: "first", started: Date.now(), loaded: 100, total: 100 });
+  assert.equal(f.frames.at(-1).download.percent, 99);
+  f.controller.download({
+    id: "first",
+    started: Date.now(),
+    loaded: 100,
+    total: 100,
+    complete: true,
+  });
+  assert.equal(f.frames.at(-1).download.percent, 100);
+  assert.equal(f.frames.at(-1).phase, "loading");
+  f.controller.begin(true);
+  await tick();
+  f.controller.download({ id: "first", started: 1, loaded: 100, total: 100, complete: true });
+  assert.equal(f.frames.at(-1).download, undefined);
+  f.controller.download({ id: "retry", started: Date.now(), loaded: 10, total: 100 });
+  assert.equal(f.frames.at(-1).download.percent, 10);
+  work.resolve();
+  await tick();
+  assert.equal(f.frames.at(-1).phase, "ready");
+  f.controller.dispose();
+});

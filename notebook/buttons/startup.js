@@ -2,7 +2,7 @@
 
 // Track startup independently of cell execution and chapter-update notices. A timeout offers
 // retry without pretending a slow download has failed. Superseded attempts cannot update the UI
-// or keep a queued Run all waiting. No download totals are exposed by the worker's kernel API.
+// or keep a queued Run all waiting. Runtime download bytes arrive from the course service worker.
 export function createStartup({ start, render, setTimer = setTimeout, clearTimer = clearTimeout }) {
   let attempt;
   let disposed = false;
@@ -15,6 +15,7 @@ export function createStartup({ start, render, setTimer = setTimeout, clearTimer
       attempt?.finish(false);
       const current = {
         phase: "loading",
+        since: retry ? Date.now() : 0,
         slow: false,
         stalled: false,
         timers: [],
@@ -24,7 +25,13 @@ export function createStartup({ start, render, setTimer = setTimeout, clearTimer
       attempt = current;
       const active = () => !disposed && attempt === current;
       const show = () =>
-        render({ phase: current.phase, slow: current.slow, stalled: current.stalled });
+        render({
+          phase: current.phase,
+          slow: current.slow,
+          stalled: current.stalled,
+          download: current.download,
+        });
+      current.show = show;
       show();
       for (const [delay, flag] of [
         [10_000, "slow"],
@@ -73,6 +80,27 @@ export function createStartup({ start, render, setTimer = setTimeout, clearTimer
           },
         );
       return current.promise;
+    },
+    download(value) {
+      const current = attempt;
+      if (disposed || !current || current.phase !== "loading" || value.started < current.since)
+        return;
+      if (
+        !Number.isFinite(value.total) ||
+        value.total <= 0 ||
+        !Number.isFinite(value.loaded) ||
+        value.loaded < 0
+      )
+        return;
+      if (current.downloadId && current.downloadId !== value.id) return;
+      current.downloadId = value.id;
+      const percent = Math.min(
+        value.complete ? 100 : 99,
+        Math.floor((value.loaded * 100) / value.total),
+      );
+      if (current.download && percent <= current.download.percent) return;
+      current.download = { percent };
+      current.show();
     },
     ready() {
       return attempt?.promise ?? Promise.resolve(false);

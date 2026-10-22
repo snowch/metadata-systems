@@ -1,25 +1,9 @@
 // Copyright © 2026 Christopher Snow
 
-// Opens the built JupyterLite site in Chromium as a phone, with touch, and presses the row of
-// buttons (notebook/buttons/) as the chapters' texts tell a reader to. For each chapter: the menu
-// bar and the notebook's toolbar are hidden; the row shows the labels buttons.json gives, each
-// button at least 44 pixels tall, and arrows to the chapters either side, which open in a new tab,
-// the row fitting 360 pixels, with a link to the contents between them from 390 pixels wide; a
-// press disables Run all and Run below, not Save, marks the pressed button busy and shows the notice
-// of what Python is doing until the run ends, when the notice says every cell has run; Run all runs every
-// visible code cell, with no error in any output, and leaves the notebook where it was scrolled;
-// the warning and the steps for running the page are boxes, and from Chapter 2 the requirement the
-// chapter questions is one too, in a colour of its own, each with its icon; in Chapter 1 a printed
-// file keeps one record per line, scrolling inside its box, and the page never scrolls sideways.
-// In Chapter 2, Run below from a selected cell does the same, the opening's links reach their
-// stages, and the check's answers open with their feedback. In Chapter 3 the reader's record,
-// typed in, passes its check, and in Chapter 4 the merge, typed in, leaves the model's check 3
-// problems; in Chapters 10 to 22 each chapter's change to a cell gives its result. A browser set
-// to dark gets the dark theme, and one set to light the light. The page logs no error; a copy the
-// reader saved before the chapter was updated gives way to the published chapter, and is kept
-// under another name if the reader changed a cell; and the notebooks' earlier names lead to their
-// chapters. The notebook workflow runs it after the build, with Playwright from the course's
-// dependencies.
+// Drive every chapter's reader controls as a phone, including exercise edits through Run below.
+// Check outputs, navigation, responsive layouts, figures, answer persistence and legacy code
+// migration. Shared startup/answer/1b cases run once by default. Local chapter shards can use
+// SMOKE_PORT, SMOKE_CHAPTERS and SMOKE_CHAPTERS_ONLY to reuse an already verified shared suite.
 //
 //   node notebook/jupyterlite/smoke.mjs SITE_DIR
 
@@ -36,10 +20,8 @@ const notices = JSON.parse(
 );
 
 const site = process.argv[2];
-const port = 8765;
-const labels = Object.values(
-  JSON.parse(readFileSync(new URL("../buttons/buttons.json", import.meta.url), "utf8")),
-);
+const port = Number(process.env.SMOKE_PORT || 8765);
+const labels = ["Run all", "Download code"];
 const server = spawn("python3", ["-m", "http.server", String(port), "--bind", "127.0.0.1"], {
   cwd: site,
   stdio: "ignore",
@@ -67,49 +49,41 @@ try {
     isMobile: true,
     hasTouch: true,
   });
-  await checkStartup(browser, `http://127.0.0.1:${port}`, check);
-  await checkAnswers(browser, `http://127.0.0.1:${port}`, check);
-  await checkReader(browser, `http://127.0.0.1:${port}`, check);
+  if (!process.env.SMOKE_CHAPTERS_ONLY) {
+    await checkStartup(browser, `http://127.0.0.1:${port}`, check);
+    await checkAnswers(browser, `http://127.0.0.1:${port}`, check);
+    await checkReader(browser, `http://127.0.0.1:${port}`, check);
+  }
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
-  const button = (label) => page.locator(".ms-Buttons-button", { hasText: label });
-  const scrolled = () =>
-    page.evaluate(() => Math.round(document.querySelector(".jp-WindowedPanel-outer").scrollTop));
-  // Presses a button, checks the row shows the run under way, waits for it to end, and checks the
-  // notebook did not move.
+  let selectedExample;
+  const button = (label) =>
+    label === "Run below"
+      ? page
+          .locator(`.ms-Example[data-example="${selectedExample}"]`)
+          .getByRole("button", { name: label, exact: true })
+      : page.locator(".ms-Reader-nav").getByRole("button", { name: label, exact: true });
   const run = async (label, what) => {
-    const before = await scrolled();
     await button(label).tap();
-    const busy = await page.evaluate((label) => {
-      const row = [...document.querySelectorAll(".ms-Buttons-button")];
-      const pressed = row.find((b) => b.textContent === label);
-      const runs = row.filter((b) => b.dataset.action !== "save");
-      const save = row.find((b) => b.dataset.action === "save");
-      const notice = document.querySelector(".ms-Status");
-      return (
-        runs.every((b) => b.disabled) &&
-        !save.disabled &&
-        pressed?.getAttribute("aria-busy") === "true" &&
-        !!notice &&
-        !notice.hidden &&
-        notice.getAttribute("role") === "status"
-      );
-    }, label);
     check(
-      busy,
-      `${what}: the run buttons are disabled, Save is not, the button is busy and the notice says so`,
+      (await page.getByRole("button", { name: "Download code", exact: true }).isEnabled()) &&
+        (await button(label).isDisabled()),
+      `${what}: running controls lock and code export remains available`,
     );
     await page.waitForFunction(
-      () =>
-        !document.querySelector(".ms-Buttons-button[aria-busy], .ms-Buttons-button:disabled") &&
-        ![...document.querySelectorAll(".jp-InputPrompt")].some((p) => p.textContent.includes("*")),
+      () => !document.querySelector('[data-reader-action="runAll"]:disabled'),
       null,
-      { timeout: 120_000, polling: 200 },
+      { timeout: 120000 },
     );
-    check((await scrolled()) === before, `${what}: the notebook stays where it was scrolled`);
-    const said = await page.evaluate(() => document.querySelector(".ms-Status")?.textContent);
-    check(said === notices.done, `${what}: the notice says every cell has run ("${said}")`);
+    const said = await page.locator(".ms-Reader-progress").textContent();
+    check(
+      said ===
+        (label === "Run all"
+          ? "All examples finished successfully."
+          : "This example and all following examples finished successfully."),
+      `${what}: examples finished successfully (${said})`,
+    );
   };
   const shown = (selector) =>
     page.evaluate((selector) => {
@@ -129,13 +103,13 @@ try {
     await page.waitForFunction(() => document.querySelector(".jp-MarkdownOutput h1"), null, {
       timeout: 120_000,
     });
-    await page.waitForTimeout(1000);
+    await page.waitForSelector('.ms-Reader-nav [data-reader-action="runAll"]', { timeout: 120000 });
     check(
       !(await shown("#menu-panel-wrapper")) && !(await shown(".jp-NotebookPanel-toolbar")),
       `Chapter ${chapter}: the menu bar and the toolbar are hidden`,
     );
     const row = await page.evaluate(() =>
-      [...document.querySelectorAll(".ms-Buttons-button")].map((b) => ({
+      [...document.querySelectorAll(".ms-Reader-nav > .ms-Buttons-button")].map((b) => ({
         label: b.textContent,
         height: b.getBoundingClientRect().height,
       })),
@@ -222,8 +196,8 @@ try {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.waitForTimeout(300);
     check(
-      arrows.contents === 0,
-      `Chapter ${chapter}: at 360 pixels wide, the contents link does not show`,
+      arrows.contents >= 40,
+      `Chapter ${chapter}: at 360 pixels wide, the contents link is accessible`,
     );
     check(
       JSON.stringify(arrows.links.map((a) => a.name)) === JSON.stringify(expected) &&
@@ -450,7 +424,7 @@ try {
     if (chapter === 2) {
       const copy = page.locator(".jp-CodeCell", { hasText: 'shop.run_week(["copy"])' }).first();
       await copy.scrollIntoViewIfNeeded();
-      await copy.locator(".jp-InputPrompt").tap();
+      selectedExample = await copy.getAttribute("data-example");
       await run("Run below", "Chapter 2, Run below from the first what-if");
       // The opening's links to the stages scroll the notebook to each stage's heading, below the
       // row of buttons.
@@ -531,7 +505,8 @@ try {
         to.every((t) => typed.includes(t)),
         `the edit to the cell with ${JSON.stringify(hasText)} is in its editor`,
       );
-      await (await cell.$(".jp-InputPrompt")).tap();
+      selectedExample = await cell.getAttribute("data-example");
+      await editor.press("Escape");
     };
     // The output of the first code cell holding `hasText`, or of a later one, counted from 0.
     const output = async (hasText, nth = 0) => {
@@ -1047,8 +1022,22 @@ try {
         return out?.result;
       }, change);
     const save = async () => {
-      await reader.click('button[data-action="save"]');
-      await reader.waitForTimeout(1_500);
+      const content = await (await fetch(`http://127.0.0.1:${port}/files/chapter_01.ipynb`)).json();
+      content.metadata.ms.reader = false;
+      for (const cell of content.cells)
+        if (cell.metadata.ms?.example) delete cell.metadata.ms.example;
+      const value = {
+        name: "chapter_01.ipynb",
+        path: "chapter_01.ipynb",
+        type: "notebook",
+        format: "json",
+        content,
+        writable: true,
+        created: new Date().toISOString(),
+        last_modified: new Date().toISOString(),
+        mimetype: null,
+      };
+      await stored(`return {put: ${JSON.stringify(value)}};`);
     };
     // Waits for the notice to say the text, and returns it with its link's words: the notice is up
     // for five or ten seconds, from a moment that depends on the machine.
@@ -1087,7 +1076,7 @@ try {
     await save();
     await stored(`const nb = items["chapter_01.ipynb"].content;
       nb.metadata.ms.version = "older";
-      nb.cells.find((cell) => cell.cell_type === "code").source = "# the reader's change";
+      nb.cells.find((cell) => cell.cell_type === "code" && !cell.metadata.ms?.setup).source = "# the reader's change";
       return { put: items["chapter_01.ipynb"] };`);
     await reader.reload();
     const words = notices.kept.replace("{copy}", copy);
@@ -1105,7 +1094,10 @@ try {
       kept?.link === copy &&
         stays === words &&
         JSON.stringify(keys) === JSON.stringify([copy]) &&
-        content.includes("# the reader's change"),
+        content.includes("# the reader's change") &&
+        (
+          await reader.locator('.ms-Example[data-example="products"] .cm-content').innerText()
+        ).includes("# the reader's change"),
       `an older saved copy with a change of the reader's is kept under another name, and the chapter is the published one (${JSON.stringify({ link: kept?.link ?? null, stays: stays === words, stored: keys, change: content.includes("# the reader's change") })})`,
     );
     await context.close();

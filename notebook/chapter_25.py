@@ -103,7 +103,13 @@ def _(mo):
 
     You write the pieces for items 2 and 4: `key(event)` and `newer(event, current)`. A third piece comes later.
 
-    An event's run id is `event["run"]["runId"]`; its type is `event["eventType"]`; its time is `event["eventTime"]`. A key must be a value a set can hold, such as a tuple or a piece of text.
+    Read the event's fields at these paths:
+
+    - **Run id:** `event["run"]["runId"]`.
+    - **Type:** `event["eventType"]`.
+    - **Time:** `event["eventTime"]`.
+
+    A key must be a value a set can hold, such as a tuple or a piece of text.
 
     The next two cells hold the two pieces as they stand: `key` gives the event's whole content as JSON text, and `newer` always gives `True`, so the last event to arrive holds the state.
 

@@ -74,6 +74,7 @@ jobs:
         run: |
           npx playwright install --with-deps chromium
           node notebook/jupyterlite/reader-smoke.mjs apps/course/dist
+          node notebook/jupyterlite/download-smoke.mjs apps/course/dist
           node scripts/offline-smoke.mjs apps/course/dist
 
       - uses: actions/upload-pages-artifact@v3

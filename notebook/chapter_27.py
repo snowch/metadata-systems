@@ -73,7 +73,14 @@ def _(mo):
     mo.md(r"""
     ## Questions over the graph
 
-    Earlier chapters answered questions about the shop's assets: what is downstream of an asset (Chapters 6 and 16), where it came from (Chapter 15), who owns it (Chapters 2, 4 and 21), how recent it is (Chapter 13), which runs failed (Chapter 13), and what a change to a column reaches (Chapter 16).
+    Earlier chapters answered these questions about the shop's assets:
+
+    - **Downstream assets:** what is downstream of an asset (Chapters 6 and 16).
+    - **Sources:** where it came from (Chapter 15).
+    - **Ownership:** who owns it (Chapters 2, 4 and 21).
+    - **Freshness:** how recent it is (Chapter 13).
+    - **Failures:** which runs failed (Chapter 13).
+    - **Column changes:** what a change to a column reaches (Chapter 16).
 
     Here some of them are asked of the lineage graph Chapter 26 built, and the rest of the week's other records. This page builds the graph with the shop's own version of Chapter 26's `add`. Your cells there are not used.
 

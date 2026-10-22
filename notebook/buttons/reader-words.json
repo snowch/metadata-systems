@@ -19,5 +19,12 @@
   "saveFailed": "Your edits are not saved. Copy the code before leaving this page.",
   "restored": "Original code restored. Result cleared.",
   "editorLabel": "Python code: {example}",
-  "downloadCode": "Download code"
+  "downloadCode": "Download code",
+  "runBelow": "Run below",
+  "runningBelow": "Running from this example: {done}/{total} complete.",
+  "belowSucceeded": "This example and all following examples finished successfully.",
+  "belowStopped": "Run below stopped at {example}. See the error below that example.",
+  "queuedBelow": "Waiting for Python. This example and the following examples will run in order when it is ready.",
+  "startupFailedBelow": "Python could not start. Press Retry above, then Run below again.",
+  "staleBelow": "An earlier example changed. Use Run below from that example, or Run all, to update this result."
 }

@@ -68,14 +68,14 @@ export async function checkStartup(browser, base, check) {
     await page.evaluate(() => {
       window.startupPageMarker = "same page";
     });
-    await page.click('button[data-action="runAll"]');
+    await page.click('button[data-reader-action="runAll"]');
     check(
-      await page.locator('button[data-action="runAll"]').isDisabled(),
-      "startup: Run all waits for Python while Save remains available",
+      await page.locator('button[data-reader-action="runAll"]').isDisabled(),
+      "startup: Run all waits for Python while Download code remains available",
     );
     check(
-      await page.locator('button[data-action="save"]').isEnabled(),
-      "startup: notebook edits can be saved during loading",
+      await page.getByRole("button", { name: "Download code", exact: true }).isEnabled(),
+      "startup: code can be downloaded during loading",
     );
     await page.clock.fastForward(120_001);
     const retry = page.locator(".ms-Startup-retry");
@@ -114,14 +114,15 @@ export async function checkStartup(browser, base, check) {
       "startup: retry preserves unsaved notebook edits",
     );
     check(downloads >= 2, "startup: retry requests Python again after a stalled download");
-    await page.click('button[data-action="runAll"]');
+    await page.click('button[data-reader-action="runAll"]');
     await page.waitForFunction(
-      () => !document.querySelector('button[data-action="runAll"]:disabled'),
+      () => !document.querySelector('button[data-reader-action="runAll"]:disabled'),
       null,
       { timeout: 120_000 },
     );
     check(
-      (await page.locator(".ms-Status").textContent()) === words.done,
+      (await page.locator(".ms-Reader-progress").textContent()) ===
+        "All examples finished successfully.",
       "startup: Run all succeeds after retry",
     );
   } finally {
@@ -147,7 +148,7 @@ export async function checkStartup(browser, base, check) {
   });
   try {
     const page = await open(failed);
-    await page.click('button[data-action="runAll"]');
+    await page.click('button[data-reader-action="runAll"]');
     await page
       .waitForSelector('.ms-Startup[data-phase="failed"]', { timeout: 120_000 })
       .catch(async (error) => {
@@ -163,7 +164,7 @@ export async function checkStartup(browser, base, check) {
       "startup: a failed chapter setup displays a clear error and Retry",
     );
     await page.waitForFunction(
-      () => !document.querySelector('button[data-action="runAll"]:disabled'),
+      () => !document.querySelector('button[data-reader-action="runAll"]:disabled'),
     );
     check(
       (await page.locator(".ms-Startup-busy").count()) === 0,
