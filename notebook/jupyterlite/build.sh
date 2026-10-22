@@ -48,6 +48,17 @@ source, out = map(Path, sys.argv[1:])
 size = (out / "static/pyodide/pyodide.asm.wasm").stat().st_size
 (out / "python-progress.js").write_text((source / "python-progress.js").read_text().replace("MS_PYTHON_RUNTIME_BYTES", str(size)))
 (out / "python-worker.js").write_bytes((source / "python-worker.js").read_bytes())
+# Redirect the retired comparison URL before Jupyter tries to open a missing notebook.
+p = out / "notebooks/index.html"
+redirect = """<script>(function () {
+  var url = new URL(window.location.href);
+  if (url.searchParams.get("path") === "chapter_01b.ipynb") {
+    url.searchParams.set("path", "chapter_01.ipynb");
+    window.location.replace(url.href);
+  }
+})();</script>"""
+p.write_text(p.read_text().replace("<head>", "<head>" + redirect, 1))
+(out / "files/chapter_01b.ipynb").unlink(missing_ok=True)
 p = out / "jupyter-lite.json"
 config = json.loads(p.read_text())
 config["jupyter-config-data"]["msOfflineWorker"] = "python-worker.js"

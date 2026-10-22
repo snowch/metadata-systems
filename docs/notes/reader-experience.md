@@ -1,9 +1,9 @@
 # Course reader
 
-All 33 published chapters now use the reading surface introduced in Chapter 1b. The contents
-page links to the canonical chapters; the old `chapter_01b.ipynb` address remains usable with
-its existing draft keys. It renders Chapter 1's current content. Chapter 1 imports existing 1b
-code drafts if it has no canonical draft for that example.
+All 33 published chapters use the reading surface introduced in the Chapter 1b comparison.
+Chapter 1b is no longer generated or listed. Its old URL redirects to Chapter 1 before Jupyter
+opens a document. Chapter 1 imports existing 1b code drafts if it has no canonical draft for
+that example. Exercise answers already use the shared Chapter 1 keys.
 
 ## Controls and execution
 

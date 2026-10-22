@@ -157,8 +157,8 @@ async function run(panel, state, start) {
 function row(app, panel, state) {
   const widget = new Widget();
   widget.addClass("ms-Buttons");
-  // The comparison view attaches its per-example controls after the published notebook is ready.
-  if (CHAPTER.test(panel.context.path) || panel.context.path === "chapter_01b.ipynb") return widget;
+  // The reader attaches its per-example controls after the published notebook is ready.
+  if (CHAPTER.test(panel.context.path)) return widget;
   const buttons = [];
   let pointer = "mouse";
   for (const [action, label] of Object.entries(labels)) {
@@ -204,9 +204,7 @@ const CHAPTER = /^chapter_(\d\d)\.ipynb$/;
 /** Arrows to the chapters either side of the panel's, added to the row when the site's files are
     listed. */
 async function arrows(app, panel, widget) {
-  const path = panel.context.path
-    .replace(/ \(your copy(?: \d+)?\)/, "")
-    .replace("chapter_01b.ipynb", "chapter_01.ipynb");
+  const path = panel.context.path.replace(/ \(your copy(?: \d+)?\)/, "");
   const own = CHAPTER.exec(path);
   if (!own) return;
   const listing = await app.serviceManager.contents.get("", { content: true });
@@ -530,7 +528,7 @@ async function freeName(contents, path) {
 async function update(app, panel, state) {
   await panel.context.ready;
   const path = panel.context.path;
-  if (!CHAPTER.test(path) && path !== "chapter_01b.ipynb") return;
+  if (!CHAPTER.test(path)) return;
   const response = await fetch(URLExt.join(PageConfig.getBaseUrl(), "files", path), {
     cache: "no-cache",
   });
@@ -746,7 +744,7 @@ const rowPlugin = {
         if (
           url.origin !== window.location.origin ||
           (!link.closest(".jp-RenderedMarkdown") && url.pathname !== window.location.pathname) ||
-          !/^chapter_\d\d[b]?\.ipynb$/.test(path || "")
+          !/^chapter_\d\d\.ipynb$/.test(path || "")
         )
           return;
         event.preventDefault();
@@ -759,7 +757,7 @@ const rowPlugin = {
     );
     window.addEventListener("popstate", () => {
       const path = new URLSearchParams(window.location.search).get("path");
-      if (/^chapter_\d\d[b]?\.ipynb$/.test(path || "")) void navigate(path, false);
+      if (/^chapter_\d\d\.ipynb$/.test(path || "")) void navigate(path, false);
     });
     const add = (panel) => {
       panel.toolbar.setHidden(true);

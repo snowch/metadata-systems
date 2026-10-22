@@ -224,10 +224,8 @@ def stamp(nb: nbformat.NotebookNode) -> dict[str, str]:
 
 
 def build_all() -> dict[str, nbformat.NotebookNode]:
-    """Every chapter in the reading view; retain the shared 1b address for existing readers."""
-    notebooks = {name: build_reader(chapter) for chapter, (_, name) in CHAPTERS.items()}
-    notebooks["chapter_01b.ipynb"] = build_reader(1)
-    return notebooks
+    """Every canonical chapter in the reading view."""
+    return {name: build_reader(chapter) for chapter, (_, name) in CHAPTERS.items()}
 
 
 def build_reader(chapter: int = 1) -> nbformat.NotebookNode:
@@ -300,6 +298,7 @@ def check(nb: nbformat.NotebookNode) -> None:
 if __name__ == "__main__":
     out = Path(sys.argv[1])
     out.mkdir(parents=True, exist_ok=True)
+    (out / "chapter_01b.ipynb").unlink(missing_ok=True)
     for name, nb in build_all().items():
         if "--check" in sys.argv:
             check(nb)

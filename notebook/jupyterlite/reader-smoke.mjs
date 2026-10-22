@@ -1,6 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 // Exercise the reading surface against the real Python runtime and native code editors.
+import { checkRetiredChapter } from "./redirect-smoke.mjs";
 import { checkAutosave } from "./autosave-smoke.mjs";
 import { checkNavigation } from "./navigation-smoke.mjs";
 import assert from "node:assert/strict";
@@ -23,7 +24,7 @@ export async function checkReader(browser, base, check) {
     errors.push(detail);
   });
   const open = async () => {
-    await page.goto(`${base}/notebooks/index.html?path=chapter_01b.ipynb`);
+    await page.goto(`${base}/notebooks/index.html?path=chapter_01.ipynb`);
     await page.waitForSelector('.ms-Example[data-example="daily_sales"]', { timeout: 120_000 });
   };
   const example = (id) => page.locator(`.ms-Example[data-example="${id}"]`);
@@ -49,19 +50,6 @@ export async function checkReader(browser, base, check) {
     check((await cell.locator(".jp-mod-error").count()) === 0, `reader: ${id} has no Python error`);
   };
   try {
-    const published = await Promise.all(
-      ["chapter_01.ipynb", "chapter_01b.ipynb"].map(async (file) =>
-        (await fetch(`${base}/files/${file}`)).json(),
-      ),
-    );
-    const examplesOf = (nb) =>
-      nb.cells
-        .filter((cell) => cell.cell_type === "code" && !cell.metadata.ms?.setup)
-        .map((cell) => cell.source);
-    check(
-      JSON.stringify(examplesOf(published[0])) === JSON.stringify(examplesOf(published[1])),
-      "reader: comparison examples are identical to the original Chapter 1",
-    );
     await open();
     const reminder = page
       .locator(".jp-RenderedMarkdown")
@@ -280,7 +268,7 @@ export async function checkReader(browser, base, check) {
       "reader: storage failure is visible and Download code retains the live draft",
     );
 
-    await page.locator('textarea[data-answer="ch01.daily_sales"]').fill("My comparison answer");
+    await page.locator('textarea[data-answer="ch01.daily_sales"]').fill("My Chapter 1 answer");
     await page.goto(`${base}/notebooks/index.html?path=chapter_02.ipynb`);
     await page.waitForSelector(".jp-Notebook .jp-Cell", { timeout: 120_000 });
     // The normal chapter still windows distant cells.
@@ -294,8 +282,8 @@ export async function checkReader(browser, base, check) {
     });
     check(
       (await page.locator('textarea[data-answer="ch01.daily_sales"]').first().inputValue()) ===
-        "My comparison answer",
-      "reader: Chapter 2 recalls the same exercise answers from Chapter 1b",
+        "My Chapter 1 answer",
+      "reader: Chapter 2 recalls the same exercise answers from Chapter 1",
     );
     await open();
     for (const width of [360, 1280]) {
@@ -359,7 +347,7 @@ async function checkQueuedReader(browser, base, check) {
   });
   try {
     const page = await context.newPage();
-    await page.goto(`${base}/notebooks/index.html?path=chapter_01b.ipynb`);
+    await page.goto(`${base}/notebooks/index.html?path=chapter_01.ipynb`);
     await page.waitForSelector('.ms-Example[data-example="daily_sales"]', { timeout: 120_000 });
     const last = page.locator('[data-example="daily_sales"]');
     await page.getByRole("button", { name: "Run all", exact: true }).click();
@@ -409,6 +397,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         break;
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
+    await checkRetiredChapter(browser, `http://127.0.0.1:8866${standalone ? "" : "/jupyterlite"}`);
     await checkReader(
       browser,
       `http://127.0.0.1:8866${standalone ? "" : "/jupyterlite"}`,
