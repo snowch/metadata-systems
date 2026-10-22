@@ -63,18 +63,23 @@ def tally(systems) -> str:
     return f"{' + '.join(parts)} = {total} asset{'' if total == 1 else 's'}"
 
 
-def pipeline(week: Week, flow_label: str = "unseen jobs move data each night") -> str:
+def pipeline(week: Week, flow_label: str = "Nightly jobs") -> str:
     """The three systems, in the order data moves through them, with what each holds and a count."""
     systems = platform_assets(week)
     cells = []
     for i, (name, assets) in enumerate(systems):
         items = "".join(
-            f'<li><code>{escape(a)}</code><span class="ms-kind">{_KIND_LABEL[k]}</span></li>' for a, k in assets
+            f'<li><span class="ms-asset-icon ms-icon-{k}" aria-hidden="true"></span>'
+            f'<span class="ms-visually-hidden">{_KIND_LABEL[k]}: </span><code>{escape(a)}</code></li>' for a, k in assets
         )
         cells.append(f'<div class="ms-system"><h4>{escape(name)}</h4><ul>{items}</ul></div>')
         if i < len(systems) - 1:
-            cells.append(f'<div class="ms-flow">{escape(flow_label)}<span class="ms-right">&nbsp;&rarr;</span></div>')
-    return f'<div class="ms-fig"><div class="ms-systems">{"".join(cells)}</div><div class="ms-tally">{escape(tally(systems))}</div></div>'
+            cells.append('<div class="ms-flow" aria-hidden="true"><span class="ms-asset-icon ms-icon-job"></span><span class="ms-right">&rarr;</span></div>')
+    legend = "".join(
+        f'<span><span class="ms-asset-icon ms-icon-{kind}" aria-hidden="true"></span>{escape(label)}</span>'
+        for kind, label in [*_KIND_LABEL.items(), ("job", flow_label)]
+    )
+    return f'<div class="ms-fig ms-pipeline"><div class="ms-systems">{"".join(cells)}</div><div class="ms-pipeline-key">{legend}</div><div class="ms-tally">{escape(tally(systems))}</div></div>'
 
 
 # The week's image: drawn 340 units wide with 14-unit text. A 360-pixel phone gives a notebook's

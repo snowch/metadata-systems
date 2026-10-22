@@ -26,6 +26,17 @@ only itself after hidden setup is ready. All six Chapter 1 examples are independ
 visible cells. Future dependent examples will need explicit prerequisites rather than implicitly
 replaying arbitrary learner code.
 
+Run all executes current examples sequentially, stops on the first error and marks later results
+as skipped. It reuses Jupyter's cell execution/output API without selecting each cell. A live
+progress notice floats outside the document so it cannot shift the reader's place. Execution
+restores the visible document anchor after outputs resize, while respecting wheel/touch scrolling.
+Code edits and answers remain available during execution; Run and Reset controls share one lock.
+
+The shared platform diagram uses original file, table, dashboard and job symbols with a single
+key. Connectors indicate the known order of systems, not asset-level dependencies. Its container
+query stacks cards based on the diagram's available width and font size, including landscape and
+split views where a viewport-only breakpoint left the old diagram cramped.
+
 Code drafts use a synchronous localStorage key per notebook and stable example identifier,
 independent of notebook autosave and published versions. A failed write retains the live code
 and reports that it is not saved. Download code exports the live examples. Reset restores the

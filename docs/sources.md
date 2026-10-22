@@ -711,6 +711,9 @@ The Chapter 1b reading surface also reuses the pinned JupyterLab 4.6.4 APIs:
 - [Notebook actions](https://github.com/jupyterlab/jupyterlab/blob/v4.6.4/packages/notebook/src/actions.tsx)
   expose `runCells` for a chosen list of cells and an existing session. The reading surface runs
   one example after its hidden setup; normal Jupyter output handling is retained.
+  Run all uses `CodeCell.execute` from the linked cell widget source, awaiting each execution
+  reply in order without the notebook action's selection/scroll handling. The diagram's new
+  file/table/dashboard/job SVG masks are original geometric drawings, not third-party icons.
 
 Read 18 October 2026 from the pinned JupyterLite 0.8.6 source:
 

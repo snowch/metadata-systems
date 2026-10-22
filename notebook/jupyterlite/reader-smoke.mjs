@@ -71,6 +71,33 @@ export async function checkReader(browser, base, check) {
         (await page.locator(".ms-Reader .jp-cell-toolbar:visible").count()) === 0,
       "reader: notebook document chrome and cell management controls are hidden",
     );
+    const pipeline = page.locator(".ms-pipeline").first();
+    for (const width of [360, 640, 800, 1280]) {
+      await page.setViewportSize({ width, height: 844 });
+      check(
+        await pipeline.evaluate((node) => {
+          const systems = [...node.querySelectorAll(".ms-system")];
+          return (
+            systems.every((system) =>
+              [...system.querySelectorAll("code")].every((code) => {
+                const rect = code.getBoundingClientRect();
+                return (
+                  code.getClientRects().length === 1 &&
+                  rect.right <= system.getBoundingClientRect().right
+                );
+              }),
+            ) &&
+            [...node.querySelectorAll(".ms-flow")].every(
+              (flow) => flow.textContent.trim() === "→",
+            ) &&
+            node.querySelectorAll(".ms-pipeline-key > span").length === 4
+          );
+        }),
+        `reader: the ${width}px system diagram keeps names on one line and labels its icons once`,
+      );
+      await pipeline.screenshot({ path: `/tmp/metadata-pipeline-${width}.png` });
+    }
+    await page.setViewportSize({ width: 390, height: 844 });
     const originals = Object.fromEntries(
       await Promise.all(
         ["products", "customers", "orders", "clean_customers", "clean_orders", "daily_sales"].map(
@@ -128,7 +155,79 @@ export async function checkReader(browser, base, check) {
         (await read("products")).includes("My saved change"),
       "reader: Reset restores only its example and clears its result",
     );
-    for (const id of Object.keys(originals)) await run(id);
+    const ids = Object.keys(originals);
+    for (const id of ids) {
+      const setup =
+        id === "products"
+          ? '\nreader_order = ["products"]\nimport asyncio\nawait asyncio.sleep(0.25)'
+          : `\nreader_order.append(${JSON.stringify(id)})`;
+      const show = id === "daily_sales" ? "\nprint(reader_order)" : "";
+      await edit(id, originals[id] + setup + show);
+    }
+    const answer = page.locator('textarea[data-answer="ch01.daily_sales"]');
+    await answer.fill("My run all answer");
+    const heading = page.getByRole("heading", { name: "The warehouse", exact: true });
+    await heading.evaluate((node) => node.scrollIntoView({ block: "center" }));
+    const top = (await heading.boundingBox()).y;
+    await page.evaluate(() => {
+      window.readerProgress = [];
+      const node = document.querySelector(".ms-Reader-progress");
+      new MutationObserver(() => window.readerProgress.push(node.textContent)).observe(node, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+      });
+    });
+    const all = page.getByRole("button", { name: "Run all", exact: true });
+    await all.click();
+    check(
+      (await all.isDisabled()) &&
+        (await example("orders").getByRole("button", { name: "Reset example" }).isDisabled()) &&
+        (await page.getByRole("button", { name: "Download code", exact: true }).isEnabled()),
+      "reader: Run all prevents overlapping runs and resets while keeping code export available",
+    );
+    await page
+      .getByText("All examples finished successfully.", { exact: true })
+      .waitFor({ timeout: 120_000 });
+    check(
+      (await example("daily_sales").locator(".jp-OutputArea").innerText()).includes(
+        "['products', 'customers', 'orders', 'clean_customers', 'clean_orders', 'daily_sales']",
+      ),
+      "reader: Run all executes edited examples sequentially in document order",
+    );
+    check(
+      await page.evaluate(
+        () =>
+          window.readerProgress.some((text) => text.includes("1/6")) &&
+          window.readerProgress.some((text) => text.includes("5/6")),
+      ),
+      "reader: Run all reports completed-example progress",
+    );
+    check(
+      Math.abs((await heading.boundingBox()).y - top) <= 3 &&
+        (await answer.inputValue()) === "My run all answer" &&
+        (await read("products")).includes("reader_order"),
+      "reader: Run all preserves the reader's place, edited code and exercise answers",
+    );
+    const oldResult = await example("clean_customers").locator(".jp-OutputArea").innerText();
+    await edit("orders", "this is not valid Python !!!");
+    await edit("clean_customers", originals.clean_customers + '\nprint("SHOULD_NOT_RUN")');
+    await all.click();
+    await page
+      .getByText("Run all stopped at The orders. See the error below that example.", {
+        exact: true,
+      })
+      .waitFor({ timeout: 120_000 });
+    check(
+      (await example("orders").locator(".jp-OutputArea").innerText()).includes("SyntaxError") &&
+        (await example("clean_customers").locator(".jp-OutputArea").innerText()) === oldResult &&
+        (await example("clean_customers").locator(".ms-Example-status").innerText()).includes(
+          "Not run because an earlier example failed",
+        ) &&
+        (await all.isEnabled()),
+      "reader: Run all stops at the first error, labels skipped results and releases the controls",
+    );
+    for (const id of ids) await example(id).getByRole("button", { name: "Reset example" }).click();
 
     const h1 = page.locator(".jp-MarkdownOutput h1");
     await h1.dblclick();
@@ -198,8 +297,10 @@ export async function checkReader(browser, base, check) {
           const controls = [
             ...document.querySelectorAll(".ms-Example button, .ms-Reader-nav button"),
           ];
+          const navigation = document.querySelector(".ms-Reader-nav");
           return (
             outer.scrollWidth <= outer.clientWidth + 1 &&
+            navigation.scrollWidth <= navigation.clientWidth + 1 &&
             controls.every((button) => button.getBoundingClientRect().height >= 44)
           );
         }),
@@ -247,22 +348,22 @@ async function checkQueuedReader(browser, base, check) {
     await page.goto(`${base}/notebooks/index.html?path=chapter_01b.ipynb`);
     await page.waitForSelector('.ms-Example[data-example="daily_sales"]', { timeout: 120_000 });
     const last = page.locator('[data-example="daily_sales"]');
-    await last.getByRole("button", { name: "Run", exact: true }).click();
-    await last
-      .getByText("Waiting for Python. This example will run when it is ready.", { exact: true })
+    await page.getByRole("button", { name: "Run all", exact: true }).click();
+    await page
+      .getByText("Waiting for Python. Examples will run in order when it is ready.", {
+        exact: true,
+      })
       .waitFor();
     check(
       await page.locator('[data-example="products"] [data-reader-action="run"]').isDisabled(),
-      "reader: a queued run prevents overlapping runs while Python loads",
+      "reader: queued Run all prevents overlapping runs while Python loads",
     );
     const editor = page.locator('[data-example="orders"] .cm-content');
     await editor.fill((await editor.innerText()).replace("2026-09-07", "2026-09-10"));
     release();
-    await page.waitForFunction(
-      () => !document.querySelector('[data-reader-action="run"]:disabled'),
-      null,
-      { timeout: 120_000 },
-    );
+    await page
+      .getByText("All examples finished successfully.", { exact: true })
+      .waitFor({ timeout: 120_000 });
     check(
       (await last.locator("tbody tr").count()) === 7 &&
         (await editor.innerText()).includes("2026-09-10"),

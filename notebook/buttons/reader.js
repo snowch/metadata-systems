@@ -4,6 +4,7 @@
 // Only notebooks explicitly marked ms.reader opt in. Drafts are synchronous and independent of
 // notebook autosave, so refresh before the first execution does not lose a reader's changes.
 import { NotebookActions } from "@jupyterlab/notebook";
+import { CodeCell } from "@jupyterlab/cells";
 import { Widget } from "@lumino/widgets";
 import words from "./reader-words.json";
 
@@ -35,15 +36,105 @@ export async function attachReader(panel, state, navigation) {
   navigation.node.replaceChildren();
   navigation.addClass("ms-Reader-nav");
   const entries = [];
+  const runAll = button(words.runAll);
+  runAll.dataset.readerAction = "runAll";
+  const progress = element("div", "", "ms-Status ms-Reader-progress");
+  progress.setAttribute("role", "status");
+  progress.setAttribute("aria-live", "polite");
+  progress.hidden = true;
+  panel.node.append(progress);
+  let hideProgress;
+  const report = (text, briefly = 0) => {
+    clearTimeout(hideProgress);
+    progress.textContent = text;
+    progress.hidden = false;
+    if (briefly) hideProgress = setTimeout(() => (progress.hidden = true), briefly);
+  };
   let busy = false;
   let disposed = false;
   const hold = (value) => {
     busy = value;
+    runAll.disabled = value;
     for (const entry of entries) {
       entry.run.disabled = value;
       entry.reset.disabled = value;
     }
   };
+
+  async function runExample(entry, batch = false) {
+    const outer = notebook.node.classList.contains("jp-WindowedPanel-outer")
+      ? notebook.node
+      : (notebook.node.querySelector(".jp-WindowedPanel-outer") ?? notebook.node);
+    const top = outer.scrollTop;
+    const view = outer.getBoundingClientRect();
+    // Prefer a visible paragraph or cell boundary: a partly visible output can grow within
+    // its cell, so anchoring that cell's top would still move the prose below it.
+    const candidates = [...outer.querySelectorAll(".jp-RenderedMarkdown > *, .jp-Cell")].filter(
+      (node) => {
+        const rect = node.getBoundingClientRect();
+        return rect.bottom > view.top && rect.top < view.bottom && rect.height > 0;
+      },
+    );
+    const anchor =
+      candidates.find((node) => node.getBoundingClientRect().top >= view.top) || candidates[0];
+    const offset = anchor?.getBoundingClientRect().top;
+    entry.run.setAttribute("aria-busy", "true");
+    entry.status.textContent = words.running;
+    let scrolled = false;
+    const manual = () => {
+      scrolled = true;
+    };
+    const keyScroll = (event) => {
+      if (["PageUp", "PageDown", "Home", "End", "ArrowUp", "ArrowDown", " "].includes(event.key))
+        manual();
+    };
+    outer.addEventListener("wheel", manual, { passive: true });
+    outer.addEventListener("touchmove", manual, { passive: true });
+    window.addEventListener("keydown", keyScroll, true);
+    try {
+      // Capture what is actually run, after any edits made while Python was loading.
+      const source = entry.cell.model.sharedModel.getSource();
+      let succeeded;
+      if (batch) {
+        // The cell API retains native outputs without NotebookActions selecting or scrolling to
+        // each cell in turn. The batch deliberately awaits one reply before starting the next.
+        if (!panel.sessionContext.session?.kernel) throw Error("Python is unavailable");
+        const reply = await CodeCell.execute(entry.cell, panel.sessionContext);
+        succeeded = !reply || reply.content.status === "ok";
+      } else {
+        notebook.activeCellIndex = notebook.widgets.indexOf(entry.cell);
+        succeeded = await NotebookActions.runCells(notebook, [entry.cell], panel.sessionContext);
+      }
+      if (disposed) return false;
+      entry.executed = source;
+      entry.status.textContent =
+        source !== entry.cell.model.sharedModel.getSource()
+          ? words.stale
+          : succeeded
+            ? words.success
+            : words.error;
+      return succeeded;
+    } catch {
+      if (!disposed) entry.status.textContent = words.error;
+      return false;
+    } finally {
+      if (!disposed && !scrolled) {
+        // Preserve the paragraph in view even when new outputs above it change the page height.
+        if (document.visibilityState === "visible")
+          await new Promise((resolve) => requestAnimationFrame(resolve));
+        if (!disposed) {
+          outer.scrollTop =
+            anchor && offset !== undefined
+              ? outer.scrollTop + anchor.getBoundingClientRect().top - offset
+              : top;
+        }
+      }
+      outer.removeEventListener("wheel", manual);
+      outer.removeEventListener("touchmove", manual);
+      window.removeEventListener("keydown", keyScroll, true);
+      entry.run.removeAttribute("aria-busy");
+    }
+  }
 
   async function execute(entry) {
     if (busy || disposed) return;
@@ -55,33 +146,48 @@ export async function attachReader(panel, state, navigation) {
         if (!disposed) entry.status.textContent = words.startupFailed;
         return;
       }
-      entry.status.textContent = words.running;
-      // Capture what is actually run, after any edits made while Python was loading.
-      const source = entry.cell.model.sharedModel.getSource();
-      const outer = notebook.node;
-      const top = outer.scrollTop;
-      notebook.activeCellIndex = notebook.widgets.indexOf(entry.cell);
-      const succeeded = await NotebookActions.runCells(
-        notebook,
-        [entry.cell],
-        panel.sessionContext,
-      );
-      if (disposed) return;
-      outer.scrollTop = top;
-      entry.executed = source;
-      entry.status.textContent =
-        source !== entry.cell.model.sharedModel.getSource()
-          ? words.stale
-          : succeeded
-            ? words.success
-            : words.error;
-    } catch {
-      if (!disposed) entry.status.textContent = words.error;
+      await runExample(entry);
     } finally {
       entry.run.removeAttribute("aria-busy");
       hold(false);
     }
   }
+
+  runAll.addEventListener("click", async () => {
+    if (busy || disposed) return;
+    hold(true);
+    runAll.setAttribute("aria-busy", "true");
+    const count = (done) =>
+      words.runningAll.replace("{done}", done).replace("{total}", entries.length);
+    report(state.ready ? count(0) : words.queuedAll);
+    try {
+      if (!(await state.startup.ready()) || disposed) {
+        if (!disposed) report(words.startupFailedAll);
+        return;
+      }
+      report(count(0));
+      for (let index = 0; index < entries.length; index++) {
+        if (disposed) return;
+        const entry = entries[index];
+        if (!(await runExample(entry, true))) {
+          if (!disposed) {
+            report(
+              words.stopped.replace("{example}", entry.cell.model.getMetadata("ms").example.title),
+              10_000,
+            );
+            for (const skipped of entries.slice(index + 1))
+              skipped.status.textContent = words.skipped;
+          }
+          return;
+        }
+        report(count(index + 1));
+      }
+      report(words.allSucceeded, 5000);
+    } finally {
+      runAll.removeAttribute("aria-busy");
+      hold(false);
+    }
+  });
 
   for (const cell of notebook.widgets) {
     cell.model.setMetadata("deletable", false);
@@ -168,7 +274,7 @@ export async function attachReader(panel, state, navigation) {
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
-  navigation.node.append(download);
+  navigation.node.append(runAll, download);
 
   // Keep normal editing, text selection and browser navigation. Notebook structural shortcuts
   // and the context menu are not part of this reading surface. Run shortcuts execute one example.
@@ -200,6 +306,8 @@ export async function attachReader(panel, state, navigation) {
   window.addEventListener("contextmenu", contextMenu, true);
   panel.disposed.connect(() => {
     disposed = true;
+    clearTimeout(hideProgress);
+    progress.remove();
     document.body.classList.remove("ms-Reading");
     window.removeEventListener("keydown", shortcut, true);
     notebook.node.removeEventListener("keydown", stop);

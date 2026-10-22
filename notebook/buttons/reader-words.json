@@ -1,5 +1,12 @@
 {
   "run": "Run",
+  "runAll": "Run all",
+  "queuedAll": "Waiting for Python. Examples will run in order when it is ready.",
+  "runningAll": "Running all examples: {done}/{total} complete.",
+  "allSucceeded": "All examples finished successfully.",
+  "stopped": "Run all stopped at {example}. See the error below that example.",
+  "skipped": "Not run because an earlier example failed. Any displayed result is from a previous run.",
+  "startupFailedAll": "Python could not start. Press Retry above, then Run all again.",
   "reset": "Reset example",
   "queued": "Waiting for Python. This example will run when it is ready.",
   "running": "Running example.",
