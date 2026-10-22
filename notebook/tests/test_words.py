@@ -324,7 +324,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         # Across the whole week, only Thursday's three are missing from clean_orders.
         week = [o for o in self.week.storage.records(shop.FILES["orders"]) if o["order_id"] not in kept]
         self.assertEqual(week, lacking)
-        self.assertIn("WHERE order_id NOT IN (SELECT order_id FROM clean_orders)", SOURCE[2])
+        self.assertIn("WHERE order_id NOT IN ( SELECT order_id FROM clean_orders )", flat(SOURCE[2]))
         self.says("Across the whole week, 3 orders in `orders.jsonl` are missing from `clean_orders`: 7021, 7023 and 7025.")
         self.says("All three are Thursday's, and none has a customer id.")
         self.says("Together they are worth 15400 pence, the whole of Thursday's gap.")
@@ -583,7 +583,7 @@ class TheWordsOfChapter3(unittest.TestCase):
         differ = [(r["day"], r["revenue_pence"], r["meant_pence"]) for r in rows if r["compared"] == "different"]
         self.assertEqual(differ, [("2026-09-10", 5150, 20550)])
         self.says("Thursday is the only day that differs: `daily_sales` shows 5150 pence, and Jo Marsh's meaning gives 20550.")
-        every_line = self.jos.replace("(SELECT DISTINCT * FROM raw_orders)", "raw_orders")
+        every_line = self.jos.replace("SELECT DISTINCT *", "SELECT *")
         self.assertEqual([r["day"] for r in self.w.sql(every_line, files=files) if r["compared"] == "different"], ["2026-09-09", "2026-09-10"])
         self.assertEqual(shop.data.DUPLICATED, 7015)
         self.says("The file holds order 7015 on two lines.")
@@ -591,7 +591,7 @@ class TheWordsOfChapter3(unittest.TestCase):
         cancelled = {o["ordered_at"][:10] for o in self.week.storage.records(shop.FILES["orders"]) if o["status"] == "cancelled"}
         self.assertEqual(cancelled, {"2026-09-08", "2026-09-12"})
         self.says("Tuesday, Wednesday and Saturday agree because the query leaves out cancelled orders and counts the order the export wrote twice once")
-        rebuilt = self.jos.replace("(SELECT DISTINCT * FROM raw_orders)", "clean_orders")
+        rebuilt = re.sub(r"\(\s*SELECT DISTINCT \*\s+FROM raw_orders\s*\)", "clean_orders", self.jos)
         self.assertEqual({r["compared"] for r in self.w.sql(rebuilt)}, {"same"})
         self.assertIn("FROM clean_orders", SOURCE[3])
         self.says("Every day is the same, Thursday included.")
@@ -697,7 +697,7 @@ class TheWordsOfChapter4(unittest.TestCase):
         self.assertEqual(len(after), 3)
         self.says("The check then lists 3 problems.")
         count = "SELECT COUNT(DISTINCT value) AS owners\n        FROM records\n        WHERE attribute = 'responsible'"
-        self.assertIn(count, SOURCE[4])
+        self.assertIn(flat(count), flat(SOURCE[4]))
         self.assertEqual((self.records.sql(count)[0]["owners"], self.merged().sql(count)[0]["owners"]), (4, 3))
         self.says("Before your change it counts 4. After your change it counts 3: `j.marsh`, `s.lund` and the data engineer")
         drops = shop.model(self.model.text + "\ndataset drops: text\n")
@@ -815,7 +815,7 @@ class TheWordsOfChapter6(unittest.TestCase):
         self.assertEqual([r["file"] for r in self.repo if "customer_id" in r["code"]], ["jobs/build_clean_customers.py", "jobs/build_clean_orders.py"])
         [orders] = [r for r in self.repo if r["file"] == "jobs/build_clean_orders.py"]
         self.assertIn("customer_id IS NOT NULL", orders["code"])
-        self.assertIn("SELECT DISTINCT order_id, customer_id", orders["code"])
+        self.assertIn("SELECT DISTINCT order_id, customer_id", flat(orders["code"]))
         self.says("Only the code of `build_clean_orders` names `customer_id`: in its `SELECT` and in its `WHERE`.")
         self.says("The code of `build_clean_orders` has `WHERE customer_id IS NOT NULL`.")
 
@@ -905,9 +905,9 @@ class TheWordsOfChapter7(unittest.TestCase):
     def test_what_each_run_read(self):
         changed = shop.run_week(["returns", "source"])
         runs = shop.runs(shop.events(changed, ["run", "job", "type", "reads", "code_version"])).where(job="build_daily_sales")
-        self.assertEqual([(r["reads"], r["code_version"]) for r in runs], [("clean_orders", "256e271")] * 5 + [(shop.COPY, "c715bde")] * 2)
-        self.says("The runs on Tuesday 8 to Saturday 12 read `clean_orders`, with code version `256e271`.")
-        self.says("The runs on Sunday 13 and Monday 14 read `s3://shop-scratch/clean_orders_copy.csv`, with code version `c715bde`.")
+        self.assertEqual([(r["reads"], r["code_version"]) for r in runs], [("clean_orders", "f31810f")] * 5 + [(shop.COPY, "b01670a")] * 2)
+        self.says("The runs on Tuesday 8 to Saturday 12 read `clean_orders`, with code version `f31810f`.")
+        self.says("The runs on Sunday 13 and Monday 14 read `s3://shop-scratch/clean_orders_copy.csv`, with code version `b01670a`.")
 
     def test_without_reads(self):
         with_reads = shop.lineage(shop.runs(shop.events(self.week, ["run", "job", "type", "reads", "writes"])))
@@ -944,8 +944,8 @@ class TheWordsOfChapter8(unittest.TestCase):
         self.assertEqual((start["eventType"], complete["eventType"]), ("START", "COMPLETE"))
         self.assertEqual(complete["inputs"][0]["inputFacets"]["inputStatistics"]["rowCount"], 27)
         self.assertEqual(complete["outputs"][0]["outputFacets"]["outputStatistics"]["rowCount"], 23)
-        self.assertEqual(complete["job"]["facets"]["sourceCodeLocation"]["version"], "b178023")
-        self.says("**`sourceCodeLocation`:** holds the code version, `b178023`.")
+        self.assertEqual(complete["job"]["facets"]["sourceCodeLocation"]["version"], "47190f1")
+        self.says("**`sourceCodeLocation`:** holds the code version, `47190f1`.")
         self.says("**`inputStatistics`:** holds the rows read, 27.")
         self.says("**`outputStatistics`:** holds the rows written, 23.")
         self.assertEqual(start["run"]["runId"][14], "7")

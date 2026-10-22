@@ -141,10 +141,12 @@ def _(mo):
 @app.cell
 def _(together):
     together.sql("""
-        SELECT asset, value AS responsible
-        FROM records
-        WHERE field = 'responsible'
-        ORDER BY asset
+    SELECT
+        asset,
+        value AS responsible
+    FROM records
+    WHERE field = 'responsible'
+    ORDER BY asset
     """)
     return
 
@@ -160,9 +162,9 @@ def _(mo):
 @app.cell
 def _(together):
     together.sql("""
-        SELECT COUNT(DISTINCT value) AS owners
-        FROM records
-        WHERE field = 'responsible'
+    SELECT COUNT(DISTINCT value) AS owners
+    FROM records
+    WHERE field = 'responsible'
     """)
     return
 
@@ -318,9 +320,9 @@ def _(mo):
 @app.cell
 def _(records):
     records.sql("""
-        SELECT COUNT(DISTINCT value) AS owners
-        FROM records
-        WHERE attribute = 'responsible'
+    SELECT COUNT(DISTINCT value) AS owners
+    FROM records
+    WHERE attribute = 'responsible'
     """)
     return
 

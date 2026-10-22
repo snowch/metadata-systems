@@ -172,8 +172,10 @@ def _(mo):
 @app.cell
 def _(records):
     records.sql("""
-        SELECT value FROM records
-        WHERE asset = 'daily_sales' AND field = 'responsible'
+    SELECT value
+    FROM records
+    WHERE asset = 'daily_sales'
+        AND field = 'responsible'
     """)
     return
 
@@ -195,16 +197,27 @@ def _(mo):
 @app.cell
 def _(warehouse):
     by_jos_meaning = """
-        SELECT d.day, d.revenue_pence, m.meant_pence,
-               CASE WHEN d.revenue_pence = m.meant_pence THEN 'same' ELSE 'different' END AS compared
-        FROM daily_sales AS d
-        JOIN (
-            SELECT date(ordered_at) AS day, SUM(price_pence * quantity) AS meant_pence
-            FROM (SELECT DISTINCT * FROM raw_orders)
-            WHERE status = 'completed'
-            GROUP BY day
-        ) AS m USING (day)
-        ORDER BY d.day
+    SELECT
+        d.day,
+        d.revenue_pence,
+        m.meant_pence,
+        CASE
+            WHEN d.revenue_pence = m.meant_pence THEN 'same'
+            ELSE 'different'
+        END AS compared
+    FROM daily_sales AS d
+    JOIN (
+        SELECT
+            date(ordered_at) AS day,
+            SUM(price_pence * quantity) AS meant_pence
+        FROM (
+            SELECT DISTINCT *
+            FROM raw_orders
+        )
+        WHERE status = 'completed'
+        GROUP BY day
+    ) AS m USING (day)
+    ORDER BY d.day
     """
     warehouse.sql(by_jos_meaning, files={"raw_orders": "s3://shop-raw/orders.jsonl"})
     return (by_jos_meaning,)
@@ -233,16 +246,24 @@ def _(mo):
 @app.cell
 def _(warehouse):
     warehouse.sql("""
-        SELECT d.day, d.revenue_pence, m.meant_pence,
-               CASE WHEN d.revenue_pence = m.meant_pence THEN 'same' ELSE 'different' END AS compared
-        FROM daily_sales AS d
-        JOIN (
-            SELECT date(ordered_at) AS day, SUM(price_pence * quantity) AS meant_pence
-            FROM clean_orders
-            WHERE status = 'completed'
-            GROUP BY day
-        ) AS m USING (day)
-        ORDER BY d.day
+    SELECT
+        d.day,
+        d.revenue_pence,
+        m.meant_pence,
+        CASE
+            WHEN d.revenue_pence = m.meant_pence THEN 'same'
+            ELSE 'different'
+        END AS compared
+    FROM daily_sales AS d
+    JOIN (
+        SELECT
+            date(ordered_at) AS day,
+            SUM(price_pence * quantity) AS meant_pence
+        FROM clean_orders
+        WHERE status = 'completed'
+        GROUP BY day
+    ) AS m USING (day)
+    ORDER BY d.day
     """)
     return
 
@@ -266,9 +287,12 @@ def _(mo):
 @app.cell
 def _(records):
     records.sql("""
-        SELECT * FROM records
-        WHERE asset LIKE '%products.csv%' OR asset LIKE '%orders.jsonl%'
-           OR value LIKE '%products.csv%' OR value LIKE '%orders.jsonl%'
+    SELECT *
+    FROM records
+    WHERE asset LIKE '%products.csv%'
+        OR asset LIKE '%orders.jsonl%'
+        OR value LIKE '%products.csv%'
+        OR value LIKE '%orders.jsonl%'
     """)
     return
 
@@ -304,8 +328,11 @@ def _(mo):
 @app.cell
 def _(warehouse):
     warehouse.sql("""
-        SELECT table_name, column_name, data_type
-        FROM information_schema.columns
+    SELECT
+        table_name,
+        column_name,
+        data_type
+    FROM information_schema.columns
     """)
     return
 
@@ -325,9 +352,11 @@ def _(storage):
     storage.sql(
         "s3://shop-raw/products.csv",
         """
-        SELECT updated_by, COUNT(*) AS products
-        FROM file
-        GROUP BY updated_by
+    SELECT
+        updated_by,
+        COUNT(*) AS products
+    FROM file
+    GROUP BY updated_by
         """,
     )
     return
@@ -410,8 +439,10 @@ def _(mo):
 @app.cell
 def _(shop, warehouse):
     columns = warehouse.sql("""
-        SELECT table_name, column_name
-        FROM information_schema.columns
+    SELECT
+        table_name,
+        column_name
+    FROM information_schema.columns
     """)
     by_name = shop.records("\n".join(
         f"{c['table_name']} {c['column_name']} means: {c['column_name'].replace('_', ' ')}"

@@ -432,7 +432,10 @@ def _(mo):
 
 @app.cell
 def _(changed, warehouse):
-    changed.warehouse.sql("SELECT * FROM daily_sales") == warehouse.sql("SELECT * FROM daily_sales")
+    (
+        changed.warehouse.sql("SELECT * FROM daily_sales")
+        == warehouse.sql("SELECT * FROM daily_sales")
+    )
     return
 
 

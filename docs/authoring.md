@@ -336,3 +336,17 @@ a failed and successful release update, rejects a checksum mismatch, detects an 
 and removes the download without removing answers, saved notebooks or unrelated workers and
 caches. Both the Notebooks and deploy workflows run it;
 the deploy verifies the exact artifact it publishes.
+
+
+## SQL layout
+
+Keep short lookups compact. For longer queries, put each selected expression on its own line,
+align the outer clauses, and use four spaces for nested expressions and subqueries. Put `CASE`,
+its branches and `END` on separate lines. Break long conditions at `AND` or `OR` without changing
+their grouping. Do not add horizontal padding merely because SQL is inside a Python string:
+check the exported notebook, whose code has the marimo function's four spaces removed.
+
+Apply the same layout to SQL shown from the shop's repository. Formatting that program text
+changes its code-version hash, so recompute any versions quoted in prose and pinned by tests.
+Check SQL tokens as well as execution results; do not change aliases, parameters, expressions,
+filters, column order or row order while improving layout.

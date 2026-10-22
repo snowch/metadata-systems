@@ -167,8 +167,9 @@ def _(storage):
     storage.sql(
         "s3://shop-raw/orders.jsonl",
         """
-        SELECT * FROM file
-        WHERE date(ordered_at) = :day
+    SELECT *
+    FROM file
+    WHERE date(ordered_at) = :day
         """,
         day=day,
     )

@@ -301,9 +301,10 @@ def _(shop):
 @app.cell
 def _(week10n):
     week10n.warehouse.sql("""
-        SELECT returned_quantity(7004, 2) AS order_7004,
-               returned_quantity(7008, 1) AS order_7008,
-               returned_quantity(7001, 1) AS order_7001
+    SELECT
+        returned_quantity(7004, 2) AS order_7004,
+        returned_quantity(7008, 1) AS order_7008,
+        returned_quantity(7001, 1) AS order_7001
     """)
     return
 

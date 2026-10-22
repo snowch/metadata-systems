@@ -116,7 +116,7 @@ noun in the same section (the term gate exempts "run", the verb, so no test can 
 
 - **Role:** inspect
 - **Serves:** Chapter 6's question, which nights read the copy: 13 and 14 September, under code
-  version `c715bde`.
+  version `b01670a`.
 - **Why now:** the design has just gained `reads` and `code_version`.
 
 ### `without-reads`

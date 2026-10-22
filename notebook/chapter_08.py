@@ -143,7 +143,7 @@ def _(mo):
     In these events, the facets hold:
 
     - **`jobType`:** says the job is a batch job, one that starts and finishes.
-    - **`sourceCodeLocation`:** holds the code version, `b178023`. The shop fills it with its own hash of the code, which is Chapter 7's `code_version`, not a commit.
+    - **`sourceCodeLocation`:** holds the code version, `47190f1`. The shop fills it with its own hash of the code, which is Chapter 7's `code_version`, not a commit.
     - **`nominalTime`:** holds the time the run was due to start.
     - **`inputStatistics`:** holds the rows read, 27.
     - **`outputStatistics`:** holds the rows written, 23.

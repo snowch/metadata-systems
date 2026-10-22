@@ -177,8 +177,12 @@ def _(mo):
 def _(warehouse):
     warehouse.sql(
         """
-        SELECT * FROM raw_orders
-        WHERE order_id NOT IN (SELECT order_id FROM clean_orders)
+    SELECT *
+    FROM raw_orders
+    WHERE order_id NOT IN (
+        SELECT order_id
+        FROM clean_orders
+    )
         """,
         files={"raw_orders": "s3://shop-raw/orders.jsonl"},
     )
@@ -235,8 +239,9 @@ def _(mo):
 @app.cell
 def _(warehouse):
     warehouse.sql("""
-        SELECT * FROM information_schema.tables
-        WHERE table_name = 'daily_sales'
+    SELECT *
+    FROM information_schema.tables
+    WHERE table_name = 'daily_sales'
     """)
     return
 
@@ -244,9 +249,11 @@ def _(warehouse):
 @app.cell
 def _(warehouse):
     warehouse.sql("""
-        SELECT column_name, data_type
-        FROM information_schema.columns
-        WHERE table_name = 'daily_sales'
+    SELECT
+        column_name,
+        data_type
+    FROM information_schema.columns
+    WHERE table_name = 'daily_sales'
     """)
     return
 
@@ -320,8 +327,10 @@ def _(mo):
 @app.cell
 def _(warehouse):
     warehouse.sql("""
-        SELECT table_name, table_owner
-        FROM information_schema.tables
+    SELECT
+        table_name,
+        table_owner
+    FROM information_schema.tables
     """)
     return
 
@@ -412,13 +421,16 @@ def _(mo):
 @app.cell
 def _(warehouse):
     rebuilt = warehouse.sql("""
-        SELECT date(ordered_at) AS day, SUM(price_pence * quantity) AS revenue_pence
-        FROM clean_orders
-        WHERE status = 'completed'
-        GROUP BY day
-        ORDER BY day
+    SELECT
+        date(ordered_at) AS day,
+        SUM(price_pence * quantity) AS revenue_pence
+    FROM clean_orders
+    WHERE status = 'completed'
+    GROUP BY day
+    ORDER BY day
     """)
-    # Prints True if the query gives exactly the rows of daily_sales, in order.
+    # Prints True if the query gives exactly the rows of daily_sales,
+    # in order.
     rebuilt == warehouse.sql("SELECT * FROM daily_sales ORDER BY day")
     return
 
@@ -440,9 +452,13 @@ def _(mo):
 @app.cell
 def _(warehouse):
     warehouse.sql("""
-        SELECT order_id, date(ordered_at) AS day, status, price_pence * quantity AS pence
-        FROM clean_orders
-        WHERE status = 'cancelled'
+    SELECT
+        order_id,
+        date(ordered_at) AS day,
+        status,
+        price_pence * quantity AS pence
+    FROM clean_orders
+    WHERE status = 'cancelled'
     """)
     return
 
@@ -451,10 +467,13 @@ def _(warehouse):
 def _(warehouse):
     warehouse.sql(
         """
-        SELECT order_id, date(ordered_at) AS day, COUNT(*) AS copies
-        FROM raw_orders
-        GROUP BY order_id
-        HAVING COUNT(*) > 1
+    SELECT
+        order_id,
+        date(ordered_at) AS day,
+        COUNT(*) AS copies
+    FROM raw_orders
+    GROUP BY order_id
+    HAVING COUNT(*) > 1
         """,
         files={"raw_orders": "s3://shop-raw/orders.jsonl"},
     )

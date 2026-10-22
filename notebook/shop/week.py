@@ -168,42 +168,77 @@ DURATION = {
     "remove_return": 2,
 }
 
-CLEAN_CUSTOMERS = """SELECT customer_id, name, LOWER(email), country, signed_up
+CLEAN_CUSTOMERS = """SELECT
+    customer_id,
+    name,
+    LOWER(email),
+    country,
+    signed_up
 FROM raw_customers
 WHERE email IS NOT NULL"""
 
-CLEAN_ORDERS = """SELECT DISTINCT order_id, customer_id, product_id, quantity, price_pence, status, ordered_at
+CLEAN_ORDERS = """SELECT DISTINCT
+    order_id,
+    customer_id,
+    product_id,
+    quantity,
+    price_pence,
+    status,
+    ordered_at
 FROM raw_orders
-WHERE customer_id IS NOT NULL AND quantity > 0"""
+WHERE customer_id IS NOT NULL
+    AND quantity > 0"""
 
-DAILY_SALES = """SELECT date(ordered_at), SUM(price_pence * quantity)
+DAILY_SALES = """SELECT
+    date(ordered_at),
+    SUM(price_pence * quantity)
 FROM clean_orders
-WHERE status = 'completed' AND date(ordered_at) = :day
+WHERE status = 'completed'
+    AND date(ordered_at) = :day
 GROUP BY date(ordered_at)"""
 
 # The edited program of the `refunds` change: every order that is not refunded.
-DAILY_SALES_FOR_REFUNDS = """SELECT date(ordered_at), SUM(price_pence * quantity)
+DAILY_SALES_FOR_REFUNDS = """SELECT
+    date(ordered_at),
+    SUM(price_pence * quantity)
 FROM clean_orders
-WHERE status <> 'refunded' AND date(ordered_at) = :day
+WHERE status <> 'refunded'
+    AND date(ordered_at) = :day
 GROUP BY date(ordered_at)"""
 
 # The edited program of the `column` change: the same revenue, and the number of orders it counts.
-DAILY_SALES_WITH_COUNT = """SELECT date(ordered_at), SUM(price_pence * quantity), COUNT(*)
+DAILY_SALES_WITH_COUNT = """SELECT
+    date(ordered_at),
+    SUM(price_pence * quantity),
+    COUNT(*)
 FROM clean_orders
-WHERE status = 'completed' AND date(ordered_at) = :day
+WHERE status = 'completed'
+    AND date(ordered_at) = :day
 GROUP BY date(ordered_at)"""
 
 # The edited program of the `net` change: each order's quantity less what was returned of it.
 DAILY_SALES_NET = """WITH lines AS (
-    SELECT date(ordered_at) AS day, price_pence * (quantity - returned_quantity(order_id, product_id)) AS line_pence, status
+    SELECT
+        date(ordered_at) AS day,
+        price_pence * (
+            quantity - returned_quantity(order_id, product_id)
+        ) AS line_pence,
+        status
     FROM clean_orders
 )
-SELECT day, SUM(line_pence)
+SELECT
+    day,
+    SUM(line_pence)
 FROM lines
-WHERE status = 'completed' AND day = :day
+WHERE status = 'completed'
+    AND day = :day
 GROUP BY day"""
 
-DASHBOARD = "SELECT day, revenue_pence FROM daily_sales ORDER BY day"
+DASHBOARD = """SELECT
+    day,
+    revenue_pence
+FROM daily_sales
+ORDER BY day"""
 
 
 def returned_quantity(db) -> callable:
@@ -542,13 +577,22 @@ def _job(reads: dict[str, str], writes: str, sql: str, verb: str = "write", extr
 
 RECORD_RETURN = """returned = read(changed_object)
 change("returns", \"\"\"
-DELETE FROM returns WHERE return_id = :return_id;
-INSERT INTO returns SELECT return_id, order_id, product_id, quantity, returned_at FROM returned
+DELETE FROM returns
+WHERE return_id = :return_id;
+INSERT INTO returns
+SELECT
+    return_id,
+    order_id,
+    product_id,
+    quantity,
+    returned_at
+FROM returned
 \"\"\")
 """
 
 REMOVE_RETURN = """change("returns", \"\"\"
-DELETE FROM returns WHERE return_id = :return_id
+DELETE FROM returns
+WHERE return_id = :return_id
 \"\"\", return_id=name_of(changed_object))
 """
 

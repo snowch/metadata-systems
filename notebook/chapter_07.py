@@ -111,9 +111,12 @@ job build_clean_orders writes: clean_orders
 @app.cell
 def _(warehouse):
     warehouse.sql("""
-        SELECT table_name, row_count, last_altered
-        FROM information_schema.tables
-        WHERE table_name = 'clean_orders'
+    SELECT
+        table_name,
+        row_count,
+        last_altered
+    FROM information_schema.tables
+    WHERE table_name = 'clean_orders'
     """)
     return
 
@@ -332,9 +335,9 @@ def _(shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The runs on Tuesday 8 to Saturday 12 read `clean_orders`, with code version `256e271`.
+    The runs on Tuesday 8 to Saturday 12 read `clean_orders`, with code version `f31810f`.
 
-    The runs on Sunday 13 and Monday 14 read `s3://shop-scratch/clean_orders_copy.csv`, with code version `c715bde`.
+    The runs on Sunday 13 and Monday 14 read `s3://shop-scratch/clean_orders_copy.csv`, with code version `b01670a`.
 
     Chapter 6's change took effect from Saturday's row. The run on Sunday 13, early in the morning, writes Saturday's row, so it is the first run that reads the copy.
 
