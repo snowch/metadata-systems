@@ -35,7 +35,7 @@
 // A link in the text to one of the notebook's own headings scrolls the notebook to that heading
 // (followLinks, below), where JupyterLab's own handling lands it a screen away in a long notebook.
 
-import { DocumentManager } from "@jupyterlab/docmanager";
+import { DocumentManager, IDocumentManager } from "@jupyterlab/docmanager";
 import { PageConfig, URLExt } from "@jupyterlab/coreutils";
 import { NotebookActions, INotebookTracker } from "@jupyterlab/notebook";
 import { Widget } from "@lumino/widgets";
@@ -609,8 +609,10 @@ const rowPlugin = {
   description:
     "Run and reset examples, autosave code locally, track Python loading and navigate chapters with the existing notebook editors and outputs.",
   autoStart: true,
-  requires: [INotebookTracker],
-  activate(app, tracker) {
+  requires: [INotebookTracker, IDocumentManager],
+  activate(app, tracker, initialDocuments) {
+    // Reader drafts and answers save independently of the notebook file.
+    initialDocuments.autosave = false;
     followMove(app);
     let navigating = false;
     let reused = false;
@@ -626,6 +628,7 @@ const rowPlugin = {
         },
       },
     });
+    documents.autosave = false;
     const navigate = async (path, history = true) => {
       if (navigating) return;
       const previous = app.shell.currentWidget;

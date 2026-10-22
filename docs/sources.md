@@ -774,3 +774,17 @@ Read 22 October 2026 for Python reuse between chapters:
 The navigation browser test counts actual dedicated workers, checks that a variable from Chapter 1
 is absent in Chapter 2, runs Chapters 2 and 3, and checks saved answers, code drafts, Contents and
 browser Back. A new tab or a page reload still starts its own Python worker.
+
+Read 22 October 2026 for the reader's notebook-save conflict fix:
+
+- JupyterLab 4.6.4's installed `@jupyterlab/docmanager/lib/manager.js` defaults a newly created
+  document manager to whole-document autosaving. Its `autosave` setter stops or starts its
+  save handlers. Both document managers used by the reader explicitly disable that mechanism.
+- `@jupyterlab/docmanager/lib/savehandler.js` schedules background `context.save()` calls for
+  dirty documents; `@jupyterlab/docregistry/lib/context.js` compares the saved file's modification
+  time or hash and raises the File Changed dialog on a conflict.
+
+The regression test shortens only that background-save timer and writes a newer notebook into
+IndexedDB, representing another tab's save. It reproduces the dialog in a navigated chapter before
+the fix, then verifies no dialog after the fix and checks that independent code drafts and exercise
+answers survive refresh. The reader does not overwrite the newer notebook to suppress the dialog.
