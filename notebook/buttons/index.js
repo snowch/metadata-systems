@@ -44,6 +44,7 @@ import words from "./status.json";
 import { attachAnswers } from "./answers.js";
 import { createStartup } from "./startup.js";
 import { courseWorker } from "./service-worker.js";
+import { attachReader } from "./reader.js";
 
 // How much of a cell must show for JupyterLab not to scroll to it, in pixels: its notebook's
 // scroll-down threshold, half a cell margin and one line.
@@ -156,6 +157,8 @@ async function run(panel, state, start) {
 function row(app, panel, state) {
   const widget = new Widget();
   widget.addClass("ms-Buttons");
+  // The comparison view attaches its per-example controls after the published notebook is ready.
+  if (panel.context.path === "chapter_01b.ipynb") return widget;
   const buttons = [];
   let pointer = "mouse";
   for (const [action, label] of Object.entries(labels)) {
@@ -201,14 +204,15 @@ const CHAPTER = /^chapter_(\d\d)\.ipynb$/;
 /** Arrows to the chapters either side of the panel's, added to the row when the site's files are
     listed. */
 async function arrows(app, panel, widget) {
-  const own = CHAPTER.exec(panel.context.path);
+  const path = panel.context.path.replace("chapter_01b.ipynb", "chapter_01.ipynb");
+  const own = CHAPTER.exec(path);
   if (!own) return;
   const listing = await app.serviceManager.contents.get("", { content: true });
   const chapters = listing.content
     .map((file) => file.name)
     .filter((name) => CHAPTER.test(name))
     .sort();
-  const at = chapters.indexOf(panel.context.path);
+  const at = chapters.indexOf(path);
   const links = [
     [chapters[at - 1], "Previous", "\u2039"],
     [chapters[at + 1], "Next", "\u203a"],
@@ -487,7 +491,7 @@ async function freeName(contents, path) {
 async function update(app, panel, state) {
   await panel.context.ready;
   const path = panel.context.path;
-  if (!CHAPTER.test(path)) return;
+  if (!CHAPTER.test(path) && path !== "chapter_01b.ipynb") return;
   const response = await fetch(URLExt.join(PageConfig.getBaseUrl(), "files", path), {
     cache: "no-cache",
   });
@@ -560,7 +564,13 @@ const rowPlugin = {
       const widget = row(app, panel, state);
       panel.contentHeader.addWidget(widget);
       panel.context.ready
-        .then(() => arrows(app, panel, widget))
+        .then(async () => {
+          await state.checked;
+          if (panel.context.model.getMetadata("ms")?.reader)
+            await attachReader(panel, state, widget);
+          app.shell.fit();
+          await arrows(app, panel, widget);
+        })
         .catch((reason) => console.error("arrows", reason));
       state.startup = startup(app, panel, state);
       void state.startup.begin();
@@ -569,6 +579,10 @@ const rowPlugin = {
     };
     tracker.forEach(add);
     tracker.widgetAdded.connect((_, panel) => add(panel));
+    tracker.currentChanged.connect((_, panel) => {
+      document.body.classList.toggle("ms-Reading", !!panel?.hasClass("ms-ReaderPanel"));
+      app.shell.fit();
+    });
   },
 };
 

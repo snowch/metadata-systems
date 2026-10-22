@@ -4,6 +4,11 @@
 // docs/notes/chapter-02/briefs/F-figure-labels.md (CLAUDE.md).
 
 export const STRINGS = {
+  readerComparison: {
+    title: "1b. The shop and its platform",
+    description:
+      "The same material as Chapter 1, with a Run button beside each code example. Compare the two reading experiences.",
+  },
   offline: {
     title: "Use the course offline",
     intro:

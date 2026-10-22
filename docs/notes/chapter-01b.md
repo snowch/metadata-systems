@@ -1,0 +1,35 @@
+# Chapter 1b: The shop and its platform
+
+This comparison view is generated from Chapter 1's source by `build_reader` in
+`notebook/jupyterlite/build_ipynb.py`. The shop, prose, diagrams, examples and answer boxes are
+the same. Only the heading, navigation and running/saving instructions change. The original
+chapter remains available beside the comparison on the contents page.
+
+## Requirements
+
+This view questions no additional metadata requirement. It compares the reading experience of
+per-example Run and Reset controls with the existing notebook controls on the same material.
+Chapter 1's learning objectives and the requirements described in its notes still apply.
+
+## Originality
+
+The comparison uses the course's own bicycle shop, the same examples and the same prose as
+Chapter 1. It does not reproduce another project's course or interface copy. The new control
+instructions were drafted by the separate prose agent from checked implementation facts.
+
+## Reader implementation
+
+`ms.reader` notebook metadata opts in. Prose and setup are read-only and cells cannot be deleted.
+Windowing is disabled so reading and keyboard navigation use the complete document. Native code
+editors, output rendering, answer fields and Python startup/retry are reused. Each example runs
+only itself after hidden setup is ready. All six Chapter 1 examples are independent of the other
+visible cells. Future dependent examples will need explicit prerequisites rather than implicitly
+replaying arbitrary learner code.
+
+Code drafts use a synchronous localStorage key per notebook and stable example identifier,
+independent of notebook autosave and published versions. A failed write retains the live code
+and reports that it is not saved. Download code exports the live examples. Reset restores the
+published source and clears only that example's output; it does not restart Python. A refresh
+restores code and clears outputs so old results cannot be mistaken for a new execution. The
+comparison's code drafts are separate from Chapter 1's notebook saves. Its answer boxes use the
+same answer keys as Chapters 1 and 2. Offline download updates/removal leave all learner data.

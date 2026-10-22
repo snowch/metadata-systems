@@ -298,6 +298,13 @@ download, and checks retry, queued runs, retained edits, answer fields and a nar
 
 ## Offline course
 
+Chapter 1b is a comparison view generated from Chapter 1's source, with fixed prose, per-example
+Run/Reset controls and synchronous code drafts. Its words for the replacement running/saving
+instructions live in `notebook/jupyterlite/reader.json`; the examples and all other prose remain
+in Chapter 1. See `docs/notes/chapter-01b.md` for the persistence contract. Run
+`node notebook/jupyterlite/reader-smoke.mjs SITE_DIR` to check the reading view against a built
+JupyterLite site. The normal notebook browser suite and the deployment also run this check.
+
 The contents page offers an explicit full-course download with the size calculated from the
 assembled site. It includes the front page, all published notebooks, Python and all bundled
 packages. No first visit or successful Python startup alone is called offline-ready. A user must

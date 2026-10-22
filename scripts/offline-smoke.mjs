@@ -133,6 +133,22 @@ try {
   await ready(page);
   assert.match(await page.locator('.offline-course [role="status"]').textContent(), /offline/);
   ok("the home page survives a browser restart offline with an empty HTTP cache");
+  await page.goto(`${base}jupyterlite/notebooks/index.html?path=chapter_01b.ipynb`);
+  await page.waitForSelector('.ms-Example[data-example="daily_sales"]', { timeout: 120_000 });
+  const reader = page.locator('.ms-Example[data-example="daily_sales"]');
+  await reader.getByRole("button", { name: "Run", exact: true }).click();
+  await page.waitForFunction(
+    () => !document.querySelector('[data-reader-action="run"]:disabled'),
+    null,
+    { timeout: 120_000 },
+  );
+  assert.equal(await reader.locator("tbody tr").count(), 7);
+  const readerCode = reader.locator(".cm-content");
+  await readerCode.fill((await readerCode.innerText()) + "\n# My offline edit");
+  await page.reload();
+  await page.waitForSelector('.ms-Example[data-example="daily_sales"]', { timeout: 120_000 });
+  assert.match(await readerCode.innerText(), /My offline edit/);
+  ok("Chapter 1b executes offline and retains an unrun code edit across refresh");
   await chapter(page, 1);
   assert.equal(
     await (await findAnswer(page, "ch01.daily_sales")).inputValue(),
@@ -252,6 +268,12 @@ try {
   assert(await page.evaluate(() => caches.has("another-project")));
   assert(await page.evaluate(() => navigator.serviceWorker.getRegistration("/unrelated/")));
   assert.deepEqual(await savedNotebook(), notebookBefore);
+  assert.match(
+    await page.evaluate(() =>
+      localStorage.getItem("ms:metadata-systems:code:v1:chapter_01b.ipynb:daily_sales"),
+    ),
+    /My offline edit/,
+  );
   assert.equal(
     await page.evaluate(() =>
       localStorage.getItem("ms:metadata-systems:answers:v1:ch01.daily_sales"),

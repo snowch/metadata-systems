@@ -700,6 +700,18 @@ Read in the OpenLineage repository (`OpenLineage/OpenLineage`, `main`, commit
 
 ## Offline course storage and JupyterLite integration
 
+The Chapter 1b reading surface also reuses the pinned JupyterLab 4.6.4 APIs:
+
+- [Notebook configuration](https://github.com/jupyterlab/jupyterlab/blob/v4.6.4/packages/notebook/src/widget.ts)
+  supports disabling windowing and suppressing editors for read-only Markdown. The trial uses
+  these settings only on the comparison view of Chapter 1.
+- [Cell widgets](https://github.com/jupyterlab/jupyterlab/blob/v4.6.4/packages/cells/src/widget.ts)
+  expose read-only state, cell readiness, editors and layouts. Published prose/setup carry
+  `editable: false` and all reading-view cells carry `deletable: false`.
+- [Notebook actions](https://github.com/jupyterlab/jupyterlab/blob/v4.6.4/packages/notebook/src/actions.tsx)
+  expose `runCells` for a chosen list of cells and an existing session. The reading surface runs
+  one example after its hidden setup; normal Jupyter output handling is retained.
+
 Read 18 October 2026 from the pinned JupyterLite 0.8.6 source:
 
 - [`ServiceWorkerManager`](https://github.com/jupyterlite/jupyterlite/blob/v0.8.6/packages/apputils/src/service-worker-manager.ts)

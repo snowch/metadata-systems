@@ -1,5 +1,137 @@
 /* Copyright © 2026 Christopher Snow */
 
+/* Chapter 1b opts into a reading page. The same Jupyter editors and outputs remain underneath,
+   but prose is fixed and examples carry their own controls. */
+body.ms-Reading #top-panel-wrapper {
+  display: none;
+  min-height: 0 !important;
+  max-height: 0 !important;
+}
+
+.ms-Reader .jp-Cell {
+  box-sizing: border-box;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 8px 20px;
+  width: 100%;
+}
+
+.ms-Reader .jp-MarkdownOutput {
+  font-size: 16px;
+  line-height: 1.65;
+  border: none;
+  background: transparent;
+}
+
+.ms-Reader .jp-MarkdownCell .jp-InputArea {
+  border: none;
+}
+
+.jp-Notebook.ms-Reader.jp-mod-commandMode .jp-Cell.jp-mod-active:focus-visible {
+  box-shadow: none;
+}
+
+.ms-Reader .jp-cell-toolbar,
+.ms-Reader .jp-Notebook-footer,
+.ms-Reader .jp-Cell-toolbar {
+  display: none;
+}
+
+.ms-Reader .jp-Cell.jp-mod-active::before,
+.ms-Reader .jp-Cell.jp-mod-selected::before {
+  display: none;
+}
+
+.ms-Reader .jp-CodeCell:not(.ms-Example),
+.ms-Reader .jp-InputPrompt,
+.ms-Reader .jp-OutputPrompt,
+.ms-Reader .jp-Cell-inputCollapser,
+.ms-Reader .jp-Cell-outputCollapser,
+.ms-Reader .jp-CellFooter {
+  display: none;
+}
+
+.ms-Reader .ms-Example {
+  margin: 8px auto 24px;
+  padding: 14px;
+  border: 1px solid var(--jp-border-color1);
+  border-radius: 8px;
+  background: var(--jp-layout-color0);
+}
+
+.ms-Reader .ms-Example:focus-within {
+  border-color: var(--jp-brand-color1);
+}
+
+.ms-Reader .ms-Example .jp-InputArea {
+  border: 1px solid var(--jp-border-color2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ms-Reader .cm-editor {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.ms-Example-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 12px;
+}
+
+.ms-Example-saved {
+  flex: 1 1 180px;
+  text-align: right;
+  color: var(--jp-ui-font-color2);
+  font: 12px / 1.5 var(--jp-ui-font-family);
+}
+
+.ms-Example-status {
+  color: var(--jp-ui-font-color1);
+  font: 14px / 1.5 var(--jp-ui-font-family);
+  padding-top: 8px;
+}
+
+.ms-Example-status:has(span:empty) {
+  display: none;
+}
+
+.ms-Reader-nav .ms-Buttons-button {
+  margin-right: auto;
+}
+
+.ms-Reader-nav .ms-Buttons-contents {
+  display: inline-flex;
+}
+
+.ms-Reader .jp-OutputArea {
+  overflow-x: auto;
+  padding-top: 12px;
+}
+
+.ms-Reader :is(button, a, [contenteditable]):focus-visible {
+  outline: 2px solid var(--jp-brand-color1);
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  .ms-Reader .jp-Cell {
+    padding: 6px 8px;
+  }
+
+  .ms-Reader .ms-Example {
+    width: calc(100% - 16px);
+    padding: 10px;
+  }
+
+  .ms-Reader .cm-editor {
+    font-size: 16px;
+  }
+}
+
 /* Answer fields are outside Markdown rendering and follow the notebook's theme. */
 .ms-Answers {
   box-sizing: border-box;

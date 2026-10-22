@@ -1,0 +1,16 @@
+{
+  "run": "Run",
+  "reset": "Reset example",
+  "queued": "Waiting for Python. This example will run when it is ready.",
+  "running": "Running example.",
+  "success": "Example finished.",
+  "error": "The example stopped with an error. See the details below.",
+  "startupFailed": "Python could not start. Press Retry above, then Run again.",
+  "stale": "The code has changed. Run again to update the result.",
+  "saved": "Edits saved in this browser.",
+  "noSavedEdits": "No edits saved in this browser.",
+  "saveFailed": "Your edits are not saved. Copy the code before leaving this page.",
+  "restored": "Original code restored. Result cleared.",
+  "editorLabel": "Python code: {example}",
+  "downloadCode": "Download code"
+}

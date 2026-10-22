@@ -23,6 +23,7 @@ Usage: python3 build_ipynb.py OUT_DIR [--check]
 
 import ast
 import hashlib
+import json
 import re
 import sys
 import textwrap
@@ -224,7 +225,43 @@ def stamp(nb: nbformat.NotebookNode) -> dict[str, str]:
 
 def build_all() -> dict[str, nbformat.NotebookNode]:
     """Every chapter, by notebook name."""
-    return {name: build(chapter) for chapter, (_, name) in CHAPTERS.items()}
+    notebooks = {name: build(chapter) for chapter, (_, name) in CHAPTERS.items()}
+    notebooks["chapter_01b.ipynb"] = build_reader()
+    return notebooks
+
+
+def build_reader() -> nbformat.NotebookNode:
+    """A comparison view of Chapter 1, generated from the same source rather than a prose fork."""
+    nb = build(1)
+    words = json.loads((HERE / "reader.json").read_text(encoding="utf-8"))
+    examples = iter([
+        ("products", "The product catalogue"),
+        ("customers", "The customers"),
+        ("orders", "The orders"),
+        ("clean_customers", "clean_customers"),
+        ("clean_orders", "clean_orders"),
+        ("daily_sales", "daily_sales"),
+    ])
+    for cell in nb.cells:
+        cell.metadata["deletable"] = False
+        if cell.cell_type == "markdown":
+            cell.metadata["editable"] = False
+            cell.source = cell.source.replace("# Chapter 1:", "# Chapter 1b:")
+            if "ms-box-warning" in cell.source:
+                cell.source = box("ms-box-warning", words["warning"])
+            elif "ms-box-steps" in cell.source:
+                cell.source = box("ms-box-steps", words["instructions"])
+            cell.source = cell.source.replace(" or press **Save**", "")
+        elif cell.metadata.get("ms", {}).get("setup"):
+            cell.metadata["editable"] = False
+        else:
+            identifier, title = next(examples)
+            cell.metadata["ms"] = {"example": {"id": identifier, "title": title, "source": cell.source}}
+    if next(examples, None) is not None:
+        raise ValueError("Chapter 1 reader examples no longer match the chapter")
+    nb.cells[0].source += "\n\n" + words["comparison"]
+    nb.metadata["ms"] = {**stamp(nb), "reader": True}
+    return nb
 
 
 def check(nb: nbformat.NotebookNode) -> None:

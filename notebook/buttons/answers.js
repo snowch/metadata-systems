@@ -242,7 +242,7 @@ export function mountAnswers(root, kind, store) {
 export async function attachAnswers(app, panel, checked) {
   await panel.context.ready;
   await checked;
-  if (!/^chapter_0[12](?: \(your copy(?: \d+)?\))?\.ipynb$/.test(panel.context.path)) return;
+  if (!/^chapter_0(?:1b?|2)(?: \(your copy(?: \d+)?\))?\.ipynb$/.test(panel.context.path)) return;
   const store = answerStore();
   try {
     await recoverGuesses(app.serviceManager.contents, store);

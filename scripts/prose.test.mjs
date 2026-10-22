@@ -16,7 +16,12 @@ import { tmpdir } from "node:os";
 const PROSE = new URL("./prose.mjs", import.meta.url).pathname;
 
 /** Every file the check scans; a temp repository must have them all. */
-const ALL_FILES = ["apps/course/src/strings.ts", "notebook/buttons/answer-words.js"];
+const ALL_FILES = [
+  "apps/course/src/strings.ts",
+  "notebook/buttons/answer-words.js",
+  "notebook/buttons/reader-words.json",
+  "notebook/jupyterlite/reader.json",
+];
 
 /** Runs the check in a temp copy of the repository layout, with the given file contents. */
 function runCheck(files) {

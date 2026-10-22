@@ -110,7 +110,12 @@ const PROHIBITED = [
  * tests and docs, which quote and teach the standard, and quote bad phrasing on purpose; and code
  * identifiers.
  */
-const FILES = ["apps/course/src/strings.ts", "notebook/buttons/answer-words.js"];
+const FILES = [
+  "apps/course/src/strings.ts",
+  "notebook/buttons/answer-words.js",
+  "notebook/buttons/reader-words.json",
+  "notebook/jupyterlite/reader.json",
+];
 
 /** Every string literal in a TypeScript source file, one per line of the file it came from. */
 function* stringsOf(source) {
