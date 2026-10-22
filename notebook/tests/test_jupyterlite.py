@@ -56,7 +56,7 @@ class TheButtons(unittest.TestCase):
 
     def test_the_notice_has_its_words_and_keeps_the_rules(self):
         words = json.loads((BUTTONS / "status.json").read_text(encoding="utf-8"))
-        self.assertEqual(set(words), {"loading", "preparing", "slow", "stalled", "failed", "retry", "runFailed", "ready", "waiting", "running", "done", "updated", "kept", "downloadingRuntime", "runtimeDownloaded"})
+        self.assertEqual(set(words), {"loading", "preparing", "slow", "stalled", "failed", "retry", "runFailed", "ready", "waiting", "running", "done", "updated", "kept", "downloadingRuntime", "runtimeDownloaded", "elapsed"})
         self.assertIn("{done}", words["running"])
         self.assertIn("{total}", words["running"])
         self.assertEqual(words["kept"].count("{copy}"), 1)

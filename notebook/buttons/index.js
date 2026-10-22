@@ -349,7 +349,12 @@ function startup(app, panel, state) {
   retry.className = "ms-Startup-retry";
   retry.textContent = words.retry;
   retry.hidden = true;
-  body.append(status, retry);
+  const elapsedTimer = document.createElement("div");
+  elapsedTimer.className = "ms-Startup-detail";
+  elapsedTimer.setAttribute("role", "timer");
+  elapsedTimer.setAttribute("aria-live", "off");
+  elapsedTimer.hidden = true;
+  body.append(status, elapsedTimer, retry);
   widget.node.append(body);
   panel.contentHeader.addWidget(widget);
   // Lumino lays out the header using each widget's explicit limits. Observe the content so
@@ -364,25 +369,30 @@ function startup(app, panel, state) {
   size.observe(body);
   const controller = createStartup({
     start: (attempt) => warmUp(app, panel, state, attempt),
-    render({ phase, slow, stalled, download }) {
+    render({ phase, slow, stalled, download, elapsed }) {
       if (panel.isDisposed) return;
       state.ready = phase === "ready" || phase === "hidden";
       widget.setHidden(phase === "hidden");
       widget.node.dataset.phase = phase;
       widget.node.classList.toggle("ms-Startup-busy", phase === "loading" || phase === "preparing");
-      message.textContent =
+      const text =
         phase === "loading" && download
           ? download.percent === 100
             ? words.runtimeDownloaded
             : words.downloadingRuntime.replace("{percent}", download.percent)
           : words[phase] || "";
-      progress.hidden = phase !== "loading" || !download;
+      if (message.textContent !== text) message.textContent = text;
+      elapsedTimer.hidden = elapsed === undefined || (phase !== "loading" && phase !== "preparing");
+      elapsedTimer.textContent = elapsedTimer.hidden
+        ? ""
+        : words.elapsed.replace("{seconds}", elapsed);
+      progress.hidden = phase !== "loading" || !download || download.percent === 100;
       if (download) {
         progress.value = download.percent;
         progress.setAttribute("aria-label", message.textContent);
         widget.node.dataset.percent = String(download.percent);
       } else delete widget.node.dataset.percent;
-      detail.textContent =
+      const detailText =
         phase === "loading" || phase === "preparing"
           ? stalled
             ? words.stalled
@@ -390,6 +400,7 @@ function startup(app, panel, state) {
               ? words.slow
               : ""
           : "";
+      if (detail.textContent !== detailText) detail.textContent = detailText;
       detail.hidden = !detail.textContent;
       retry.hidden =
         phase !== "failed" && !((phase === "loading" || phase === "preparing") && stalled);

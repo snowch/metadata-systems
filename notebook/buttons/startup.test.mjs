@@ -20,8 +20,10 @@ function fixture(start) {
   const frames = [];
   const timers = new Map();
   let next = 0;
+  let clock = 0;
   const controller = createStartup({
     start,
+    now: () => clock,
     render: (state) => frames.push(state),
     setTimer: (fn, delay) => {
       const id = ++next;
@@ -32,6 +34,9 @@ function fixture(start) {
   });
   return {
     controller,
+    advance(ms) {
+      clock += ms;
+    },
     frames,
     timers,
     fire(delay) {
@@ -150,4 +155,41 @@ test("runtime percentages measure download only and ignore replaced attempts", a
   await tick();
   assert.equal(f.frames.at(-1).phase, "ready");
   f.controller.dispose();
+});
+
+test("elapsed time measures each startup stage and stops on completion", async () => {
+  const work = deferred();
+  let attempt;
+  const f = fixture((value) => {
+    attempt = value;
+    return work.promise;
+  });
+  const ready = f.controller.begin();
+  await tick();
+  f.advance(5000);
+  f.fire(1000);
+  assert.equal(f.frames.at(-1).elapsed, undefined);
+  f.controller.download({
+    id: "runtime",
+    started: Date.now(),
+    loaded: 100,
+    total: 100,
+    complete: true,
+  });
+  assert.equal(f.frames.at(-1).elapsed, 0);
+  f.advance(2400);
+  f.fire(1000);
+  assert.equal(f.frames.at(-1).elapsed, 2);
+  attempt.preparing();
+  assert.equal(f.frames.at(-1).elapsed, 0);
+  f.advance(1000);
+  f.fire(1000);
+  assert.equal(f.frames.at(-1).elapsed, 1);
+  work.resolve();
+  assert.equal(await ready, true);
+  const count = f.frames.length;
+  f.fire(1000);
+  assert.equal(f.frames.length, count);
+  f.controller.dispose();
+  assert.equal(f.timers.size, 0);
 });

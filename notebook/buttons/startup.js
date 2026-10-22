@@ -3,10 +3,19 @@
 // Track startup independently of cell execution and chapter-update notices. A timeout offers
 // retry without pretending a slow download has failed. Superseded attempts cannot update the UI
 // or keep a queued Run all waiting. Runtime download bytes arrive from the course service worker.
-export function createStartup({ start, render, setTimer = setTimeout, clearTimer = clearTimeout }) {
+export function createStartup({
+  start,
+  render,
+  setTimer = setTimeout,
+  clearTimer = clearTimeout,
+  now = () => performance.now(),
+}) {
   let attempt;
   let disposed = false;
-  const clear = () => attempt?.timers.forEach(clearTimer);
+  const clear = () => {
+    attempt?.timers.forEach(clearTimer);
+    if (attempt?.clock !== undefined) clearTimer(attempt.clock);
+  };
   return {
     begin(retry = false) {
       if (disposed) return Promise.resolve(false);
@@ -29,9 +38,22 @@ export function createStartup({ start, render, setTimer = setTimeout, clearTimer
           phase: current.phase,
           slow: current.slow,
           stalled: current.stalled,
+          elapsed:
+            current.stageSince === undefined
+              ? undefined
+              : Math.floor((now() - current.stageSince) / 1000),
           download: current.download,
         });
       current.show = show;
+      current.stage = () => {
+        current.stageSince = now();
+      };
+      const updateClock = () => {
+        if (!active()) return;
+        if (current.stageSince !== undefined) show();
+        current.clock = setTimer(updateClock, 1000);
+      };
+      current.clock = setTimer(updateClock, 1000);
       show();
       for (const [delay, flag] of [
         [10_000, "slow"],
@@ -54,6 +76,7 @@ export function createStartup({ start, render, setTimer = setTimeout, clearTimer
             preparing() {
               if (!active()) return;
               current.phase = "preparing";
+              current.stage();
               show();
             },
           }),
@@ -100,6 +123,7 @@ export function createStartup({ start, render, setTimer = setTimeout, clearTimer
       );
       if (current.download && percent <= current.download.percent) return;
       current.download = { percent };
+      if (percent === 100) current.stage();
       current.show();
     },
     ready() {

@@ -79,6 +79,12 @@ try {
     `ok download: actual streamed bytes show ${percent}% while Python remains unavailable`,
   );
   release();
+  const timer = banner.getByRole("timer");
+  await timer.waitFor({ state: "visible", timeout: 120000 });
+  assert.match(await timer.innerText(), /\d+ seconds elapsed/);
+  assert.equal(await timer.getAttribute("aria-live"), "off");
+  assert(await banner.locator("progress").isHidden());
+  await banner.screenshot({ path: "/tmp/metadata-python-starting-timer.png" });
   await page
     .getByText("All examples finished successfully.", { exact: true })
     .waitFor({ timeout: 120000 });

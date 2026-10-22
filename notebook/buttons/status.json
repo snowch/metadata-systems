@@ -13,5 +13,6 @@
   "retry": "Retry",
   "runFailed": "Could not finish running the cells. Try running them again.",
   "downloadingRuntime": "Downloading Python's main runtime file: {percent}%.",
-  "runtimeDownloaded": "Runtime file downloaded. Starting Python."
+  "runtimeDownloaded": "Runtime file downloaded. Starting Python.",
+  "elapsed": "{seconds} seconds elapsed"
 }
