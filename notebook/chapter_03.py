@@ -219,7 +219,9 @@ def _(warehouse):
     ) AS m USING (day)
     ORDER BY d.day
     """
-    warehouse.sql(by_jos_meaning, files={"raw_orders": "s3://shop-raw/orders.jsonl"})
+    warehouse.sql(
+        by_jos_meaning, files={"raw_orders": "s3://shop-raw/orders.jsonl"}
+    )
     return (by_jos_meaning,)
 
 
@@ -445,7 +447,8 @@ def _(shop, warehouse):
     FROM information_schema.columns
     """)
     by_name = shop.records("\n".join(
-        f"{c['table_name']} {c['column_name']} means: {c['column_name'].replace('_', ' ')}"
+        f"{c['table_name']} {c['column_name']} means: "
+        f"{c['column_name'].replace('_', ' ')}"
         for c in columns
     ))
     by_name.check(warehouse)
@@ -529,7 +532,9 @@ def _(mo):
 
 @app.cell
 def _(by_jos_meaning, refunds_week):
-    refunds_week.warehouse.sql(by_jos_meaning, files={"raw_orders": "s3://shop-raw/orders.jsonl"})
+    refunds_week.warehouse.sql(
+        by_jos_meaning, files={"raw_orders": "s3://shop-raw/orders.jsonl"}
+    )
     return
 
 

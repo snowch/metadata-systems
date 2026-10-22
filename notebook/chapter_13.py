@@ -330,7 +330,9 @@ def _(mo):
 @app.cell
 def _(shop):
     week13d = shop.run_week(["returns"])
-    print("last change to shop-returns:", shop.observe.source_changed(week13d))
+    print(
+        "last change to shop-returns:", shop.observe.source_changed(week13d)
+    )
     shop.observe.freshness(week13d)
     return
 

@@ -94,10 +94,19 @@ def _(mo):
 def _(shop):
     week19 = shop.run_week(["returns"])
     once = shop.delivery.send(week19)
-    twice = shop.delivery.send(week19, lose_ack=["build_daily_sales COMPLETE 2026-09-10"], at_least_once=True)
-    graph = lambda d: shop.ingest.edges(shop.ingest.objects(shop.ingest.normalise(d.events)))
+    twice = shop.delivery.send(
+        week19,
+        lose_ack=["build_daily_sales COMPLETE 2026-09-10"],
+        at_least_once=True,
+    )
+    graph = lambda d: shop.ingest.edges(
+        shop.ingest.objects(shop.ingest.normalise(d.events))
+    )
     print(len(twice.events), "events received")
-    print("The same graph as with each event received once:", graph(twice).by_job == graph(once).by_job)
+    print(
+        "The same graph as with each event received once:",
+        graph(twice).by_job == graph(once).by_job,
+    )
     graph(twice).of("shop/build_daily_sales")
     return (week19,)
 
@@ -128,8 +137,15 @@ def _(mo):
 
 @app.cell
 def _(shop, week19):
-    retimed = shop.delivery.send(week19, lose_ack=["build_daily_sales COMPLETE 2026-09-10"], at_least_once=True, restamp=True)
-    shop.ingest.objects(shop.ingest.normalise(retimed.events)).runs_of(job="shop/build_daily_sales", columns=["started", "ended"])
+    retimed = shop.delivery.send(
+        week19,
+        lose_ack=["build_daily_sales COMPLETE 2026-09-10"],
+        at_least_once=True,
+        restamp=True,
+    )
+    shop.ingest.objects(shop.ingest.normalise(retimed.events)).runs_of(
+        job="shop/build_daily_sales", columns=["started", "ended"]
+    )
     return (retimed,)
 
 
@@ -168,7 +184,9 @@ def _(mo):
 
 @app.cell
 def _(deduped, shop):
-    shop.ingest.objects(shop.ingest.normalise(deduped)).runs_of(job="shop/build_daily_sales", columns=["started", "ended"])
+    shop.ingest.objects(shop.ingest.normalise(deduped)).runs_of(
+        job="shop/build_daily_sales", columns=["started", "ended"]
+    )
     return
 
 
@@ -253,7 +271,12 @@ def _(mo):
 
 @app.cell
 def _(events_t, shop, week19):
-    shop.ingest.edges_side_by_side("shop/record_return", label="notice", once=shop.delivery.week_events(week19), twice=events_t)
+    shop.ingest.edges_side_by_side(
+        "shop/record_return",
+        label="notice",
+        once=shop.delivery.week_events(week19),
+        twice=events_t,
+    )
     return
 
 

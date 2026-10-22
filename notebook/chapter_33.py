@@ -226,7 +226,11 @@ def _(inputs, platform, shop):
 
 @app.cell
 def _(inputs, platform, shop):
-    print(shop.openlineage.show(shop.ferry.one_event(platform, inputs, "deleted")))
+    print(
+        shop.openlineage.show(
+            shop.ferry.one_event(platform, inputs, "deleted")
+        )
+    )
     return
 
 

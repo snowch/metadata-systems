@@ -116,8 +116,12 @@ def _(mo):
 
 @app.cell
 def _(shop, week18):
-    lost = shop.delivery.send(week18, lose=["build_daily_sales COMPLETE 2026-09-10"])
-    found = shop.ingest.edges(shop.ingest.objects(shop.ingest.normalise(lost.events)))
+    lost = shop.delivery.send(
+        week18, lose=["build_daily_sales COMPLETE 2026-09-10"]
+    )
+    found = shop.ingest.edges(
+        shop.ingest.objects(shop.ingest.normalise(lost.events))
+    )
     found.of("shop/build_daily_sales")
     return (lost,)
 
@@ -164,7 +168,9 @@ def _(mo):
 
 @app.cell
 def _(week18):
-    week18.warehouse.sql("SELECT * FROM daily_sales WHERE day = '2026-09-09'")
+    week18.warehouse.sql(
+        "SELECT * FROM daily_sales WHERE day = '2026-09-09'"
+    )
     return
 
 
@@ -189,7 +195,9 @@ def _(mo):
 @app.cell
 def _(shop, week18):
     lost_once = shop.delivery.send(week18, lose=["remove_return COMPLETE"])
-    found_once = shop.ingest.edges(shop.ingest.objects(shop.ingest.normalise(lost_once.events)))
+    found_once = shop.ingest.edges(
+        shop.ingest.objects(shop.ingest.normalise(lost_once.events))
+    )
     found_once.of("shop/remove_return")
     return (lost_once,)
 
@@ -232,7 +240,9 @@ def _(mo):
 
 @app.cell
 def _(shop, week18):
-    again = shop.delivery.send(week18, lose=["remove_return COMPLETE"], at_least_once=True)
+    again = shop.delivery.send(
+        week18, lose=["remove_return COMPLETE"], at_least_once=True
+    )
     again.retried()
     return
 

@@ -116,7 +116,13 @@ def _(mo):
 @app.cell
 def _(lines, shop):
     damaged = list(lines)
-    k = next(i for i, line in enumerate(damaged) if '"build_daily_sales"' in line and '"COMPLETE"' in line and "2026-09-09" in line)
+    k = next(
+        i
+        for i, line in enumerate(damaged)
+        if '"build_daily_sales"' in line
+        and '"COMPLETE"' in line
+        and "2026-09-09" in line
+    )
     damaged[k] = damaged[k][:150]
     parsed = shop.ingest.parse(damaged)
     parsed.refused
@@ -215,7 +221,10 @@ def _(mo):
 
 @app.cell
 def _(objs):
-    objs.runs_of(state="START", columns=["job", "state", "started", "ended", "reads", "writes"])
+    objs.runs_of(
+        state="START",
+        columns=["job", "state", "started", "ended", "reads", "writes"],
+    )
     return
 
 
@@ -247,7 +256,15 @@ def _(objs):
 
 @app.cell
 def _(objs):
-    objs.runs_of("shop/record_return", columns=["started", "reads", "shop_objectChange.change", "shop_objectChange.version"])
+    objs.runs_of(
+        "shop/record_return",
+        columns=[
+            "started",
+            "reads",
+            "shop_objectChange.change",
+            "shop_objectChange.version",
+        ],
+    )
     return
 
 
@@ -331,7 +348,19 @@ def _(mo):
 
 @app.cell
 def _(found):
-    found.graph().drawing(label="orders.jsonl goes through build_clean_orders to shop.analytics.clean_orders, which copy_clean_orders reads to write clean_orders_copy.csv, and which build_daily_sales reads as well as the copy, to write shop.analytics.daily_sales, which refresh_dashboard reads to write sales_dashboard. Four return files are read by record_return, which with remove_return writes shop.analytics.returns; customers.jsonl goes through build_clean_customers to shop.analytics.clean_customers.")
+    found.graph().drawing(
+        label=(
+            "orders.jsonl goes through build_clean_orders to "
+            "shop.analytics.clean_orders, which copy_clean_orders reads to "
+            "write clean_orders_copy.csv, and which build_daily_sales "
+            "reads as well as the copy, to write "
+            "shop.analytics.daily_sales, which refresh_dashboard reads to "
+            "write sales_dashboard. Four return files are read by "
+            "record_return, which with remove_return writes "
+            "shop.analytics.returns; customers.jsonl goes through "
+            "build_clean_customers to shop.analytics.clean_customers."
+        )
+    )
     return
 
 

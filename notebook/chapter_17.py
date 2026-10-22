@@ -205,7 +205,9 @@ def _(mo):
 
 @app.cell
 def _(shop, week17r):
-    print(shop.cause.code_change(week17r, "build_daily_sales", "2026-09-13"))
+    print(
+        shop.cause.code_change(week17r, "build_daily_sales", "2026-09-13")
+    )
     return
 
 

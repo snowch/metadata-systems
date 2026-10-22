@@ -104,7 +104,9 @@ def _(mo):
 def _(shop):
     week12 = shop.run_week(["returns", "dev", "view"])
     parsed = shop.ingest.parse(shop.ingest.event_lines(week12))
-    found = shop.ingest.edges(shop.ingest.objects(shop.ingest.normalise(parsed)))
+    found = shop.ingest.edges(
+        shop.ingest.objects(shop.ingest.normalise(parsed))
+    )
     found.of("analytics.daily_sales")
     return parsed, week12
 
@@ -163,14 +165,20 @@ def _(mo):
 
 @app.cell
 def _(shop, week12):
-    v1, v2 = [v["version"] for v in week12.storage.versions("s3://shop-returns/r-202.json")]
+    v1, v2 = [
+        v["version"]
+        for v in week12.storage.versions("s3://shop-returns/r-202.json")
+    ]
     pairs = [
         ("shop.analytics.daily_sales", "SHOP.ANALYTICS.DAILY_SALES"),
         ("daily_sales", "shop.analytics.daily_sales"),
         ("shop.analytics.daily_sales", "shop_dev.analytics.daily_sales"),
         ("shop.analytics.daily_sales", "shop.analytics.sales_by_day"),
         ("s3://shop-raw/orders.jsonl", "s3://shop-raw/Orders.jsonl"),
-        (f"s3://shop-returns/r-202.json@{v1}", f"s3://shop-returns/r-202.json@{v2}"),
+        (
+            f"s3://shop-returns/r-202.json@{v1}",
+            f"s3://shop-returns/r-202.json@{v2}",
+        ),
     ]
     shop.identity.references(week12, pairs)
     return (pairs,)
@@ -290,7 +298,9 @@ def _(mo):
 def _(parsed, shop):
     databases = {}
     # databases[shop.openlineage.DEV_PRODUCER] = "shop_dev"
-    parted = shop.ingest.edges(shop.ingest.objects(shop.ingest.normalise(parsed, databases)))
+    parted = shop.ingest.edges(
+        shop.ingest.objects(shop.ingest.normalise(parsed, databases))
+    )
     parted.of("analytics.daily_sales")
     return
 

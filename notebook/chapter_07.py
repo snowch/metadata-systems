@@ -264,7 +264,15 @@ def _(mo):
 @app.cell
 def _(shop):
     returns_week = shop.run_week(["returns"])
-    design_for_returns = ["job", "type", "time", "rows_read", "rows_written", "object", "object_change"]
+    design_for_returns = [
+        "job",
+        "type",
+        "time",
+        "rows_read",
+        "rows_written",
+        "object",
+        "object_change",
+    ]
     returns_events = shop.events(returns_week, design_for_returns)
     shop.runs(returns_events.where(job="record_return"), by=["job", "day"])
     return (design_for_returns, returns_week,)
@@ -293,7 +301,9 @@ def _(mo):
 @app.cell
 def _(design_for_returns, returns_week, shop):
     with_run = design_for_returns + ["run", "object_version"]
-    returns_runs = shop.runs(shop.events(returns_week, with_run), by=["run"])
+    returns_runs = shop.runs(
+        shop.events(returns_week, with_run), by=["run"]
+    )
     returns_runs.where(job=["record_return", "remove_return"])
     return (with_run,)
 
@@ -328,7 +338,9 @@ def _(mo):
 def _(shop):
     changed = shop.run_week(["returns", "source"])
     with_reads = ["run", "job", "type", "time", "reads", "code_version"]
-    shop.runs(shop.events(changed, with_reads), by=["run"]).where(job=["build_daily_sales", "remove_return"])
+    shop.runs(shop.events(changed, with_reads), by=["run"]).where(
+        job=["build_daily_sales", "remove_return"]
+    )
     return
 
 
@@ -360,7 +372,11 @@ def _(mo):
 
 @app.cell
 def _(shop, week):
-    lineage = shop.lineage(shop.runs(shop.events(week, ["run", "job", "type", "reads", "writes"])))
+    lineage = shop.lineage(
+        shop.runs(
+            shop.events(week, ["run", "job", "type", "reads", "writes"])
+        )
+    )
     lineage.upstream("sales_dashboard")
     return
 

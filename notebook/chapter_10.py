@@ -117,7 +117,11 @@ def _(mo):
 @app.cell
 def _(shop):
     week10 = shop.run_week()
-    code = [p["code"] for p in shop.columns.programs(week10) if p["job"] == "build_daily_sales"][0]
+    code = [
+        p["code"]
+        for p in shop.columns.programs(week10)
+        if p["job"] == "build_daily_sales"
+    ][0]
     print(code)
     return code, week10
 
@@ -188,13 +192,21 @@ def _(mo):
 
 @app.cell
 def _(shop, week10):
-    print([p["code"] for p in shop.columns.programs(week10) if p["job"] == "build_clean_orders"][0])
+    print(
+        [
+            p["code"]
+            for p in shop.columns.programs(week10)
+            if p["job"] == "build_clean_orders"
+        ][0]
+    )
     return
 
 
 @app.cell
 def _(shop, week10):
-    shop.columns.upstream(week10, "daily_sales", "revenue_pence", week10.warehouse)
+    shop.columns.upstream(
+        week10, "daily_sales", "revenue_pence", week10.warehouse
+    )
     return
 
 
@@ -259,7 +271,9 @@ def _(mo):
 
 @app.cell
 def _(shop, week10s):
-    shop.columns.upstream(week10s, "daily_sales", "revenue_pence", week10s.warehouse)
+    shop.columns.upstream(
+        week10s, "daily_sales", "revenue_pence", week10s.warehouse
+    )
     return
 
 
@@ -294,7 +308,13 @@ def _(mo):
 @app.cell
 def _(shop):
     week10n = shop.run_week(["net"])
-    print([p["code"] for p in shop.columns.programs(week10n) if p["job"] == "build_daily_sales"][0])
+    print(
+        [
+            p["code"]
+            for p in shop.columns.programs(week10n)
+            if p["job"] == "build_daily_sales"
+        ][0]
+    )
     return (week10n,)
 
 
@@ -327,7 +347,9 @@ def _(mo):
 
 @app.cell
 def _(shop, week10n):
-    shop.columns.upstream(week10n, "daily_sales", "revenue_pence", week10n.warehouse)
+    shop.columns.upstream(
+        week10n, "daily_sales", "revenue_pence", week10n.warehouse
+    )
     return
 
 

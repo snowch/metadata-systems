@@ -216,8 +216,17 @@ def _(mo):
 
 @app.cell
 def _(model, records, shop):
-    lineage = shop.graph(records, model).only(["reads", "writes"], ["dataset", "dashboard", "job"])
-    lineage.drawing(label="The drawing shows a chain from orders.jsonl through three jobs to sales_dashboard, a chain from customers.jsonl through one job to clean_customers, and products.csv with no arrow to a job.")
+    lineage = shop.graph(records, model).only(
+        ["reads", "writes"], ["dataset", "dashboard", "job"]
+    )
+    lineage.drawing(
+        label=(
+            "The drawing shows a chain from orders.jsonl through three "
+            "jobs to sales_dashboard, a chain from customers.jsonl through "
+            "one job to clean_customers, and products.csv with no arrow to "
+            "a job."
+        )
+    )
     return (lineage,)
 
 

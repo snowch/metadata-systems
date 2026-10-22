@@ -654,7 +654,11 @@ def _(mo):
 
 @app.cell
 def _(storage):
-    sum(1 for o in storage.records("s3://shop-raw/orders.jsonl") if o["quantity"] <= 0)
+    sum(
+        1
+        for o in storage.records("s3://shop-raw/orders.jsonl")
+        if o["quantity"] <= 0
+    )
     return
 
 

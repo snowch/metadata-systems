@@ -206,7 +206,14 @@ def _(mo):
 
 @app.cell
 def _(graph):
-    graph.drawing(label="The drawing has 3 parts: daily_sales, its 2 columns and sales_dashboard, joined through j.marsh and finance; clean_customers and clean_orders, joined through data_engineering; and products.csv, s.lund and catalogue.")
+    graph.drawing(
+        label=(
+            "The drawing has 3 parts: daily_sales, its 2 columns and "
+            "sales_dashboard, joined through j.marsh and finance; "
+            "clean_customers and clean_orders, joined through "
+            "data_engineering; and products.csv, s.lund and catalogue."
+        )
+    )
     return
 
 

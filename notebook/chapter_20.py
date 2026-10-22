@@ -95,7 +95,9 @@ def _(mo):
 @app.cell
 def _(shop):
     week20 = shop.run_week(["returns"])
-    late = shop.delivery.send(week20, delay={"build_daily_sales COMPLETE 2026-09-09": 26 * 3600})
+    late = shop.delivery.send(
+        week20, delay={"build_daily_sales COMPLETE 2026-09-09": 26 * 3600}
+    )
     seen = shop.ingest.normalise(late.until("2026-09-10T09:00:00Z"))
     shop.ingest.objects(seen, order="event").last_write("daily_sales")
     return late, week20
@@ -171,8 +173,14 @@ def _(mo):
 
 @app.cell
 def _(shop, week20):
-    early = shop.delivery.send(week20, delay={"build_daily_sales START 2026-09-09": 60})
-    shop.ingest.objects(shop.ingest.normalise(early.events), order="arrival").runs_of(job="shop/build_daily_sales", columns=["started", "ended", "state"])
+    early = shop.delivery.send(
+        week20, delay={"build_daily_sales START 2026-09-09": 60}
+    )
+    shop.ingest.objects(
+        shop.ingest.normalise(early.events), order="arrival"
+    ).runs_of(
+        job="shop/build_daily_sales", columns=["started", "ended", "state"]
+    )
     return
 
 
@@ -201,7 +209,13 @@ def _(mo):
 @app.cell
 def _(shop):
     week20w = shop.run_week(["returns", "withdrawn"])
-    held = shop.delivery.send(week20w, delay={"record_return START 2026-09-13": 12 * 3600, "record_return COMPLETE 2026-09-13": 12 * 3600})
+    held = shop.delivery.send(
+        week20w,
+        delay={
+            "record_return START 2026-09-13": 12 * 3600,
+            "record_return COMPLETE 2026-09-13": 12 * 3600,
+        },
+    )
     shop.delivery.object_states(held.events, "arrival")
     return
 

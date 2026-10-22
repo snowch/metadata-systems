@@ -273,7 +273,11 @@ def _(mo):
 
 @app.cell
 def _(shop, week24):
-    shop.store.compare(week24, "warehouse://shop-warehouse/shop.analytics.clean_orders", "shop/build_daily_sales")
+    shop.store.compare(
+        week24,
+        "warehouse://shop-warehouse/shop.analytics.clean_orders",
+        "shop/build_daily_sales",
+    )
     return
 
 

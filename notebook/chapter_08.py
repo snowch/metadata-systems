@@ -115,9 +115,21 @@ def _(mo):
 def _(shop):
     week8 = shop.run_week(["returns", "failed"])
     events = shop.openlineage.run_events(week8)
-    friday = [e for e in events if e["job"]["name"] == "build_clean_orders" and e["eventTime"].startswith("2026-09-11")]
+    friday = [
+        e
+        for e in events
+        if e["job"]["name"] == "build_clean_orders"
+        and e["eventTime"].startswith("2026-09-11")
+    ]
     print(shop.openlineage.show(friday[0]))
-    print(shop.openlineage.show({k: friday[1][k] for k in ("eventType", "eventTime", "inputs", "outputs")}))
+    print(
+        shop.openlineage.show(
+            {
+                k: friday[1][k]
+                for k in ("eventType", "eventTime", "inputs", "outputs")
+            }
+        )
+    )
     return (events, friday,)
 
 
@@ -270,9 +282,16 @@ def _(shop):
     start = {
         "eventType": "START",
         "eventTime": "2026-09-11T02:15:00Z",
-        "run": {"runId": shop.openlineage.uuid7("2026-09-11T02:15:00Z", "copy")},
+        "run": {
+            "runId": shop.openlineage.uuid7("2026-09-11T02:15:00Z", "copy")
+        },
         "job": {"namespace": "analyst", "name": "copy_clean_orders"},
-        "inputs": [{"namespace": "warehouse://shop-warehouse", "name": "analytics.clean_orders"}],
+        "inputs": [
+            {
+                "namespace": "warehouse://shop-warehouse",
+                "name": "analytics.clean_orders",
+            }
+        ],
         "outputs": [],
         "producer": "https://example.org/analyst/copy-script/v1",
         "schemaURL": shop.openlineage.SCHEMA_URL,
@@ -281,7 +300,12 @@ def _(shop):
         **start,
         "eventType": "COMPLETE",
         "eventTime": "2026-09-11T02:15:17Z",
-        "outputs": [{"namespace": "s3://shop-scratch", "name": "clean_orders_copy.csv"}],
+        "outputs": [
+            {
+                "namespace": "s3://shop-scratch",
+                "name": "clean_orders_copy.csv",
+            }
+        ],
     }
     shop.openlineage.check(start)
     return (complete, start,)
@@ -360,7 +384,12 @@ def _(shop, start):
 @app.cell
 def _(broken, shop):
     refusing = shop.openlineage.Consumer().send(broken)
-    print(len(refusing.refused), "event set aside;", len(refusing.runs()), "runs")
+    print(
+        len(refusing.refused),
+        "event set aside;",
+        len(refusing.runs()),
+        "runs",
+    )
     return
 
 @app.cell(hide_code=True)

@@ -191,7 +191,9 @@ def _(mo):
 def _(shop, week23):
     events23 = shop.delivery.week_events(week23)
     kept = shop.scale.retain(events23, 3, "2026-09-14T09:00:00Z")
-    found23 = shop.ingest.edges(shop.ingest.objects(shop.ingest.normalise(kept)))
+    found23 = shop.ingest.edges(
+        shop.ingest.objects(shop.ingest.normalise(kept))
+    )
     print(len(events23), "events,", len(kept), "kept")
     shop.scale.lineage_of(found23.by_run, "r-201.json")
     return (events23,)

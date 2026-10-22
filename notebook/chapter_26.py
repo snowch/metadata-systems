@@ -110,7 +110,14 @@ def _(mo):
 def _(shop):
     def add(edges, event):
         for key in shop.lineage_graph.edges_of(event):
-            edge = edges.setdefault(key, {"runs": set(), "first": event["eventTime"], "last": event["eventTime"]})
+            edge = edges.setdefault(
+                key,
+                {
+                    "runs": set(),
+                    "first": event["eventTime"],
+                    "last": event["eventTime"],
+                },
+            )
             edge["runs"].add(event["run"]["runId"])
             edge["last"] = event["eventTime"]
     return (add,)
