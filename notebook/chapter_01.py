@@ -180,9 +180,13 @@ def _(mo):
     mo.md(r"""
     ## The warehouse
 
-    The warehouse holds three tables: `clean_customers`, `clean_orders` and `daily_sales`. You read a table by writing SQL in `warehouse.sql`. `daily_sales` has one row per day: the day and that day's reported revenue in pence (`revenue_pence`).
+    The warehouse holds three tables: `clean_customers`, `clean_orders` and `daily_sales`. Use `warehouse.sql` to query them with SQL.
 
-    The cell below reads every row of `clean_customers`.
+    ### `clean_customers`
+
+    The columns are `customer_id`, `name`, `email`, `country` and `signed_up`.
+
+    The query below reads every row of `clean_customers`.
     """)
     return
 
@@ -196,7 +200,15 @@ def _(warehouse):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The cell below reads the first 7 rows of `clean_orders`, and you can change `LIMIT 7` to read more.
+    ### `clean_orders`
+
+    This table has seven columns:
+
+    - **Order, customer and product:** `order_id`, `customer_id` and `product_id`.
+    - **Quantity and price:** `quantity` and `price_pence`.
+    - **Status and time:** `status` and `ordered_at`.
+
+    The query below reads the first 7 rows of `clean_orders`. Change `LIMIT 7` to read more.
     """)
     return
 
@@ -210,7 +222,14 @@ def _(warehouse):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The cell below reads every row of `daily_sales`.
+    ### `daily_sales`
+
+    This table has one row per day:
+
+    - **Date:** `day`.
+    - **Reported revenue:** `revenue_pence`, in pence.
+
+    The query below reads every row of `daily_sales`.
     """)
     return
 

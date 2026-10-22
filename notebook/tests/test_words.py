@@ -187,7 +187,10 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.says("The warehouse holds three tables: `clean_customers`, `clean_orders` and `daily_sales`.", 1)
         days = [r["day"] for r in self.w.sql("SELECT day FROM daily_sales ORDER BY day")]
         self.assertEqual(days, list(shop.DAYS))
-        self.says("`daily_sales` has one row per day: the day and that day's reported revenue in pence (`revenue_pence`).", 1)
+        self.says("This table has one row per day:", 1)
+        self.says("- **Date:** `day`.", 1)
+        self.says("- **Reported revenue:** `revenue_pence`, in pence.", 1)
+        self.assertEqual(len(self.w.sql("SELECT * FROM clean_orders")[0]), 7)
         self.assertIn('warehouse.sql("SELECT * FROM clean_orders LIMIT 7")', SOURCE[1])
         self.says("the first 7 rows of `clean_orders`", 1)
         d = self.week.reporting.dashboard()
