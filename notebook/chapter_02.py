@@ -142,15 +142,23 @@ def _(warehouse):
     # files= reads orders.jsonl from object storage as raw_orders.
     warehouse.sql(
         """
-        SELECT d.day, r.raw_orders_pence, d.revenue_pence,
-               CASE WHEN r.raw_orders_pence = d.revenue_pence THEN 'same' ELSE 'different' END AS compared
-        FROM daily_sales AS d
-        JOIN (
-            SELECT date(ordered_at) AS day, SUM(price_pence * quantity) AS raw_orders_pence
-            FROM raw_orders
-            GROUP BY day
-        ) AS r USING (day)
-        ORDER BY d.day
+    SELECT
+        d.day,
+        r.raw_orders_pence,
+        d.revenue_pence,
+        CASE
+            WHEN r.raw_orders_pence = d.revenue_pence THEN 'same'
+            ELSE 'different'
+        END AS compared
+    FROM daily_sales AS d
+    JOIN (
+        SELECT
+            date(ordered_at) AS day,
+            SUM(price_pence * quantity) AS raw_orders_pence
+        FROM raw_orders
+        GROUP BY day
+    ) AS r USING (day)
+    ORDER BY d.day
         """,
         files={"raw_orders": "s3://shop-raw/orders.jsonl"},
     )
