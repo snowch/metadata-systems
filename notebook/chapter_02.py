@@ -217,7 +217,7 @@ def _(mo):
     mo.md(r"""
     ## 2. What the platform records about its assets
 
-    Section 1 read the shop's data: the orders in `orders.jsonl`, and the rows of `clean_orders` and `daily_sales`. Besides that data, each system keeps records about the assets it holds: a record describes the file, the table or the dashboard, and is not an order or a day's revenue.
+    Comparing the rows has not identified which job produced `daily_sales` or what it read. Each system also keeps records about its files, tables or dashboards; inspect those for evidence about how the table was produced. The discrepancies on the other days still need explaining.
 
     The cells below read three of these records:
 
