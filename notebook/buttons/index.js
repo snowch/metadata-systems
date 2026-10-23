@@ -45,6 +45,7 @@ import { attachAnswers } from "./answers.js";
 import { createStartup } from "./startup.js";
 import { courseWorker } from "./service-worker.js";
 import { attachReader } from "./reader.js";
+import { releaseIndicator } from "./release.js";
 
 // How much of a cell must show for JupyterLab not to scroll to it, in pixels: its notebook's
 // scroll-down threshold, half a cell margin and one line.
@@ -773,6 +774,9 @@ const rowPlugin = {
       states.set(panel, state);
       const widget = row(app, panel, state);
       panel.contentHeader.addWidget(widget);
+      const release = releaseIndicator(new URL(PageConfig.getBaseUrl(), window.location.href));
+      panel.contentHeader.addWidget(new Widget({ node: release.node }));
+      panel.disposed.connect(() => release.dispose());
       state.surface = panel.context.ready
         .then(async () => {
           await state.checked;

@@ -797,3 +797,11 @@ not itself identify a responsible contact. Chapter 8 retains that distinction wi
 that the ownership facet cannot carry additional meaning: its optional `type` remains available.
 The unused prose labels from the earlier explanation are removed; Chapter 4's executable
 `one_owner`, `one_person` and `one_team` checks are unchanged.
+
+The published commit indicator is a course implementation (`notebook/buttons/release.js` and
+`notebook/jupyterlite/build.sh`). The HTML and network release record carry the same build-time
+Git commit. `notebook/jupyterlite/release-smoke.mjs` checks equal/different commits, failed
+checks and reconnection; `scripts/offline-smoke.mjs` checks that a downloaded course shows an
+unknown freshness state offline. The offline snapshot excludes the release record, and checks
+use the existing download-request bypass in `offline/worker.js`. These checks compare deployed
+files, not the latest commit on the main branch.

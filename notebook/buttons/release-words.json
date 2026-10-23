@@ -1,0 +1,6 @@
+{
+  "latest": "{commit} ✓ Latest deployed version",
+  "updateAvailable": "{commit} ✗ Update available",
+  "checking": "{commit} ? Checking deployed version",
+  "cannotCheck": "{commit} ? Cannot check deployed version"
+}

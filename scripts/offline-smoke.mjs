@@ -141,6 +141,9 @@ try {
   assert.match(await readerCode.innerText(), /My offline edit/);
   ok("Chapter 1 runs all examples offline and retains an unrun code edit across refresh");
   await chapter(page, 1);
+  await page.locator('.ms-Release[data-state="cannotCheck"]').waitFor();
+  assert.match(await page.locator(".ms-Release").innerText(), /\? Cannot check/);
+  ok("the offline reader shows its commit without claiming it is the latest deployment");
   assert.equal(
     await (await findAnswer(page, "ch01.daily_sales")).inputValue(),
     "My offline explanation",

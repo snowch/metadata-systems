@@ -20,7 +20,7 @@ async function walk(folder = "") {
     if (entry.isDirectory()) files.push(...(await walk(name)));
     else if (
       !name.endsWith(".map") &&
-      !["offline-manifest.json", "offline-worker.js"].includes(name)
+      !["offline-manifest.json", "offline-worker.js", "jupyterlite/release.json"].includes(name)
     ) {
       const bytes = await readFile(join(root, name));
       files.push({

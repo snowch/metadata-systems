@@ -67,3 +67,14 @@ in JupyterLite's IndexedDB, and closes the browser process. It changes the serve
 files, restarts the same browser profile, verifies that the new prose appears, and checks every
 answer, including Chapter 1 originals displayed read-only in Chapter 2. This passed in Chromium;
 it has not reproduced the reported loss and does not establish the cause on the reader's device.
+
+## Published commit indicator
+
+The reader header shows the first seven characters of the Git commit stamped into its HTML,
+linked to that commit on GitHub. A network-only comparison with `jupyterlite/release.json`
+shows a tick for the same deployed commit, a cross for a different deployed commit, and a
+question mark when the check fails. It checks on opening, each minute while visible, and when
+focus, visibility or connectivity returns. The comparison is with the deployed site, not the
+main branch while a deployment may still be building. It never reloads the reader or changes
+saved work. `release.json` is excluded from the offline snapshot and its request uses the
+existing offline-download cache bypass, so a saved release cannot certify itself as current.
