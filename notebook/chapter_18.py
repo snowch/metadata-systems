@@ -84,7 +84,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-10
 def _(shop):
     week18 = shop.run_week(["returns"])
     sent = shop.delivery.send(week18)
@@ -114,7 +114,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-13
 def _(shop, week18):
     lost = shop.delivery.send(
         week18, lose=["build_daily_sales COMPLETE 2026-09-10"]
@@ -146,7 +146,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-15
 def _(lost, shop):
     shop.delivery.open_runs(lost.events, "2026-09-14T09:00:00Z")
     return
@@ -166,7 +166,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-17
 def _(week18):
     week18.warehouse.sql(
         "SELECT * FROM daily_sales WHERE day = '2026-09-09'"
@@ -192,7 +192,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-19
 def _(shop, week18):
     lost_once = shop.delivery.send(week18, lose=["remove_return COMPLETE"])
     found_once = shop.ingest.edges(
@@ -216,7 +216,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-21
 def _(lost_once, shop):
     shop.delivery.open_runs(lost_once.events, "2026-09-14T09:00:00Z")
     return
@@ -238,7 +238,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-23
 def _(shop, week18):
     again = shop.delivery.send(
         week18, lose=["remove_return COMPLETE"], at_least_once=True

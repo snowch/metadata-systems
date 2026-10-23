@@ -82,7 +82,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-10
 def _(shop):
     shop.platforms.architectures()
     return
@@ -115,13 +115,13 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-13
 def _(shop):
     shop.platforms.owners_in()
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-14
 def _(shop):
     shop.platforms.kept()
     return
@@ -151,7 +151,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-16
 def _():
     types = {
         "account": "urn:li:ownershipType:__system__technical_owner",
@@ -161,19 +161,19 @@ def _():
     return (types,)
 
 
-@app.cell
+@app.cell  # reader-id: cell-17
 def _(shop, types):
     shop.platforms.check(types)
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-18
 def _(shop, types):
     shop.platforms.kept(types)
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-19
 def _(shop, types):
     shop.platforms.owners_in(types)
     return

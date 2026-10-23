@@ -117,7 +117,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: products
 def _(storage):
     print(storage.read_text("s3://shop-raw/products.csv"))
     return
@@ -135,7 +135,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: customers
 def _(storage):
     print(storage.read_text("s3://shop-raw/customers.jsonl"))
     return
@@ -153,7 +153,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: orders
 def _(storage):
     day = "2026-09-07"
     storage.sql(
@@ -184,7 +184,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: clean_customers
 def _(warehouse):
     warehouse.sql("SELECT * FROM clean_customers")
     return
@@ -206,7 +206,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: clean_orders
 def _(warehouse):
     warehouse.sql("SELECT * FROM clean_orders LIMIT 7")
     return
@@ -227,7 +227,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: daily_sales
 def _(warehouse):
     warehouse.sql("SELECT * FROM daily_sales")
     return

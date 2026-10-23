@@ -102,7 +102,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-12
 def _(shop):
     week17 = shop.run_week()
     shop.cause.search(week17, "2026-09-10")
@@ -163,7 +163,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-17
 def _(shop):
     week17r = shop.run_week(["refunds"])
     day = "2026-09-12"
@@ -203,7 +203,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-20
 def _(shop, week17r):
     print(
         shop.cause.code_change(week17r, "build_daily_sales", "2026-09-13")

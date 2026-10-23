@@ -115,7 +115,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-12
 def _(shop):
     week11 = shop.run_week(["renamed"])
     shop.schemas.versions(week11, "orders.jsonl")
@@ -136,7 +136,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-14
 def _(shop, week11):
     shop.schemas.diff(week11, "orders.jsonl")
     return
@@ -152,7 +152,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-16
 def _(shop):
     shop.schemas.diffs()
     return
@@ -168,7 +168,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-18
 def _(shop):
     shop.run_week(["retyped"]).warehouse.sql("""
     SELECT
@@ -204,13 +204,13 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-21
 def _(shop):
     print(shop.schemas.JO_QUERY)
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-22
 def _(shop):
     shop.schemas.compare_all()
     return
@@ -246,7 +246,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-25
 def _(shop, week11):
     column = "quantity"
     shop.schemas.readers(week11, "orders.jsonl", column)

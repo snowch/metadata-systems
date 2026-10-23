@@ -165,8 +165,10 @@ def build(chapter: int) -> nbformat.NotebookNode:
             out.append(nbformat.v4.new_markdown_cell(FIGURE.sub(lambda m: draw(m.group(1)), text), metadata=metadata))
             continue
         code = lines_of(source, stmts)
+        marker = re.search(r"# reader-id: ([a-zA-Z0-9_-]+)", source.splitlines()[deco.lineno - 1])
+        identity = {"ms": {"readerId": marker.group(1)}} if marker else {}
         if not hidden:
-            out.append(nbformat.v4.new_code_cell(code))
+            out.append(nbformat.v4.new_code_cell(code, metadata=identity))
         elif "mo.callout(" in code:
             # A box: the warning, the steps for running and saving the page, or a requirement. The
             # setup, hidden, follows the warning and any box straight after it, so the boxes stay
@@ -185,7 +187,7 @@ def build(chapter: int) -> nbformat.NotebookNode:
             out.append(nbformat.v4.new_markdown_cell(drawn))
         elif len(stmts) == 1 and isinstance(first, ast.Expr) and is_call(first.value, "vstack"):
             parts = ",\n    ".join(ast.unparse(e) for e in first.value.args[0].elts)
-            out.append(nbformat.v4.new_code_cell(f"display(\n    {parts},\n)", metadata=HIDDEN))
+            out.append(nbformat.v4.new_code_cell(f"display(\n    {parts},\n)", metadata={**HIDDEN, **identity}))
         else:
             raise SystemExit(f"no Jupyter form for this hidden cell of the source file:\n{code}")
     if setup_at is None:
@@ -238,6 +240,7 @@ def build_reader(chapter: int = 1) -> nbformat.NotebookNode:
     heading = f"Chapter {chapter}"
     counts = {}
     index = 0
+    identities = set()
     for cell in nb.cells:
         cell.metadata["deletable"] = False
         if cell.cell_type == "markdown":
@@ -261,9 +264,12 @@ def build_reader(chapter: int = 1) -> nbformat.NotebookNode:
         else:
             counts[heading] = counts.get(heading, 0) + 1
             title = heading if counts[heading] == 1 else f"{heading} ({counts[heading]})"
-            identifier = first_ids[index] if chapter == 1 else cell.id
+            identifier = cell.metadata.get("ms", {}).get("readerId")
+            if not identifier or identifier in identities:
+                raise ValueError(f"Chapter {chapter}: every example needs a unique permanent reader-id")
+            identities.add(identifier)
             if chapter == 1:
-                title = ["The product catalogue", "The customers", "The orders", "clean_customers", "clean_orders", "daily_sales"][index]
+                title = dict(zip(first_ids, ["The product catalogue", "The customers", "The orders", "clean_customers", "clean_orders", "daily_sales"]))[identifier]
             cell.metadata["ms"] = {"example": {"id": identifier, "title": title, "source": cell.source,
                 "editable": not cell.metadata.get("jupyter", {}).get("source_hidden", False)}}
             index += 1

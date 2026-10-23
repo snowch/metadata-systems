@@ -103,7 +103,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-12
 def _(shop):
     yours = """
 # Your own record of `daily_sales`, written in Chapter 3
@@ -138,7 +138,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-14
 def _(together):
     together.sql("""
     SELECT
@@ -159,7 +159,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-16
 def _(together):
     together.sql("""
     SELECT COUNT(DISTINCT value) AS owners
@@ -217,7 +217,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-19
 def _(shop):
     records = shop.typed_records("""
 dataset daily_sales means: the value of every completed order placed that day, by its UTC date
@@ -259,7 +259,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-21
 def _(shop):
     model = shop.model("""
 dataset means: text
@@ -284,7 +284,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-23
 def _(model, records):
     model.check(records)
     return
@@ -317,7 +317,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-26
 def _(records):
     records.sql("""
     SELECT COUNT(DISTINCT value) AS owners
@@ -392,7 +392,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-32
 def _(records, shop, week):
     the_data_engineer = "team"
     after = shop.typed_records(

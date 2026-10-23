@@ -116,7 +116,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-14
 def _(shop):
     week16 = shop.run_week(["copy"])
     shop.impact.downstream(week16, "clean_orders")
@@ -139,7 +139,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-16
 def _(shop, week16):
     shop.impact.downstream_columns(week16, "clean_orders", "customer_id")
     return
@@ -175,7 +175,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-20
 def _(shop, week16):
     shop.impact.readers(week16, shop.run_week(["copy", "customer"]))
     return
@@ -211,7 +211,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-23
 def _(shop):
     week16w = shop.run_week(["withdrawn"])
     shop.impact.downstream(week16w, "s3://shop-returns/r-206.json")
@@ -230,7 +230,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-25
 def _(shop, week16w):
     shop.impact.made_from(week16w, "r-206")
     return

@@ -88,7 +88,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-10
 def _(shop):
     week24 = shop.run_week(["returns"])
     documents = shop.store.documents(week24)
@@ -114,7 +114,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-12
 def _():
     def readers_of(documents, dataset):
         found = []
@@ -124,7 +124,7 @@ def _():
     return (readers_of,)
 
 
-@app.cell
+@app.cell  # reader-id: cell-13
 def _(documents, readers_of, shop, week24):
     shop.store.check(week24, documents, readers_of)
     return
@@ -154,7 +154,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-16
 def _(shop, week24):
     tables = shop.store.tables(week24)
     tables
@@ -175,13 +175,13 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-18
 def _():
     query = "SELECT job FROM edges"
     return (query,)
 
 
-@app.cell
+@app.cell  # reader-id: cell-19
 def _(query, shop, tables, week24):
     shop.store.check(week24, tables, query)
     return
@@ -209,14 +209,14 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-21
 def _(tables):
     tables.sql("DROP INDEX IF EXISTS edges_index")
     tables.sql("CREATE INDEX edges_index ON edges(job)")
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-22
 def _(query, shop, tables, week24):
     shop.store.check(week24, tables, query)
     return
@@ -244,14 +244,14 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-24
 def _():
     def readers_of(graph, dataset):
         return [e["job"] for e in graph.edges_at(dataset)]
     return (readers_of,)
 
 
-@app.cell
+@app.cell  # reader-id: cell-25
 def _(readers_of, shop, week24):
     shop.store.check(week24, shop.store.graph(week24), readers_of)
     return
@@ -271,7 +271,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-27
 def _(shop, week24):
     shop.store.compare(
         week24,

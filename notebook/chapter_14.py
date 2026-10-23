@@ -87,7 +87,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-10
 def _(shop):
     week14 = shop.run_week()
     shop.quality.measurements(week14, "orders.jsonl")
@@ -154,7 +154,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-17
 def _(shop, week14):
     dataset = "clean_orders"
     shop.quality.check(week14, dataset, "no customer_id")
@@ -197,7 +197,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-21
 def _(shop, week14):
     shop.quality.reconcile(week14)
     return
@@ -231,7 +231,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-24
 def _(shop, week14):
     shop.quality.readings(week14)
     return
@@ -268,7 +268,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-27
 def _(shop, week14):
     import json
 

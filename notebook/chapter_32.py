@@ -84,7 +84,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-10
 def _(shop):
     week32 = shop.run_week(["returns"])
     shop.ml.record(week32)
@@ -107,7 +107,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-12
 def _(shop, week32):
     shop.ml.version(week32)
     return
@@ -131,7 +131,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-15
 def _(shop, week32):
     shop.ml.today(week32)
     return
@@ -163,13 +163,13 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-17
 def _():
     where = "day <= '2026-09-13'"
     return (where,)
 
 
-@app.cell
+@app.cell  # reader-id: cell-18
 def _(shop, week32, where):
     shop.ml.check(week32, where)
     return
@@ -193,7 +193,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-20
 def _(shop):
     shop.ml.cap()
     return

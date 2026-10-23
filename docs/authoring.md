@@ -350,3 +350,17 @@ Apply the same layout to SQL shown from the shop's repository. Formatting that p
 changes its code-version hash, so recompute any versions quoted in prose and pinned by tests.
 Check SQL tokens as well as execution results; do not change aliases, parameters, expressions,
 filters, column order or row order while improving layout.
+
+
+## Permanent reader identities
+
+Every code example has a `# reader-id: ...` marker on its `@app.cell`
+decorator. This is a permanent browser save key, not a position in the notebook. Preserve it when
+editing or moving the example. Give a new example a unique new ID; never copy another example's
+marker or reuse an ID from a deleted example. Keep the marker outside the function so readers do
+not see this implementation detail. Chapter 1 retains its six named IDs on the same kind of marker.
+
+The initial IDs deliberately retain the existing `cell-NN` values to preserve current drafts.
+The notebook's own positional cell ID may change; the reader ID must not. The build rejects
+missing or duplicate reader IDs, and its regression tests insert prose and code before an example
+to verify that its save key stays unchanged.

@@ -21,8 +21,12 @@ Field inventories use labelled bullets where the facts are parallel; explanation
 
 ## Persistence and migration
 
-Draft keys are per notebook and example. Chapter 1 keeps the six identifiers from 1b; later
-chapters use their existing stable cell identifiers. A refresh restores drafts but clears outputs.
+Draft keys are per notebook and example. Chapter 1 keeps the six identifiers from 1b. From
+23 October 2026, all chapters use permanent reader IDs marked on their source decorators.
+Previously those IDs came from notebook positions, so inserting prose could orphan or misassign
+a draft. The initial permanent IDs retain all current keys; new builds reject missing or duplicate
+IDs. A refresh restores drafts but clears outputs. Earlier positional keys are not deleted or
+blindly reassigned, because a key without its original notebook version can be ambiguous.
 Download code exports the live examples even when local storage fails. Existing notebook code
 edits are imported before a legacy document is replaced, without overwriting a reader draft.
 An archived notebook remains as a second backup; storage failures retain an exportable live draft.
@@ -51,3 +55,9 @@ Build-time CPython execution checks every chapter. Browser checks run the chapte
 exercise edits through Run below, preserve answers/drafts and archive legacy edits. A throttled
 HTTP test verifies intermediate download percentages with real service workers. Unit checks cover
 compressed length handling, truncated streams, cancellation and superseded startup attempts.
+
+
+The published-update browser regression changes the release version and notebook cell IDs,
+inserts an explanation, then reloads the reader. It checks both a code edit and an exercise answer,
+and verifies that every existing local-storage entry remains intact. Builder tests separately
+insert prose and code before existing examples to catch any regression to positional save keys.

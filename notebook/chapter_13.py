@@ -110,7 +110,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-13
 def _(shop):
     week13 = shop.run_week(["failed"])
     shop.observe.observations(week13)
@@ -147,7 +147,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-16
 def _(shop, week13):
     shop.observe.freshness(week13)
     return
@@ -185,7 +185,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-19
 def _(shop, week13):
     shop.observe.readings(week13)
     return
@@ -199,7 +199,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-21
 def _(shop, week13):
     shop.observe.chain(week13)
     return
@@ -229,14 +229,14 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-24
 def _(shop):
     week13r = shop.run_week(["renamed"])
     shop.observe.observations(week13r, rows_written=0)
     return (week13r,)
 
 
-@app.cell
+@app.cell  # reader-id: cell-25
 def _(shop, week13r):
     shop.observe.readings(week13r)
     return
@@ -266,7 +266,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-28
 def _(shop):
     week13c = shop.run_week(["clock"])
     shop.observe.chain(week13c, by="stores")
@@ -283,7 +283,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-30
 def _(week13c):
     week13c.reporting.dashboard()
     return
@@ -327,7 +327,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-34
 def _(shop):
     week13d = shop.run_week(["returns"])
     print(

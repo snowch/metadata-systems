@@ -91,7 +91,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-10
 def _(shop):
     week27 = shop.run_week(["returns", "source", "failed"])
     graph27 = shop.query.graph(week27)
@@ -113,14 +113,14 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-12
 def _(shop):
     def downstream(graph, asset):
         return shop.query.next_assets(graph, asset)
     return (downstream,)
 
 
-@app.cell
+@app.cell  # reader-id: cell-13
 def _(downstream, shop, week27):
     shop.query.check_downstream(week27, downstream)
     return
@@ -150,7 +150,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-16
 def _(shop, week27):
     shop.query.answers(week27)
     return
@@ -174,7 +174,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-18
 def _(shop, week27):
     shop.observe.freshness(week27)
     return
@@ -238,20 +238,20 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-24
 def _(shop):
     shop.query.owners("daily_sales")
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-25
 def _(shop):
     def owner(asset):
         return {"owner": shop.query.owners(asset)["account"]}
     return (owner,)
 
 
-@app.cell
+@app.cell  # reader-id: cell-26
 def _(owner, shop):
     shop.query.check_owner(owner)
     return
@@ -271,7 +271,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-28
 def _(shop, week27):
     shop.query.coverage(week27)
     return

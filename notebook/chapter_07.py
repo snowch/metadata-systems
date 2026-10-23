@@ -98,7 +98,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-12
 def _(shop):
     lines = shop.typed_records("""
 job build_clean_orders reads: s3://shop-raw/orders.jsonl
@@ -108,7 +108,7 @@ job build_clean_orders writes: clean_orders
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-13
 def _(warehouse):
     warehouse.sql("""
     SELECT
@@ -157,7 +157,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-16
 def _(shop):
     shop.event_fields()
     return
@@ -175,7 +175,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-18
 def _(shop, week):
     design = ["job", "type", "time", "rows_read", "rows_written"]
     events = shop.events(week, design)
@@ -195,7 +195,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-20
 def _(events, shop):
     shop.runs(events.where(job="build_clean_orders"), by=["job", "day"])
     return
@@ -261,7 +261,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-26
 def _(shop):
     returns_week = shop.run_week(["returns"])
     design_for_returns = [
@@ -298,7 +298,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-28
 def _(design_for_returns, returns_week, shop):
     with_run = design_for_returns + ["run", "object_version"]
     returns_runs = shop.runs(
@@ -334,7 +334,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-31
 def _(shop):
     changed = shop.run_week(["returns", "source"])
     with_reads = ["run", "job", "type", "time", "reads", "code_version"]
@@ -370,7 +370,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-34
 def _(shop, week):
     lineage = shop.lineage(
         shop.runs(
@@ -437,7 +437,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-40
 def _(shop):
     yours = ["run", "job", "type", "time", "status"]
     shop.readings(yours)

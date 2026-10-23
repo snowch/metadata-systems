@@ -82,7 +82,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-10
 def _(shop):
     week25 = shop.run_week(["returns"])
     shop.collector.faults(week25)
@@ -120,7 +120,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-12
 def _():
     import json
 
@@ -129,14 +129,14 @@ def _():
     return json, key
 
 
-@app.cell
+@app.cell  # reader-id: cell-13
 def _():
     def newer(event, current):
         return True
     return (newer,)
 
 
-@app.cell
+@app.cell  # reader-id: cell-14
 def _(key, newer, shop, week25):
     shop.collector.check(week25, key, newer)
     return
@@ -182,14 +182,14 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-18
 def _():
     def start(stored):
         return set()
     return (start,)
 
 
-@app.cell
+@app.cell  # reader-id: cell-19
 def _(key, newer, shop, start, week25):
     shop.collector.check(week25, key, newer, start)
     return

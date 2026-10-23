@@ -95,7 +95,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-10
 def _(shop):
     print(shop.interface.writers("daily_sales"))
     print(len(shop.interface.runs()), "runs in the file")
@@ -118,14 +118,14 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-13
 def _(shop):
     def run_history(asset):
         return [r for r in shop.interface.runs() if asset in r["writes"]]
     return (run_history,)
 
 
-@app.cell
+@app.cell  # reader-id: cell-14
 def _(run_history, shop):
     shop.interface.check(run_history)
     return
@@ -167,13 +167,13 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-16
 def _():
     sections = ["description", "owner", "runs"]
     return (sections,)
 
 
-@app.cell
+@app.cell  # reader-id: cell-17
 def _(run_history, sections, shop):
     shop.interface.page("daily_sales", sections, run_history)
     return

@@ -90,7 +90,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-11
 def _(shop):
     week19 = shop.run_week(["returns"])
     once = shop.delivery.send(week19)
@@ -135,7 +135,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-13
 def _(shop, week19):
     retimed = shop.delivery.send(
         week19,
@@ -165,7 +165,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-15
 def _(retimed, shop):
     deduped = shop.ingest.dedupe(retimed.events, "content")
     deduped.dropped
@@ -182,7 +182,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-17
 def _(deduped, shop):
     shop.ingest.objects(shop.ingest.normalise(deduped)).runs_of(
         job="shop/build_daily_sales", columns=["started", "ended"]
@@ -230,7 +230,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-21
 def _(shop, week19):
     week19t = shop.run_week(["returns", "twice"])
     query = "SELECT * FROM returns ORDER BY return_id"
@@ -252,7 +252,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-23
 def _(shop, week19t):
     events_t = shop.delivery.week_events(week19t)
     shop.delivery.repeated_work(events_t)
@@ -269,7 +269,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-25
 def _(events_t, shop, week19):
     shop.ingest.edges_side_by_side(
         "shop/record_return",
@@ -292,7 +292,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-27
 def _(events_t, shop):
     len(shop.ingest.dedupe(events_t, "run").dropped)
     return

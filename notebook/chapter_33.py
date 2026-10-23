@@ -92,7 +92,7 @@ def _(figures, mo, shop):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-10
 def _(shop):
     platform = shop.ferry.run()
     storage, functions = platform.storage, platform.functions
@@ -113,19 +113,19 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-12
 def _(functions):
     functions.triggers()
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-13
 def _(functions):
     functions.log("s3://ferry-gates/mainland/2026-09-22/1730")
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-14
 def _(scheduler):
     scheduler.runs("build_loads")
     return
@@ -208,7 +208,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-19
 def _(shop):
     def inputs(change):
         batch = {"namespace": change["bucket"], "name": change["key"]}
@@ -218,13 +218,13 @@ def _(shop):
     return (inputs,)
 
 
-@app.cell
+@app.cell  # reader-id: cell-20
 def _(inputs, platform, shop):
     shop.ferry.check_inputs(platform, inputs)
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-21
 def _(inputs, platform, shop):
     print(
         shop.openlineage.show(
@@ -250,7 +250,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-23
 def _(inputs, platform, shop):
     collected = shop.ferry.collect(shop.ferry.events(platform, inputs))
     graph33 = shop.ferry.graph(collected)
@@ -274,7 +274,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-25
 def _(platform, shop):
     shop.ferry.compare_counts(platform, "2026-09-24", "island")
     return
@@ -298,7 +298,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-28
 def _(collected, shop):
     shop.ferry.run_states(collected)
     return
@@ -363,14 +363,14 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-33
 def _():
     def suspect(run):
         return run["state"] == "FAIL"
     return (suspect,)
 
 
-@app.cell
+@app.cell  # reader-id: cell-34
 def _(collected, shop, suspect):
     shop.ferry.check_suspect(collected, suspect)
     return
@@ -384,7 +384,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-36
 def _(collected, shop):
     shop.ferry.fields(collected, "island", "gate-2")
     return
@@ -412,7 +412,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-39
 def _(collected, platform, shop):
     shop.ferry.trace(platform, collected, "2026-09-22 mainland 17:30")
     return
@@ -454,7 +454,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-42
 def _(graph33, platform, shop):
     shop.ferry.made_from_test(platform, graph33)
     return

@@ -102,7 +102,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-13
 def _(shop):
     records = shop.typed_records("""
 # These are Chapter 4's records after both changes.
@@ -140,7 +140,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-15
 def _(shop):
     model = shop.model("""
 dataset means: text
@@ -175,7 +175,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-17
 def _(model, records, shop):
     graph = shop.graph(records, model)
     graph.nodes()
@@ -190,7 +190,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-19
 def _(graph):
     graph.edges()
     return
@@ -204,7 +204,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-21
 def _(graph):
     graph.drawing(
         label=(
@@ -243,7 +243,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-24
 def _(graph):
     graph.traverse("j.marsh", {"responsible": "in"})
     return
@@ -283,7 +283,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-28
 def _(graph):
     graph.traverse("daily_sales")
     return
@@ -307,7 +307,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-30
 def _(graph):
     graph.traverse("clean_customers")
     return

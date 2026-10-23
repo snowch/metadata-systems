@@ -88,7 +88,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-10
 def _(shop):
     shop.aliases.references()
     return
@@ -110,7 +110,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-13
 def _(shop):
     shop.aliases.merge("last part")
     return

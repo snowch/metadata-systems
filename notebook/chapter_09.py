@@ -92,7 +92,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-11
 def _(shop):
     week9 = shop.run_week(["returns", "source"])
     lines = shop.ingest.event_lines(week9)
@@ -113,7 +113,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-13
 def _(lines, shop):
     damaged = list(lines)
     k = next(
@@ -163,7 +163,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-17
 def _(parsed, shop):
     normal = shop.ingest.normalise(parsed)
     normal.changes
@@ -200,7 +200,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-20
 def _(normal, shop):
     known = dict(shop.ingest.KNOWN)
     # known["shop_objectChange"] = ["object", "version", "change"]
@@ -219,7 +219,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-22
 def _(objs):
     objs.runs_of(
         state="START",
@@ -248,13 +248,13 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-25
 def _(objs):
     objs.unknown
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-26
 def _(objs):
     objs.runs_of(
         "shop/record_return",
@@ -303,7 +303,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-30
 def _(objs, shop):
     found = shop.ingest.edges(objs)
     found
@@ -328,7 +328,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-32
 def _(found):
     found.of("shop/build_daily_sales")
     return
@@ -346,7 +346,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-34
 def _(found):
     found.graph().drawing(
         label=(
@@ -408,7 +408,7 @@ def _(mo):
     """)
     return
 
-@app.cell
+@app.cell  # reader-id: cell-39
 def _(found):
     found.latest()
     return

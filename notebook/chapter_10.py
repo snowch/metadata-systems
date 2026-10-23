@@ -114,7 +114,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-14
 def _(shop):
     week10 = shop.run_week()
     code = [
@@ -145,7 +145,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-16
 def _(code, shop, warehouse):
     catalogue = None
     # catalogue = warehouse
@@ -190,7 +190,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-19
 def _(shop, week10):
     print(
         [
@@ -202,7 +202,7 @@ def _(shop, week10):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-20
 def _(shop, week10):
     shop.columns.upstream(
         week10, "daily_sales", "revenue_pence", week10.warehouse
@@ -243,7 +243,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-23
 def _(shop):
     week10s = shop.run_week(["source"])
     print(shop.columns.ANALYST_COPY)
@@ -251,7 +251,7 @@ def _(shop):
     return (week10s,)
 
 
-@app.cell
+@app.cell  # reader-id: cell-24
 def _(shop, week10s):
     shop.columns.lineage(shop.columns.ANALYST_COPY, week10s.warehouse)
     return
@@ -269,7 +269,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-26
 def _(shop, week10s):
     shop.columns.upstream(
         week10s, "daily_sales", "revenue_pence", week10s.warehouse
@@ -305,7 +305,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-29
 def _(shop):
     week10n = shop.run_week(["net"])
     print(
@@ -318,7 +318,7 @@ def _(shop):
     return (week10n,)
 
 
-@app.cell
+@app.cell  # reader-id: cell-30
 def _(week10n):
     week10n.warehouse.sql("""
     SELECT
@@ -345,7 +345,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-33
 def _(shop, week10n):
     shop.columns.upstream(
         week10n, "daily_sales", "revenue_pence", week10n.warehouse
@@ -393,7 +393,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-36
 def _(shop, week10):
     print(shop.columns.show(shop.columns.facet(week10, "daily_sales")))
     return

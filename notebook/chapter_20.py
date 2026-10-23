@@ -92,7 +92,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-11
 def _(shop):
     week20 = shop.run_week(["returns"])
     late = shop.delivery.send(
@@ -125,7 +125,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-13
 def _(late):
     late.received(job="build_daily_sales", type="COMPLETE")
     return
@@ -171,7 +171,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-16
 def _(shop, week20):
     early = shop.delivery.send(
         week20, delay={"build_daily_sales START 2026-09-09": 60}
@@ -206,7 +206,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-18
 def _(shop):
     week20w = shop.run_week(["returns", "withdrawn"])
     held = shop.delivery.send(

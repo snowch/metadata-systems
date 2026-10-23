@@ -84,7 +84,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-10
 def _(shop):
     week26 = shop.run_week(["returns", "source"])
     stored26 = shop.lineage_graph.stored(week26)
@@ -106,7 +106,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-12
 def _(shop):
     def add(edges, event):
         for key in shop.lineage_graph.edges_of(event):
@@ -139,7 +139,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-15
 def _(add, shop, week26):
     shop.lineage_graph.check(week26, add)
     return
@@ -183,7 +183,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-17
 def _(add, shop, week26):
     graph26 = shop.lineage_graph.build(week26, add)
     shop.lineage_graph.table(graph26, "build_daily_sales")
@@ -248,7 +248,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-23
 def _(graph26, shop):
     shop.lineage_graph.now(graph26, "2026-09-14T09:00:00Z")
     return

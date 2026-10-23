@@ -100,7 +100,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-12
 def _(shop):
     week12 = shop.run_week(["returns", "dev", "view"])
     parsed = shop.ingest.parse(shop.ingest.event_lines(week12))
@@ -163,7 +163,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-17
 def _(shop, week12):
     v1, v2 = [
         v["version"]
@@ -253,7 +253,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-23
 def _(pairs, shop, week12):
     shop.identity.compare(week12, pairs)
     return
@@ -294,7 +294,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-26
 def _(parsed, shop):
     databases = {}
     # databases[shop.openlineage.DEV_PRODUCER] = "shop_dev"

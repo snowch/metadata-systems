@@ -94,7 +94,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-12
 def _(shop):
     week15 = shop.run_week()
     shop.provenance.trace(week15, "2026-09-10")
@@ -136,7 +136,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-15
 def _(shop, week15):
     shop.provenance.trace(week15, "2026-09-10", dropped=False)
     return
@@ -174,7 +174,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-19
 def _(shop):
     week15c = shop.run_week(["corrected"])
     shop.provenance.trace(week15c, "2026-09-13")
@@ -199,7 +199,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-21
 def _(shop, week15c):
     shop.provenance.object_versions(week15c, "r-205")
     return
@@ -217,7 +217,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-23
 def _(shop, week15c):
     shop.provenance.trace(week15c, "2026-09-13", as_read=False)
     return

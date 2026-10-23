@@ -88,7 +88,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-10
 def _(shop):
     held = shop.claims.claims("2026-09-14T18:00:00Z")
     held
@@ -109,7 +109,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-12
 def _(held, shop):
     shop.claims.resolve(held, "newest")
     return
@@ -135,7 +135,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-15
 def _(shop):
     tuesday = shop.claims.claims("2026-09-15T09:00:00Z")
     shop.claims.resolve(tuesday, "newest")
@@ -156,7 +156,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-17
 def _(tuesday):
     tuesday
     return
@@ -194,7 +194,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-20
 def _(shop, tuesday):
     rule = "as of"
     shop.claims.resolve(tuesday, rule)

@@ -88,7 +88,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-10
 def _(shop):
     week29 = shop.run_week(["returns"])
     shop.consumers.provider(week29)
@@ -116,14 +116,14 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-12
 def _(shop, week29):
     event29 = shop.consumers.provider_event(week29)
     print(shop.openlineage.show(event29))
     return (event29,)
 
 
-@app.cell
+@app.cell  # reader-id: cell-13
 def _(event29, shop):
     shop.openlineage.check(event29)
     return
@@ -161,13 +161,13 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-16
 def _(shop, week29):
     shop.consumers.compare(week29)
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-17
 def _(shop, week29):
     shop.consumers.totals(week29)
     return
@@ -199,19 +199,19 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-19
 def _():
     order = "arrival"
     return (order,)
 
 
-@app.cell
+@app.cell  # reader-id: cell-20
 def _(order, shop, week29):
     shop.consumers.check(week29, order)
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-21
 def _(order, shop, week29):
     shop.consumers.compare(week29, order)
     return

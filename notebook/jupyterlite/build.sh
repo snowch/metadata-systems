@@ -26,6 +26,9 @@ python3 "$here/fetch_pyodide.py" "$here/static/pyodide"
 python3 "$here/make_wheel.py" "$work/wheels"
 python3 -m pip download --quiet --no-deps --dest "$work/wheels" "comm==0.2.3"
 
+# Save identities must survive author edits before publishing any chapter.
+python3 "$here/test_reader_ids.py"
+
 # The notebooks, from the source files; each runs once here, in CPython, as a check.
 python3 "$here/build_ipynb.py" "$work/content" --check
 

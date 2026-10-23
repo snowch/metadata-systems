@@ -137,7 +137,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-16
 def _(warehouse):
     # files= reads orders.jsonl from object storage as raw_orders.
     warehouse.sql(
@@ -173,7 +173,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-18
 def _(warehouse):
     warehouse.sql(
         """
@@ -236,7 +236,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-22
 def _(warehouse):
     warehouse.sql("""
     SELECT *
@@ -246,7 +246,7 @@ def _(warehouse):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-23
 def _(warehouse):
     warehouse.sql("""
     SELECT
@@ -258,13 +258,13 @@ def _(warehouse):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-24
 def _(storage):
     storage.ls("s3://shop-raw/")
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-25
 def _(reporting):
     reporting.dashboard("sales_dashboard")
     return
@@ -324,7 +324,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-30
 def _(warehouse):
     warehouse.sql("""
     SELECT
@@ -418,7 +418,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-39
 def _(warehouse):
     rebuilt = warehouse.sql("""
     SELECT
@@ -449,7 +449,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-41
 def _(warehouse):
     warehouse.sql("""
     SELECT
@@ -463,7 +463,7 @@ def _(warehouse):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-42
 def _(warehouse):
     warehouse.sql(
         """
@@ -550,7 +550,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-48
 def _(shop, week):
     with_copy = shop.run_week(["copy"])
     shop.records_beside(week, with_copy)
@@ -583,7 +583,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-51
 def _(shop, week):
     with_refunds = shop.run_week(["refunds"])
     shop.records_beside(week, with_refunds)
@@ -614,7 +614,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-54
 def _(shop, week):
     with_failure = shop.run_week(["failed"])
     shop.records_beside(week, with_failure)
@@ -652,7 +652,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-57
 def _(storage):
     sum(
         1
@@ -662,7 +662,7 @@ def _(storage):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-58
 def _(shop, week):
     shop.cleaning_rules_that_fit(week)
     return

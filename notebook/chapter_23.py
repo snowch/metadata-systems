@@ -78,7 +78,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-10
 def _(shop):
     week23 = shop.run_week(["returns"])
     shop.scale.measure(week23)
@@ -97,7 +97,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-12
 def _(shop, week23):
     shop.scale.reach(week23)
     return
@@ -135,7 +135,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-15
 def _(shop, week23):
     shop.scale.first_over(week23)
     return
@@ -163,7 +163,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-17
 def _(shop, week23):
     shop.scale.project(week23)
     return
@@ -187,7 +187,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-19
 def _(shop, week23):
     events23 = shop.delivery.week_events(week23)
     kept = shop.scale.retain(events23, 3, "2026-09-14T09:00:00Z")
@@ -213,7 +213,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-21
 def _(week23):
     week23.warehouse.sql("SELECT * FROM returns WHERE return_id = 'r-201'")
     return
@@ -233,7 +233,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-23
 def _(events23, shop):
     shop.scale.lineage_of(shop.scale.compact(events23), "r-201.json")
     return

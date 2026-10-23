@@ -111,7 +111,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-13
 def _(shop):
     week8 = shop.run_week(["returns", "failed"])
     events = shop.openlineage.run_events(week8)
@@ -165,7 +165,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-15
 def _(shop):
     shop.openlineage.mapping()
     return
@@ -189,7 +189,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-18
 def _(friday, shop):
     consumer = shop.openlineage.Consumer()
     consumer.send(friday[0])
@@ -215,7 +215,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-20
 def _(consumer, friday):
     consumer.send(friday[1])
     consumer.runs()
@@ -238,7 +238,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-22
 def _(events, shop):
     everything = shop.openlineage.Consumer().send(*events)
     print(len(everything.runs()), "runs")
@@ -277,7 +277,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-25
 def _(shop):
     start = {
         "eventType": "START",
@@ -329,7 +329,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-28
 def _(complete, events, shop, start):
     joined = shop.openlineage.Consumer().send(*events, start, complete)
     joined.lineage().upstream("s3://shop-scratch/clean_orders_copy.csv")
@@ -372,7 +372,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-31
 def _(shop, start):
     broken = {**start, "run": {"runId": "copy-friday"}}
     del broken["producer"]
@@ -381,7 +381,7 @@ def _(shop, start):
 
 
 
-@app.cell
+@app.cell  # reader-id: cell-32
 def _(broken, shop):
     refusing = shop.openlineage.Consumer().send(broken)
     print(
@@ -443,7 +443,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-37
 def _(events, shop):
     shop.openlineage.summary(events)
     return

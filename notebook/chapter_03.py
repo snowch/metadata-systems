@@ -111,7 +111,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-11
 def _(shop):
     records = shop.records("""
 daily_sales means: ........
@@ -132,7 +132,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-13
 def _(records, warehouse):
     records.check(warehouse, "daily_sales")
     return
@@ -169,7 +169,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-17
 def _(records):
     records.sql("""
     SELECT value
@@ -194,7 +194,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-19
 def _(warehouse):
     by_jos_meaning = """
     SELECT
@@ -245,7 +245,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-22
 def _(warehouse):
     warehouse.sql("""
     SELECT
@@ -286,7 +286,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-25
 def _(records):
     records.sql("""
     SELECT *
@@ -327,7 +327,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-28
 def _(warehouse):
     warehouse.sql("""
     SELECT
@@ -349,7 +349,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-30
 def _(storage):
     storage.sql(
         "s3://shop-raw/products.csv",
@@ -424,7 +424,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-36
 def _(records, warehouse):
     records.check(warehouse)
     return
@@ -438,7 +438,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-38
 def _(shop, warehouse):
     columns = warehouse.sql("""
     SELECT
@@ -465,7 +465,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-40
 def _(by_name):
     by_name.about("daily_sales")
     return
@@ -500,14 +500,14 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-44
 def _(records, shop):
     column_week = shop.run_week(["column"])
     records.check(column_week.warehouse, "daily_sales")
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-45
 def _(records, shop):
     refunds_week = shop.run_week(["refunds"])
     records.check(refunds_week.warehouse, "daily_sales")
@@ -530,7 +530,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-47
 def _(by_jos_meaning, refunds_week):
     refunds_week.warehouse.sql(
         by_jos_meaning, files={"raw_orders": "s3://shop-raw/orders.jsonl"}

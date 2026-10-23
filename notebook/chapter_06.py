@@ -100,7 +100,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-11
 def _(week, shop):
     repo = shop.repository(week)
     for job in repo:
@@ -121,7 +121,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-13
 def _(shop):
     records = shop.typed_records("""
 # These are Chapter 5's records.
@@ -175,7 +175,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-15
 def _(shop):
     model = shop.model("""
 dataset means: text
@@ -214,7 +214,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-17
 def _(model, records, shop):
     lineage = shop.graph(records, model).only(
         ["reads", "writes"], ["dataset", "dashboard", "job"]
@@ -248,7 +248,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-20
 def _(lineage):
     lineage.downstream("s3://shop-raw/orders.jsonl")
     return
@@ -282,7 +282,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-22
 def _(lineage):
     lineage.upstream("sales_dashboard")
     return
@@ -300,7 +300,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-24
 def _(lineage):
     lineage.downstream("s3://shop-raw/products.csv")
     return
@@ -336,7 +336,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-27
 def _(model, records, shop):
     jos_line = "job build_daily_sales reads: clean_customers"
     with_jo = shop.typed_records(records.text + "\n" + jos_line + "\n")
@@ -368,7 +368,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-31
 def _(repo, shop, with_jo):
     shop.compare_with_code(with_jo, repo)
     return
@@ -414,7 +414,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-35
 def _(records, shop):
     changed = shop.run_week(["source"])
     shop.compare_with_code(records, shop.repository(changed))
@@ -439,7 +439,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-37
 def _(changed, warehouse):
     (
         changed.warehouse.sql("SELECT * FROM daily_sales")

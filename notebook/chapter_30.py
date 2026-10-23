@@ -89,7 +89,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-10
 def _(shop):
     shop.integrations.rules()
     return
@@ -113,7 +113,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-12
 def _(shop):
     week30 = shop.run_week(["returns", "source", "failed"])
     shop.integrations.airflow(week30)
@@ -138,7 +138,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-14
 def _(shop):
     print(shop.integrations.spark())
     return
@@ -164,7 +164,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-16
 def _(shop, week30):
     shop.integrations.dbt(week30)
     return
@@ -202,7 +202,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-19
 def _():
     name_format = "$QUERY_ID"
     source_of = {
@@ -214,7 +214,7 @@ def _():
     return name_format, source_of
 
 
-@app.cell
+@app.cell  # reader-id: cell-20
 def _(name_format, shop, source_of, week30):
     shop.integrations.check_trino(week30, name_format, source_of)
     return
@@ -248,7 +248,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell  # reader-id: cell-22
 def _(shop, source_of, week30):
     shop.integrations.jobs_by_format(week30, source_of)
     return
