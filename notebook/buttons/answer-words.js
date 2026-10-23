@@ -19,5 +19,5 @@ export default {
   imported: "Import complete. Any answers you had already written were kept.",
   invalid: "Could not import this file. Choose an answers file exported by this course.",
   exportFailed: "Could not export the answers. Copy your text before leaving this page.",
-  chapterOne: "Open your Chapter 1 guesses",
+  chapterOne: "Go to the Chapter 1 exercise",
 };

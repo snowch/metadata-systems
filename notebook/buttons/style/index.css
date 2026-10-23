@@ -207,6 +207,10 @@ body.ms-Reading #top-panel-wrapper {
   color: var(--jp-brand-color1);
 }
 
+.ms-Answers [hidden] {
+  display: none;
+}
+
 .ms-Answer-status {
   margin: 6px 0;
 }

@@ -154,10 +154,11 @@ function field(root, store, id, label, readonly = false) {
     status.textContent = !answer.saved
       ? words.unsaved
       : readonly && !answer.text
-        ? words.empty
+        ? ""
         : answer.exists
           ? words.saved
           : "";
+    status.hidden = !status.textContent;
   };
   input.addEventListener("input", () => store.write(id, input.value));
   // Notebook keyboard shortcuts must not consume normal editing keys, including spaces and Escape.
@@ -189,6 +190,11 @@ export function mountAnswers(root, kind, store) {
     link.target = "_blank";
     link.rel = "noopener";
     root.append(link);
+    const refreshLink = () => {
+      link.hidden = Boolean(store.read(`ch01.${kind}`).text);
+    };
+    refreshLink();
+    cleanups.push(store.subscribe(refreshLink));
     cleanups.push(
       field(root, store, `ch02.${kind}.revision`, words.revision.replace("{table}", kind)),
     );
