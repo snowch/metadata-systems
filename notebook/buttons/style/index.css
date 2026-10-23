@@ -111,6 +111,122 @@ body.ms-Reading #top-panel-wrapper {
   display: inline-flex;
 }
 
+.ms-Download-icon {
+  display: none;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+@media (max-width: 599px) {
+  .ms-Reader-nav-hasTables .ms-Download-label {
+    display: none;
+  }
+
+  .ms-Reader-nav-hasTables .ms-Download-icon {
+    display: block;
+  }
+}
+
+.ms-Tables {
+  box-sizing: border-box;
+  width: min(1100px, calc(100vw - 24px));
+  max-width: none;
+  max-height: calc(100dvh - 24px);
+  padding: 20px;
+  overflow: auto;
+  border: 1px solid var(--jp-border-color1);
+  border-radius: 8px;
+  color: var(--jp-ui-font-color1);
+  background: var(--jp-layout-color0);
+  font: var(--jp-content-font-size1) / 1.5 var(--jp-ui-font-family);
+}
+
+.ms-Tables::backdrop {
+  background: rgb(0 0 0 / 65%);
+}
+
+.ms-Tables-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ms-Tables h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.ms-Tables-label {
+  display: block;
+  margin-top: 16px;
+}
+
+.ms-Tables select {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 6px;
+  padding: 8px;
+  font: inherit;
+  color: inherit;
+  background: var(--jp-layout-color1);
+  border: 1px solid var(--jp-border-color1);
+}
+
+.ms-Tables-output {
+  max-height: 55dvh;
+  overflow: auto;
+  margin: 16px 0;
+  border: 1px solid var(--jp-border-color1);
+}
+
+.ms-Tables-output table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.ms-Tables-output :is(th, td) {
+  padding: 10px 12px;
+  text-align: right;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--jp-border-color2);
+  background: var(--jp-layout-color0);
+}
+
+.ms-Tables-output tr:nth-child(even) td {
+  background: var(--jp-layout-color1);
+}
+
+.ms-Tables-output :is(th, td):first-child {
+  position: sticky;
+  left: 0;
+  text-align: left;
+  border-right: 1px solid var(--jp-border-color2);
+}
+
+.ms-Tables :is(button, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--jp-brand-color1);
+  outline-offset: 2px;
+}
+
+.ms-Tables [hidden] {
+  display: none;
+}
+
+@media (max-width: 599px) {
+  .ms-Tables {
+    padding: 12px;
+  }
+}
+
 .ms-Reader .jp-OutputArea {
   overflow-x: auto;
   padding-top: 12px;

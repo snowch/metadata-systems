@@ -2,6 +2,7 @@
 
 """Reader save keys must survive published edits to the chapter around an example."""
 import ast
+import json
 import runpy
 import tempfile
 import unittest
@@ -81,6 +82,20 @@ def _(warehouse):
                         source.replace("reader-id: cell-18", "reader-id: cell-16", 1)):
             with self.with_source(updated), self.assertRaisesRegex(ValueError, "unique permanent reader-id"):
                 BUILDER["build_reader"](2)
+
+    def test_reference_table_metadata_changes_publish_without_changing_save_keys(self):
+        original = BUILDER["build_reader"](2)
+        config = Path(__file__).parents[1] / "buttons" / "table-words.json"
+        words = json.loads(config.read_text())
+        words["tables"]["cell-16"] = "A revised table label"
+        read = Path.read_text
+        def revised(path, *args, **kwargs):
+            return json.dumps(words) if path == config else read(path, *args, **kwargs)
+        with patch.object(Path, "read_text", autospec=True, side_effect=revised):
+            updated = BUILDER["build_reader"](2)
+        self.assertEqual(examples(original), examples(updated))
+        self.assertNotEqual(original.metadata.ms.version, updated.metadata.ms.version)
+        self.assertEqual(updated.metadata.ms.tables[0]["title"], "A revised table label")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,30 @@
+{
+  "button": "Tables",
+  "title": "Chapter 2 tables",
+  "choose": "Choose a table",
+  "close": "Close tables",
+  "run": "Run query",
+  "empty": "This query has not run yet. Choose Run query to see its result.",
+  "stale": "The query has changed. This result is from a previous run. Choose Run query to update it.",
+  "upstream": "An earlier example changed. This result is from a previous run. Use Run below from that example, or Run all, in the chapter.",
+  "error": "The query stopped with an error. Check its code and error details in the chapter.",
+  "noTable": "This result contains no table. Check the query and its output in the chapter.",
+  "running": "Waiting for the query's result.",
+  "busy": "Another example is running. Wait for it to finish.",
+  "latest": "Result from this query's latest run.",
+  "link": "View daily revenue comparison",
+  "notRunLabel": "Not run",
+  "staleLabel": "Out of date",
+  "errorLabel": "Error",
+  "noTableLabel": "No table",
+  "scrollHint": "Scroll sideways to see all columns.",
+  "runningLabel": "Running",
+  "latestLabel": "Latest result",
+  "tableArea": "Selected query result",
+  "tables": {
+    "cell-16": "Daily revenue comparison",
+    "cell-18": "Orders missing from clean_orders",
+    "cell-41": "Cancelled orders",
+    "cell-42": "Duplicate orders"
+  }
+}

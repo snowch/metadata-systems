@@ -352,6 +352,24 @@ Check SQL tokens as well as execution results; do not change aliases, parameters
 filters, column order or row order while improving layout.
 
 
+## Reference tables in the reader
+
+Chapter 2's header offers four named query results through **Tables**. The matching permanent
+reader IDs and labels are in `notebook/buttons/table-words.json`; the notebook build validates
+them and adds the list to its metadata. A Markdown link such as
+`[View daily revenue comparison](#ms-table-cell-16)` opens the same result beside an explanation.
+
+`notebook/buttons/tables.js` opens a native modal dialog over the current reading position. It
+copies table text and structure from Jupyter's rendered output, without copying active HTML or
+moving the original output. Opening the chooser does not execute code. **Run query** uses the
+current editor content and the existing Python session. A changed query, or a changed or rerun
+earlier example, marks its result as out of date. Closing the dialog restores focus and the
+reading position. Results are not persisted; saved code and exercise answers keep their existing
+storage keys.
+
+`tables-smoke.mjs`, called by the reader suite, runs the real queries, checks outdated and empty
+states, errors and recovery, reset, busy execution, nearby links and mobile layout.
+
 ## Permanent reader identities
 
 Every code example has a `# reader-id: ...` marker on its `@app.cell`

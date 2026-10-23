@@ -278,6 +278,14 @@ def build_reader(chapter: int = 1) -> nbformat.NotebookNode:
     if replaced != descriptions.keys():
         raise ValueError("Reader descriptions no longer match the chapter headings")
     nb.metadata["ms"] = {**stamp(nb), "reader": True, "dependent": chapter != 1}
+    if chapter == 2:
+        tables = json.loads((HERE.parent / "buttons" / "table-words.json").read_text())["tables"]
+        if not tables.keys() <= identities:
+            raise ValueError("A reference table no longer matches a permanent reader ID")
+        nb.metadata["ms"]["tables"] = [{"id": identifier, "title": title} for identifier, title in tables.items()]
+        # A label or chooser change must replace an older saved notebook too, without changing
+        # any example's browser save key.
+        nb.metadata["ms"].update(stamp(nb))
     return nb
 
 

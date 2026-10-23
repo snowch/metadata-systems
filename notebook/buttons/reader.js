@@ -7,6 +7,8 @@ import { NotebookActions } from "@jupyterlab/notebook";
 import { CodeCell } from "@jupyterlab/cells";
 import { Widget } from "@lumino/widgets";
 import words from "./reader-words.json";
+import tableWords from "./table-words.json";
+import { tableViewer } from "./tables.js";
 
 const prefix = "ms:metadata-systems:code:v1:";
 const element = (tag, text, className) => {
@@ -36,6 +38,13 @@ export async function attachReader(panel, state, navigation) {
   navigation.node.replaceChildren();
   navigation.addClass("ms-Reader-nav");
   const entries = [];
+  let tables;
+  const inputKey = (entry) =>
+    JSON.stringify(
+      entries
+        .slice(0, entries.indexOf(entry))
+        .map((earlier) => [earlier.cell.model.sharedModel.getSource(), earlier.generation]),
+    );
   const dependent = panel.context.model.getMetadata("ms")?.dependent;
   const runAll = button(words.runAll);
   runAll.dataset.readerAction = "runAll";
@@ -62,9 +71,13 @@ export async function attachReader(panel, state, navigation) {
       entry.reset.disabled = value;
       if (entry.below) entry.below.disabled = value;
     }
+    tables?.update();
   };
 
   async function runExample(entry, batch = false) {
+    entry.running = true;
+    entry.failed = false;
+    tables?.update();
     const outer = notebook.node.classList.contains("jp-WindowedPanel-outer")
       ? notebook.node
       : (notebook.node.querySelector(".jp-WindowedPanel-outer") ?? notebook.node);
@@ -97,6 +110,7 @@ export async function attachReader(panel, state, navigation) {
     try {
       // Capture what is actually run, after any edits made while Python was loading.
       const source = entry.cell.model.sharedModel.getSource();
+      const inputs = inputKey(entry);
       let succeeded;
       if (batch) {
         // The cell API retains native outputs without NotebookActions selecting or scrolling to
@@ -110,6 +124,10 @@ export async function attachReader(panel, state, navigation) {
       }
       if (disposed) return false;
       entry.executed = source;
+      entry.inputs = inputs;
+      entry.succeeded = succeeded;
+      entry.failed = !succeeded;
+      entry.generation += 1;
       entry.status.textContent =
         source !== entry.cell.model.sharedModel.getSource()
           ? words.stale
@@ -118,9 +136,13 @@ export async function attachReader(panel, state, navigation) {
             : words.error;
       return succeeded;
     } catch {
+      entry.succeeded = false;
+      entry.failed = true;
       if (!disposed) entry.status.textContent = words.error;
       return false;
     } finally {
+      entry.running = false;
+      tables?.update();
       if (!disposed && !scrolled) {
         // Preserve the paragraph in view even when new outputs above it change the page height.
         if (document.visibilityState === "visible")
@@ -139,18 +161,22 @@ export async function attachReader(panel, state, navigation) {
     }
   }
 
-  async function execute(entry) {
+  async function execute(entry, fromTable = false) {
     if (busy || disposed) return;
     hold(true);
+    entry.running = true;
+    entry.failed = false;
     entry.run.setAttribute("aria-busy", "true");
     entry.status.textContent = state.ready ? words.running : words.queued;
     try {
       if (!(await state.startup.ready()) || disposed) {
+        entry.failed = true;
         if (!disposed) entry.status.textContent = words.startupFailed;
         return;
       }
-      await runExample(entry);
+      await runExample(entry, fromTable);
     } finally {
+      entry.running = false;
       entry.run.removeAttribute("aria-busy");
       hold(false);
     }
@@ -238,7 +264,16 @@ export async function attachReader(panel, state, navigation) {
     else cell.readOnly = true;
     cell.layout.insertWidget(0, controls);
     cell.layout.addWidget(statusWidget);
-    const entry = { cell, run, reset, below, status, executed: null };
+    const entry = {
+      cell,
+      run,
+      reset,
+      below,
+      status,
+      executed: null,
+      generation: 0,
+      running: false,
+    };
     entries.push(entry);
     cell.model.outputs.clear();
     cell.model.executionCount = null;
@@ -277,6 +312,7 @@ export async function attachReader(panel, state, navigation) {
       if (dependent)
         for (const later of entries.slice(entries.indexOf(entry) + 1))
           if (later.executed !== null) later.status.textContent = words.staleBelow;
+      tables?.update();
     };
     cell.model.contentChanged.connect(changed);
     panel.disposed.connect(() => cell.model.contentChanged.disconnect(changed));
@@ -290,11 +326,15 @@ export async function attachReader(panel, state, navigation) {
       cell.model.outputs.clear();
       cell.model.executionCount = null;
       entry.executed = null;
+      entry.failed = false;
+      entry.generation += 1;
       status.textContent = words.restored;
+      tables?.update();
     });
   }
 
   const download = button(words.downloadCode);
+  download.dataset.readerAction = "downloadCode";
   download.addEventListener("click", () => {
     const source = entries
       .map(
@@ -310,6 +350,59 @@ export async function attachReader(panel, state, navigation) {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
   navigation.node.append(runAll, download);
+  const references = panel.context.model.getMetadata("ms")?.tables;
+  if (references?.length) {
+    navigation.addClass("ms-Reader-nav-hasTables");
+    download.setAttribute("aria-label", words.downloadCode);
+    download.title = words.downloadCode;
+    download.replaceChildren(element("span", words.downloadCode, "ms-Download-label"));
+    const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("aria-hidden", "true");
+    icon.classList.add("ms-Download-icon");
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", "M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5");
+    icon.append(path);
+    download.append(icon);
+    tables = tableViewer({
+      root: notebook.node,
+      toolbar: navigation.node,
+      scrollElement: notebook.node.classList.contains("jp-WindowedPanel-outer")
+        ? notebook.node
+        : (notebook.node.querySelector(".jp-WindowedPanel-outer") ?? notebook.node),
+      words: tableWords,
+      entries: references.map((reference) => {
+        const entry = entries.find(
+          (item) => item.cell.model.getMetadata("ms").example.id === reference.id,
+        );
+        return {
+          ...reference,
+          node: entry.cell.node,
+          run: () => execute(entry, true),
+          state: () => {
+            const kind = (() => {
+              if (entry.running) return "running";
+              if (entry.failed) return "error";
+              if (entry.executed === null) return "empty";
+              if (!entry.succeeded) return "error";
+              if (entry.executed !== entry.cell.model.sharedModel.getSource()) return "stale";
+              const earlierChanged = entries
+                .slice(0, entries.indexOf(entry))
+                .some(
+                  (earlier) =>
+                    earlier.executed !== null &&
+                    earlier.executed !== earlier.cell.model.sharedModel.getSource(),
+                );
+              if (dependent && (entry.inputs !== inputKey(entry) || earlierChanged))
+                return "upstream";
+              return entry.cell.node.querySelector(".jp-OutputArea table") ? "latest" : "noTable";
+            })();
+            return { kind, busy };
+          },
+        };
+      }),
+    });
+  }
 
   // Keep normal editing, text selection and browser navigation. Notebook structural shortcuts
   // and the context menu are not part of this reading surface. Run shortcuts execute one example.
@@ -341,6 +434,7 @@ export async function attachReader(panel, state, navigation) {
   window.addEventListener("contextmenu", contextMenu, true);
   panel.disposed.connect(() => {
     disposed = true;
+    tables?.dispose();
     clearTimeout(hideProgress);
     progress.remove();
     document.body.classList.toggle(

@@ -114,9 +114,10 @@ try {
         height: b.getBoundingClientRect().height,
       })),
     );
+    const expectedLabels = chapter === 2 ? [...labels, "Tables"] : labels;
     check(
-      JSON.stringify(row.map((b) => b.label)) === JSON.stringify(labels),
-      `Chapter ${chapter}: the row's buttons are ${labels.join(", ")}`,
+      JSON.stringify(row.map((b) => b.label)) === JSON.stringify(expectedLabels),
+      `Chapter ${chapter}: the row's buttons are ${expectedLabels.join(", ")}`,
     );
     check(
       row.every((b) => b.height >= 44),
@@ -201,23 +202,36 @@ try {
     );
     check(
       JSON.stringify(arrows.links.map((a) => a.name)) === JSON.stringify(expected) &&
-        arrows.links.every((a) => a.height >= 44 && a.tab === "_blank"),
-      `Chapter ${chapter}: the arrows lead to ${expected.map((e) => e.split("|")[0]).join(" and ")}, in a new tab`,
+        arrows.links.every((a) => a.height >= 44 && a.tab === ""),
+      `Chapter ${chapter}: the arrows lead to ${expected.map((e) => e.split("|")[0]).join(" and ")} in the same tab`,
     );
     check(arrows.fits, `Chapter ${chapter}: at 360 pixels wide the row fits without scrolling`);
     if (chapter === 1) {
-      const opened = page.context().waitForEvent("page", { timeout: 30_000 });
       await page.locator(".ms-Buttons-next").tap();
-      const next = await opened;
-      await next.waitForFunction(() => document.querySelector(".jp-MarkdownOutput h1"), null, {
+      await page.waitForFunction(
+        () => document.querySelector(".jp-MarkdownOutput h1")?.textContent.startsWith("Chapter 2:"),
+        null,
+        {
+          timeout: 120_000,
+        },
+      );
+      const heading = await page.locator(".jp-MarkdownOutput h1").first().textContent();
+      await page.waitForURL((url) => url.searchParams.get("path") === stemOf(2), {
         timeout: 120_000,
       });
-      const heading = await next.locator(".jp-MarkdownOutput h1").first().textContent();
       check(
-        heading.startsWith("Chapter 2:") && page.url().endsWith(stemOf(1)),
-        "Chapter 1: its Next arrow opens Chapter 2 in a new tab",
+        heading.startsWith("Chapter 2:") && page.url().endsWith(stemOf(2)),
+        "Chapter 1: its Next arrow opens Chapter 2 in the same tab",
       );
-      await next.close();
+      await page.goBack();
+      await page.waitForFunction(
+        () => document.querySelector(".jp-MarkdownOutput h1")?.textContent.startsWith("Chapter 1:"),
+        null,
+        { timeout: 120_000 },
+      );
+      await page.waitForSelector('.ms-Reader-nav [data-reader-action="runAll"]', {
+        timeout: 120_000,
+      });
     }
     // Python starts on the setup as the page opens (the extension's warm-up), silently: before Run
     // all, no cell has a count and none has an output.
