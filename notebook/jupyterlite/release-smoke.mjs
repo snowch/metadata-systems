@@ -9,6 +9,11 @@ export async function checkRelease(browser, base) {
   });
   try {
     const page = await context.newPage();
+    const config = await (await fetch(`${base}/jupyter-lite.json`)).json();
+    const workerURL = new URL(
+      config["jupyter-config-data"].msOfflineWorker || "python-worker.js",
+      `${base}/`,
+    ).href;
     let deployed = (await (await fetch(`${base}/release.json`)).json()).commit;
     let fail = false;
     await context.route("**/release.json", (route) => {
@@ -118,12 +123,10 @@ export async function checkRelease(browser, base) {
       "ok update button: unsaved drafts and running code block reload; network failure keeps the page; online reload retains answers/code without downloading the full course",
     );
     // A worker can still be waiting even when the loaded HTML already has the latest commit.
-    await page.evaluate(() => {
-      navigator.serviceWorker.getRegistrations = async () => [
-        { waiting: { scriptURL: new URL("../python-worker.js", location.href).href } },
-      ];
+    await page.evaluate((scriptURL) => {
+      navigator.serviceWorker.getRegistrations = async () => [{ waiting: { scriptURL } }];
       window.dispatchEvent(new Event("focus"));
-    });
+    }, workerURL);
     await page.getByRole("button", { name: "Reload to update", exact: true }).waitFor();
     console.log(
       "ok release: loaded commit, current tick, outdated cross, offline unknown and reconnect; fits a 360px header",
