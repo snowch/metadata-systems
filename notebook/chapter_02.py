@@ -401,6 +401,8 @@ def _(mo):
     mo.md(r"""
     - On Thursday, `daily_sales` agrees with `clean_orders`, not with `orders.jsonl`: it is short by exactly the three orders that `clean_orders` lacks.
     - Leaving out cancelled orders is an assumption, that a cancelled order brings in no money. Nothing so far shows whether `daily_sales` counts them.
+
+    [View daily revenue comparison](#ms-table-cell-16)
     """)
     return
 
@@ -465,6 +467,8 @@ def _(mo):
     mo.md(r"""
     `clean_orders` holds 2 cancelled orders: 7009 on Tuesday, worth 2999 pence, and 7037 on Saturday, worth 2400 pence. The completed-orders query leaves them out, accounting for Tuesday's and Saturday's gaps in `daily_sales`.
 
+    [View daily revenue comparison](#ms-table-cell-16)
+
     The next query counts repeated orders in `orders.jsonl`. The `files` argument lets the query read that file as `raw_orders`.
 
     For identical copies, `extra_pence` is their total value minus the value of one copy. `SUM` adds the values of all copies; when the copies are identical, `MAX` gives the value of one copy.
@@ -495,6 +499,8 @@ def _(warehouse):
 def _(mo):
     mo.md(r"""
     `orders.jsonl` holds two identical copies of order 7015, placed on Wednesday; `clean_orders` holds it once. The `extra_pence` value is 4500 pence, matching Wednesday's gap.
+
+    [View daily revenue comparison](#ms-table-cell-16)
     """)
     return
 

@@ -6,6 +6,7 @@ import { checkRelease } from "./release-smoke.mjs";
 import { checkRetiredChapter } from "./redirect-smoke.mjs";
 import { checkAutosave } from "./autosave-smoke.mjs";
 import { checkNavigation } from "./navigation-smoke.mjs";
+import { checkTables } from "./tables-smoke.mjs";
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { pathToFileURL } from "node:url";
@@ -287,6 +288,7 @@ export async function checkReader(browser, base, check) {
         "My Chapter 1 answer",
       "reader: Chapter 2 recalls the same exercise answers from Chapter 1",
     );
+    await checkTables(page, check);
     await open();
     for (const width of [360, 1280]) {
       await page.setViewportSize({ width, height: 844 });
