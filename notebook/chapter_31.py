@@ -121,6 +121,24 @@ def _(shop):
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
+    DataHub and OpenMetadata keep all three owners. Atlas keeps one, here the first, `etlsvc/batch01.corp.internal@CORP.INTERNAL`. Marquez keeps none.
+
+    Compare this with what you decided.
+
+    DataHub gives all three owners the same ownership type, `urn:li:ownershipType:__system__technical_owner`. OpenMetadata's owners carry no ownership type.
+
+    </details>
+
+    The next cell counts how many owners each platform keeps and how many it distinguishes by ownership type.
+    """)
+    return
+
+
 @app.cell  # reader-id: cell-14
 def _(shop):
     shop.platforms.kept()
@@ -132,11 +150,7 @@ def _(mo):
     mo.md(r"""
     <details><summary>The printed result, explained</summary>
 
-    DataHub and OpenMetadata keep all three. Atlas keeps one, here the first, `etlsvc/batch01.corp.internal@CORP.INTERNAL`. Marquez keeps none.
-
-    Compare this with what you decided.
-
-    The list of stored owners gives DataHub's three owners the same ownership type, `urn:li:ownershipType:__system__technical_owner`, with its description. So the count of owners below it shows none of DataHub's three told apart by ownership type. OpenMetadata's owners carry no ownership type at all.
+    The count shows that none of DataHub's 3 owners can be distinguished by ownership type.
 
     </details>
 
@@ -167,9 +181,29 @@ def _(shop, types):
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    With three different ownership types, both tests pass.
+
+    The next cell counts how many owners each platform keeps and how many it distinguishes by ownership type.
+    """)
+    return
+
+
 @app.cell  # reader-id: cell-18
 def _(shop, types):
     shop.platforms.kept(types)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    With three different ownership types, the count shows all 3 of DataHub's owners distinguished by ownership type.
+
+    The next cell lists the stored owners, their ownership types and the descriptions of DataHub's own ownership types.
+    """)
     return
 
 
@@ -182,10 +216,6 @@ def _(shop, types):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    With three different ownership types, both tests pass. The count of owners below the check shows all 3 of DataHub's owners told apart by ownership type.
-
-    The list of stored owners below that shows each owner's ownership type, and the description of each of DataHub's own ownership types.
-
     An ownership type tells the owners apart. Neither DataHub's names for its four nor their descriptions say which question an owner answers: `__system__business_owner` is described as "Principal stakeholders or domain experts associated with the asset(s).", not as the person to ask.
 
     An ownership type the organisation defines carries the description the organisation gives it.

@@ -85,7 +85,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The two cells below show what the shop already holds about this: Chapter 6's two lines for `build_clean_orders`, and what the warehouse records about `clean_orders`.
+    The next cell shows Chapter 6's two lines recording what `build_clean_orders` reads and writes.
     """)
     return
 
@@ -108,6 +108,20 @@ job build_clean_orders writes: clean_orders
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
+    The lines say what the job reads and what it writes. They do not say when it did its work, or how many rows it read or wrote.
+
+    </details>
+
+    The next query reads the warehouse's record for `clean_orders`.
+    """)
+    return
+
+
 @app.cell  # reader-id: cell-13
 def _(warehouse):
     warehouse.sql("""
@@ -125,8 +139,6 @@ def _(warehouse):
 def _(mo):
     mo.md(r"""
     <details><summary>The printed result, explained</summary>
-
-    The lines say what the job reads and what it writes. They do not say when it did its work, or how many rows it read or wrote.
 
     The warehouse records that `clean_orders` has 44 rows and was last written at `2026-09-14T02:05:52Z`. That is the work of the last night only.
 

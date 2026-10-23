@@ -243,7 +243,7 @@ def _(mo):
     mo.md(r"""
     ## A facet the stage does not read
 
-    The next cell lists the facets the stage does not read. The cell after it asks for the runs of `record_return`: when each started, what it read, and the change and the version of the file from the facet `shop_objectChange`.
+    The next cell lists the facets the stage does not read.
     """)
     return
 
@@ -251,6 +251,16 @@ def _(mo):
 @app.cell  # reader-id: cell-25
 def _(objs):
     objs.unknown
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    All 6 facets are `shop_objectChange`, on the runs of the two functions.
+
+    The next cell asks for the runs of `record_return`: when each started, what it read, and the change and the version of the file from the facet `shop_objectChange`.
+    """)
     return
 
 
@@ -271,8 +281,6 @@ def _(objs):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    All 6 facets are `shop_objectChange`, on the runs of the two functions.
-
     The table of `record_return`'s runs has two columns: when each started, and what it read. The change and the version are missing: the stage did not read the facet.
 
     In the cell that starts `known = dict(`, delete the `# ` at the start of the line `known["shop_objectChange"] = ...`. Select that cell and press **Run below**. Then compare the two tables with what they showed before.

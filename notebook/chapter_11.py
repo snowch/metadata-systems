@@ -198,8 +198,6 @@ def _(mo):
     ## What each reader gets
 
     The next cell prints Jo Marsh's own query, which runs in a spreadsheet that reads the warehouse. It counts orders by the customer's country. It is not in the shop's repository and sends no events.
-
-    The cell after it counts what three readers get on Monday, in the plain week and with each change: the rows of `daily_sales`, the days the dashboard shows, and the rows of Jo Marsh's query.
     """)
     return
 
@@ -207,6 +205,14 @@ def _(mo):
 @app.cell  # reader-id: cell-21
 def _(shop):
     print(shop.schemas.JO_QUERY)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The next cell counts what three readers get on Monday, in the plain week and with each change: the rows of `daily_sales`, the days the dashboard shows, and the rows of Jo Marsh's query.
+    """)
     return
 
 

@@ -182,10 +182,6 @@ def _(mo):
     ## Back to the raw orders
 
     The next cell prints the code of `build_clean_orders`, which writes `clean_orders`.
-
-    The cell after it follows `revenue_pence` back through every program whose code the shop has, to `orders.jsonl`. The export that writes `orders.jsonl` is not in the repository, so the parser stops there.
-
-    In its answer, `value` says whether `revenue_pence` is made from the column, through every step. `rows` says where the column decides which rows count.
     """)
     return
 
@@ -202,6 +198,16 @@ def _(shop, week10):
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The next cell follows `revenue_pence` back through every program whose code the shop has, to `orders.jsonl`. The export that writes `orders.jsonl` is not in the repository, so the parser stops there.
+
+    In its answer, `value` says whether `revenue_pence` is made from the column, through every step. `rows` says where the column decides which rows count.
+    """)
+    return
+
+
 @app.cell  # reader-id: cell-20
 def _(shop, week10):
     shop.columns.upstream(
@@ -213,7 +219,7 @@ def _(shop, week10):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    11 columns: 4 of `clean_orders` and 7 of `orders.jsonl`. The value of `revenue_pence` is made from 2 columns of `orders.jsonl`: `price_pence` and `quantity`.
+    The upstream query lists 11 columns: 4 of `clean_orders` and 7 of `orders.jsonl`. The value of `revenue_pence` is made from 2 columns of `orders.jsonl`: `price_pence` and `quantity`.
 
     All 7 decide which rows count: `build_clean_orders` keeps one row of each set of equal rows (`distinct`), so every column takes part; its filter reads `customer_id` and `quantity`. The filter of `build_daily_sales` reads `status` and `ordered_at`.
 
@@ -238,7 +244,7 @@ def _(mo):
 
     The analyst's script is not in the repository. The analyst sends its code: it writes the result of `SELECT * FROM clean_orders` to the copy.
 
-    Which columns of `clean_orders` can the parser say the copy holds, from this code alone? The next cell gives the code to the parser without the catalogue; the cell after it, with it.
+    Which columns of `clean_orders` can the parser say the copy holds, from this code alone? The next cell gives the code to the parser without the catalogue.
     """)
     return
 
@@ -251,6 +257,16 @@ def _(shop):
     return (week10s,)
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Without the catalogue, the parser gives one row: `clean_orders_copy.csv.*` from `clean_orders.*`. `*` names no column, and the parser lists no column it cannot read.
+
+    The next cell supplies the warehouse's catalogue to the parser.
+    """)
+    return
+
+
 @app.cell  # reader-id: cell-24
 def _(shop, week10s):
     shop.columns.lineage(shop.columns.ANALYST_COPY, week10s.warehouse)
@@ -260,8 +276,6 @@ def _(shop, week10s):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Without the catalogue, the parser gives one row: `clean_orders_copy.csv.*` from `clean_orders.*`. `*` names no column, and the parser lists no column it cannot read.
-
     With the catalogue, it gives 7 rows, one for each column of `clean_orders`, each `copied`.
 
     The next cell follows `revenue_pence` back in the week with the `source` change: 15 columns in all, through the copy (4), then `clean_orders` (4), to `orders.jsonl` (7).
@@ -300,7 +314,7 @@ def _(mo):
 
     No order of Saturday or Sunday was returned, so the rows of `daily_sales` are the same.
 
-    The next cell prints the edited code. The cell after it asks the SQL function about two returned orders and one that was not returned.
+    The next cell prints the edited code.
     """)
     return
 
@@ -316,6 +330,14 @@ def _(shop):
         ][0]
     )
     return (week10n,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The next cell asks the SQL function about two returned orders and one that was not returned.
+    """)
+    return
 
 
 @app.cell  # reader-id: cell-30

@@ -125,6 +125,16 @@ def _(functions):
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The log lists 3 runs of `load_scans` on that sailing's batches: gate 1's batch at 17:31:02 on Tuesday, gate 2's at 17:31:02, and gate 2's again at 07:05:02 on Wednesday, each with its version.
+
+    The next cell lists the scheduler's runs of `build_loads`.
+    """)
+    return
+
+
 @app.cell  # reader-id: cell-14
 def _(scheduler):
     scheduler.runs("build_loads")
@@ -134,8 +144,6 @@ def _(scheduler):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The log lists 3 runs of `load_scans` on that sailing's batches: gate 1's batch at 17:31:02 on Tuesday, gate 2's at 17:31:02, and gate 2's again at 07:05:02 on Wednesday, each with its version.
-
     `build_loads` ran at 01:00 on Wednesday, Thursday and Friday.
 
     No record links a run of `build_loads` to a batch or a version.
@@ -201,8 +209,6 @@ def _(mo):
 
     Change `inputs` so that each run names the version it read, and a delete names the version it removed. `shop.ferry.version_facet(version)` makes the `version` facet. Select the cell and press **Run below**.
 
-    The event the cell after the check prints, from the run that the delete of the test batch started, holds the facet `ferry_batchChange`, with the change that started the function. OpenLineage has a dataset facet, `lifecycleStateChange`, whose values include `CREATE`, `OVERWRITE` and `DROP`; its documentation shows it on a run's output. Recording the change that started a function in a facet of its own is the ferry's choice.
-
     The check below it tests every function run of the three days. As `inputs` stands, 1 of 3 tests passes.
     """)
     return
@@ -224,6 +230,20 @@ def _(inputs, platform, shop):
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
+    With the change, all 3 tests pass.
+
+    </details>
+
+    The event the next cell prints, from the run that the delete of the test batch started, holds the facet `ferry_batchChange`, with the change that started the function. OpenLineage has a dataset facet, `lifecycleStateChange`, whose values include `CREATE`, `OVERWRITE` and `DROP`; its documentation shows it on a run's output. Recording the change that started a function in a facet of its own is the ferry's choice.
+    """)
+    return
+
+
 @app.cell  # reader-id: cell-21
 def _(inputs, platform, shop):
     print(
@@ -239,7 +259,7 @@ def _(mo):
     mo.md(r"""
     <details><summary>The printed result, explained</summary>
 
-    With the change, all 3 tests pass. The delete's event names the test batch with the version `e622b165c27a`, the version the engineer deleted.
+    With the change, the delete's event names the test batch with the version `e622b165c27a`, the version the engineer deleted.
 
     </details>
 

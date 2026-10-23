@@ -507,6 +507,20 @@ def _(records, shop):
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    <details><summary>The printed result, explained</summary>
+
+    For change 1, the check reports `order_count`, which has no description in your record. The check compares the columns of your record with the warehouse's, so the record is now incomplete.
+
+    </details>
+
+    The second change makes the job keep unrefunded orders. The next cell checks the recorded column descriptions against `daily_sales` after this edit.
+    """)
+    return
+
+
 @app.cell  # reader-id: cell-45
 def _(records, shop):
     refunds_week = shop.run_week(["refunds"])
@@ -518,8 +532,6 @@ def _(records, shop):
 def _(mo):
     mo.md(r"""
     <details><summary>The printed result, explained</summary>
-
-    For change 1, the check reports `order_count`, which has no description in your record. The check compares the columns of your record with the warehouse's, so the record is now incomplete.
 
     For change 2, the check reports nothing: the edit changed no column.
 

@@ -224,7 +224,7 @@ def _(mo):
 
     Before you read on, decide which of the three readings the dashboard will meet in this week.
 
-    The next cell lists the runs that wrote no rows. The cell after it tests the dashboard against the three readings.
+    The next cell lists the runs that wrote no rows.
     """)
     return
 
@@ -236,6 +236,18 @@ def _(shop):
     return (week13r,)
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    4 runs: `build_clean_orders` and `build_daily_sales`, on Sunday 13 and on Monday 14. Each succeeded.
+
+    `build_clean_orders` read 43 rows and then 48, and wrote 0 each time. On Saturday 12 it had written 31. A count of 0 stands out only beside the rows read and the counts of earlier nights.
+
+    The next cell tests the dashboard against the three readings of "up to date".
+    """)
+    return
+
+
 @app.cell  # reader-id: cell-25
 def _(shop, week13r):
     shop.observe.readings(week13r)
@@ -245,10 +257,6 @@ def _(shop, week13r):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    4 runs: `build_clean_orders` and `build_daily_sales`, on Sunday 13 and on Monday 14. Each succeeded.
-
-    `build_clean_orders` read 43 rows and then 48, and wrote 0 each time. On Saturday 12 it had written 31. A count of 0 stands out only beside the rows read and the counts of earlier nights.
-
     Refreshed lately and built from the latest data are met. Showing the latest day is not. The dashboard's latest day is Friday 11, two days before Sunday 13.
 
     By status and by time, the dashboard is up to date. By the rows written against earlier nights, and by its latest day, it is not.

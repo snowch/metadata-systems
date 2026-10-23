@@ -381,6 +381,16 @@ def _(shop, start):
 
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The check lists 2 problems: `producer` is missing, and `run.runId` is not a UUID.
+
+    The next cell sends this invalid event to a new consumer.
+    """)
+    return
+
+
 @app.cell  # reader-id: cell-32
 def _(broken, shop):
     refusing = shop.openlineage.Consumer().send(broken)
@@ -395,8 +405,6 @@ def _(broken, shop):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The check lists 2 problems: `producer` is missing, and `run.runId` is not a UUID.
-
     The cell above sent the event to a new consumer. The consumer set it aside and holds no run from it.
 
     Setting such an event aside is how the shop's consumer is written. The specification says what an event must hold.

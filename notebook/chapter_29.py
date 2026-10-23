@@ -146,7 +146,7 @@ def _(mo):
     - `START` gives the state `RUNNING`, `COMPLETE` gives `COMPLETED`, `ABORT` gives `ABORTED` and `FAIL` gives `FAILED`; `RUNNING` and `OTHER`, the specification's other two types, give `RUNNING`, as does any type it does not know;
     - `COMPLETE`, `ABORT` or `FAIL` moves the run's end time to the event's own time.
 
-    The two cells below send Chapter 25's arrivals, Part V's faults included, to your collector (the shop's versions of your three pieces from Chapter 25) and through Marquez's rules, in the order the events arrived.
+    The next cell compares your collector with Marquez's rules, using Chapter 25's arrivals with Part V's faults. The collector uses the shop's versions of the three pieces you wrote in Chapter 25. It compares run states, end times and event counts after processing the events in arrival order.
 
     The run of `build_daily_sales` early on Friday 11 has a `START` with the event time 02:30:00 and a `COMPLETE` with the event time 02:30:21. The `START` arrived at 02:31:03, after the `COMPLETE`.
     """)
@@ -167,12 +167,6 @@ def _(shop, week29):
     return
 
 
-@app.cell  # reader-id: cell-17
-def _(shop, week29):
-    shop.consumers.totals(week29)
-    return
-
-
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -185,6 +179,24 @@ def _(mo):
     Thursday 10: the run's `COMPLETE` was sent again with a new event time, a retry. Your collector dropped the retry and kept the end at 02:30:21. Marquez's rules stored 3 event rows for the run and moved its end to 02:30:52.
 
     Saturday 12: the same `COMPLETE` of `remove_return` arrived twice, a repeat. Your collector stored 2 events for the run; Marquez's rules stored 3 rows.
+
+    </details>
+
+    The next cell counts stored and refused events over the whole week for both consumers.
+    """)
+    return
+
+
+@app.cell  # reader-id: cell-17
+def _(shop, week29):
+    shop.consumers.totals(week29)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    <details><summary>The printed result, explained</summary>
 
     Over the week, both refused the developer's event with no `eventTime`. Your collector stored 68 events, and Marquez's rules stored 70.
 
@@ -211,6 +223,14 @@ def _(order, shop, week29):
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    With `"event time"`, the check passes: the run early on Friday 11 is `COMPLETED` by Marquez's rules and `COMPLETE` in your collector.
+    """)
+    return
+
+
 @app.cell  # reader-id: cell-21
 def _(order, shop, week29):
     shop.consumers.compare(week29, order)
@@ -220,8 +240,6 @@ def _(order, shop, week29):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    With `"event time"`, the check passes: the run early on Friday 11 is `COMPLETED` by Marquez's rules and `COMPLETE` in your collector.
-
     The run early on Thursday 10 still ends at 02:30:52 by Marquez's rules: sorting does not drop a retry. Saturday's repeat is still 3 rows.
 
     Putting events in order and dropping retries and repeats are two separate steps.

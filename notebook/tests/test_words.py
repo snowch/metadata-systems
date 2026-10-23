@@ -410,7 +410,7 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         cancelled = self.w.sql("SELECT order_id, date(ordered_at) AS day, price_pence * quantity AS pence FROM clean_orders WHERE status = 'cancelled'")
         self.assertEqual([(c["order_id"], c["day"], c["pence"]) for c in cancelled], [(7009, "2026-09-08", 2999), (7037, "2026-09-12", 2400)])
         self.assertEqual((raw["2026-09-08"] - daily["2026-09-08"], raw["2026-09-12"] - daily["2026-09-12"]), (2999, 2400))
-        self.says("`clean_orders` holds 2 cancelled orders, 7009 on Tuesday, worth 2999 pence, and 7037 on Saturday, worth 2400 pence.")
+        self.says("`clean_orders` holds 2 cancelled orders: 7009 on Tuesday, worth 2999 pence, and 7037 on Saturday, worth 2400 pence.")
         self.assertIn("HAVING COUNT(*) > 1", SOURCE[2])
         copies = [o for o in self.week.storage.records(shop.FILES["orders"]) if o["order_id"] == 7015]
         self.assertEqual((len(copies), copies[0]["ordered_at"][:10], copies[0]["price_pence"] * copies[0]["quantity"]), (2, "2026-09-09", 4500))
@@ -1883,11 +1883,11 @@ class TheWordsOfPartVII(unittest.TestCase):
         from shop import platforms as P
 
         self.assertEqual([r["owners kept"] for r in P.kept()], [3, 3, 1, 0])
-        self.says("DataHub and OpenMetadata keep all three. Atlas keeps one, here the first, `etlsvc/batch01.corp.internal@CORP.INTERNAL`. Marquez keeps none.", 31)
+        self.says("DataHub and OpenMetadata keep all three owners. Atlas keeps one, here the first, `etlsvc/batch01.corp.internal@CORP.INTERNAL`. Marquez keeps none.", 31)
         ns: dict = {}
         exec(P.REFERENCE["types"], ns)
         self.assertEqual(P.kept(ns["types"])[0]["owners told apart by ownership type"], 3)
-        self.says("all 3 of DataHub's owners told apart by ownership type", 31)
+        self.says("all 3 of DataHub's owners distinguished by ownership type", 31)
 
     def test_chapter_32(self):
         from shop import ml as M
@@ -1920,7 +1920,7 @@ class TheWordsOfPartVII(unittest.TestCase):
         self.assertEqual(F.check_inputs(f, ns["stub_inputs"]).passed, 1)
         self.says("As `inputs` stands, 1 of 3 tests passes.", 33)
         [deleted] = [c for c in f.changes if c["change"] == "deleted"]
-        self.says(f"The delete's event names the test batch with the version `{deleted['previous']}`", 33)
+        self.says(f"With the change, the delete's event names the test batch with the version `{deleted['previous']}`", 33)
         c = F.collect(F.events(f, ns["reference_inputs"]))
         g = F.graph(c)
         edges = {(r["job"], r["edge"]): r for r in F.edges(g)}

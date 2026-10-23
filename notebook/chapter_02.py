@@ -444,7 +444,7 @@ def _(mo):
 
     </details>
 
-    The query also explains the other three days that differ. The two cells below list the cancelled orders that `clean_orders` holds, and the orders that `orders.jsonl` holds more than once.
+    The next query lists the cancelled orders in `clean_orders`.
     """)
     return
 
@@ -459,6 +459,16 @@ def _(warehouse):
         price_pence * quantity AS pence
     FROM clean_orders
     WHERE status = 'cancelled'
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    `clean_orders` holds 2 cancelled orders: 7009 on Tuesday, worth 2999 pence, and 7037 on Saturday, worth 2400 pence. The completed-orders query leaves them out, accounting for Tuesday's and Saturday's gaps in `daily_sales`.
+
+    The next query counts repeated orders in `orders.jsonl`. The `files` argument lets the query read that file as `raw_orders`.
     """)
     return
 
@@ -483,7 +493,7 @@ def _(warehouse):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    `clean_orders` holds 2 cancelled orders, 7009 on Tuesday, worth 2999 pence, and 7037 on Saturday, worth 2400 pence. The query leaves them out, and so does `daily_sales`: they are Tuesday's and Saturday's gaps. `orders.jsonl` holds order 7015, placed on Wednesday, twice, and `clean_orders` holds it once, so Wednesday's gap is its second copy, worth 4500 pence.
+    `orders.jsonl` holds order 7015, placed on Wednesday, twice, and `clean_orders` holds it once, so Wednesday's gap is its second copy, worth 4500 pence.
     """)
     return
 
@@ -521,13 +531,13 @@ def _(mo):
     mo.md(r"""
     ### Could have been made, or was made
 
-    The query shows how `daily_sales` **could have been** made, not how it **was** made.
+    The completed-orders query shows how `daily_sales` **could have been** made, not how it **was** made.
 
     The difference is tested by three small changes to the shop. None of them happened in the week you have read.
 
     Each cell below runs the week again with one change. It prints Monday morning's records in three columns: `the week as it ran`, `with the change`, and `changed`, which says `yes` where the two differ.
 
-    The equality check above required the query to reproduce `daily_sales` exactly. The last row of these comparisons uses a weaker test: it lists queries that match every existing row of `daily_sales`, even if they return additional rows. Here, "fits" means matching the existing rows; it does not mean reproducing the whole table exactly.
+    The equality check above required the completed-orders query to reproduce `daily_sales` exactly. The last row of these comparisons uses a weaker test: it lists queries that match every existing row of `daily_sales`, even if they return additional rows. Here, "fits" means matching the existing rows; it does not mean reproducing the whole table exactly.
 
     <details><summary>How the last row is found</summary>
 
@@ -647,7 +657,7 @@ def _(mo):
     - keep cancelled orders
     - drop orders with a quantity of 0 or less
 
-    The first cell counts the orders in `orders.jsonl` with a quantity of 0 or less. The second lists every setting of the four rules that turns the raw orders into `clean_orders` exactly, one setting per row.
+    The next cell counts the orders in `orders.jsonl` with a quantity of 0 or less.
     """)
     return
 
@@ -662,6 +672,16 @@ def _(storage):
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    The count is 0. No order in the week has a quantity of 0 or less.
+
+    The next cell lists every setting of the four cleaning rules that reproduces `clean_orders` exactly, one setting per row.
+    """)
+    return
+
+
 @app.cell  # reader-id: cell-58
 def _(shop, week):
     shop.cleaning_rules_that_fit(week)
@@ -671,8 +691,6 @@ def _(shop, week):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The count is 0. No order in the week has a quantity of 0 or less.
-
     So the last rule never removes a row. Two settings fit: one with the rule and one without.
 
     From the data you cannot tell whether the rule exists. Testing it requires an input that would produce different results with and without the rule.
