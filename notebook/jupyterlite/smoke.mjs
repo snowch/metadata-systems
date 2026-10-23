@@ -835,13 +835,12 @@ try {
       );
     }
     if (chapter === 26) {
+      // Change the assignments, independently of the layout of the surrounding function.
       await rewrite(
         "def add(edges, event):",
+        ['edge["last"] = event["eventTime"]'],
         [
-          'def add(edges, event):\n    for key in shop.lineage_graph.edges_of(event):\n        edge = edges.setdefault(key, {"runs": set(), "first": event["eventTime"], "last": event["eventTime"]})\n        edge["runs"].add(event["run"]["runId"])\n        edge["last"] = event["eventTime"]',
-        ],
-        [
-          'def add(edges, event):\n    for key in shop.lineage_graph.edges_of(event):\n        edge = edges.setdefault(key, {"runs": set(), "first": event["eventTime"], "last": event["eventTime"]})\n        edge["runs"].add(event["run"]["runId"])\n        edge["first"] = min(edge["first"], event["eventTime"])\n        edge["last"] = max(edge["last"], event["eventTime"])',
+          'edge["first"] = min(edge["first"], event["eventTime"])\n        edge["last"] = max(edge["last"], event["eventTime"])',
         ],
       );
       await run("Run below", "Chapter 26, Run below with add");
