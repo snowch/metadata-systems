@@ -475,6 +475,15 @@ Read 10 October 2026, for `notebook/` and `docs/notes/notebook-prototype.md`.
   report with figures for one iPhone was found by search but could not be opened from this
   environment, so nothing here relies on it.
 
+## SQLite aggregate functions (Chapter 2)
+
+Read on 23 October 2026: SQLite's [aggregate function documentation](https://www.sqlite.org/lang_aggfunc.html).
+`SUM` adds the non-null values in a group; `MAX` returns its greatest non-null value.
+Chapter 2 subtracts `MAX(price_pence * quantity)` from the sum to calculate the excess value
+of identical copies. This assumes identical copies; it is not a rule for resolving conflicting
+records with the same order id. The chapter's test checks both the identical rows and the query's
+4,500-pence result against the shop's data.
+
 ## SQLite's query plan (Chapter 24)
 
 Read on 13 October 2026, in SQLite's source: `src/wherecode.c` in the project's GitHub mirror

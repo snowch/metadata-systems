@@ -418,9 +418,13 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         self.assertIn("HAVING COUNT(*) > 1", SOURCE[2])
         copies = [o for o in self.week.storage.records(shop.FILES["orders"]) if o["order_id"] == 7015]
         self.assertEqual((len(copies), copies[0]["ordered_at"][:10], copies[0]["price_pence"] * copies[0]["quantity"]), (2, "2026-09-09", 4500))
+        self.assertEqual(copies[0], copies[1])
+        duplicate_query = next(s for s in strings(2) if "AS extra_pence" in s)
+        duplicates = self.w.sql(duplicate_query, files={"raw_orders": shop.FILES["orders"]})
+        self.assertEqual(list(duplicates), [{"order_id": 7015, "day": "2026-09-09", "copies": 2, "extra_pence": 4500}])
         self.assertEqual(len(self.w.sql("SELECT * FROM clean_orders WHERE order_id = 7015")), 1)
         self.assertEqual(raw["2026-09-09"] - daily["2026-09-09"], 4500)
-        self.says("`orders.jsonl` holds order 7015, placed on Wednesday, twice, and `clean_orders` holds it once, so Wednesday's gap is its second copy, worth 4500 pence.")
+        self.says("`orders.jsonl` holds two identical copies of order 7015, placed on Wednesday; `clean_orders` holds it once. The `extra_pence` value is 4500 pence, matching Wednesday's gap.")
         # The diagram of the hypothesis draws the engine's one fitting query and its tables' rows.
         drawn = figures.inferred(self.week, {"from": "{rows}", "step": "s", "fit": "{rows}", "to": "{rows}", "recorded": "r"})
         self.assertIn("<code>clean_orders</code><div class=\"ms-muted\">44</div>", drawn)

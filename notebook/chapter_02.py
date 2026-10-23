@@ -466,6 +466,8 @@ def _(mo):
     `clean_orders` holds 2 cancelled orders: 7009 on Tuesday, worth 2999 pence, and 7037 on Saturday, worth 2400 pence. The completed-orders query leaves them out, accounting for Tuesday's and Saturday's gaps in `daily_sales`.
 
     The next query counts repeated orders in `orders.jsonl`. The `files` argument lets the query read that file as `raw_orders`.
+
+    For identical copies, `extra_pence` is their total value minus the value of one copy. `SUM` adds the values of all copies; when the copies are identical, `MAX` gives the value of one copy.
     """)
     return
 
@@ -477,7 +479,9 @@ def _(warehouse):
     SELECT
         order_id,
         date(ordered_at) AS day,
-        COUNT(*) AS copies
+        COUNT(*) AS copies,
+        SUM(price_pence * quantity)
+            - MAX(price_pence * quantity) AS extra_pence
     FROM raw_orders
     GROUP BY order_id
     HAVING COUNT(*) > 1
@@ -490,7 +494,7 @@ def _(warehouse):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    `orders.jsonl` holds order 7015, placed on Wednesday, twice, and `clean_orders` holds it once, so Wednesday's gap is its second copy, worth 4500 pence.
+    `orders.jsonl` holds two identical copies of order 7015, placed on Wednesday; `clean_orders` holds it once. The `extra_pence` value is 4500 pence, matching Wednesday's gap.
     """)
     return
 
