@@ -221,7 +221,7 @@ def _(mo):
 
     The cells below read three of these records:
 
-    - The warehouse's `information_schema` for `daily_sales` (the table, then its columns).
+    - The warehouse's `information_schema` for `daily_sales`: its table details, then its column names and data types.
     - The listing of the bucket `shop-raw`.
     - The reporting tool's record of `sales_dashboard`.
     """)
