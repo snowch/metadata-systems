@@ -58,9 +58,12 @@ def tally(systems) -> str:
     for _, assets in systems:
         for _, kind in assets:
             counts[kind] = counts.get(kind, 0) + 1
-    parts = [f"{n} {kind}{'' if n == 1 else 's'}" for kind, n in counts.items()]
+    words = ("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve")
+    number = lambda n: words[n] if n < len(words) else str(n)
+    parts = [f"{number(n)} {kind}{'' if n == 1 else 's'}" for kind, n in counts.items()]
     total = sum(counts.values())
-    return f"{' + '.join(parts)} = {total} asset{'' if total == 1 else 's'}"
+    listed = ", ".join(parts[:-1]) + " and " + parts[-1] if len(parts) > 1 else "".join(parts)
+    return f"The platform holds {number(total)} asset{'' if total == 1 else 's'}: {listed}."
 
 
 def pipeline(week: Week, flow_label: str = "Nightly jobs") -> str:

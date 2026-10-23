@@ -1746,8 +1746,10 @@ class TheWordsKeepTheRules(unittest.TestCase):
         self.assertGreaterEqual(records, len(CELLS[1]))
         self.assertTrue(records <= first("metadata") < after, (records, first("metadata"), after))
         self.assertIn("is called **metadata**", chapter[first("metadata")])
-        self.assertTrue(chapter[first("asset")].startswith("An asset is one thing the platform holds"))
-        self.assertLess(first("asset"), len(CELLS[1]))
+        # The Chapter 1 diagram introduces assets through its computed summary.
+        self.assertIn("The platform holds seven assets: three files, three tables and one dashboard.",
+                      figures.pipeline(shop.run_week()))
+        self.assertLess(SOURCE[1].index("figures.pipeline(week)"), SOURCE[1].index("## The product catalogue"))
         # Chapter 3 introduces "descriptive", "operational" and "schema" where it sets the reader's
         # record beside what the systems record; Chapter 4 its four terms where it asks what the
         # records describe. Neither uses its terms before then, objectives included.

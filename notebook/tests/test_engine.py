@@ -30,7 +30,9 @@ class TheWeekAsItRan(unittest.TestCase):
                 ["sales_dashboard"],
             ],
         )
-        self.assertEqual(figures.tally(systems), "3 files + 3 tables + 1 dashboard = 7 assets")
+        self.assertEqual(figures.tally(systems), "The platform holds seven assets: three files, three tables and one dashboard.")
+        self.assertEqual(figures.tally(figures.platform_assets(shop.run_week(["returns"]))),
+                         "The platform holds eleven assets: six files, four tables and one dashboard.")
 
     def test_row_counts(self):
         counts = {r["table_name"]: r["row_count"] for r in self.w.sql("SELECT * FROM information_schema.tables")}

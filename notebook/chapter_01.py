@@ -54,14 +54,6 @@ def _(figures, mo, week):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    An asset is one thing the platform holds: here, a file, a table or a dashboard.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
     The shop's first week ran from Monday 7 to Sunday 13 September. Each night, in the early hours of the next day, the export writes the three files to object storage again, then jobs write the tables and refresh the dashboard. The last night ends early on Monday 14 September, before you start work.
     """)
     return
