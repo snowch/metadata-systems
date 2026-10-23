@@ -132,7 +132,7 @@ def _(figures, mo, week):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The cell below sets each day's raw orders beside that day's row in `daily_sales`.
+    The cell below sets each day's raw orders beside that day's row in `daily_sales`. `difference_pence` is the raw total minus the reported total, in pence: 0 means they match, and a positive value means the raw total is higher.
     """)
     return
 
@@ -146,10 +146,7 @@ def _(warehouse):
         d.day,
         r.raw_orders_pence,
         d.revenue_pence,
-        CASE
-            WHEN r.raw_orders_pence = d.revenue_pence THEN 'same'
-            ELSE 'different'
-        END AS compared
+        r.raw_orders_pence - d.revenue_pence AS difference_pence
     FROM daily_sales AS d
     JOIN (
         SELECT

@@ -306,6 +306,10 @@ class TheWordsMatchTheEngine(unittest.TestCase):
         for o in self.week.storage.records(shop.FILES["orders"]):
             raw[o["ordered_at"][:10]] = raw.get(o["ordered_at"][:10], 0) + o["price_pence"] * o["quantity"]
         daily = {r["day"]: r["revenue_pence"] for r in self.w.sql("SELECT * FROM daily_sales")}
+        comparison = next(s for s in strings(2) if "AS difference_pence" in s)
+        compared = self.w.sql(comparison, files={"raw_orders": shop.FILES["orders"]})
+        self.assertEqual(list(compared[0]), ["day", "raw_orders_pence", "revenue_pence", "difference_pence"])
+        self.assertEqual([r["difference_pence"] for r in compared], [0, 2999, 4500, 15400, 0, 2400, 0])
         self.assertEqual((raw["2026-09-10"], daily["2026-09-10"]), (20550, 5150))
         # The three totals are a figure the engine draws: each amount in pounds and in pence.
         self.assertEqual(raw["2026-09-10"] - daily["2026-09-10"], 15400)
