@@ -1477,7 +1477,6 @@ body.ms-Reading #top-panel-wrapper {
   box-sizing: border-box;
   min-height: 24px;
   max-height: 24px;
-  padding: 3px 12px;
   font: 12px/1.5 var(--jp-ui-font-family);
   color: var(--jp-ui-font-color2);
   text-align: right;
@@ -1491,4 +1490,33 @@ body.ms-Reading #top-panel-wrapper {
 }
 .ms-Release a:focus-visible {
   outline: 2px solid var(--jp-brand-color1);
+}
+
+.ms-Release-body {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  padding: 3px 12px;
+}
+.ms-Release button {
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 1px solid var(--jp-border-color1);
+  border-radius: 4px;
+  background: var(--jp-layout-color1);
+  color: var(--jp-ui-font-color1);
+  font: inherit;
+  cursor: pointer;
+}
+.ms-Release button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.ms-Release [hidden] {
+  display: none;
+}
+.ms-Release-message {
+  flex-basis: 100%;
 }

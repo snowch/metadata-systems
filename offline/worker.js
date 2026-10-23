@@ -67,8 +67,15 @@ self.addEventListener("fetch", (event) => {
 });
 
 self.addEventListener("message", (event) => {
-  if (event.data?.type === "MS_OFFLINE_CLAIM") event.waitUntil(self.clients.claim());
+  if (event.data?.type === "MS_OFFLINE_ACTIVATE") event.waitUntil(self.skipWaiting());
+  if (event.data?.type === "MS_OFFLINE_CLAIM")
+    event.waitUntil(
+      self.clients.claim().then(() => event.ports[0]?.postMessage({ claimed: true })),
+    );
 });
 
 // Supplied by the pinned JupyterLite build, not a copied implementation of its protocol.
+// The pinned upstream install handler calls skipWaiting unconditionally. Its precache list
+// is empty; handle installation here so subsequent workers wait for the reader's update action.
+self.addEventListener("install", (event) => event.stopImmediatePropagation());
 importScripts("./jupyterlite/service-worker.js");

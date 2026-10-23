@@ -11,6 +11,7 @@ export const STRINGS = {
     size: "Full course: {size} MB",
     download: "Download full course",
     update: "Download update",
+    reload: "Reload to update",
     cancel: "Cancel download",
     remove: "Remove downloaded course",
     progress: "Downloaded {done} of {total} MB",

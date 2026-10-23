@@ -805,3 +805,14 @@ checks and reconnection; `scripts/offline-smoke.mjs` checks that a downloaded co
 unknown freshness state offline. The offline snapshot excludes the release record, and checks
 use the existing download-request bypass in `offline/worker.js`. These checks compare deployed
 files, not the latest commit on the main branch.
+
+Explicit update activation is checked against the pinned JupyterLite 0.8.6 service worker shipped
+by the build (`service-worker.js`): its install handler calls `skipWaiting` and `cacheAll`, whose
+precache list is empty; its activate handler calls `clients.claim`. The course wrappers intercept
+installation to wait for an explicit `MS_OFFLINE_ACTIVATE` message. `offline/activate.js` waits
+for activation and a claim acknowledgement before reload. `offline/activate.test.mjs` checks
+worker selection and offline activation; the offline browser smoke test creates a waiting worker
+with two open reader tabs, updates the snapshot, and verifies retained answers and code plus
+manual reload in the second tab. The release smoke test checks ordinary online reload, failed
+network checks, running-code and unsaved-edit guards, and that no full course download occurs
+when the reader has no offline snapshot.

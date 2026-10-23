@@ -22,6 +22,12 @@ const server = spawn("python3", ["-m", "http.server", "8877", "--bind", "127.0.0
 const manifestPath = join(site, "offline-manifest.json");
 const original = await readFile(manifestPath, "utf8");
 const first = JSON.parse(original);
+const htmlPath = join(site, "jupyterlite/notebooks/index.html");
+const releasePath = join(site, "jupyterlite/release.json");
+const workerPath = join(site, "offline-worker.js");
+const originalHTML = await readFile(htmlPath, "utf8");
+const originalRelease = await readFile(releasePath, "utf8");
+const originalWorker = await readFile(workerPath, "utf8");
 const extra = "offline-test-revision.txt";
 let context;
 const ok = (text) => console.log(`ok  offline: ${text}`);
@@ -165,6 +171,15 @@ try {
   ok("Python runs in new chapters offline; answers survive saving, refresh and chapter navigation");
   await context.setOffline(false);
   const content = Buffer.from("A second complete offline release.");
+  const updatedCommit = "abcdef0123".repeat(4);
+  const updatedHTML = originalHTML.replace(
+    /(<meta name="ms-commit" content=")[a-f0-9]{40}/,
+    "$1" + updatedCommit,
+  );
+  await writeFile(htmlPath, updatedHTML);
+  await writeFile(releasePath, JSON.stringify({ commit: updatedCommit }));
+  // A changed worker must activate while both old reader tabs remain open.
+  await writeFile(workerPath, originalWorker + "\n// A new published worker.\n");
   const next = {
     ...first,
     version: "0123456789abcdef0123",
@@ -178,6 +193,16 @@ try {
       },
     ],
   };
+  next.files = next.files.map((file) =>
+    file.path !== "jupyterlite/notebooks/index.html"
+      ? file
+      : {
+          ...file,
+          size: Buffer.byteLength(updatedHTML),
+          sha256: createHash("sha256").update(updatedHTML).digest("hex"),
+        },
+  );
+  next.bytes = next.files.reduce((sum, file) => sum + file.size, 0);
   await writeFile(manifestPath, JSON.stringify(next));
   await page.goto(base);
   await page.getByRole("button", { name: "Download update", exact: true }).waitFor();
@@ -210,16 +235,126 @@ try {
   );
   ok("a checksum mismatch cannot publish a corrupt update");
   await writeFile(join(site, extra), content);
-  await page.goto(base);
-  await page.getByRole("button", { name: "Download update", exact: true }).click();
-  await done(page);
-  await ready(page);
+  await chapter(page, 1);
+  try {
+    await page.locator('.ms-Release[data-state="updateAvailable"]').waitFor();
+  } catch (error) {
+    console.log(
+      "update detection",
+      await page.evaluate(async () => ({
+        online: navigator.onLine,
+        commit: document.querySelector('meta[name="ms-commit"]')?.content,
+        badge: document.querySelector(".ms-Release")?.outerHTML,
+        release: await fetch(new URL("../release.json", location.href), {
+          headers: { "X-MS-Offline-Download": "release-check" },
+          cache: "no-store",
+        })
+          .then((r) => r.text())
+          .catch(String),
+      })),
+    );
+    throw error;
+  }
+  const other = await context.newPage();
+  await chapter(other, 2);
+  const otherDraft = other.locator(".ms-Example .cm-content").first();
+  await otherDraft.fill((await otherDraft.innerText()) + "\n# Kept in another open tab");
+  await other.evaluate(() => {
+    window.updateTabMarker = "still open";
+    window.controllerUpdates = 0;
+    navigator.serviceWorker.addEventListener("controllerchange", () => window.controllerUpdates++);
+  });
+  const home = await context.newPage();
+  await home.goto(base);
+  await home.locator(".offline-course").waitFor();
+  await home.evaluate(() => (window.updateHomeMarker = "still open"));
+  await page.bringToFront();
+  await page.waitForFunction(
+    async () => Boolean((await navigator.serviceWorker.getRegistration())?.waiting),
+    null,
+    { timeout: 30000 },
+  );
+  await page.evaluate(() => {
+    window.controllerUpdates = 0;
+    navigator.serviceWorker.addEventListener("controllerchange", () => window.controllerUpdates++);
+  });
+  await page.getByRole("button", { name: "Update and reload", exact: true }).click();
+  await page.waitForFunction(
+    (commit) => document.querySelector('meta[name="ms-commit"]')?.content === commit,
+    updatedCommit,
+    { timeout: 180000 },
+  );
+  await page.locator('.ms-Release[data-state="latest"]').waitFor();
+  assert.match(
+    await page.locator('.ms-Example[data-example="daily_sales"] .cm-content').innerText(),
+    /My offline edit/,
+  );
+  assert.equal(
+    await (await findAnswer(page, "ch01.daily_sales")).inputValue(),
+    "Changed without a connection",
+  );
+  assert.equal(
+    await other.evaluate(() => window.updateTabMarker),
+    "still open",
+    "another tab must never be reloaded automatically",
+  );
+  assert.ok(
+    (await other.evaluate(() => window.controllerUpdates)) > 0,
+    "the new worker claims other open tabs without closing them",
+  );
+  assert.equal(await home.evaluate(() => window.updateHomeMarker), "still open");
+  await home.getByRole("button", { name: "Reload to update", exact: true }).waitFor();
+  await home.getByRole("button", { name: "Reload to update", exact: true }).click();
+  await home.waitForFunction(() => window.updateHomeMarker === undefined);
+  await ready(home);
+  await home.close();
+  await other.getByRole("button", { name: "Reload to update", exact: true }).waitFor();
+  await other.bringToFront();
+  await other.getByRole("button", { name: "Reload to update", exact: true }).click();
+  await other.waitForFunction(
+    (commit) => document.querySelector('meta[name="ms-commit"]')?.content === commit,
+    updatedCommit,
+    { timeout: 180000 },
+  );
+  await other.locator(".ms-Example .cm-content").first().waitFor();
+  assert.match(
+    await other.locator(".ms-Example .cm-content").first().innerText(),
+    /Kept in another open tab/,
+  );
+  await other.close();
+  ok(
+    "Update and reload verifies the offline snapshot, activates a waiting worker with two tabs open, retains answers/code, and lets the other tab choose when to reload",
+  );
   await context.setOffline(true);
   assert.equal(
     await page.evaluate(async (url) => (await fetch(url)).text(), base + extra),
     content.toString(),
   );
   ok("a completed update is published atomically and serves its new files offline");
+  // Retrying an already complete release must retain the previous snapshot for old open tabs.
+  const sharedClient = await readFile(new URL("../offline/client.js", import.meta.url), "utf8");
+  await page.evaluate(
+    async ({ source, manifest, base }) => {
+      const create = new Function(
+        source.replace("export function createOffline", "function createOffline") +
+          ";return createOffline;",
+      )();
+      const prefix = `ms:metadata-systems:offline:${base}:`;
+      const stateURL = new URL("__offline_state__", base).href;
+      const meta = await caches.open(prefix + "meta");
+      const before = await (await meta.match(stateURL)).json();
+      if (!before.previous) throw new Error("Missing previous snapshot before retry");
+      await create(base).download(manifest, new AbortController().signal, () => {});
+      const after = await (await meta.match(stateURL)).json();
+      if (
+        after.previous !== before.previous ||
+        !(await caches.keys()).includes(prefix + before.previous)
+      )
+        throw new Error("Retry discarded the previous snapshot");
+    },
+    { source: sharedClient, manifest: next, base },
+  );
+  ok("retrying the same release keeps the previous snapshot for other open tabs");
   // Simulate an evicted asset without trusting a localStorage ready flag.
   await context.setOffline(false);
   await page.goto(base);
@@ -303,6 +438,9 @@ try {
   await context?.close();
   server.kill();
   await writeFile(manifestPath, original);
+  await writeFile(htmlPath, originalHTML);
+  await writeFile(releasePath, originalRelease);
+  await writeFile(workerPath, originalWorker);
   await rm(join(site, extra), { force: true });
   await rm(temp, { recursive: true, force: true });
 }

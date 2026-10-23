@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { fill } from "../fill";
 import { STRINGS } from "../strings";
-import { download, manifest, register, remove, snapshot, supported } from "../offline";
+import { base, download, manifest, register, remove, snapshot, supported } from "../offline";
 import type { Manifest, Snapshot } from "../offline";
+import { activateWorker } from "../../../../offline/activate.js";
 
 const words = STRINGS.offline;
 const mb = (bytes: number) => (bytes / 1e6).toFixed(1);
@@ -13,6 +14,7 @@ export function Offline() {
   const [available, setAvailable] = useState<Manifest | null>(null);
   const [saved, setSaved] = useState<Snapshot>({ ready: false });
   const [online, setOnline] = useState(navigator.onLine);
+  const [reloadReady, setReloadReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(0);
   const [message, setMessage] = useState("");
@@ -37,6 +39,17 @@ export function Offline() {
       }
     };
     void refresh();
+    const updates =
+      typeof BroadcastChannel === "undefined"
+        ? null
+        : new BroadcastChannel(`ms:metadata-systems:updates:${base}`);
+    updates?.addEventListener("message", (event) => {
+      if (alive && event.data?.type === "ready") {
+        setReloadReady(true);
+        setMessage(words.updated);
+        void refresh();
+      }
+    });
     const connection = () => {
       setOnline(navigator.onLine);
       setMessage("");
@@ -47,6 +60,7 @@ export function Offline() {
     window.addEventListener("focus", connection);
     return () => {
       alive = false;
+      updates?.close();
       window.removeEventListener("online", connection);
       window.removeEventListener("offline", connection);
       window.removeEventListener("focus", connection);
@@ -78,6 +92,26 @@ export function Offline() {
       await download(available, controller.signal, setDone);
       setSaved(await snapshot());
       setMessage(update ? words.updated : words.ready);
+      if (update) {
+        setReloadReady(true);
+        try {
+          const response = await fetch(new URL("jupyterlite/release.json", base), {
+            cache: "no-store",
+            headers: { "X-MS-Offline-Download": "release-check" },
+          });
+          if (response.ok) {
+            const release = await response.json();
+            const updates =
+              typeof BroadcastChannel === "undefined"
+                ? null
+                : new BroadcastChannel(`ms:metadata-systems:updates:${base}`);
+            updates?.postMessage({ type: "ready", commit: release.commit });
+            updates?.close();
+          }
+        } catch {
+          /* A notification failure must not invalidate a verified download. */
+        }
+      }
     } catch {
       setMessage(controller.signal.aborted ? words.cancelled : words.failed);
       setSaved(await snapshot().catch(() => ({ ready: false })));
@@ -88,11 +122,22 @@ export function Offline() {
       stop.current = null;
     }
   };
+  const reload = async () => {
+    setBusy(true);
+    try {
+      await activateWorker(new URL("offline-worker.js", base));
+      window.location.reload();
+    } catch {
+      setMessage(words.failed);
+      setBusy(false);
+    }
+  };
   const clear = async () => {
     setBusy(true);
     try {
       await remove();
       setSaved({ ready: false });
+      setReloadReady(false);
       setMessage("");
     } catch {
       setMessage(words.failed);
@@ -107,6 +152,11 @@ export function Offline() {
       <p>{words.intro}</p>
       <p>{fill(words.size, { size: mb(available.bytes) })}</p>
       <div className="offline-actions">
+        {reloadReady && (
+          <button className="button" disabled={busy} onClick={() => void reload()}>
+            {words.reload}
+          </button>
+        )}
         {canUse && (!saved.ready || update) && (
           <button className="button" disabled={busy || !online} onClick={() => void begin()}>
             {update ? words.update : words.download}

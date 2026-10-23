@@ -774,7 +774,22 @@ const rowPlugin = {
       states.set(panel, state);
       const widget = row(app, panel, state);
       panel.contentHeader.addWidget(widget);
-      const release = releaseIndicator(new URL(PageConfig.getBaseUrl(), window.location.href));
+      const releaseBase = new URL(PageConfig.getBaseUrl(), window.location.href);
+      const workerURL = new URL(
+        PageConfig.getOption("msOfflineWorker") || "python-worker.js",
+        releaseBase,
+      );
+      const release = releaseIndicator(releaseBase, {
+        workerURL,
+        courseBase: new URL("./", workerURL).href,
+        blocked: () =>
+          state.busy || panel.sessionContext.session?.kernel?.status === "busy"
+            ? "busy"
+            : panel.node.querySelector('[data-unsaved="true"]')
+              ? "unsaved"
+              : null,
+        resize: () => panel.contentHeader.fit(),
+      });
       panel.contentHeader.addWidget(new Widget({ node: release.node }));
       panel.disposed.connect(() => release.dispose());
       state.surface = panel.context.ready

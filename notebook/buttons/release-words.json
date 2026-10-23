@@ -1,6 +1,17 @@
 {
-  "latest": "{commit} ✓ Latest deployed version",
-  "updateAvailable": "{commit} ✗ Update available",
+  "latest": "{commit} \u2713 Latest deployed version",
+  "updateAvailable": "{commit} \u2717 Update available",
   "checking": "{commit} ? Checking deployed version",
-  "cannotCheck": "{commit} ? Cannot check deployed version"
+  "cannotCheck": "{commit} ? Cannot check deployed version",
+  "update": "Update and reload",
+  "reload": "Reload to update",
+  "progress": "Downloading course update: {percent}%.",
+  "activating": "Applying the update.",
+  "failed": "Could not update. Your current version is still available. Try again.",
+  "pythonBusy": "Wait for the running code to finish before updating.",
+  "cancel": "Cancel update",
+  "cancelled": "Update cancelled. Your current version is still available.",
+  "ready": "The update is ready. Reload this chapter to use it.",
+  "help": "Updates this chapter and restarts Python. Saved answers and code are kept. If you downloaded the course for offline use, its files are updated too.",
+  "unsavedEdits": "Cannot reload because some edits could not be saved. Use Export answers and Download code before trying again."
 }

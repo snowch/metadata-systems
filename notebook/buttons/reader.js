@@ -258,6 +258,7 @@ export async function attachReader(panel, state, navigation) {
     } catch {
       shared.setSource(state.legacyDrafts?.get(example.id) ?? initialSource);
       saveStatus.textContent = words.saveFailed;
+      cell.node.dataset.unsaved = "true";
     }
     let previous = shared.getSource();
     const changed = () => {
@@ -267,8 +268,10 @@ export async function attachReader(panel, state, navigation) {
       try {
         localStorage.setItem(key, source);
         saveStatus.textContent = words.saved;
+        cell.node.dataset.unsaved = "false";
       } catch {
         saveStatus.textContent = words.saveFailed;
+        cell.node.dataset.unsaved = "true";
       }
       if (entry.executed !== null) status.textContent = words.stale;
       if (dependent)

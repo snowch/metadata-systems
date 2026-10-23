@@ -78,3 +78,27 @@ focus, visibility or connectivity returns. The comparison is with the deployed s
 main branch while a deployment may still be building. It never reloads the reader or changes
 saved work. `release.json` is excluded from the offline snapshot and its request uses the
 existing offline-download cache bypass, so a saved release cannot certify itself as current.
+
+## Applying an update from a chapter
+
+The commit line offers **Update and reload** when a newer deployed commit is detected. It checks
+the release over the network again on click. If a downloaded snapshot exists, it uses the same
+client as the home page (`offline/client.js`): cross-tab locking, resumable downloads, file lengths
+and SHA-256 checks, then the existing atomic snapshot switch. Without a downloaded snapshot it
+reloads the online reader without downloading the full course. Cache and answer keys are unchanged.
+
+Activation is explicit. Both worker wrappers intercept the pinned upstream install handler, whose
+precache list is empty and whose default handler unconditionally calls `skipWaiting`. Their new
+activation message calls `skipWaiting`, then a claim acknowledgement makes reload wait for the
+new controller. The helper selects only the expected course worker, retaining other projects'
+registrations. It never closes or reloads another tab. A course-scoped BroadcastChannel announces
+that a verified update is ready; other chapters and the home page offer **Reload to update**.
+
+Running code disables the action. A failed answer/code save blocks reload and names the export
+controls; execution started during download also defers reload. Download cancellation or failure
+does not publish a partial snapshot. The button reports percentage progress, and only the chosen
+tab reloads after successful activation. Saved text/code remains in browser storage; Python restarts.
+
+A waiting worker also exposes **Reload to update** when the HTML's commit already matches the
+server. Retrying a complete snapshot keeps its existing previous-version fallback, so a repeated
+update does not discard assets still used by another tab.

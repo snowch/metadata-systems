@@ -149,6 +149,7 @@ function field(root, store, id, label, readonly = false) {
   root.append(wrapper, status);
   const refresh = () => {
     const answer = store.read(id);
+    wrapper.dataset.unsaved = String(!answer.saved);
     if (input.value !== answer.text) input.value = answer.text;
     status.textContent = !answer.saved
       ? words.unsaved
