@@ -1,7 +1,7 @@
 // Copyright © 2026 Christopher Snow
 
 // Exercise the reading surface against the real Python runtime and native code editors.
-import { checkPublishedUpdate } from "./saved-work-smoke.mjs";
+import { checkPublishedUpdate, checkAnswerUpdate } from "./saved-work-smoke.mjs";
 import { checkRetiredChapter } from "./redirect-smoke.mjs";
 import { checkAutosave } from "./autosave-smoke.mjs";
 import { checkNavigation } from "./navigation-smoke.mjs";
@@ -399,6 +399,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
     await checkPublishedUpdate(browser, `http://127.0.0.1:8866${standalone ? "" : "/jupyterlite"}`);
+    await checkAnswerUpdate(
+      chromium,
+      `http://127.0.0.1:8866${standalone ? "" : "/jupyterlite"}`,
+      resolve(process.argv[2], standalone ? "" : "jupyterlite"),
+    );
     await checkRetiredChapter(browser, `http://127.0.0.1:8866${standalone ? "" : "/jupyterlite"}`);
     await checkReader(
       browser,

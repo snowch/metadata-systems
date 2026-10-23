@@ -61,3 +61,9 @@ The published-update browser regression changes the release version and notebook
 inserts an explanation, then reloads the reader. It checks both a code edit and an exercise answer,
 and verifies that every existing local-storage entry remains intact. Builder tests separately
 insert prose and code before existing examples to catch any regression to positional save keys.
+
+A second regression fills all six written-answer fields through the UI, saves old notebook copies
+in JupyterLite's IndexedDB, and closes the browser process. It changes the served Chapter 1 and 2
+files, restarts the same browser profile, verifies that the new prose appears, and checks every
+answer, including Chapter 1 originals displayed read-only in Chapter 2. This passed in Chromium;
+it has not reproduced the reported loss and does not establish the cause on the reader's device.
