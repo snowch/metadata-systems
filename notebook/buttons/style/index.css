@@ -1712,7 +1712,6 @@ body.ms-Reading #top-panel-wrapper {
 }
 @media (max-width: 699px) {
   .ms-Reader-toolbar .ms-Buttons-link {
-    width: 44px;
     min-width: 44px;
   }
 }

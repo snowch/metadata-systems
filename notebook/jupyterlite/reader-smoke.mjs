@@ -32,7 +32,7 @@ export async function checkReader(browser, base, check) {
   };
   const header = async (chapter) => {
     await page.locator(".ms-Reader-toolbar").waitFor();
-    for (const width of [360, 390, 768, 1280]) {
+    for (const width of [360, 390, 600, 768, 1280]) {
       await page.setViewportSize({ width, height: 844 });
       await page.waitForFunction(
         ({ chapter, width }) => {
@@ -52,7 +52,7 @@ export async function checkReader(browser, base, check) {
             .filter((n) => n.getClientRects().length)
             .every((n) => {
               const r = n.getBoundingClientRect();
-              return r.width >= 44 && r.height >= 44;
+              return r.width >= 44 && r.height >= 44 && n.scrollWidth <= n.clientWidth;
             }),
         ),
         `header: Chapter ${chapter} at ${width}px has no empty header band or overflow and retains 44px targets`,
