@@ -77,7 +77,7 @@ export async function checkNavigation(browser, base) {
     await page
       .getByText("All examples finished successfully.", { exact: true })
       .waitFor({ timeout: 120000 });
-    await page.locator('.jp-RenderedMarkdown a[href*="chapter_04.ipynb"]').first().click();
+    await page.locator('.jp-RenderedMarkdown a[href*="chapter_04.ipynb"]:visible').first().click();
     await page.waitForURL(/path=chapter_04.ipynb/);
     await ready();
     assert.equal(

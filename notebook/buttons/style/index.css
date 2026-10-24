@@ -1641,3 +1641,106 @@ body.ms-Reading #top-panel-wrapper {
 .ms-Release-message {
   flex-basis: 100%;
 }
+
+/* The reader has one toolbar; status no longer reserves a second full-width header band. */
+.ms-Reader-header {
+  display: block;
+  overflow: visible;
+}
+.ms-Reader-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+.ms-Reader-toolbar .ms-AppStatus-inline {
+  padding: 0;
+  gap: 6px;
+  flex: none;
+  margin-left: auto;
+  flex-wrap: nowrap;
+  font-size: 12px;
+}
+.ms-AppStatus-inline button::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--jp-ui-font-color2);
+}
+.ms-AppStatus-inline[data-state="upToDate"] button::before {
+  background: #21875b;
+}
+.ms-AppStatus-inline[data-state="updateAvailable"] button::before,
+.ms-AppStatus-inline[data-state="ready"] button::before {
+  background: #b76a00;
+  box-shadow: 0 0 0 2px #b76a0044;
+}
+.ms-AppStatus-inline[data-state="updateAvailable"] button,
+.ms-AppStatus-inline[data-state="ready"] button {
+  border-color: #b76a00;
+}
+.ms-AppStatus-inline a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+@media (max-width: 699px) {
+  .ms-Reader-toolbar {
+    gap: 4px;
+  }
+  .ms-Reader-toolbar .ms-AppStatus-inline {
+    gap: 4px;
+    font-size: 11px;
+  }
+  .ms-Reader-toolbar .ms-AppStatus-inline button {
+    padding: 4px 6px;
+  }
+}
+
+.ms-Reader .jp-MarkdownOutput:has(h1) > p:first-child {
+  display: none;
+}
+.ms-Reader .jp-MarkdownOutput h1 {
+  margin-top: 12px;
+}
+.ms-Reader-toolbar .ms-Buttons-button,
+.ms-AppStatus-inline a {
+  min-width: 44px;
+}
+@media (max-width: 699px) {
+  .ms-Reader-toolbar .ms-Buttons-link {
+    width: 44px;
+    min-width: 44px;
+  }
+}
+
+@media (max-width: 699px) {
+  .ms-Reader-header .ms-Download-label,
+  .ms-AppStatus-inline .ms-AppStatus-label,
+  .ms-AppStatus-inline > a {
+    display: none;
+  }
+  .ms-Reader-header .ms-Download-icon,
+  .ms-AppStatus-inline .ms-AppStatus-short {
+    display: inline-block;
+  }
+  .ms-AppStatus-inline[data-state="updateAvailable"] button::after,
+  .ms-AppStatus-inline[data-state="ready"] button::after {
+    content: " ↑";
+  }
+}
+
+.ms-Reader-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+@media (max-width: 699px) {
+  .ms-Reader-links {
+    margin-left: auto;
+  }
+}

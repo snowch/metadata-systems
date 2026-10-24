@@ -62,7 +62,7 @@ export async function checkRelease(browser, base) {
     assert.equal(await badge.locator("a").textContent(), loaded.commit.slice(0, 7));
     await dialog.getByRole("button", { name: "Later", exact: true }).isHidden();
     await page.keyboard.press("Escape");
-    assert.match(await badge.innerText(), /Update available/);
+    assert.match(await badge.getByRole("button").getAttribute("aria-label"), /Update available/);
     assert.equal(
       await badge.getByRole("button").evaluate((n) => n === document.activeElement),
       true,

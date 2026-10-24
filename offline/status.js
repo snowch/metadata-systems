@@ -47,10 +47,17 @@ export function appStatus(
     identity.target = "_blank";
     identity.rel = "noopener";
   }
+  const label = document.createElement("span");
+  label.className = "ms-AppStatus-label";
+  const shortVersion = document.createElement("span");
+  shortVersion.className = "ms-AppStatus-short";
+  shortVersion.textContent = identity.textContent;
+  trigger.append(label, shortVersion);
   node.append(trigger, identity);
   const sizeObserver = new ResizeObserver(() => {
     const height = `${Math.ceil(Math.max(52, trigger.getBoundingClientRect().height + 8))}px`;
-    node.style.minHeight = node.style.maxHeight = height;
+    if (!node.classList.contains("ms-AppStatus-inline"))
+      node.style.minHeight = node.style.maxHeight = height;
     resize();
   });
   sizeObserver.observe(trigger);
@@ -68,13 +75,18 @@ export function appStatus(
   close.type = "button";
   close.onclick = () => dialog.close();
   make("h3", words.version);
-  make(
+  const versionLine = make(
     "p",
     words.loadedVersion.replace(
       "{commit}",
       validBuild(build) ? `${identity.textContent} · ${build}` : identity.textContent,
     ),
   );
+  if (identity.href) {
+    const source = identity.cloneNode(true);
+    source.textContent = words.sourceCommit;
+    versionLine.append(" ", source);
+  }
   const versionState = make("p");
   versionState.setAttribute("role", "status");
   const actions = make("div");
@@ -158,7 +170,19 @@ export function appStatus(
   const say = (text) => write(message, text);
   function render() {
     node.dataset.state = pending ? "ready" : state;
-    write(trigger, `${words.title} · ${pending ? words.updateReady : words[state]}`);
+    const summary = `${words.title} · ${pending ? words.updateReady : words[state]}`;
+    write(
+      label,
+      node.classList.contains("ms-AppStatus-inline")
+        ? pending
+          ? `${words.title} · ${words.updateReady}`
+          : state === "updateAvailable"
+            ? `${words.title} · ${words.updateAvailable}`
+            : words.title
+        : summary,
+    );
+    trigger.setAttribute("aria-label", `${summary} · ${identity.textContent}`);
+    trigger.title = summary;
     write(versionState, pending ? words.updateReady : words[state]);
     write(checkButton, state === "checkFailed" ? words.retry : words.check);
     checkButton.disabled = !!request || !!operation;
@@ -372,6 +396,11 @@ export function appStatus(
   void refresh();
   return {
     node,
+    compact() {
+      node.classList.add("ms-AppStatus-inline");
+      node.style.minHeight = node.style.maxHeight = "44px";
+      render();
+    },
     open: () => trigger.click(),
     dispose() {
       sizeObserver.disconnect();
