@@ -51,6 +51,11 @@ import { releaseIndicator } from "./release.js";
 // scroll-down threshold, half a cell margin and one line.
 const SHOWN = 28;
 
+function readingHeader(app, reading) {
+  if (reading) app.shell.collapseTop?.();
+  else app.shell.expandTop?.();
+}
+
 /** The index of the first cell that starts in view, or -1 if none does. */
 function cellInView(notebook) {
   const view = notebook.node.getBoundingClientRect();
@@ -790,7 +795,8 @@ const rowPlugin = {
               : null,
         resize: () => panel.contentHeader.fit(),
       });
-      panel.contentHeader.addWidget(new Widget({ node: release.node }));
+      const releaseWidget = new Widget({ node: release.node });
+      panel.contentHeader.addWidget(releaseWidget);
       panel.disposed.connect(() => release.dispose());
       state.surface = panel.context.ready
         .then(async () => {
@@ -799,6 +805,34 @@ const rowPlugin = {
             await attachReader(panel, state, widget);
           app.shell.fit();
           await arrows(app, panel, widget);
+          if (panel.context.model.getMetadata("ms")?.reader) {
+            releaseWidget.parent = null;
+            release.compact();
+            readingHeader(app, true);
+            const controls = document.createElement("div");
+            controls.className = "ms-Reader-toolbar";
+            controls.append(...widget.node.childNodes);
+            controls.insertBefore(release.node, controls.querySelector(".ms-Buttons-link"));
+            const links = document.createElement("div");
+            links.className = "ms-Reader-links";
+            for (const link of controls.querySelectorAll(":scope > .ms-Buttons-link"))
+              links.append(link);
+            controls.append(links);
+            widget.node.append(controls);
+            widget.addClass("ms-Reader-header");
+            const observer = new ResizeObserver(() => {
+              const height = `${Math.ceil(controls.getBoundingClientRect().height + 12)}px`;
+              if (widget.node.style.minHeight === height) return;
+              widget.node.style.minHeight = widget.node.style.maxHeight = height;
+              panel.contentHeader.fit();
+            });
+            observer.observe(controls);
+            panel.disposed.connect(() => {
+              observer.disconnect();
+              releaseWidget.dispose();
+            });
+            panel.contentHeader.fit();
+          }
         })
         .catch((reason) => console.error("arrows", reason));
       state.startup = startup(app, panel, state);
@@ -813,6 +847,7 @@ const rowPlugin = {
         "ms-Reading",
         !!app.shell.currentWidget?.hasClass("ms-ReaderPanel"),
       );
+      readingHeader(app, !!app.shell.currentWidget?.hasClass("ms-ReaderPanel"));
       app.shell.fit();
     });
   },

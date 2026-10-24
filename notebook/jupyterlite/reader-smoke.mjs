@@ -30,6 +30,38 @@ export async function checkReader(browser, base, check) {
     await page.goto(`${base}/notebooks/index.html?path=chapter_01.ipynb`);
     await page.waitForSelector('.ms-Example[data-example="daily_sales"]', { timeout: 120_000 });
   };
+  const header = async (chapter) => {
+    await page.locator(".ms-Reader-toolbar").waitFor();
+    for (const width of [360, 390, 600, 768, 1280]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.waitForFunction(
+        ({ chapter, width }) => {
+          const bar = document.querySelector(".ms-Reader-header");
+          const r = bar.getBoundingClientRect();
+          return (
+            r.y === 0 &&
+            r.height <= (chapter === 2 && width < 700 ? 104 : 56) &&
+            bar.scrollWidth <= bar.clientWidth
+          );
+        },
+        { chapter, width },
+      );
+      check(
+        await page.locator(".ms-Reader-toolbar button, .ms-Reader-toolbar a").evaluateAll((nodes) =>
+          nodes
+            .filter((n) => n.getClientRects().length)
+            .every((n) => {
+              const r = n.getBoundingClientRect();
+              return r.width >= 44 && r.height >= 44 && n.scrollWidth <= n.clientWidth;
+            }),
+        ),
+        `header: Chapter ${chapter} at ${width}px has no empty header band or overflow and retains 44px targets`,
+      );
+      if (width === 360 || width === 1280)
+        await page.screenshot({ path: `/tmp/compact-header-${chapter}-${width}.png` });
+    }
+    await page.setViewportSize({ width: 390, height: 844 });
+  };
   const example = (id) => page.locator(`.ms-Example[data-example="${id}"]`);
   const code = (id) => example(id).locator(".cm-content");
   const read = (id) => code(id).innerText();
@@ -54,6 +86,7 @@ export async function checkReader(browser, base, check) {
   };
   try {
     await open();
+    await header(1);
     const reminder = page
       .locator(".jp-RenderedMarkdown")
       .getByText("Write your guesses now, before continuing to Chapter 2.", {
@@ -68,7 +101,7 @@ export async function checkReader(browser, base, check) {
     );
     assert.equal(await page.locator(".ms-Example").count(), 6);
     check(
-      (await page.locator(".ms-Buttons > [data-action]").count()) === 0,
+      (await page.locator(".ms-Buttons [data-action]").count()) === 0,
       "reader: the chapter has per-example controls and no notebook Run all/Run below/Save row",
     );
     check(
@@ -288,6 +321,7 @@ export async function checkReader(browser, base, check) {
         "My Chapter 1 answer",
       "reader: Chapter 2 recalls the same exercise answers from Chapter 1",
     );
+    await header(2);
     await checkTables(page, check);
     await open();
     for (const width of [360, 1280]) {

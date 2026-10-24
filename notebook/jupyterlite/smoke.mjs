@@ -109,7 +109,7 @@ try {
       `Chapter ${chapter}: the menu bar and the toolbar are hidden`,
     );
     const row = await page.evaluate(() =>
-      [...document.querySelectorAll(".ms-Reader-nav > .ms-Buttons-button")].map((b) => ({
+      [...document.querySelectorAll(".ms-Reader-nav .ms-Buttons-button")].map((b) => ({
         label: b.textContent,
         height: b.getBoundingClientRect().height,
       })),

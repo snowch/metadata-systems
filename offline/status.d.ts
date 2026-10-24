@@ -7,4 +7,4 @@ export function appStatus(
     releaseURL?: URL;
     resize?: () => void;
   },
-): { node: HTMLDivElement; open(): void; dispose(): void };
+): { node: HTMLDivElement; open(): void; compact(): void; dispose(): void };

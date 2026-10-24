@@ -350,20 +350,20 @@ export async function attachReader(panel, state, navigation) {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
   navigation.node.append(runAll, download);
+  download.setAttribute("aria-label", words.downloadCode);
+  download.title = words.downloadCode;
+  download.replaceChildren(element("span", words.downloadCode, "ms-Download-label"));
+  const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  icon.setAttribute("viewBox", "0 0 24 24");
+  icon.setAttribute("aria-hidden", "true");
+  icon.classList.add("ms-Download-icon");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", "M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5");
+  icon.append(path);
+  download.append(icon);
   const references = panel.context.model.getMetadata("ms")?.tables;
   if (references?.length) {
     navigation.addClass("ms-Reader-nav-hasTables");
-    download.setAttribute("aria-label", words.downloadCode);
-    download.title = words.downloadCode;
-    download.replaceChildren(element("span", words.downloadCode, "ms-Download-label"));
-    const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    icon.setAttribute("viewBox", "0 0 24 24");
-    icon.setAttribute("aria-hidden", "true");
-    icon.classList.add("ms-Download-icon");
-    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", "M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5");
-    icon.append(path);
-    download.append(icon);
     tables = tableViewer({
       root: notebook.node,
       toolbar: navigation.node,

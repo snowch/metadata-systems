@@ -81,3 +81,7 @@
   background: var(--jp-layout-color1, #fff);
   border-top: 1px solid var(--jp-border-color1, #888);
 }
+
+.ms-AppStatus-short {
+  display: none;
+}
