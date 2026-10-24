@@ -9,16 +9,24 @@ const prefix = `ms:metadata-systems:offline:${scope}:`;
 const stateURL = new URL("__offline_state__", scope).href;
 const manifestURL = new URL("offline-manifest.json", scope).href;
 
-async function saved(request) {
+async function saved(request, event) {
   const meta = await caches.open(`${prefix}meta`);
   const record = await meta.match(stateURL);
   if (!record) return;
   const state = await record.json();
-  for (const version of [state.version, state.previous].filter(Boolean)) {
+  const client = event.resultingClientId || event.clientId;
+  const pinURL = new URL(`__offline_client__/${client}`, scope).href;
+  const pin = client && (await meta.match(pinURL));
+  const pinned = pin ? (await pin.json()).version : state.version;
+  if (client && !pin && pinned) await meta.put(pinURL, Response.json({ version: pinned }));
+  // Never fall through to an unrelated release when a pinned asset is missing.
+  for (const version of [pinned].filter(Boolean)) {
     const cache = await caches.open(`${prefix}${version}`);
     const response = await cache.match(request, { ignoreSearch: true });
     if (response) return response;
   }
+  if (pin && (state.version || state.pending))
+    return new Response("Release asset unavailable; restart this tab", { status: 409 });
 }
 
 async function network(request) {
@@ -57,9 +65,9 @@ self.addEventListener("fetch", (event) => {
         } catch {
           /* An existing snapshot remains usable without a network. */
         }
-        return (await saved(key)) || new Response("", { status: 503 });
+        return (await saved(key, event)) || new Response("", { status: 503 });
       }
-      const cached = await saved(key);
+      const cached = await saved(key, event);
       if (cached) return self.msTrackPython(request, cached);
       return self.msTrackPython(request, await fetch(request));
     })(),
@@ -67,10 +75,47 @@ self.addEventListener("fetch", (event) => {
 });
 
 self.addEventListener("message", (event) => {
+  if (
+    event.data?.type === "MS_OFFLINE_BIND" &&
+    /^[a-f0-9]{20}$/.test(event.data.version) &&
+    event.source?.id
+  )
+    event.waitUntil(
+      (async () => {
+        const meta = await caches.open(`${prefix}meta`);
+        await meta.put(
+          new URL(`__offline_client__/${event.source.id}`, scope).href,
+          Response.json({ version: event.data.version }),
+        );
+        event.ports[0]?.postMessage({ bound: true });
+      })(),
+    );
   if (event.data?.type === "MS_OFFLINE_ACTIVATE") event.waitUntil(self.skipWaiting());
   if (event.data?.type === "MS_OFFLINE_CLAIM")
     event.waitUntil(
-      self.clients.claim().then(() => event.ports[0]?.postMessage({ claimed: true })),
+      (async () => {
+        // Pin every already-open client before publishing a new selected snapshot. Persist pins
+        // in the app's metadata cache because service workers can stop between requests.
+        const meta = await caches.open(`${prefix}meta`);
+        const record = await meta.match(stateURL);
+        const state = record ? await record.json() : {};
+        for (const client of await self.clients.matchAll({
+          includeUncontrolled: true,
+          type: "all",
+        })) {
+          if (!client.url.startsWith(scope) || !state.version) continue;
+          const key = new URL(`__offline_client__/${client.id}`, scope).href;
+          if (!(await meta.match(key)))
+            await meta.put(
+              key,
+              Response.json({
+                version: state.pending ? state.version : state.previous || state.version,
+              }),
+            );
+        }
+        await self.clients.claim();
+        event.ports[0]?.postMessage({ claimed: true });
+      })(),
     );
 });
 

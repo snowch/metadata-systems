@@ -59,7 +59,18 @@ export function createOffline(base) {
       (name) => name.startsWith(prefix) && name !== `${prefix}meta`,
     );
     if (!state) return { ready: false, hasDownload };
-    const { version } = await state.json();
+    const { version, pending: candidate } = await state.json();
+    let pending, pendingIncomplete;
+    if (candidate) {
+      const cache = await caches.open(`${prefix}${candidate}`);
+      const response = await cache.match(manifestURL);
+      const value = response && validate(await response.json());
+      const keys = new Set((await cache.keys()).map((request) => request.url));
+      if (value && value.files.every((file) => keys.has(new URL(file.path, base).href)))
+        pending = candidate;
+      else pendingIncomplete = candidate;
+    }
+    if (!version) return { ready: false, pending, pendingIncomplete, hasDownload };
     const cache = await caches.open(`${prefix}${version}`);
     const response = await cache.match(manifestURL);
     if (!response) return { ready: false, hasDownload };
@@ -68,6 +79,8 @@ export function createOffline(base) {
     return {
       ready: saved.files.every((file) => keys.has(new URL(file.path, base).href)),
       version,
+      pending,
+      pendingIncomplete,
       hasDownload,
     };
   }
@@ -111,7 +124,7 @@ export function createOffline(base) {
     }
     registration.active?.postMessage({ type: "MS_OFFLINE_CLAIM" });
   }
-  async function download(value, signal, progress) {
+  async function download(value, signal, progress, prepare = false) {
     validate(value);
     await navigator.locks.request(prefix, { ifAvailable: true }, async (lock) => {
       if (!lock) throw Error("Another tab is changing the offline download");
@@ -143,6 +156,24 @@ export function createOffline(base) {
               }
             }
           }
+        }
+      }
+      // A partial cache is not a success flag. Validate resumed/reused bytes before counting
+      // them; a browser eviction or damaged entry must be repaired by the same download.
+      for (const file of value.files) {
+        const url = new URL(file.path, base).href;
+        if (!known.has(url)) continue;
+        signal.throwIfAborted();
+        const response = await cache.match(url);
+        const bytes = response && (await response.arrayBuffer());
+        const hash =
+          bytes &&
+          [...new Uint8Array(await crypto.subtle.digest("SHA-256", bytes))]
+            .map((byte) => byte.toString(16).padStart(2, "0"))
+            .join("");
+        if (!bytes || bytes.byteLength !== file.size || hash !== file.sha256) {
+          await cache.delete(url);
+          known.delete(url);
         }
       }
       let done = 0;
@@ -216,19 +247,63 @@ export function createOffline(base) {
       // This single write publishes the complete snapshot. No half-downloaded release is served.
       await meta.put(
         stateURL,
-        Response.json({
-          version: value.version,
-          previous: fallback,
-        }),
+        Response.json(
+          prepare
+            ? { ...prior, pending: value.version }
+            : { version: value.version, previous: fallback },
+        ),
       );
-      for (const name of await caches.keys()) {
-        if (
-          name.startsWith(prefix) &&
-          ![`${prefix}meta`, `${prefix}${value.version}`, `${prefix}${fallback}`].includes(name)
-        )
-          await caches.delete(name);
-      }
+      // Retain complete snapshots used by other open windows. Removal is explicitly scoped.
       report(true);
+    });
+  }
+  async function select(version) {
+    await navigator.locks.request(prefix, async () => {
+      const meta = await caches.open(`${prefix}meta`);
+      const record = await meta.match(stateURL);
+      const state = record ? await record.json() : {};
+      if (version !== state.pending && version !== state.version)
+        throw Error("Update no longer ready");
+      const cache = await caches.open(`${prefix}${version}`);
+      const response = await cache.match(manifestURL);
+      if (!response) throw Error("Update missing");
+      const value = validate(await response.json());
+      for (const file of value.files)
+        if (!(await cache.match(new URL(file.path, base).href))) throw Error("Update incomplete");
+      await meta.put(stateURL, Response.json({ version, previous: state.version }));
+    });
+  }
+  async function loaded(build) {
+    if (!supported() || !/^[a-f0-9]{20}$/.test(build)) return;
+    let version = build;
+    for (const name of await caches.keys()) {
+      if (!name.startsWith(prefix) || name === `${prefix}meta`) continue;
+      const response = await (await caches.open(name)).match(manifestURL);
+      if (response) {
+        const value = await response.json();
+        if (value.release?.build === build) {
+          version = value.version;
+          break;
+        }
+      }
+    }
+    await bind(version);
+  }
+  async function bind(version) {
+    const controller = navigator.serviceWorker?.controller;
+    if (!controller || !version) return;
+    await new Promise((resolve, reject) => {
+      const channel = new MessageChannel();
+      const timer = setTimeout(() => {
+        channel.port1.close();
+        reject(Error("Release binding timed out"));
+      }, 5000);
+      channel.port1.onmessage = () => {
+        clearTimeout(timer);
+        channel.port1.close();
+        resolve();
+      };
+      controller.postMessage({ type: "MS_OFFLINE_BIND", version }, [channel.port2]);
     });
   }
   async function remove() {
@@ -240,5 +315,5 @@ export function createOffline(base) {
     });
   }
 
-  return { supported, manifest, snapshot, register, download, remove };
+  return { supported, manifest, snapshot, register, download, select, bind, loaded, remove };
 }

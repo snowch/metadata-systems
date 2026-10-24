@@ -818,4 +818,33 @@ const rowPlugin = {
   },
 };
 
-export default [rowPlugin, courseWorker];
+// The file browser and empty notebook entry point have no NotebookPanel header. Offer the
+// same control there; an actual chapter owns its header and its stricter save/Python guards.
+const statusFallback = {
+  id: "ms-notebook-buttons:app-status",
+  autoStart: true,
+  optional: [INotebookTracker],
+  activate(app, tracker) {
+    let status;
+    const sync = () => {
+      if (tracker?.currentWidget) {
+        if (status) {
+          status.dispose();
+          status = null;
+        }
+      } else if (!status) {
+        const base = new URL(PageConfig.getBaseUrl(), window.location.href);
+        const workerURL = new URL(
+          PageConfig.getOption("msOfflineWorker") || "python-worker.js",
+          base,
+        );
+        status = releaseIndicator(base, { workerURL, courseBase: new URL("./", workerURL).href });
+        status.node.classList.add("ms-AppStatus-fallback");
+        document.body.append(status.node);
+      }
+    };
+    tracker?.currentChanged.connect(sync);
+    Promise.resolve(app.restored || app.started).then(sync);
+  },
+};
+export default [rowPlugin, courseWorker, statusFallback];

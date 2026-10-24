@@ -318,8 +318,8 @@ It writes `offline-manifest.json` with a release digest, file sizes and SHA-256 
 source maps. The client validates downloads before storing them, resumes incomplete downloads
 and reuses unchanged files during updates. A single metadata write switches to a complete new
 version. An interrupted update leaves the previous complete version active. The offline copy
-remains on that version until the reader chooses Download update; open chapters are reloaded
-by the reader afterwards. No page reload is forced and learner data is never deleted for an
+remains on that version while an update is prepared; only an explicit Restart to update selects the new release.
+Other open chapters stay on their pinned release until the reader restarts them. No page reload is forced and learner data is never deleted for an
 update. A cross-tab Web Lock serialises download/removal operations.
 
 `offline/worker.js` serves the selected snapshot under the course's own URL scope, including
@@ -382,3 +382,41 @@ The initial IDs deliberately retain the existing `cell-NN` values to preserve cu
 The notebook's own positional cell ID may change; the reader ID must not. The build rejects
 missing or duplicate reader IDs, and its regression tests insert prose and code before an example
 to verify that its save key stays unchanged.
+
+## App status and release identity
+
+Issue #2 replaces the separate home offline card and notebook release line with a shared native
+App status dialog (`offline/status.js`), mounted by a React adapter on the contents and a Lumino
+adapter on notebooks. Learner words are drafted in `offline/status-words.json`. Version checking
+and offline completeness have separate states. Only a successful network-only, validated,
+time-limited check can report Up to date. Focus/reconnect/visibility checks are throttled;
+visible pages repeat checks every minute. No asset download starts from a release check.
+
+The complete-course assembly writes identical `release.json` and `jupyterlite/release.json`:
+`{schema: 1, commit: <40 hex source commit>, build: <20 hex content digest>}`. `build` hashes the
+sorted assembled runtime files and course worker before inserting `ms-build` HTML tags. Existing
+build tags are stripped before hashing, so repeating assembly is deterministic. The loaded
+identity comes only from HTML meta tags, never fetched metadata. The standalone notebook build
+also emits this schema for its own artifact; complete-course assembly replaces it with the
+whole-course identity. A standalone build is not a full-course offline artifact.
+
+The offline manifest retains its existing 20-hex `version` and includes `release`. Its size is
+the sum of exact bytes, including Python, wheels, chapters, shell and fonts. Resume validates
+stored bytes before reusing them. A prepared update writes a `pending` snapshot without changing
+the selected snapshot. Restart activates the scoped worker, verifies the pending copy, selects
+it atomically and reloads the same URL. Other windows receive a pending notice, never a forced
+reload. Existing clients retain persistent release pins in the course metadata cache, and
+missing pinned assets fail safely instead of falling through to a different published version.
+Older snapshots remain until explicit removal, so open windows can keep their release.
+Removal touches only this course's offline caches and preserves notebook and answer storage.
+
+Existing saved manifests remain readable; unchanged verified assets can be reused into the new
+snapshot. Worker registrations outside this course are untouched. The old notebook-only worker
+is migrated only when a full course download requires the root scope. Restart guards check
+running Python, failed saves and text composition again immediately before reload. There is no
+automatic restart on controller change.
+
+Verification: `scripts/offline-smoke.mjs` tests real assembled releases and a persistent browser
+with an empty HTTP cache. `notebook/jupyterlite/release-smoke.mjs` covers malformed/failed checks,
+loaded identity, independent states, focus and narrow layout. Production byte totals, exact
+commands, review evidence and screenshots belong in the PR's delivery record.

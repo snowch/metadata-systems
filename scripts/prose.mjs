@@ -112,6 +112,7 @@ const PROHIBITED = [
  */
 const FILES = [
   "apps/course/src/strings.ts",
+  "offline/status-words.json",
   "notebook/buttons/answer-words.js",
   "notebook/buttons/reader-words.json",
   "notebook/jupyterlite/reader.json",
