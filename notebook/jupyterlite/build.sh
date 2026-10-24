@@ -45,7 +45,7 @@ jupyter lite build --lite-dir "$here" --contents "$work/content" --output-dir "$
 
 # Stream real download progress for the runtime in standalone and complete-course builds.
 python3 - "$here" "$out" <<'PYTHON'
-import json, subprocess, sys
+import hashlib, json, subprocess, sys
 from pathlib import Path
 source, out = map(Path, sys.argv[1:])
 size = (out / "static/pyodide/pyodide.asm.wasm").stat().st_size
@@ -60,14 +60,26 @@ redirect = """<script>(function () {
     window.location.replace(url.href);
   }
 })();</script>"""
-commit = subprocess.check_output(["git", "-C", str(source), "rev-parse", "HEAD"], text=True).strip()
-(out / "release.json").write_text(json.dumps({"commit": commit}))
-p.write_text(p.read_text().replace("<head>", "<head>" + f'<meta name="ms-commit" content="{commit}">' + redirect, 1))
+try:
+    commit = subprocess.check_output(["git", "-C", str(source), "rev-parse", "HEAD"], text=True).strip()
+except (OSError, subprocess.CalledProcessError):
+    commit = ""
 (out / "files/chapter_01b.ipynb").unlink(missing_ok=True)
-p = out / "jupyter-lite.json"
-config = json.loads(p.read_text())
+config_path = out / "jupyter-lite.json"
+config = json.loads(config_path.read_text())
 config["jupyter-config-data"]["msOfflineWorker"] = "python-worker.js"
-p.write_text(json.dumps(config))
+config_path.write_text(json.dumps(config))
+build_hash = hashlib.sha256()
+for asset in sorted(out.rglob("*")):
+    if asset.is_file() and asset.name != "release.json":
+        build_hash.update(str(asset.relative_to(out)).encode())
+        build_hash.update(asset.read_bytes())
+build = build_hash.hexdigest()[:20]
+(out / "release.json").write_text(json.dumps({"schema": 1, "commit": commit, "build": build}))
+p.write_text(p.read_text().replace("<head>", "<head>" + f'<meta name="ms-commit" content="{commit}"><meta name="ms-build" content="{build}">' + redirect, 1))
+tree = out / "tree/index.html"
+tree.write_text(tree.read_text().replace("<head>", "<head>" + f'<meta name="ms-commit" content="{commit}"><meta name="ms-build" content="{build}">', 1))
+
 PYTHON
 
 # Every Python package the page can load carries an open licence.

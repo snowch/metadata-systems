@@ -4,6 +4,7 @@
 // JupyterLite pages, which the front page links; the shell knows nothing about metadata. An
 // address of a chapter's former page (#/chapter/<id>) leads to the chapter's notebook.
 
+import { AppStatus } from "./AppStatus";
 import { useEffect } from "react";
 
 import { CHAPTER_PAGES, NOTEBOOKS, notebookHref } from "@ms/content";
@@ -59,6 +60,7 @@ export function App() {
           </select>
         </label>
       </header>
+      <AppStatus />
       <main id="main" className="shell-main" tabIndex={-1}>
         {page}
       </main>

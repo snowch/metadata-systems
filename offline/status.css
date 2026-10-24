@@ -1,0 +1,83 @@
+/* Copyright © 2026 Christopher Snow */
+.ms-AppStatus {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  font: inherit;
+  flex-wrap: wrap;
+}
+.ms-AppStatus button {
+  min-height: 44px;
+  max-width: 100%;
+  white-space: normal;
+}
+.ms-AppStatus a {
+  color: inherit;
+  font: inherit;
+}
+.ms-AppStatus-dialog {
+  box-sizing: border-box;
+  width: min(620px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+  overflow: auto;
+  padding: 20px;
+  color: var(--jp-ui-font-color1, var(--fg, #222));
+  background: var(--jp-layout-color1, var(--bg-raised, #fff));
+  border: 1px solid #888;
+  border-radius: 8px;
+  font: 16px/1.5 sans-serif;
+}
+.ms-AppStatus-dialog::backdrop {
+  background: #0008;
+}
+.ms-AppStatus-dialog h2,
+.ms-AppStatus-dialog h3 {
+  color: inherit;
+  margin: 0.5em 0;
+}
+.ms-AppStatus-dialog button {
+  color: inherit;
+  background: transparent;
+  border: 1px solid #888;
+  border-radius: 4px;
+  min-height: 44px;
+  padding: 8px 12px;
+  margin: 4px;
+  font: inherit;
+  max-width: 100%;
+}
+.ms-AppStatus-dialog button:disabled {
+  opacity: 0.55;
+}
+.ms-AppStatus-dialog [hidden] {
+  display: none;
+}
+.ms-AppStatus-dialog progress {
+  width: 100%;
+  accent-color: #138875;
+}
+.ms-AppStatus-dialog p {
+  overflow-wrap: anywhere;
+}
+.ms-AppStatus-dialog :focus-visible {
+  outline: 3px solid #2387ce;
+  outline-offset: 2px;
+}
+@media (prefers-color-scheme: dark) {
+  .ms-AppStatus-dialog {
+    color-scheme: dark;
+  }
+}
+
+.ms-AppStatus-fallback {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 1001;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--jp-layout-color1, #fff);
+  border-top: 1px solid var(--jp-border-color1, #888);
+}

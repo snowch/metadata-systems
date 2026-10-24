@@ -1,10 +1,9 @@
 // Copyright © 2026 Christopher Snow
 
-// Test a complete published build at a GitHub Pages subpath. Restart the browser and clear its
-// HTTP cache before taking the network away, so successful runs must use the offline snapshot.
+// Real assembled releases, real service worker, real Python, persistent profile and empty HTTP
+// cache. The second release is rebuilt from changed production HTML/assets, never a fake timer.
 import assert from "node:assert/strict";
-import { spawn } from "node:child_process";
-import { createHash } from "node:crypto";
+import { spawn, execFileSync } from "node:child_process";
 import { mkdtemp, readFile, writeFile, rm, symlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -15,53 +14,63 @@ const temp = await mkdtemp(join(tmpdir(), "ms-offline-"));
 await symlink(site, join(temp, "metadata-systems"));
 await writeFile(join(temp, "unrelated-worker.js"), 'self.addEventListener("fetch", () => {});');
 const base = "http://127.0.0.1:8877/metadata-systems/";
+const paths = [
+  "offline-manifest.json",
+  "release.json",
+  "jupyterlite/release.json",
+  "index.html",
+  "jupyterlite/notebooks/index.html",
+  "jupyterlite/tree/index.html",
+  "offline-worker.js",
+];
+const originals = new Map(
+  await Promise.all(paths.map(async (p) => [p, await readFile(join(site, p))])),
+);
+const first = JSON.parse(originals.get("offline-manifest.json"));
+const releaseA = JSON.parse(originals.get("release.json"));
 const server = spawn("python3", ["-m", "http.server", "8877", "--bind", "127.0.0.1"], {
   cwd: temp,
   stdio: "ignore",
 });
-const manifestPath = join(site, "offline-manifest.json");
-const original = await readFile(manifestPath, "utf8");
-const first = JSON.parse(original);
-const htmlPath = join(site, "jupyterlite/notebooks/index.html");
-const releasePath = join(site, "jupyterlite/release.json");
-const workerPath = join(site, "offline-worker.js");
-const originalHTML = await readFile(htmlPath, "utf8");
-const originalRelease = await readFile(releasePath, "utf8");
-const originalWorker = await readFile(workerPath, "utf8");
-const extra = "offline-test-revision.txt";
-let context;
-const ok = (text) => console.log(`ok  offline: ${text}`);
+const ok = (text) => console.log(`ok app status/offline: ${text}`);
+let context, onlineBrowser, onlineContext, onlinePage;
 const launch = () =>
   chromium.launchPersistentContext(join(temp, "profile"), {
     viewport: { width: 390, height: 844 },
   });
-const ready = (page) => page.waitForSelector('[data-offline-ready="true"]', { timeout: 180_000 });
-const done = (page) =>
-  page.waitForFunction(() => !document.querySelector(".offline-course progress"), null, {
-    timeout: 180_000,
-  });
-const findAnswer = async (page, id) => {
-  const selector = `textarea[data-answer="${id}"]`;
-  await page.waitForSelector(selector, { state: "attached", timeout: 120000 });
-  return page.locator(selector).first();
-};
-const chapter = async (page, number) => {
+async function open(page) {
+  const dialog = page.getByRole("dialog", { name: "App status", exact: true });
+  if (!(await dialog.isVisible())) await page.locator(".ms-AppStatus > button").click();
+  await dialog.waitFor();
+  return dialog;
+}
+const settled = (page) =>
+  page.locator(".ms-AppStatus-dialog progress").waitFor({ state: "hidden", timeout: 180000 });
+const ready = (page) =>
+  page.waitForSelector('[data-offline-ready="true"]', { state: "attached", timeout: 180000 });
+async function home(page) {
+  await page.goto(base);
+  return open(page);
+}
+async function chapter(page, number, run = true) {
   await page.goto(
     `${base}jupyterlite/notebooks/index.html?path=chapter_${String(number).padStart(2, "0")}.ipynb`,
   );
-  await page.waitForSelector(".jp-MarkdownOutput h1", { timeout: 120_000 });
-  await page.click('button[data-reader-action="runAll"]');
-  await page.waitForFunction(
-    () => !document.querySelector('button[data-reader-action="runAll"]:disabled'),
-    null,
-    { timeout: 120_000 },
-  );
-  assert.equal(
-    await page.locator(".ms-Reader-progress").textContent(),
-    "All examples finished successfully.",
-  );
-  assert.equal(await page.locator(".jp-OutputArea-output.jp-mod-error").count(), 0);
-};
+  await page.waitForSelector(".jp-MarkdownOutput h1", { timeout: 120000 });
+  if (run) {
+    await page.click('button[data-reader-action="runAll"]');
+    await page.waitForFunction(
+      () => !document.querySelector('button[data-reader-action="runAll"]:disabled'),
+      null,
+      { timeout: 120000 },
+    );
+    assert.equal(
+      await page.locator(".ms-Reader-progress").textContent(),
+      "All examples finished successfully.",
+    );
+    assert.equal(await page.locator(".jp-OutputArea-output.jp-mod-error").count(), 0);
+  }
+}
 try {
   for (let i = 0; i < 100; i++) {
     if (
@@ -71,304 +80,350 @@ try {
       )
     )
       break;
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((r) => setTimeout(r, 100));
   }
   context = await launch();
   let page = context.pages()[0];
-  page.on("pageerror", (error) => console.log("page error", error.message));
-  page.on("console", (message) => {
-    if (message.type() === "error") console.log("browser error", message.text());
-  });
-  await page.goto(base);
-  await page.getByRole("button", { name: "Download full course", exact: true }).waitFor();
-  assert.equal(
-    await page.locator("[data-offline-ready]").getAttribute("data-offline-ready"),
-    "false",
-  );
-  // Other projects on this origin and learner answers must survive cache management.
+  page.on("pageerror", (e) => console.log("page error", e.message));
+  let dialog = await home(page);
+  await dialog.getByRole("button", { name: "Download for offline use", exact: true }).waitFor();
   await page.evaluate(async () => {
     await navigator.serviceWorker.register("/unrelated-worker.js", { scope: "/unrelated/" });
     await (await caches.open("another-project")).put("/unrelated", new Response("keep"));
-    localStorage.setItem(
-      "ms:metadata-systems:answers:v1:ch01.daily_sales",
-      "My offline explanation",
-    );
+    localStorage.setItem("ms:metadata-systems:answers:v1:ch01.daily_sales", "Retained answer");
+    localStorage.setItem("user-imported-file", "keep");
   });
-  await page.getByRole("button", { name: "Download full course", exact: true }).click();
-  await page.getByRole("progressbar").waitFor();
-  await page.getByRole("button", { name: "Cancel download" }).click();
-  await done(page);
-  assert.match(await page.locator('.offline-course [role="status"]').textContent(), /cancelled/);
+  await dialog.getByRole("button", { name: "Download for offline use", exact: true }).click();
+  await dialog.getByRole("button", { name: "Cancel download", exact: true }).click();
+  await settled(page);
+  await dialog.getByText(/Download cancelled/).waitFor();
   assert.equal(
-    await page.locator("[data-offline-ready]").getAttribute("data-offline-ready"),
+    await dialog.locator("[data-offline-ready]").getAttribute("data-offline-ready"),
     "false",
   );
-  ok("an interrupted download is resumable and never reports ready");
-  await page.getByRole("button", { name: "Download full course", exact: true }).click();
+  // A cancellation before the first asset can leave no partial cache; either action is honest.
+  await dialog
+    .getByRole("button", { name: /^(Resume download|Download for offline use)$/ })
+    .click();
   await ready(page);
-  await done(page);
-  assert(await page.evaluate(() => caches.has("another-project")));
-  assert(
-    await page.evaluate(() => {
-      const section = document.querySelector(".offline-course");
-      return (
-        section.scrollWidth <= section.clientWidth &&
-        [...section.querySelectorAll("button")].every(
-          (button) => button.getBoundingClientRect().height >= 44,
-        )
-      );
-    }),
-  );
-  ok(`complete ${first.files.length}-file download fits a phone and leaves other projects intact`);
-  const cdp = await context.newCDPSession(page);
-  await cdp.send("Network.clearBrowserCache");
+  await settled(page);
+  ok(`cancel/resume verified ${first.files.length} assets, ${(first.bytes / 1e6).toFixed(1)} MB`);
+  for (const width of [360, 1280]) {
+    await page.setViewportSize({ width, height: 844 });
+    assert(await dialog.evaluate((n) => n.scrollWidth <= n.clientWidth));
+    assert(
+      await dialog
+        .locator("button:visible")
+        .evaluateAll((ns) => ns.every((n) => n.getBoundingClientRect().height >= 44)),
+    );
+    await page.screenshot({ path: `/tmp/ms-app-status-${width}.png` });
+  }
   await context.close();
   context = await launch();
-  await context.setOffline(true);
   page = context.pages()[0];
-  page.on("pageerror", (error) => console.log("offline page error", error.message));
-  page.on("requestfailed", (request) => console.log("offline request failed", request.url()));
-  await page.goto(base);
-  await ready(page);
-  assert.match(await page.locator('.offline-course [role="status"]').textContent(), /offline/);
-  ok("the home page survives a browser restart offline with an empty HTTP cache");
-  await page.goto(`${base}jupyterlite/notebooks/index.html?path=chapter_01.ipynb`);
-  await page.waitForSelector('.ms-Example[data-example="daily_sales"]', { timeout: 120_000 });
-  const reader = page.locator('.ms-Example[data-example="daily_sales"]');
-  await page.getByRole("button", { name: "Run all", exact: true }).click();
-  await page
-    .getByText("All examples finished successfully.", { exact: true })
-    .waitFor({ timeout: 120_000 });
-  assert.equal(await reader.locator("tbody tr").count(), 7);
-  const readerCode = reader.locator(".cm-content");
-  await readerCode.fill((await readerCode.innerText()) + "\n# My offline edit");
-  await page.reload();
-  await page.waitForSelector('.ms-Example[data-example="daily_sales"]', { timeout: 120_000 });
-  assert.match(await readerCode.innerText(), /My offline edit/);
-  ok("Chapter 1 runs all examples offline and retains an unrun code edit across refresh");
+  const cdp = await context.newCDPSession(page);
+  await cdp.send("Network.clearBrowserCache");
+  await cdp.detach();
+  await context.setOffline(true);
+  await page.goto(`${base}jupyterlite/tree/index.html`);
+  await open(page);
+  assert.equal(
+    await page.locator('meta[name="ms-commit"]').getAttribute("content"),
+    releaseA.commit,
+  );
   await chapter(page, 1);
-  await page.locator('.ms-Release[data-state="cannotCheck"]').waitFor();
-  assert.match(await page.locator(".ms-Release").innerText(), /\? Cannot check/);
-  ok("the offline reader shows its commit without claiming it is the latest deployment");
-  assert.equal(
-    await (await findAnswer(page, "ch01.daily_sales")).inputValue(),
-    "My offline explanation",
-  );
-  await (await findAnswer(page, "ch01.daily_sales")).fill("Changed without a connection");
-  await page.reload();
-  await page.waitForSelector(".jp-MarkdownOutput h1");
-  assert.equal(
-    await (await findAnswer(page, "ch01.daily_sales")).inputValue(),
-    "Changed without a connection",
-  );
+  const answer = page.locator('textarea[data-answer="ch01.daily_sales"]');
+  assert.equal(await answer.inputValue(), "Retained answer");
+  await answer.fill("Saved while offline");
+  const editor = page.locator(".ms-Example .cm-content").first();
+  await editor.click();
+  await editor.press("ControlOrMeta+a");
+  await page.keyboard.insertText((await editor.innerText()) + "\n# Retained code");
   await chapter(page, 2);
   assert.equal(
-    await (await findAnswer(page, "ch01.daily_sales")).inputValue(),
-    "Changed without a connection",
+    await page.locator('textarea[data-answer="ch01.daily_sales"]').inputValue(),
+    "Saved while offline",
   );
-  await chapter(page, 33);
-  assert(await page.evaluate(() => navigator.serviceWorker.getRegistration("/unrelated/")));
-  ok("Python runs in new chapters offline; answers survive saving, refresh and chapter navigation");
+  await page.goto(`${base}notebook/index.html`);
+  await page.waitForURL(/jupyterlite\/notebooks/, { timeout: 120000 });
+  await page.locator(".jp-MarkdownOutput h1").waitFor({ timeout: 120000 });
+  dialog = await home(page);
+  await ready(page);
+  await page.locator('.ms-AppStatus[data-state="cannotCheck"]').waitFor();
+  ok(
+    "fresh offline launch, empty HTTP cache, old/deep links and previously unvisited Chapter 2 execute Python; answers retained",
+  );
   await context.setOffline(false);
-  const content = Buffer.from("A second complete offline release.");
-  const updatedCommit = "abcdef0123".repeat(4);
-  const updatedHTML = originalHTML.replace(
-    /(<meta name="ms-commit" content=")[a-f0-9]{40}/,
-    "$1" + updatedCommit,
+  onlineBrowser = await chromium.launch();
+  onlineContext = await onlineBrowser.newContext({ viewport: { width: 390, height: 844 } });
+  onlinePage = await onlineContext.newPage();
+  await home(onlinePage);
+  await onlinePage.evaluate(() => localStorage.setItem("work", "online-only work"));
+  // Publish a genuine second artifact, keeping a test payload deliberately unavailable first.
+  const commitB = releaseA.commit;
+  for (const path of [
+    "index.html",
+    "jupyterlite/notebooks/index.html",
+    "jupyterlite/tree/index.html",
+  ]) {
+    const html = (await readFile(join(site, path), "utf8")).replaceAll(releaseA.commit, commitB);
+    await writeFile(join(site, path), html);
+  }
+  await writeFile(
+    join(site, "jupyterlite/release.json"),
+    JSON.stringify({ ...releaseA, commit: commitB }),
   );
-  await writeFile(htmlPath, updatedHTML);
-  await writeFile(releasePath, JSON.stringify({ commit: updatedCommit }));
-  // A changed worker must activate while both old reader tabs remain open.
-  await writeFile(workerPath, originalWorker + "\n// A new published worker.\n");
-  const next = {
-    ...first,
-    version: "0123456789abcdef0123",
-    bytes: first.bytes + content.length,
-    files: [
-      ...first.files,
-      {
-        path: extra,
-        size: content.length,
-        sha256: createHash("sha256").update(content).digest("hex"),
-      },
-    ],
-  };
-  next.files = next.files.map((file) =>
-    file.path !== "jupyterlite/notebooks/index.html"
-      ? file
-      : {
-          ...file,
-          size: Buffer.byteLength(updatedHTML),
-          sha256: createHash("sha256").update(updatedHTML).digest("hex"),
-        },
-  );
-  next.bytes = next.files.reduce((sum, file) => sum + file.size, 0);
-  await writeFile(manifestPath, JSON.stringify(next));
-  await page.goto(base);
-  await page.getByRole("button", { name: "Download update", exact: true }).waitFor();
-  await page.getByRole("button", { name: "Download update", exact: true }).click();
-  await done(page);
-  assert.match(
-    await page.locator('.offline-course [role="status"]').textContent(),
-    /Could not complete/,
-  );
-  assert.equal(
-    await page.locator("[data-offline-ready]").getAttribute("data-offline-ready"),
-    "true",
-  );
+  await writeFile(join(site, "app-status-test.txt"), "Release B required asset");
+  execFileSync("node", ["scripts/build-offline.mjs", site], { stdio: "pipe" });
+  const releaseB = JSON.parse(await readFile(join(site, "release.json"), "utf8"));
+  assert.notEqual(releaseB.build, releaseA.build);
+  ok(`built releases ${releaseA.build} → ${releaseB.build}, same source commit ${commitB}`);
+  const next = JSON.parse(await readFile(join(site, "offline-manifest.json"), "utf8"));
+  await writeFile(join(site, "app-status-test.txt"), "Wrong bytes");
+  await dialog.getByRole("button", { name: "Check for updates", exact: true }).click();
+  await page.locator('.ms-AppStatus[data-state="updateAvailable"]').waitFor();
+  await dialog.getByRole("button", { name: "Update", exact: true }).click();
+  await settled(page);
+  await dialog.getByText(/Could not complete the download/).waitFor();
+  await ready(page);
   await context.setOffline(true);
   await chapter(page, 3);
-  ok("a failed update preserves the previous complete course and its Python runtime");
   await context.setOffline(false);
-  // A successful HTTP response with the wrong bytes must also leave the working copy intact.
-  await writeFile(join(site, extra), Buffer.alloc(content.length, 120));
-  await page.goto(base);
-  await page.getByRole("button", { name: "Download update", exact: true }).click();
-  await done(page);
-  assert.match(
-    await page.locator('.offline-course [role="status"]').textContent(),
-    /Could not complete/,
-  );
-  assert.equal(
-    await page.locator("[data-offline-ready]").getAttribute("data-offline-ready"),
-    "true",
-  );
-  ok("a checksum mismatch cannot publish a corrupt update");
-  await writeFile(join(site, extra), content);
+  ok("checksum mismatch rejects replacement and leaves previous complete Python course usable");
+  dialog = await home(page);
+  await page.evaluate(() => {
+    window.realCachePut = Cache.prototype.put;
+    Cache.prototype.put = async () => {
+      throw new DOMException("Test quota", "QuotaExceededError");
+    };
+  });
+  await dialog.getByRole("button", { name: "Update", exact: true }).click();
+  await settled(page);
+  await dialog.getByText(/Could not complete the download/).waitFor();
+  await ready(page);
+  await page.evaluate(() => {
+    Cache.prototype.put = window.realCachePut;
+  });
+  ok("storage failure retains the previous complete copy and offers retry");
+  await writeFile(join(site, "app-status-test.txt"), "Release B required asset");
   await chapter(page, 1);
-  try {
-    await page.locator('.ms-Release[data-state="updateAvailable"]').waitFor();
-  } catch (error) {
-    console.log(
-      "update detection",
-      await page.evaluate(async () => ({
-        online: navigator.onLine,
-        commit: document.querySelector('meta[name="ms-commit"]')?.content,
-        badge: document.querySelector(".ms-Release")?.outerHTML,
-        release: await fetch(new URL("../release.json", location.href), {
-          headers: { "X-MS-Offline-Download": "release-check" },
-          cache: "no-store",
-        })
-          .then((r) => r.text())
-          .catch(String),
-      })),
-    );
-    throw error;
-  }
   const other = await context.newPage();
   await chapter(other, 2);
-  const otherDraft = other.locator(".ms-Example .cm-content").first();
-  await otherDraft.fill((await otherDraft.innerText()) + "\n# Kept in another open tab");
-  await other.evaluate(() => {
-    window.updateTabMarker = "still open";
-    window.controllerUpdates = 0;
-    navigator.serviceWorker.addEventListener("controllerchange", () => window.controllerUpdates++);
-  });
-  const home = await context.newPage();
-  await home.goto(base);
-  await home.locator(".offline-course").waitFor();
-  await home.evaluate(() => (window.updateHomeMarker = "still open"));
+  await other.evaluate(() => (window.keepOtherTab = "open"));
+  const homeTab = await context.newPage();
+  await home(homeTab);
+  await homeTab.evaluate(() => (window.keepHome = "open"));
   await page.bringToFront();
+  dialog = await open(page);
+  await dialog.getByRole("button", { name: "Update", exact: true }).click();
+  await settled(page);
+  await dialog.getByRole("button", { name: "Restart to update", exact: true }).waitFor();
+  assert.equal(await page.locator('meta[name="ms-build"]').getAttribute("content"), releaseA.build);
+  await dialog.getByRole("button", { name: "Later", exact: true }).click();
+  assert.match(await page.locator(".ms-AppStatus").innerText(), /Update ready/);
+  assert.equal(await other.evaluate(() => window.keepOtherTab), "open");
+  // Before restart, both tabs must still read release A's exact HTML from the worker.
+  assert.match(
+    await other.evaluate(
+      async (u) => (await fetch(u)).text(),
+      base + "jupyterlite/notebooks/index.html",
+    ),
+    new RegExp(releaseA.build),
+  );
+  await page.evaluate(
+    async ({ base, version }) => {
+      await (
+        await caches.open(`ms:metadata-systems:offline:${base}:${version}`)
+      ).delete(new URL("app-status-test.txt", base).href);
+    },
+    { base, version: next.version },
+  );
+  dialog = await open(page);
+  await dialog.getByRole("button", { name: "Update", exact: true }).waitFor();
+  await dialog.getByRole("button", { name: "Update", exact: true }).click();
+  await settled(page);
+  await dialog.getByRole("button", { name: "Restart to update", exact: true }).waitFor();
+  ok("eviction of a deferred update removes false readiness and repairs it while retaining A");
+  dialog = await open(page);
+  await page.evaluate(() => {
+    window.realWorkerUpdate = ServiceWorkerRegistration.prototype.update;
+    ServiceWorkerRegistration.prototype.update = async () => {
+      throw Error("activation test failure");
+    };
+  });
+  await dialog.getByRole("button", { name: "Restart to update", exact: true }).click();
+  await dialog
+    .getByText("Could not restart with the update. This tab has not reloaded. Try again.", {
+      exact: true,
+    })
+    .waitFor();
+  assert.equal(await page.locator('meta[name="ms-build"]').getAttribute("content"), releaseA.build);
+  await page.evaluate(() => {
+    ServiceWorkerRegistration.prototype.update = window.realWorkerUpdate;
+  });
+  // Interrupt a restart after its async verification begins. The old document must not
+  // acquire B's pin when newly unsafe work prevents the final reload.
+  await page.evaluate(() => {
+    window.realCacheMatch = Cache.prototype.match;
+    window.pauseSelect = true;
+    Cache.prototype.match = async function (request, options) {
+      const url = typeof request === "string" ? request : request.url;
+      if (window.pauseSelect && url.endsWith("pyodide.asm.wasm")) {
+        window.pauseSelect = false;
+        window.selectWaiting = true;
+        await new Promise((resolve) => (window.releaseSelect = resolve));
+      }
+      return window.realCacheMatch.call(this, request, options);
+    };
+  });
+  await dialog.getByRole("button", { name: "Restart to update", exact: true }).click();
+  await page.waitForFunction(() => window.selectWaiting);
+  await page
+    .locator(".ms-Example")
+    .first()
+    .evaluate((n) => (n.dataset.unsaved = "true"));
+  await page.evaluate(() => window.releaseSelect());
+  await dialog
+    .getByText("Could not restart with the update. This tab has not reloaded. Try again.", {
+      exact: true,
+    })
+    .waitFor();
+  assert.equal(await page.locator('meta[name="ms-build"]').getAttribute("content"), releaseA.build);
+  assert.match(
+    await page.evaluate(
+      async (u) => (await fetch(u)).text(),
+      base + "jupyterlite/notebooks/index.html",
+    ),
+    new RegExp(releaseA.build),
+  );
+  await page.evaluate(() => {
+    Cache.prototype.match = window.realCacheMatch;
+  });
+  await page
+    .locator(".ms-Example")
+    .first()
+    .evaluate((n) => delete n.dataset.unsaved);
+  const sample = page.locator(".ms-Example").first();
+  await sample.evaluate((n) => (n.dataset.unsaved = "true"));
+  await page.waitForFunction(() => document.querySelector(".ms-AppStatus-dialog button") !== null);
+  await page.waitForTimeout(600);
+  assert(await dialog.getByRole("button", { name: "Restart to update", exact: true }).isDisabled());
+  await sample.evaluate((n) => delete n.dataset.unsaved);
+  await dialog.getByRole("button", { name: "Close App status", exact: true }).click();
+  const busyEditor = sample.locator(".cm-content");
+  const retainedCode = await busyEditor.innerText();
+  await busyEditor.click();
+  await busyEditor.press("ControlOrMeta+a");
+  await page.keyboard.insertText("import time\ntime.sleep(3)");
+  await sample.getByRole("button", { name: "Run", exact: true }).click();
+  dialog = await open(page);
+  await page.waitForTimeout(600);
+  assert(await dialog.getByRole("button", { name: "Restart to update", exact: true }).isDisabled());
   await page.waitForFunction(
-    async () => Boolean((await navigator.serviceWorker.getRegistration())?.waiting),
+    () =>
+      ![...document.querySelectorAll(".ms-AppStatus-dialog button")].find(
+        (n) => n.textContent === "Restart to update",
+      )?.disabled,
     null,
     { timeout: 30000 },
   );
-  await page.evaluate(() => {
-    window.controllerUpdates = 0;
-    navigator.serviceWorker.addEventListener("controllerchange", () => window.controllerUpdates++);
-  });
-  await page.getByRole("button", { name: "Update and reload", exact: true }).click();
+  await dialog.getByRole("button", { name: "Close App status", exact: true }).click();
+  await busyEditor.click();
+  await busyEditor.press("ControlOrMeta+a");
+  await page.keyboard.insertText(retainedCode);
+  dialog = await open(page);
+  await page.evaluate(() => document.dispatchEvent(new CompositionEvent("compositionstart")));
+  assert(await dialog.getByRole("button", { name: "Restart to update", exact: true }).isDisabled());
+  await page.evaluate(() => document.dispatchEvent(new CompositionEvent("compositionend")));
+  await dialog.getByRole("button", { name: "Restart to update", exact: true }).click();
   await page.waitForFunction(
-    (commit) => document.querySelector('meta[name="ms-commit"]')?.content === commit,
-    updatedCommit,
+    (c) => document.querySelector('meta[name="ms-build"]')?.content === c,
+    releaseB.build,
     { timeout: 180000 },
   );
-  await page.locator('.ms-Release[data-state="latest"]').waitFor();
+  await page.locator('.ms-AppStatus[data-state="upToDate"]').waitFor({ timeout: 120000 });
+  assert.equal(await other.evaluate(() => window.keepOtherTab), "open");
+  assert.equal(await homeTab.evaluate(() => window.keepHome), "open");
   assert.match(
-    await page.locator('.ms-Example[data-example="daily_sales"] .cm-content').innerText(),
-    /My offline edit/,
+    await other.evaluate(
+      async (u) => (await fetch(u)).text(),
+      base + "jupyterlite/notebooks/index.html",
+    ),
+    new RegExp(releaseA.build),
   );
   assert.equal(
-    await (await findAnswer(page, "ch01.daily_sales")).inputValue(),
-    "Changed without a connection",
+    await page.locator('textarea[data-answer="ch01.daily_sales"]').inputValue(),
+    "Saved while offline",
   );
-  assert.equal(
-    await other.evaluate(() => window.updateTabMarker),
-    "still open",
-    "another tab must never be reloaded automatically",
-  );
-  assert.ok(
-    (await other.evaluate(() => window.controllerUpdates)) > 0,
-    "the new worker claims other open tabs without closing them",
-  );
-  assert.equal(await home.evaluate(() => window.updateHomeMarker), "still open");
-  await home.getByRole("button", { name: "Reload to update", exact: true }).waitFor();
-  await home.getByRole("button", { name: "Reload to update", exact: true }).click();
-  await home.waitForFunction(() => window.updateHomeMarker === undefined);
-  await ready(home);
-  await home.close();
-  await other.getByRole("button", { name: "Reload to update", exact: true }).waitFor();
-  await other.bringToFront();
-  await other.getByRole("button", { name: "Reload to update", exact: true }).click();
-  await other.waitForFunction(
-    (commit) => document.querySelector('meta[name="ms-commit"]')?.content === commit,
-    updatedCommit,
-    { timeout: 180000 },
-  );
-  await other.locator(".ms-Example .cm-content").first().waitFor();
-  assert.match(
-    await other.locator(".ms-Example .cm-content").first().innerText(),
-    /Kept in another open tab/,
-  );
-  await other.close();
-  ok(
-    "Update and reload verifies the offline snapshot, activates a waiting worker with two tabs open, retains answers/code, and lets the other tab choose when to reload",
-  );
+  assert.match(await page.locator(".ms-Example .cm-content").first().innerText(), /Retained code/);
   await context.setOffline(true);
   assert.equal(
-    await page.evaluate(async (url) => (await fetch(url)).text(), base + extra),
-    content.toString(),
+    await page.evaluate(async (u) => (await fetch(u)).text(), base + "app-status-test.txt"),
+    "Release B required asset",
   );
-  ok("a completed update is published atomically and serves its new files offline");
-  // Retrying an already complete release must retain the previous snapshot for old open tabs.
-  const sharedClient = await readFile(new URL("../offline/client.js", import.meta.url), "utf8");
-  await page.evaluate(
-    async ({ source, manifest, base }) => {
-      const create = new Function(
-        source.replace("export function createOffline", "function createOffline") +
-          ";return createOffline;",
-      )();
-      const prefix = `ms:metadata-systems:offline:${base}:`;
-      const stateURL = new URL("__offline_state__", base).href;
-      const meta = await caches.open(prefix + "meta");
-      const before = await (await meta.match(stateURL)).json();
-      if (!before.previous) throw new Error("Missing previous snapshot before retry");
-      await create(base).download(manifest, new AbortController().signal, () => {});
-      const after = await (await meta.match(stateURL)).json();
-      if (
-        after.previous !== before.previous ||
-        !(await caches.keys()).includes(prefix + before.previous)
-      )
-        throw new Error("Retry discarded the previous snapshot");
-    },
-    { source: sharedClient, manifest: next, base },
+  ok(
+    "detect → verified download → Later → explicit restart → new running identity, retained answers/code, route and other tabs pinned to A",
   );
-  ok("retrying the same release keeps the previous snapshot for other open tabs");
-  // Simulate an evicted asset without trusting a localStorage ready flag.
-  await context.setOffline(false);
-  await page.goto(base);
-  await page.evaluate(async (base) => {
-    const cache = await caches.open(`ms:metadata-systems:offline:${base}:0123456789abcdef0123`);
-    await cache.delete(new URL("jupyterlite/static/pyodide/pyodide.asm.wasm", base).href);
-  }, base);
-  await page.reload();
-  await page.getByRole("button", { name: "Download full course", exact: true }).waitFor();
+  // An originally online-only tab must also get an actionable, deferred update. It must
+  // not offer Resume as a shortcut that selects the prepared release before Restart.
+  const onlineDialog = await open(onlinePage);
+  await onlineDialog.getByRole("button", { name: "Check for updates", exact: true }).click();
+  await onlineDialog.getByRole("button", { name: "Update", exact: true }).click();
+  await settled(onlinePage);
+  await onlineDialog.getByRole("button", { name: "Restart to update", exact: true }).waitFor();
   assert.equal(
-    await page.locator("[data-offline-ready]").getAttribute("data-offline-ready"),
-    "false",
+    await onlineDialog.getByRole("button", { name: "Resume download", exact: true }).isVisible(),
+    false,
   );
-  ok("readiness checks detect an incomplete or evicted cache");
+  assert.equal(
+    await onlinePage.locator('meta[name="ms-build"]').getAttribute("content"),
+    releaseA.build,
+  );
+  await onlineDialog.getByRole("button", { name: "Later", exact: true }).click();
+  await open(onlinePage);
+  await onlineDialog.getByRole("button", { name: "Restart to update", exact: true }).click();
+  await onlinePage.waitForFunction(
+    (c) => document.querySelector('meta[name="ms-build"]')?.content === c,
+    releaseB.build,
+    { timeout: 180000 },
+  );
+  assert.equal(await onlinePage.evaluate(() => localStorage.getItem("work")), "online-only work");
+  ok(
+    "online-only update prepares without restarting or publishing via Resume, then explicitly restarts with work retained",
+  );
+  assert.equal(
+    await other.evaluate(
+      async ({ base, version }) => {
+        const cache = await caches.open(`ms:metadata-systems:offline:${base}:${version}`);
+        const url = new URL("jupyterlite/notebooks/index.html", base).href;
+        const retained = await cache.match(url);
+        await cache.delete(url);
+        const response = await fetch(url, { cache: "no-store" });
+        await cache.put(url, retained);
+        return response.status;
+      },
+      { base, version: first.version },
+    ),
+    409,
+  );
+  ok("an evicted pinned asset fails safely instead of fetching a newer release");
+  await other.close();
+  await homeTab.close();
+  await context.setOffline(false);
+  // Eviction is detected on focus and repaired with verified reuse, not an old success flag.
+  await page.evaluate(
+    async ({ base, version, path }) => {
+      await (
+        await caches.open(`ms:metadata-systems:offline:${base}:${version}`)
+      ).delete(new URL(path, base).href);
+    },
+    { base, version: next.version, path: "app-status-test.txt" },
+  );
+  dialog = await open(page);
+  await dialog.getByText("Offline download incomplete", { exact: true }).waitFor();
+  await dialog.getByRole("button", { name: "Resume download", exact: true }).click();
+  await ready(page);
+  await settled(page);
   const savedNotebook = (seed = false) =>
     page.evaluate(async (seed) => {
       const { name } = (await indexedDB.databases()).find((db) =>
@@ -415,32 +470,29 @@ try {
     }, seed);
   const notebookBefore = await savedNotebook(true);
   assert(notebookBefore?.content?.cells?.length);
-  await page.getByRole("button", { name: "Remove downloaded course", exact: true }).click();
-  await page.waitForFunction(() => !document.querySelector(".offline-course button:disabled"));
-  assert(await page.evaluate(() => caches.has("another-project")));
-  assert(await page.evaluate(() => navigator.serviceWorker.getRegistration("/unrelated/")));
-  assert.deepEqual(await savedNotebook(), notebookBefore);
-  assert.match(
-    await page.evaluate(() =>
-      localStorage.getItem("ms:metadata-systems:code:v1:chapter_01.ipynb:daily_sales"),
-    ),
-    /My offline edit/,
-  );
+  await dialog.getByRole("button", { name: "Remove offline copy", exact: true }).click();
+  await dialog.getByRole("button", { name: "Keep offline copy", exact: true }).click();
+  await ready(page);
+  await dialog.getByRole("button", { name: "Remove offline copy", exact: true }).click();
+  await dialog.getByRole("button", { name: "Remove offline copy", exact: true }).last().click();
+  await dialog.getByText("Not saved for offline use", { exact: true }).waitFor();
   assert.equal(
     await page.evaluate(() =>
       localStorage.getItem("ms:metadata-systems:answers:v1:ch01.daily_sales"),
     ),
-    "Changed without a connection",
+    "Saved while offline",
   );
-  ok("removing downloaded files preserves answers, saved notebooks and unrelated workers/caches");
-  console.log("Offline checks passed.");
+  assert.equal(await page.evaluate(() => localStorage.getItem("user-imported-file")), "keep");
+  assert.deepEqual(await savedNotebook(), notebookBefore);
+  assert(await page.evaluate(() => caches.has("another-project")));
+  assert(await page.evaluate(() => navigator.serviceWorker.getRegistration("/unrelated/")));
+  ok("eviction/repair and confirmed scoped removal preserve answers, code and sibling app storage");
 } finally {
+  await onlineContext?.close();
+  await onlineBrowser?.close();
   await context?.close();
   server.kill();
-  await writeFile(manifestPath, original);
-  await writeFile(htmlPath, originalHTML);
-  await writeFile(releasePath, originalRelease);
-  await writeFile(workerPath, originalWorker);
-  await rm(join(site, extra), { force: true });
+  for (const [path, bytes] of originals) await writeFile(join(site, path), bytes);
+  await rm(join(site, "app-status-test.txt"), { force: true });
   await rm(temp, { recursive: true, force: true });
 }

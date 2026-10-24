@@ -11,7 +11,6 @@ import { NOTEBOOKS, PARTS, PLAN, notebookHref } from "@ms/content";
 import { fill } from "../fill";
 import { STRINGS } from "../strings";
 import { Dashboard } from "./Dashboard";
-import { Offline } from "./Offline";
 
 const notebook = (file: string) => notebookHref(import.meta.env.BASE_URL, file);
 
@@ -56,7 +55,6 @@ export function FrontPage() {
   return (
     <>
       <Cover />
-      <Offline />
       <h2 className="contents-heading">{STRINGS.contents}</h2>
       <p className="contents-note">{STRINGS.contentsNote}</p>
       {PARTS.map((title, i) => {
