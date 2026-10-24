@@ -220,7 +220,10 @@ try {
   await dialog.getByRole("button", { name: "Restart to update", exact: true }).waitFor();
   assert.equal(await page.locator('meta[name="ms-build"]').getAttribute("content"), releaseA.build);
   await dialog.getByRole("button", { name: "Later", exact: true }).click();
-  assert.match(await page.locator(".ms-AppStatus").innerText(), /Update ready/);
+  assert.match(
+    await page.locator(".ms-AppStatus > button").getAttribute("aria-label"),
+    /Update ready/,
+  );
   assert.equal(await other.evaluate(() => window.keepOtherTab), "open");
   // Before restart, both tabs must still read release A's exact HTML from the worker.
   assert.match(
