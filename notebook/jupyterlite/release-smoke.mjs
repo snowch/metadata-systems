@@ -22,6 +22,28 @@ export async function checkRelease(browser, base) {
     await page.goto(`${base}/notebooks/index.html?path=chapter_01.ipynb`);
     const badge = page.locator(".ms-AppStatus");
     await page.locator('.ms-AppStatus[data-state="upToDate"]').waitFor({ timeout: 120000 });
+    await badge.getByRole("button").tap();
+    await page.getByRole("dialog").getByText("Up to date", { exact: true }).waitFor();
+    await page.evaluate(() => {
+      window.statusMutations = 0;
+      window.statusObserver = new MutationObserver(
+        (records) => (window.statusMutations += records.length),
+      );
+      for (const node of document.querySelectorAll('.ms-AppStatus-dialog [role="status"]'))
+        window.statusObserver.observe(node, {
+          subtree: true,
+          characterData: true,
+          childList: true,
+        });
+    });
+    await page.waitForTimeout(1200);
+    assert.equal(
+      await page.evaluate(() => window.statusMutations),
+      0,
+      "unchanged safety polling must not repeat live announcements",
+    );
+    await page.evaluate(() => window.statusObserver.disconnect());
+    await page.keyboard.press("Escape");
     const loaded = deployed;
     assert.equal(await badge.locator("a").textContent(), loaded.commit.slice(0, 7));
     assert.equal(

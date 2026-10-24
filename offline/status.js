@@ -152,39 +152,41 @@ export function appStatus(
     typeof BroadcastChannel === "undefined"
       ? null
       : new BroadcastChannel(`ms:metadata-systems:updates:${base}`);
-  const say = (text) => {
-    message.textContent = text;
+  const write = (element, text) => {
+    if (element.textContent !== text) element.textContent = text;
   };
+  const say = (text) => write(message, text);
   function render() {
     node.dataset.state = pending ? "ready" : state;
-    trigger.textContent = `${words.title} · ${pending ? words.updateReady : words[state]}`;
-    versionState.textContent = pending ? words.updateReady : words[state];
-    checkButton.textContent = state === "checkFailed" ? words.retry : words.check;
+    write(trigger, `${words.title} · ${pending ? words.updateReady : words[state]}`);
+    write(versionState, pending ? words.updateReady : words[state]);
+    write(checkButton, state === "checkFailed" ? words.retry : words.check);
     checkButton.disabled = !!request || !!operation;
     update.hidden = !!pending || state !== "updateAvailable";
     update.disabled = !!operation || navigator.onLine === false;
     restart.hidden = later.hidden = !pending;
     restart.disabled = !!operation || !!blocked() || composing;
     offlineState.dataset.offlineReady = String(saved.ready);
-    offlineState.textContent = !offline.supported()
-      ? words.offlineUnavailable
-      : operation && operation.kind === "offline"
-        ? words.saving
-        : saved.ready
-          ? words.availableOffline
-          : saved.hasDownload && !pending
-            ? words.incomplete
-            : words.notSaved;
-    download.textContent = saved.hasDownload && !saved.ready ? words.resume : words.download;
+    write(
+      offlineState,
+      !offline.supported()
+        ? words.offlineUnavailable
+        : operation && operation.kind === "offline"
+          ? words.saving
+          : saved.ready
+            ? words.availableOffline
+            : saved.hasDownload && !pending
+              ? words.incomplete
+              : words.notSaved,
+    );
+    write(download, saved.hasDownload && !saved.ready ? words.resume : words.download);
     download.hidden = saved.ready || !!pending || !offline.supported();
     download.disabled = !!operation || !available || navigator.onLine === false;
     remove.hidden = !saved.hasDownload;
     remove.disabled = !!operation;
     cancel.hidden = !operation || operation.kind === "restart";
     progress.hidden = !operation;
-    size.textContent = available
-      ? words.size.replace("{size}", (available.bytes / 1e6).toFixed(1))
-      : "";
+    write(size, available ? words.size.replace("{size}", (available.bytes / 1e6).toFixed(1)) : "");
     resize();
   }
   async function refresh() {

@@ -57,7 +57,9 @@ and actual verified bytes, not the shared mockup's simulated figures.
   streamed Python-byte progress, delayed startup, queued runs and answer retention.
 - Focused `checkRelease` browser run: passed phone touch opening, reduced motion, Escape/focus
   restoration, malformed metadata, failed checks, offline uncertainty and an aborted stale
-  response. Separate phone/desktop light/dark screenshots are below.
+  response. A final focused run also verifies that unchanged safety polling causes zero live-region
+  text mutations, avoiding repeated screen-reader announcements. Separate phone/desktop
+  light/dark screenshots are below.
 
 The offline test constructs a second actual assembled artifact with a changed required asset,
 then downloads and verifies it through the real worker. Both retain the same real source commit,
